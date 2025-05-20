@@ -5,6 +5,6 @@
 Automated pipeline to:
 - Fetch videos via RapidAPI
 - Download with yt-dlp
-- Generate subtitles
+- Generate subtitles with fast-whisper
 - Translate subtitles
 - Publish to MediaCMS

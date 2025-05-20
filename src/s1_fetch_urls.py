@@ -2,10 +2,10 @@ import requests
 from urllib.parse import urlparse
 import logging
 
-from src.config import RAPIDAPI_KEY, RAPIDAPI_URL, KEYWORDS
-from src.connection import engine, SessionLocal, celery_app
-from src.models import Video, Base, VideoStatus
-from src.crud import batch_add
+from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL, KEYWORDS
+from src.lib.connection import engine, SessionLocal, celery_app
+from src.lib.models import Video, Base, VideoStatus
+from src.lib.crud import batch_add
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)

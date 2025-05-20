@@ -1,4 +1,4 @@
-from src.models import Video
+from src.lib.models import Video
 from sqlalchemy.orm import Session
 
 def batch_add(session: Session, videos):

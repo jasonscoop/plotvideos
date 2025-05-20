@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, Enum as SAEnum
 from sqlalchemy.orm import declarative_base
 import enum
 
-from src.connection import engine
+from src.lib.connection import engine
 
 Base = declarative_base()
 

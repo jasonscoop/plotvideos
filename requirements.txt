@@ -1,2 +1,6 @@
 requests
 python-dotenv
+celery
+psycopg2-binary
+SQLAlchemy
+redis

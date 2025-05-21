@@ -4,3 +4,5 @@ celery
 psycopg2-binary
 SQLAlchemy
 redis
+yt_dlp
+pytest

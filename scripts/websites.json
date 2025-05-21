@@ -1,0 +1,188 @@
+{
+  "data": [
+    {
+      "name": "PornHUB",
+      "url": "https://www.pornhub.com/video/search",
+      "supportedQualities": [
+        "all",
+        "hd"
+      ],
+      "supportedFilter": [
+        "all",
+        "newest",
+        "rating",
+        "longest",
+        "views",
+        "relevance"
+      ],
+      "supportedAdditionalParameter": [
+        "page",
+        "timeout"
+      ]
+    },
+    {
+      "name": "ePorner",
+      "url": "https://www.eporner.com/search/%7Bquery%7D/",
+      "supportedQualities": [
+        "all"
+      ],
+      "supportedFilter": [
+        "all",
+        "views",
+        "rating",
+        "longest"
+      ],
+      "supportedAdditionalParameter": [
+        "page",
+        "timeout"
+      ]
+    },
+    {
+      "name": "RedTube",
+      "url": "https://www.redtube.com/",
+      "supportedQualities": [
+        "all",
+        "hd",
+        "vr"
+      ],
+      "supportedFilter": [
+        "all",
+        "relevance",
+        "newest",
+        "rating",
+        "views",
+        "longest"
+      ],
+      "supportedAdditionalParameter": [
+        "page",
+        "timeout"
+      ]
+    },
+    {
+      "name": "xHamster",
+      "url": "https://www.xhamster.com/search/%7Bquery%7D",
+      "supportedQualities": [
+        "all",
+        "hd",
+        "1080p",
+        "4k",
+        "vr"
+      ],
+      "supportedFilter": [
+        "all",
+        "relevance",
+        "newest",
+        "views",
+        "rating",
+        "longest"
+      ],
+      "supportedAdditionalParameter": [
+        "page",
+        "timeout"
+      ]
+    },
+    {
+      "name": "XVideos",
+      "url": "https://www.xvideos.com/",
+      "supportedQualities": [
+        "all",
+        "hd",
+        "1080p"
+      ],
+      "supportedFilter": [
+        "all",
+        "relevance",
+        "rating",
+        "longest",
+        "newest",
+        "views"
+      ],
+      "supportedAdditionalParameter": [
+        "page",
+        "timeout"
+      ]
+    },
+    {
+      "name": "YouPorn",
+      "url": "https://www.youporn.com/search/",
+      "supportedQualities": [
+        "all",
+        "hd",
+        "vr"
+      ],
+      "supportedFilter": [
+        "all",
+        "relevance",
+        "views",
+        "rating",
+        "longest",
+        "newest"
+      ],
+      "supportedAdditionalParameter": [
+        "page",
+        "timeout"
+      ]
+    },
+    {
+      "name": "PornHD",
+      "url": "https://www.pornhd.com/search/%7Bquery%7D",
+      "supportedQualities": [
+        "all",
+        "vr"
+      ],
+      "supportedFilter": [
+        "all",
+        "relevance",
+        "newest",
+        "views",
+        "rating",
+        "longest"
+      ],
+      "supportedAdditionalParameter": [
+        "page",
+        "timeout"
+      ]
+    },
+    {
+      "name": "SpankBang",
+      "url": "https://www.spankbang.com/s/%7Bquery%7D",
+      "supportedQualities": [
+        "all",
+        "hd",
+        "1080p",
+        "4k"
+      ],
+      "supportedFilter": [
+        "all",
+        "relevance",
+        "newest",
+        "views",
+        "rating"
+      ],
+      "supportedAdditionalParameter": [
+        "page",
+        "timeout"
+      ]
+    },
+    {
+      "name": "YouJizz",
+      "url": "https://www.youjizz.com/search/%7Bfilter%7D%7Bquery%7D-%7Bpage%7D.html",
+      "supportedQualities": [
+        "all",
+        "hd"
+      ],
+      "supportedFilter": [
+        "all",
+        "views",
+        "newest",
+        "rating",
+        "longest",
+        "relevance"
+      ],
+      "supportedAdditionalParameter": [
+        "page",
+        "timeout"
+      ]
+    }
+  ]
+}

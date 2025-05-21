@@ -1,14 +1,14 @@
 import pytest
 
 from src.lib.id_utils import YouJizzIdExtractor, PornhubIdExtractor, EpornerIdExtractor, RedTubeIdExtractor, \
-    xHamsterIdExtractor, YouPornIdExtractor, SpankBangIdExtractor, XvideosIdExtractor, PornHDIdExtractor
+    XhamsterIdExtractor, YouPornIdExtractor, SpankBangIdExtractor, XvideosIdExtractor, PornHDIdExtractor
 
 
 @pytest.mark.parametrize("extractor, expected, url", [
     (PornhubIdExtractor, "ph63ce905f3fbf2", "https://www.site.com/view_video.php?viewkey=ph63ce905f3fbf2"),
     (EpornerIdExtractor, "gKxXbZQXx8C", "https://www.site.com/video-gKxXbZQXx8C/jealousy-and-erection-and-excitement-rental-wife-akemi/"),
     (RedTubeIdExtractor, "190319601", "https://www.redtube.com/190319601"),
-    (xHamsterIdExtractor, "xhwG44u", "https://xhamster.com/videos/chinese-teen-gets-the-bbc-xhwG44u"),
+    (XhamsterIdExtractor, "xhwG44u", "https://xhamster.com/videos/chinese-teen-gets-the-bbc-xhwG44u"),
     (XvideosIdExtractor, "ulluaud2445", "https://www.xvideos.com/video.ulluaud2445/chinese_housewife_xian_erai_had_a_passionate_fuck_with_a_new_guy"),
     (YouPornIdExtractor, "17133601", "https://www.youporn.com/watch/17133601/incredible-first-meeting-with-stepsis/"),
     (YouPornIdExtractor, "190632121", "https://www.youporn.com/watch/190632121/"),

@@ -6,8 +6,3 @@ from src.lib.config import POSTGRES_URL, REDIS_HOST, REDIS_PORT
 engine = create_engine(POSTGRES_URL, pool_pre_ping=True, pool_size=10,)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-celery_app = Celery(
-    'fetch_video_url',
-    broker=f'redis://{REDIS_HOST}:{REDIS_PORT}/0',
-) 
-

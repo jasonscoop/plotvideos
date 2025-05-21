@@ -1,7 +1,14 @@
 from os import getenv
+from pathlib import Path
+
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+ROOT_DIR = Path(__file__).parent.parent.parent
+DOWNLOADS_DIR = ROOT_DIR.joinpath("downloads")
+DOWNLOADS_DIR.mkdir(exist_ok=True)
 
 POSTGRES_URL=getenv("POSTGRES_URL")
 

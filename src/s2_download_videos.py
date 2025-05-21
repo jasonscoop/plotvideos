@@ -43,7 +43,7 @@ def download_video(video: Video) -> (bool, str, str):
         return False, "", str(e)
 
 
-def main():
+def download_videos():
     session = SessionLocal()
     batch_size = 10  # You can adjust this as needed
     last_id = 0
@@ -80,5 +80,5 @@ def main():
 
 if __name__ == "__main__":
     init_logging("download-videos")
-    result = download_video(Video(url="https://www.youtube.com/watch?v=UkRaqAuIIOU", original_id="UkRaqAuIIOU", host="www.youtube.com"))
-    logging.info(result)
+    download_videos()
+    logging.info("All done!")

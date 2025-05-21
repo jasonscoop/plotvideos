@@ -7,8 +7,12 @@ load_dotenv()
 
 
 ROOT_DIR = Path(__file__).parent.parent.parent
-DOWNLOADS_DIR = ROOT_DIR.joinpath("downloads")
-DOWNLOADS_DIR.mkdir(exist_ok=True)
+WORKS_DIR = ROOT_DIR / "works"
+
+VIDEOS_DIR = WORKS_DIR.joinpath("videos")
+VIDEOS_DIR.mkdir(exist_ok=True)
+LOGS_DIR = WORKS_DIR.joinpath("logs")
+LOGS_DIR.mkdir(exist_ok=True)
 
 POSTGRES_URL=getenv("POSTGRES_URL")
 

@@ -1,36 +1,30 @@
 import logging
 import os
-import uuid
-
-from src.lib.config import DOWNLOADS_DIR
-from src.lib.connection import SessionLocal
-from src.lib.models import Video, VideoStatus
-
-# Add yt-dlp import
 import yt_dlp
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from src.lib.config import VIDEOS_DIR
+from src.lib.connection import SessionLocal
+from src.lib.log_utils import init_logging
+from src.lib.models import Video, VideoStatus
 
-# No need to create DOWNLOADS_DIR here, assume it's handled in config or elsewhere
 
 def download_video(video: Video) -> (bool, str, str):
-    """
-    Download video using yt-dlp Python SDK. Returns (success, file_path, error_message)
-    """
-    video_dir = DOWNLOADS_DIR / video.host
-    video_dir.mkdir(exist_ok=True)
-    output_template = str(video_dir.joinpath(f"%(id)s-%(title)s.%(ext)s"))
+    video_dir = VIDEOS_DIR.joinpath(video.host, video.original_id)
+    if video_dir.exists():
+        logging.warning("Video dir [%s] exists, ignore", video_dir)
+        return False, "", f"Video dir exists: [{video_dir}]"
+
+    video_dir.mkdir(exist_ok=True, parents=True)
+    output_template = str(video_dir.joinpath(f"%(id)s.%(ext)s"))
     ydl_opts = {
-        'format': 'best',
+        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+        'merge_output_format': 'mp4',
         'outtmpl': output_template,
         'quiet': True,
         'no_warnings': True,
         'noplaylist': True,
-        'writesubtitles': True,
-        'writeautomaticsub': True,
-        'allsubtitles': True,
-        "subtitleslangs": ["all"],
+        'writesubtitles': False,
+        'writeautomaticsub': False,
     }
     file_path = ""
     try:
@@ -38,14 +32,14 @@ def download_video(video: Video) -> (bool, str, str):
             result = ydl.download([video.url])
             # Find the newest file in the directory as the downloaded file
             files = sorted(
-                [DOWNLOADS_DIR / f for f in os.listdir(DOWNLOADS_DIR)],
+                [video_dir / filename for filename in os.listdir(video_dir)],
                 key=lambda f: f.stat().st_mtime,
                 reverse=True
             )
-            file_path = str(files[0]) if files else ""
+            file_path = str(os.path.basename(files[0])) if files else ""
         return True, file_path, ""
     except Exception as e:
-        logger.error(f"Failed to download {video.url}: {e}")
+        logging.error(f"Failed to download {video.url}: {e}")
         return False, "", str(e)
 
 
@@ -64,19 +58,20 @@ def main():
             )
             if not videos:
                 break
-            logger.info(f"Processing batch of {len(videos)} videos (last_id {last_id})")
+
+            logging.info(f"Processing batch of {len(videos)} videos (last_id {last_id})")
             for video in videos:
-                logger.info(f"Downloading: {video.title} ({video.url})")
+                logging.info(f"Downloading: {video.title} ({video.url})")
                 success, file_path, error = download_video(video)
                 if success:
                     video.status = VideoStatus.downloaded
                     video.path = file_path
                     video.failed_reason = ""
-                    logger.info(f"Downloaded successfully: {file_path}")
+                    logging.info(f"Downloaded successfully: {file_path}")
                 else:
                     video.status = VideoStatus.download_failed
                     video.failed_reason = error[:1000]  # Truncate if too long
-                    logger.error(f"Download failed: {error}")
+                    logging.error(f"Download failed: {error}")
                 session.commit()
             last_id = videos[-1].id
     finally:
@@ -84,4 +79,6 @@ def main():
 
 
 if __name__ == "__main__":
-    download_video(Video(url="https://www.youtube.com/watch?v=UkRaqAuIIOU"))
+    init_logging("download-videos")
+    result = download_video(Video(url="https://www.youtube.com/watch?v=UkRaqAuIIOU", original_id="UkRaqAuIIOU", host="www.youtube.com"))
+    logging.info(result)

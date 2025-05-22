@@ -6,3 +6,4 @@ SQLAlchemy
 redis
 yt_dlp
 pytest
+faster_whisper==1.1.1

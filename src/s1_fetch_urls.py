@@ -7,7 +7,7 @@ import logging
 from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL, KEYWORDS
 from src.lib.connection import SessionLocal
 from src.lib.consts import ID_EXTRACTOR_MAP
-from src.lib.log_utils import init_logging
+from src.utils.log_utils import init_logging
 from src.lib.models import Video, VideoStatus
 from src.lib.crud import batch_add
 

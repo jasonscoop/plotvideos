@@ -1,6 +1,6 @@
 from enum import StrEnum
 
-from src.lib.id_utils import PornhubIdExtractor, XhamsterIdExtractor, XvideosIdExtractor, EpornerIdExtractor, \
+from src.utils.id_utils import PornhubIdExtractor, XhamsterIdExtractor, XvideosIdExtractor, EpornerIdExtractor, \
     YouJizzIdExtractor, RedTubeIdExtractor, YouPornIdExtractor, SpankBangIdExtractor
 
 # Languages with Over 100 Million Total Speakers
@@ -49,3 +49,5 @@ ID_EXTRACTOR_MAP = {
     "www.pornhd.com": PornhubIdExtractor,
     "spankbang.com": SpankBangIdExtractor,
 }
+
+SUPPORTED_VIDEO_EXTENSIONS = {"3gp", "flv", "mp4", "webm"}

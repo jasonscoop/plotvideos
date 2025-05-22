@@ -2,15 +2,19 @@ import logging
 import os
 import yt_dlp
 
-from src.lib.config import VIDEOS_DIR
+from src.lib.config import VIDEOS_DIR, YT_DLP_PROXY
 from src.lib.connection import SessionLocal
-from src.lib.log_utils import init_logging
+from src.lib.consts import SUPPORTED_VIDEO_EXTENSIONS
+from src.utils.log_utils import init_logging
 from src.lib.models import Video, VideoStatus
 
 
 def download_video(video: Video) -> (bool, str, str):
-    video_dir = VIDEOS_DIR.joinpath(video.host, video.original_id)
-    if video_dir.exists():
+    video_uri_base = f"{video.host}/{video.original_id[0:2]}/{video.original_id}"
+    video_dir = VIDEOS_DIR / video_uri_base
+    filenames ={f"{video.original_id}.{ext}" for ext in SUPPORTED_VIDEO_EXTENSIONS}
+
+    if any(video_dir.joinpath(filename).exists() for filename in filenames):
         logging.warning("Video dir [%s] exists, ignore", video_dir)
         return False, "", f"Video dir exists: [{video_dir}]"
 
@@ -25,19 +29,16 @@ def download_video(video: Video) -> (bool, str, str):
         'noplaylist': True,
         'writesubtitles': False,
         'writeautomaticsub': False,
+        'proxy': YT_DLP_PROXY
     }
-    file_path = ""
+
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            result = ydl.download([video.url])
-            # Find the newest file in the directory as the downloaded file
-            files = sorted(
-                [video_dir / filename for filename in os.listdir(video_dir)],
-                key=lambda f: f.stat().st_mtime,
-                reverse=True
-            )
-            file_path = str(os.path.basename(files[0])) if files else ""
-        return True, file_path, ""
+            ydl.download([video.url])
+            for filename in filenames:
+                if video_dir.joinpath(filename).exists():
+                    return True, f"{video_uri_base}/{filename}", ""
+        return False, "", "Can't find downloaded video file."
     except Exception as e:
         logging.error(f"Failed to download {video.url}: {e}")
         return False, "", str(e)
@@ -80,5 +81,7 @@ def download_videos():
 
 if __name__ == "__main__":
     init_logging("download-videos")
-    download_videos()
+    # download_videos()
+    r = download_video(Video(url="https://www.pornhub.com/view_video.php?viewkey=661bb3bde2251", original_id="661bb3bde2251", host="www.pornhub.com"))
+    logging.info(r)
     logging.info("All done!")

@@ -24,7 +24,7 @@ def split_text_by_words(text, words, max_length=50):
     current_segment = []
     current_words = []
     current_length = 0
-
+    
     for word_data in words:
         word = word_data.get("Word", "")
         word_len = len(word)
@@ -48,7 +48,7 @@ def split_text_by_words(text, words, max_length=50):
     if current_segment:
         segment_text = " ".join(current_segment)
         segments.append((segment_text, current_words[0], current_words[-1]))
-
+    
     return segments
 
 
@@ -86,7 +86,7 @@ def audio_to_srt(audio_path, duration, output_path):
 
     # Configure speech recognition
     speech_config = speechsdk.SpeechConfig(subscription=AZURE_SPEECH_KEY, region=AZURE_SPEECH_REGION)
-    speech_config.speech_recognition_language = "en-US"
+    # speech_config.speech_recognition_language = "en-US"
 
     # Enable detailed output with word-level timestamps
     speech_config.request_word_level_timestamps()
@@ -98,7 +98,7 @@ def audio_to_srt(audio_path, duration, output_path):
     speech_config.set_property(speechsdk.PropertyId.SpeechServiceConnection_EndSilenceTimeoutMs, "2000")
 
     # Create audio input
-    audio_config = speechsdk.audio.AudioConfig(filename=wav_path)
+    audio_config = speechsdk.audio.AudioConfig(filename=audio_path)
     speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
 
     print(f"Starting recognition for audio file: {audio_path}")
@@ -108,10 +108,13 @@ def audio_to_srt(audio_path, duration, output_path):
     done = False
 
     def handle_result(evt):
+        if evt.result.text.strip():
+            print(f"Recognized--->>: {evt.result.text}")
+
         if evt.result.reason == speechsdk.ResultReason.RecognizedSpeech:
             if evt.result.text.strip():  # Only process non-empty results
-                results.append(evt.result.json)
-                print(f"Recognized: {evt.result.text}")
+                results.append(json.loads(evt.result.json))
+                # print(f"Recognized: {evt.result.text}")
 
     def handle_canceled(evt):
         print(f"Recognition canceled: {evt.reason}")
@@ -162,7 +165,7 @@ def audio_to_srt(audio_path, duration, output_path):
 
         for result_json in json_results:
             try:
-                result = json.loads(result_json)
+                result = result_json
                 if not result.get("NBest", []):
                     continue
 
@@ -209,11 +212,15 @@ def audio_to_srt(audio_path, duration, output_path):
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(srt_output)
 
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path +".json", "w", encoding="utf-8") as f:
+        f.write(json.dumps(results, indent=2))
+
     print(f"Total processing time: {time.time() - start_time:.2f} seconds")
     print(f"Subtitle saved to: {output_path}")
 
 
 if __name__ == '__main__':
     init_logging("stt")
-    wav_path, duration = convert_to_wav("/Users/garymeng/code/more/wuse/works/661bb3bde2251.mp4")
-    audio_to_srt(wav_path, duration, "/Users/garymeng/code/more/wuse/works/661bb3bde2251.srt")
+    wav_path, duration = convert_to_wav("/Users/garymeng/code/more/wuse/works/661bb3bde2251-small.mp4")
+    audio_to_srt(wav_path, duration, "/Users/garymeng/code/more/wuse/works/661bb3bde2251-small.srt")

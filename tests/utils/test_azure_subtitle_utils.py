@@ -8,10 +8,6 @@ from src.utils.azure_subtitle_utils import generate_subtitle, create_subtitle
 from tests import SUBTITLES_DIR
 
 
-def test_generate_subtitle():
-    generate_subtitle(Path("/Users/garymeng/code/more/wuse/works/videos/661bb3bde2251-small.mp4"))
-
-
 @pytest.mark.parametrize("json_file",[
     "azure-results-661bb3bde2251.json"
 ])

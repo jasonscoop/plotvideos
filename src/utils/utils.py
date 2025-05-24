@@ -156,9 +156,9 @@ def text_to_srt(idx: int, msg: str, start_time: float, end_time: float) -> str:
     )
     return srt
 
-
+PUNCTUATIONS = """!"#$%&()*+,-./:;<=>?@[\]^_`{|}~"""
 def str_contains_punctuation(word):
-    for p in string.punctuation:
+    for p in PUNCTUATIONS:
         if p in word:
             return True
     return False
@@ -187,7 +187,7 @@ def split_string_by_punctuations(s):
             txt += char
             continue
 
-        if char not in string.punctuation:
+        if char not in PUNCTUATIONS:
             txt += char
         else:
             result.append(txt.strip())

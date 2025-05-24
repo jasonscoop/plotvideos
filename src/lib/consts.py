@@ -6,7 +6,7 @@ from src.utils.id_utils import PornhubIdExtractor, XhamsterIdExtractor, XvideosI
     YouJizzIdExtractor, RedTubeIdExtractor, YouPornIdExtractor, SpankBangIdExtractor
 
 
-NO_SPACE_LANGS = {'zh-cn', 'zh-tw', 'ja', 'th', 'lo', 'km', 'my'}
+NO_SPACE_LANGS = {'zh', 'ja', 'th', 'lo', 'km', 'my'}
 
 class BigLanguage(Enum):
     ENGLISH = ("en", "en-US", "English")

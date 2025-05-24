@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 import azure.cognitiveservices.speech as speechsdk
 import json
@@ -7,8 +8,9 @@ import time
 from pathlib import Path
 
 from src.lib.config import AZURE_SPEECH_REGION, AZURE_SPEECH_KEY
+from src.lib.consts import BigLanguage
 from src.lib.schemas import FlattedSub, SubWord
-from src.utils.log_utils import init_logging, log_time
+from src.utils.log_utils import log_time
 
 
 @log_time
@@ -35,11 +37,23 @@ def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000) -> 
     return len(audio) / 1000.0
 
 
+def get_language_candidates(lang: BigLanguage) -> List[str]:
+    if lang.bcp47_code in BigLanguage.top4():
+        return BigLanguage.top4()
+
+    return BigLanguage.top4()[:3] + [lang.bcp47_code]
+
+
 @log_time
-def get_azure_results(audio_path: Path, duration: float):
+def get_azure_results(audio_path: Path, duration: float, lang: BigLanguage):
     # Configure speech recognition
     speech_config = speechsdk.SpeechConfig(subscription=AZURE_SPEECH_KEY, region=AZURE_SPEECH_REGION)
     # speech_config.speech_recognition_language = "en-US"
+
+    # Languages
+    auto_detect_source_language_config = speechsdk.languageconfig.AutoDetectSourceLanguageConfig(
+        languages=get_language_candidates(lang),
+    )
 
     # Enable detailed output with word-level timestamps
     speech_config.request_word_level_timestamps()
@@ -53,10 +67,15 @@ def get_azure_results(audio_path: Path, duration: float):
     # Create audio input
     audio_path_str = audio_path.as_posix() if isinstance(audio_path, Path) else audio_path
     audio_config = speechsdk.audio.AudioConfig(filename=audio_path_str)
-    speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
+    speech_recognizer = speechsdk.SpeechRecognizer(
+        speech_config=speech_config,
+        audio_config=audio_config,
+        auto_detect_source_language_config=auto_detect_source_language_config
+    )
 
     results = []
     done = False
+
     def handle_result(evt):
         if evt.result.reason == speechsdk.ResultReason.RecognizedSpeech:
             if evt.result.text.strip():  # Only process non-empty results
@@ -120,4 +139,3 @@ def flat_azure_result(azure_results) -> FlattedSub:
     sub.text = " ".join(texts)
 
     return sub
-

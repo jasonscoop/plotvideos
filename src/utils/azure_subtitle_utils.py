@@ -1,25 +1,27 @@
+import json
 import logging
+import traceback
 from pathlib import Path
 from xml.sax.saxutils import unescape
 from edge_tts.submaker import mktimestamp
 
-from src.lib.consts import SubtitleType
+
+from src.lib.consts import SubtitleType, BigLanguage
 from src.lib.schemas import FlattedSub
-from src.utils import utils
 from src.utils.azure_stt_utils import media_to_wav, get_azure_results, flat_azure_result
-from src.utils.sentence_utils import compute_sentence_similarity
+from src.utils.log_utils import init_logging
+from src.utils.sentence_utils import is_similar_sentence, split_to_words, join_to_text, split_to_sentences, get_lang
 
 
-def _format_text(text: str) -> str:
-    # text = text.replace("\n", " ")
-    text = text.replace("[", " ")
-    text = text.replace("]", " ")
-    text = text.replace("(", " ")
-    text = text.replace(")", " ")
-    text = text.replace("{", " ")
-    text = text.replace("}", " ")
-    text = text.strip()
-    return text
+def remove_brackets(text: str) -> str:
+    return text.translate(str.maketrans({
+        "[": " ",
+        "]": " ",
+        "(": " ",
+        ")": " ",
+        "{": " ",
+        "}": " "
+    })).strip()
 
 
 def srt_formatter(idx: int, start_time: float, end_time: float, sub_text: str) -> str:
@@ -35,60 +37,103 @@ def vtt_formatter(idx: int, start_time: float, end_time: float, sub_text: str) -
 
 
 def create_subtitle(flatted_sub: FlattedSub, type: SubtitleType = SubtitleType.vtt) -> str:
-    text = _format_text(flatted_sub.text)
+    if not flatted_sub.text.strip() or len(flatted_sub.words) == 0:
+        return ""
+
+    formatter = vtt_formatter if type == SubtitleType.vtt else srt_formatter
+    script_lines = split_to_sentences(remove_brackets(flatted_sub.text))
 
     start_time = -1.0
-    sub_items = []
-    sub_index = 0
+    final_items = []
 
-    script_lines = utils.split_string_by_punctuations(text)
-    subs = []
-    formatter = vtt_formatter if type == SubtitleType.vtt else srt_formatter
+    realtime_i = 0
+    realtime_words = []
 
-    for sub_word in flatted_sub.words:
-        sub = sub_word.word
+    n = len(flatted_sub.words)
+    script_line = script_lines[realtime_i]
+
+    detected_language = get_lang(script_line)
+
+    script_line_words = split_to_words(script_line, detected_language)
+
+    for i, sub_word in enumerate(flatted_sub.words):
         _start_time, end_time = sub_word.start_time, sub_word.end_time
         if start_time < 0:
             start_time = _start_time
 
-        sub = unescape(sub)
-        subs.append(sub)
-        current_line = script_lines[sub_index]
-        current_line_words = current_line.split()
-        sub_text = ""
-        if len(current_line_words) == len(subs) and compute_sentence_similarity(current_line, " ".join(subs)):
-            sub_text = " ".join(current_line_words)
+        realtime_words.append(unescape(sub_word.word))
+        realtime_line = join_to_text(realtime_words, detected_language)
 
-        if sub_text:
-            sub_index += 1
+        if len(script_line_words) == len(realtime_words) and is_similar_sentence(script_line, realtime_line):
+            realtime_i += 1
             line = formatter(
-                idx=sub_index,
+                idx=realtime_i,
                 start_time=start_time,
                 end_time=end_time,
-                sub_text=sub_text,
+                sub_text=script_line,
             )
-            sub_items.append(line)
+            final_items.append(line)
             start_time = -1.0
-            subs = []
+            realtime_words = []
+            try:
+                script_line = script_lines[realtime_i]
+                script_line_words = split_to_words(script_line, detected_language)
+            except IndexError:
+                break
 
-    if len(sub_items) != len(script_lines):
-        logging.error(f"failed, sub_items len: {len(sub_items)}, script_lines len: {len(script_lines)}")
+    if len(final_items) != len(script_lines):
+        logging.error(f"failed, sub_items len: {len(final_items)}, script_lines len: {len(script_lines)}")
         return ""
 
     header = "WEBVTT\n\n" if type == SubtitleType.vtt else ""
-    return header + "\n".join(sub_items) + "\n"
+    return header + "\n".join(final_items) + "\n"
 
 
-def generate_subtitle(video_path: Path, type: SubtitleType):
+def generate_subtitle(video_path: Path, sub_type: SubtitleType):
     wav_path = video_path.with_suffix(".wav")
-    subtitle_path = video_path.with_suffix(f".{type.value}")
+    subtitle_path = video_path.with_suffix(f".{sub_type.value}")
+    azure_results_file = video_path.with_suffix(f".azure-results.json")
+    azure_flatted_result_file = video_path.with_suffix(f".azure-flatted-results.json")
 
     duration = media_to_wav(video_path, wav_path)
-    logging.info(f"Converted {video_path} to {wav_path}")
+    logging.info(f"[{video_path.name}] Converted wav")
 
-    azure_results = get_azure_results(wav_path, duration)
+    language = BigLanguage.from_short_code(get_lang(video_path.stem))
+    logging.info(f"[{video_path.name}] Detected language: {language}")
+
+    azure_results = get_azure_results(wav_path, duration, language)
+    azure_results_file.write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))
+    logging.info(f"[{video_path.name}] Wrote azure_results")
+
     flatted_sub = flat_azure_result(azure_results)
-    logging.info(f"Got the azure results")
+    azure_flatted_result_file.write_text(flatted_sub.model_dump_json())
+    logging.info(f"[{video_path.name}] Wrote azure_flatted_results")
 
-    subtitle = create_subtitle(flatted_sub, subtitle_path, type)
-    logging.info(f"Subtitle generated")
+    subtitle = create_subtitle(flatted_sub, sub_type)
+    subtitle_path.write_text(subtitle)
+
+    logging.info(f"[{video_path.name}] Generated subtitle")
+
+
+if __name__ == '__main__':
+    import os
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    init_logging("batch-convert")
+    dir_path = "/Users/garymeng/code/more/wuse/tests/files/mp4"
+    files = []
+    for filename in os.listdir(dir_path):
+        full_path = os.path.join(dir_path, filename)
+        if os.path.isfile(full_path) and (full_path.endswith(".mp4")or full_path.endswith(".webm")):
+            files.append(full_path)
+
+    with ThreadPoolExecutor(max_workers=len(files)) as executor:
+        futures = []
+        for f in files:
+            futures.append(executor.submit(generate_subtitle, Path(f), SubtitleType.vtt))
+
+        for future in as_completed(futures):
+            try:
+                future.result()  # This raises any exceptions from the thread
+            except Exception as e:
+                traceback.print_exc()

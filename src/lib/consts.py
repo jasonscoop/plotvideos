@@ -1,28 +1,61 @@
-from enum import StrEnum
+import logging
+from enum import StrEnum, Enum
+from typing import List
 
 from src.utils.id_utils import PornhubIdExtractor, XhamsterIdExtractor, XvideosIdExtractor, EpornerIdExtractor, \
     YouJizzIdExtractor, RedTubeIdExtractor, YouPornIdExtractor, SpankBangIdExtractor
 
-# Languages with Over 100 Million Total Speakers
-SUPPORTED_LANGUAGES = {
-    "en": "English",
-    "zh": "Mandarin Chinese",
-    "hi": "Hindi",
-    "es": "Spanish",
-    "ar": "Arabic",
-    "fr": "French",
-    "bn": "Bengali",
-    "pt": "Portuguese",
-    "ru": "Russian",
-    "ur": "Urdu",
-    "id": "Indonesian",
-    "de": "German",
-    "ja": "Japanese",
-    "sw": "Swahili",
-    "mr": "Marathi",
-    "te": "Telugu",
-    "tr": "Turkish"
-}
+
+NO_SPACE_LANGS = {'zh-cn', 'zh-tw', 'ja', 'th', 'lo', 'km', 'my'}
+
+class BigLanguage(Enum):
+    ENGLISH = ("en", "en-US", "English")
+    CHINESE = ("zh", "zh-CN", "Mandarin Chinese")
+    HINDI = ("hi", "hi-IN", "Hindi")
+    SPANISH = ("es", "es-ES", "Spanish")
+    ARABIC = ("ar", "ar-SA", "Arabic")
+    FRENCH = ("fr", "fr-FR", "French")
+    BENGALI = ("bn", "bn-BD", "Bengali")
+    PORTUGUESE = ("pt", "pt-PT", "Portuguese")
+    RUSSIAN = ("ru", "ru-RU", "Russian")
+    URDU = ("ur", "ur-PK", "Urdu")
+    INDONESIAN = ("id", "id-ID", "Indonesian")
+    GERMAN = ("de", "de-DE", "German")
+    JAPANESE = ("ja", "ja-JP", "Japanese")
+    SWAHILI = ("sw", "sw-KE", "Swahili")
+    MARATHI = ("mr", "mr-IN", "Marathi")
+    TELUGU = ("te", "te-IN", "Telugu")
+    TURKISH = ("tr", "tr-TR", "Turkish")
+
+    @property
+    def iso639_code(self) -> str:
+        return self.value[0]
+
+    @property
+    def bcp47_code(self) -> str:
+        return self.value[1]
+
+    @property
+    def full_name(self) -> str:
+        return self.value[2]
+
+    @classmethod
+    def from_short_code(cls, code: str):
+        for lang in cls:
+            if lang.iso639_code == code.lower():
+                return lang
+
+        logging.error(f"[{code}] Language not found, set to default")
+        return cls.ENGLISH
+
+    @classmethod
+    def top4(cls) -> List[str]:
+        return [
+            cls.ENGLISH.bcp47_code,
+            cls.CHINESE.bcp47_code,
+            cls.HINDI.bcp47_code,
+            cls.SPANISH.bcp47_code,
+        ]
 
 
 class VideoStatus(StrEnum):
@@ -56,3 +89,14 @@ ID_EXTRACTOR_MAP = {
 }
 
 SUPPORTED_VIDEO_EXTENSIONS = {"3gp", "flv", "mp4", "webm"}
+
+STOP_CHARS = {
+    ".", "!", "?", ",", ":", ";", "…", "‥",  # English & common
+    "。", "！", "？", "，", "、", "；", "：",        # Chinese/Japanese
+    "।",                                     # Hindi
+    "܀", "።", "፧",                           # Semitic (Syriac, Ge‘ez)
+    "؟", "؛",                                 # Arabic/Persian
+    "၊", "။",                                 # Burmese
+    "⸮", "⁇", "⁈", "⁉",                       # Rare multilingual
+    "...",
+}

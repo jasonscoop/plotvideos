@@ -13,6 +13,7 @@ VIDEOS_DIR = WORKS_DIR.joinpath("videos")
 VIDEOS_DIR.mkdir(exist_ok=True)
 LOGS_DIR = WORKS_DIR.joinpath("logs")
 LOGS_DIR.mkdir(exist_ok=True)
+MODELS_DIR = WORKS_DIR.joinpath("models")
 
 WHISPER_MODELS_DIR = WORKS_DIR.joinpath("models")
 WHISPER_MODELS_DIR.mkdir(exist_ok=True)

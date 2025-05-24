@@ -10,3 +10,5 @@ moviepy==2.2.1
 sentence_transformers==4.1.0
 ftfy==6.3.1
 pydantic==2.11.5
+fasttext==0.9.3
+numpy==1.26.4

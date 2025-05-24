@@ -1,0 +1,6347 @@
+[
+  {
+    "Id": "9b50b3e0416e46efa77e3c080bdb5d85",
+    "RecognitionStatus": "Success",
+    "Offset": 33200000,
+    "Duration": 162400000,
+    "Channel": 0,
+    "DisplayText": "Rootia shab teraba rabba dilbi erota sabu kuche bikara bikara bikura saru taruka molecase.",
+    "NBest": [
+      {
+        "Confidence": 0.09081954,
+        "Lexical": "rootia shab teraba rabba dilbi erota sabu kuche bikara bikara bikura saru taruka molecase",
+        "ITN": "rootia shab teraba rabba dilbi erota sabu kuche bikara bikara bikura saru taruka molecase",
+        "MaskedITN": "rootia shab teraba rabba dilbi erota sabu kuche bikara bikara bikura saru taruka molecase",
+        "Display": "Rootia shab teraba rabba dilbi erota sabu kuche bikara bikara bikura saru taruka molecase.",
+        "Words": [
+          {
+            "Word": "rootia",
+            "Offset": 33200000,
+            "Duration": 2400000,
+            "Confidence": 0.048451193
+          },
+          {
+            "Word": "shab",
+            "Offset": 35600000,
+            "Duration": 1600000,
+            "Confidence": 0.15254878
+          },
+          {
+            "Word": "teraba",
+            "Offset": 37200000,
+            "Duration": 8000000,
+            "Confidence": 0.046880513
+          },
+          {
+            "Word": "rabba",
+            "Offset": 45200000,
+            "Duration": 2400000,
+            "Confidence": 0.23218453
+          },
+          {
+            "Word": "dilbi",
+            "Offset": 47600000,
+            "Duration": 6800000,
+            "Confidence": 0.1050964
+          },
+          {
+            "Word": "erota",
+            "Offset": 69200000,
+            "Duration": 11600000,
+            "Confidence": 0.046769384
+          },
+          {
+            "Word": "sabu",
+            "Offset": 89600000,
+            "Duration": 3600000,
+            "Confidence": 0.06591454
+          },
+          {
+            "Word": "kuche",
+            "Offset": 93200000,
+            "Duration": 2800000,
+            "Confidence": 0.056765594
+          },
+          {
+            "Word": "bikara",
+            "Offset": 96800000,
+            "Duration": 12000000,
+            "Confidence": 0.05507767
+          },
+          {
+            "Word": "bikara",
+            "Offset": 108800000,
+            "Duration": 9200000,
+            "Confidence": 0.11526529
+          },
+          {
+            "Word": "bikura",
+            "Offset": 118400000,
+            "Duration": 8000000,
+            "Confidence": 0.07805737
+          },
+          {
+            "Word": "saru",
+            "Offset": 126400000,
+            "Duration": 5600000,
+            "Confidence": 0.1329925
+          },
+          {
+            "Word": "taruka",
+            "Offset": 133600000,
+            "Duration": 7200000,
+            "Confidence": 0.09011714
+          },
+          {
+            "Word": "molecase",
+            "Offset": 188000000,
+            "Duration": 7600000,
+            "Confidence": 0.045352563
+          }
+        ]
+      },
+      {
+        "Confidence": 0.090978816,
+        "Lexical": "rootia shab terappa rabba dilbi erota sabu kuche bikara bikara bikura saru taruka molecase",
+        "ITN": "rootia shab terappa rabba dilbi erota sabu kuche bikara bikara bikura saru taruka molecase",
+        "MaskedITN": "rootia shab terappa rabba dilbi erota sabu kuche bikara bikara bikura saru taruka molecase",
+        "Display": "rootia shab terappa rabba dilbi erota sabu kuche bikara bikara bikura saru taruka molecase",
+        "Words": [
+          {
+            "Word": "rootia",
+            "Offset": 33200000,
+            "Duration": 2400000,
+            "Confidence": 0.048451193
+          },
+          {
+            "Word": "shab",
+            "Offset": 35600000,
+            "Duration": 1600000,
+            "Confidence": 0.15254878
+          },
+          {
+            "Word": "terappa",
+            "Offset": 37200000,
+            "Duration": 7600000,
+            "Confidence": 0.046342835
+          },
+          {
+            "Word": "rabba",
+            "Offset": 44800000,
+            "Duration": 2800000,
+            "Confidence": 0.23495218
+          },
+          {
+            "Word": "dilbi",
+            "Offset": 47600000,
+            "Duration": 6800000,
+            "Confidence": 0.1050964
+          },
+          {
+            "Word": "erota",
+            "Offset": 69200000,
+            "Duration": 11600000,
+            "Confidence": 0.046769384
+          },
+          {
+            "Word": "sabu",
+            "Offset": 89600000,
+            "Duration": 3600000,
+            "Confidence": 0.06591454
+          },
+          {
+            "Word": "kuche",
+            "Offset": 93200000,
+            "Duration": 2800000,
+            "Confidence": 0.056765594
+          },
+          {
+            "Word": "bikara",
+            "Offset": 96800000,
+            "Duration": 12000000,
+            "Confidence": 0.05507767
+          },
+          {
+            "Word": "bikara",
+            "Offset": 108800000,
+            "Duration": 9200000,
+            "Confidence": 0.11526529
+          },
+          {
+            "Word": "bikura",
+            "Offset": 118400000,
+            "Duration": 8000000,
+            "Confidence": 0.07805737
+          },
+          {
+            "Word": "saru",
+            "Offset": 126400000,
+            "Duration": 5600000,
+            "Confidence": 0.1329925
+          },
+          {
+            "Word": "taruka",
+            "Offset": 133600000,
+            "Duration": 7200000,
+            "Confidence": 0.09011714
+          },
+          {
+            "Word": "molecase",
+            "Offset": 188000000,
+            "Duration": 7600000,
+            "Confidence": 0.045352563
+          }
+        ]
+      },
+      {
+        "Confidence": 0.09201206,
+        "Lexical": "rootia shab teraba rabba dilbi erota sabkuchi bikara bikara bikura saru taruka molecase",
+        "ITN": "rootia shab teraba rabba dilbi erota sabkuchi bikara bikara bikura saru taruka molecase",
+        "MaskedITN": "rootia shab teraba rabba dilbi erota sabkuchi bikara bikara bikura saru taruka molecase",
+        "Display": "rootia shab teraba rabba dilbi erota sabkuchi bikara bikara bikura saru taruka molecase",
+        "Words": [
+          {
+            "Word": "rootia",
+            "Offset": 33200000,
+            "Duration": 2400000,
+            "Confidence": 0.048451193
+          },
+          {
+            "Word": "shab",
+            "Offset": 35600000,
+            "Duration": 1600000,
+            "Confidence": 0.15254878
+          },
+          {
+            "Word": "teraba",
+            "Offset": 37200000,
+            "Duration": 8000000,
+            "Confidence": 0.046880513
+          },
+          {
+            "Word": "rabba",
+            "Offset": 45200000,
+            "Duration": 2400000,
+            "Confidence": 0.23218453
+          },
+          {
+            "Word": "dilbi",
+            "Offset": 47600000,
+            "Duration": 6800000,
+            "Confidence": 0.1050964
+          },
+          {
+            "Word": "erota",
+            "Offset": 69200000,
+            "Duration": 11600000,
+            "Confidence": 0.046769384
+          },
+          {
+            "Word": "sabkuchi",
+            "Offset": 89600000,
+            "Duration": 6400000,
+            "Confidence": 0.047132384
+          },
+          {
+            "Word": "bikara",
+            "Offset": 96800000,
+            "Duration": 12000000,
+            "Confidence": 0.05502412
+          },
+          {
+            "Word": "bikara",
+            "Offset": 108800000,
+            "Duration": 9200000,
+            "Confidence": 0.115549915
+          },
+          {
+            "Word": "bikura",
+            "Offset": 118400000,
+            "Duration": 8000000,
+            "Confidence": 0.07805737
+          },
+          {
+            "Word": "saru",
+            "Offset": 126400000,
+            "Duration": 5600000,
+            "Confidence": 0.1329925
+          },
+          {
+            "Word": "taruka",
+            "Offset": 133600000,
+            "Duration": 7200000,
+            "Confidence": 0.09011714
+          },
+          {
+            "Word": "molecase",
+            "Offset": 188000000,
+            "Duration": 7600000,
+            "Confidence": 0.045352563
+          }
+        ]
+      },
+      {
+        "Confidence": 0.09109941,
+        "Lexical": "rootia shab teraba rabba dilbi erota sabu kuche bikra bikara bikura saru taruka molecase",
+        "ITN": "rootia shab teraba rabba dilbi erota sabu kuche bikra bikara bikura saru taruka molecase",
+        "MaskedITN": "rootia shab teraba rabba dilbi erota sabu kuche bikra bikara bikura saru taruka molecase",
+        "Display": "rootia shab teraba rabba dilbi erota sabu kuche bikra bikara bikura saru taruka molecase",
+        "Words": [
+          {
+            "Word": "rootia",
+            "Offset": 33200000,
+            "Duration": 2400000,
+            "Confidence": 0.048451193
+          },
+          {
+            "Word": "shab",
+            "Offset": 35600000,
+            "Duration": 1600000,
+            "Confidence": 0.15254878
+          },
+          {
+            "Word": "teraba",
+            "Offset": 37200000,
+            "Duration": 8000000,
+            "Confidence": 0.046880513
+          },
+          {
+            "Word": "rabba",
+            "Offset": 45200000,
+            "Duration": 2400000,
+            "Confidence": 0.23218453
+          },
+          {
+            "Word": "dilbi",
+            "Offset": 47600000,
+            "Duration": 6800000,
+            "Confidence": 0.1050964
+          },
+          {
+            "Word": "erota",
+            "Offset": 69200000,
+            "Duration": 11600000,
+            "Confidence": 0.046769384
+          },
+          {
+            "Word": "sabu",
+            "Offset": 89600000,
+            "Duration": 3600000,
+            "Confidence": 0.06591454
+          },
+          {
+            "Word": "kuche",
+            "Offset": 93200000,
+            "Duration": 2800000,
+            "Confidence": 0.056765594
+          },
+          {
+            "Word": "bikra",
+            "Offset": 96800000,
+            "Duration": 4800000,
+            "Confidence": 0.04998615
+          },
+          {
+            "Word": "bikara",
+            "Offset": 101600000,
+            "Duration": 16400000,
+            "Confidence": 0.12436396
+          },
+          {
+            "Word": "bikura",
+            "Offset": 118400000,
+            "Duration": 8000000,
+            "Confidence": 0.07796859
+          },
+          {
+            "Word": "saru",
+            "Offset": 126400000,
+            "Duration": 5600000,
+            "Confidence": 0.1329925
+          },
+          {
+            "Word": "taruka",
+            "Offset": 133600000,
+            "Duration": 7200000,
+            "Confidence": 0.09011714
+          },
+          {
+            "Word": "molecase",
+            "Offset": 188000000,
+            "Duration": 7600000,
+            "Confidence": 0.045352563
+          }
+        ]
+      },
+      {
+        "Confidence": 0.09125867,
+        "Lexical": "rootia shab terappa rabba dilbi erota sabu kuche bikra bikara bikura saru taruka molecase",
+        "ITN": "rootia shab terappa rabba dilbi erota sabu kuche bikra bikara bikura saru taruka molecase",
+        "MaskedITN": "rootia shab terappa rabba dilbi erota sabu kuche bikra bikara bikura saru taruka molecase",
+        "Display": "rootia shab terappa rabba dilbi erota sabu kuche bikra bikara bikura saru taruka molecase",
+        "Words": [
+          {
+            "Word": "rootia",
+            "Offset": 33200000,
+            "Duration": 2400000,
+            "Confidence": 0.048451193
+          },
+          {
+            "Word": "shab",
+            "Offset": 35600000,
+            "Duration": 1600000,
+            "Confidence": 0.15254863
+          },
+          {
+            "Word": "terappa",
+            "Offset": 37200000,
+            "Duration": 7600000,
+            "Confidence": 0.046342835
+          },
+          {
+            "Word": "rabba",
+            "Offset": 44800000,
+            "Duration": 2800000,
+            "Confidence": 0.23495218
+          },
+          {
+            "Word": "dilbi",
+            "Offset": 47600000,
+            "Duration": 6800000,
+            "Confidence": 0.1050964
+          },
+          {
+            "Word": "erota",
+            "Offset": 69200000,
+            "Duration": 11600000,
+            "Confidence": 0.046769384
+          },
+          {
+            "Word": "sabu",
+            "Offset": 89600000,
+            "Duration": 3600000,
+            "Confidence": 0.06591454
+          },
+          {
+            "Word": "kuche",
+            "Offset": 93200000,
+            "Duration": 2800000,
+            "Confidence": 0.056765594
+          },
+          {
+            "Word": "bikra",
+            "Offset": 96800000,
+            "Duration": 4800000,
+            "Confidence": 0.04998615
+          },
+          {
+            "Word": "bikara",
+            "Offset": 101600000,
+            "Duration": 16400000,
+            "Confidence": 0.1243639
+          },
+          {
+            "Word": "bikura",
+            "Offset": 118400000,
+            "Duration": 8000000,
+            "Confidence": 0.07796859
+          },
+          {
+            "Word": "saru",
+            "Offset": 126400000,
+            "Duration": 5600000,
+            "Confidence": 0.13299245
+          },
+          {
+            "Word": "taruka",
+            "Offset": 133600000,
+            "Duration": 7200000,
+            "Confidence": 0.09011714
+          },
+          {
+            "Word": "molecase",
+            "Offset": 188000000,
+            "Duration": 7600000,
+            "Confidence": 0.045352563
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "b5da1fe2fd934882b815fdba453bf910",
+    "RecognitionStatus": "Success",
+    "Offset": 502600000,
+    "Duration": 34000000,
+    "Channel": 0,
+    "DisplayText": "OK, don't click on my little.",
+    "NBest": [
+      {
+        "Confidence": 0.20975837,
+        "Lexical": "OK don't click on my little",
+        "ITN": "OK don't click on my little",
+        "MaskedITN": "ok don't click on my little",
+        "Display": "OK, don't click on my little.",
+        "Words": [
+          {
+            "Word": "OK",
+            "Offset": 502600000,
+            "Duration": 1600000,
+            "Confidence": 0.20013647
+          },
+          {
+            "Word": "don't",
+            "Offset": 504200000,
+            "Duration": 2400000,
+            "Confidence": 0.29592556
+          },
+          {
+            "Word": "click",
+            "Offset": 524600000,
+            "Duration": 2400000,
+            "Confidence": 0.05487826
+          },
+          {
+            "Word": "on",
+            "Offset": 527000000,
+            "Duration": 800000,
+            "Confidence": 0.3622762
+          },
+          {
+            "Word": "my",
+            "Offset": 531800000,
+            "Duration": 2000000,
+            "Confidence": 0.21989529
+          },
+          {
+            "Word": "little",
+            "Offset": 533800000,
+            "Duration": 2800000,
+            "Confidence": 0.12543842
+          }
+        ]
+      },
+      {
+        "Confidence": 0.1711579,
+        "Lexical": "ok don't freak on my little",
+        "ITN": "ok don't freak on my little",
+        "MaskedITN": "ok don't freak on my little",
+        "Display": "OK don't freak on my little",
+        "Words": [
+          {
+            "Word": "OK",
+            "Offset": 525800000,
+            "Duration": 2000000,
+            "Confidence": 0.20013647
+          },
+          {
+            "Word": "don't",
+            "Offset": 534600000,
+            "Duration": 3600000,
+            "Confidence": 0.29592547
+          },
+          {
+            "Word": "freak",
+            "Offset": 538200000,
+            "Duration": 2800000,
+            "Confidence": 0.049168147
+          },
+          {
+            "Word": "on",
+            "Offset": 541000000,
+            "Duration": 800000,
+            "Confidence": 0.13111535
+          },
+          {
+            "Word": "my",
+            "Offset": 541800000,
+            "Duration": 800000,
+            "Confidence": 0.24121074
+          },
+          {
+            "Word": "little",
+            "Offset": 542600000,
+            "Duration": 4400000,
+            "Confidence": 0.10939124
+          }
+        ]
+      },
+      {
+        "Confidence": 0.18791932,
+        "Lexical": "ok don't click on my little mess up some",
+        "ITN": "ok don't click on my little mess up some",
+        "MaskedITN": "ok don't click on my little mess up some",
+        "Display": "OK don't click on my little mess up some",
+        "Words": [
+          {
+            "Word": "OK",
+            "Offset": 502600000,
+            "Duration": 1600000,
+            "Confidence": 0.20013647
+          },
+          {
+            "Word": "don't",
+            "Offset": 504200000,
+            "Duration": 2400000,
+            "Confidence": 0.29592556
+          },
+          {
+            "Word": "click",
+            "Offset": 524600000,
+            "Duration": 2400000,
+            "Confidence": 0.05487826
+          },
+          {
+            "Word": "on",
+            "Offset": 527000000,
+            "Duration": 800000,
+            "Confidence": 0.3622762
+          },
+          {
+            "Word": "my",
+            "Offset": 531800000,
+            "Duration": 3200000,
+            "Confidence": 0.21989529
+          },
+          {
+            "Word": "little",
+            "Offset": 535000000,
+            "Duration": 2400000,
+            "Confidence": 0.12543842
+          },
+          {
+            "Word": "mess",
+            "Offset": 537400000,
+            "Duration": 1600000,
+            "Confidence": 0.13781954
+          },
+          {
+            "Word": "up",
+            "Offset": 539000000,
+            "Duration": 800000,
+            "Confidence": 0.13769965
+          },
+          {
+            "Word": "some",
+            "Offset": 539800000,
+            "Duration": 6400000,
+            "Confidence": 0.15720437
+          }
+        ]
+      },
+      {
+        "Confidence": 0.17305505,
+        "Lexical": "ok don't click on my little manikana mess up some",
+        "ITN": "ok don't click on my little manikana mess up some",
+        "MaskedITN": "ok don't click on my little manikana mess up some",
+        "Display": "OK don't click on my little manikana mess up some",
+        "Words": [
+          {
+            "Word": "OK",
+            "Offset": 502600000,
+            "Duration": 1600000,
+            "Confidence": 0.20013647
+          },
+          {
+            "Word": "don't",
+            "Offset": 504200000,
+            "Duration": 2400000,
+            "Confidence": 0.29592556
+          },
+          {
+            "Word": "click",
+            "Offset": 524600000,
+            "Duration": 2000000,
+            "Confidence": 0.05487826
+          },
+          {
+            "Word": "on",
+            "Offset": 526600000,
+            "Duration": 800000,
+            "Confidence": 0.3622762
+          },
+          {
+            "Word": "my",
+            "Offset": 527400000,
+            "Duration": 800000,
+            "Confidence": 0.21989529
+          },
+          {
+            "Word": "little",
+            "Offset": 528200000,
+            "Duration": 2400000,
+            "Confidence": 0.12543842
+          },
+          {
+            "Word": "manikana",
+            "Offset": 531800000,
+            "Duration": 5600000,
+            "Confidence": 0.04750445
+          },
+          {
+            "Word": "mess",
+            "Offset": 537400000,
+            "Duration": 1600000,
+            "Confidence": 0.17326616
+          },
+          {
+            "Word": "up",
+            "Offset": 539000000,
+            "Duration": 800000,
+            "Confidence": 0.119658254
+          },
+          {
+            "Word": "some",
+            "Offset": 539800000,
+            "Duration": 7200000,
+            "Confidence": 0.13157144
+          }
+        ]
+      },
+      {
+        "Confidence": 0.15022013,
+        "Lexical": "ok don't freak on my little manikana mess up some",
+        "ITN": "ok don't freak on my little manikana mess up some",
+        "MaskedITN": "ok don't freak on my little manikana mess up some",
+        "Display": "OK don't freak on my little manikana mess up some",
+        "Words": [
+          {
+            "Word": "OK",
+            "Offset": 502600000,
+            "Duration": 1600000,
+            "Confidence": 0.20013647
+          },
+          {
+            "Word": "don't",
+            "Offset": 504200000,
+            "Duration": 2400000,
+            "Confidence": 0.29592556
+          },
+          {
+            "Word": "freak",
+            "Offset": 524600000,
+            "Duration": 2000000,
+            "Confidence": 0.049168147
+          },
+          {
+            "Word": "on",
+            "Offset": 526600000,
+            "Duration": 800000,
+            "Confidence": 0.13111535
+          },
+          {
+            "Word": "my",
+            "Offset": 527400000,
+            "Duration": 800000,
+            "Confidence": 0.24121095
+          },
+          {
+            "Word": "little",
+            "Offset": 528200000,
+            "Duration": 2400000,
+            "Confidence": 0.10939119
+          },
+          {
+            "Word": "manikana",
+            "Offset": 531800000,
+            "Duration": 5600000,
+            "Confidence": 0.050757833
+          },
+          {
+            "Word": "mess",
+            "Offset": 537400000,
+            "Duration": 1600000,
+            "Confidence": 0.17326616
+          },
+          {
+            "Word": "up",
+            "Offset": 539000000,
+            "Duration": 800000,
+            "Confidence": 0.119658254
+          },
+          {
+            "Word": "some",
+            "Offset": 539800000,
+            "Duration": 7200000,
+            "Confidence": 0.13157144
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "2c6e6c3597574312b33bf4c5d6b7677b",
+    "RecognitionStatus": "Success",
+    "Offset": 574300000,
+    "Duration": 1600000,
+    "Channel": 0,
+    "DisplayText": "Love.",
+    "NBest": [
+      {
+        "Confidence": 0.23259771,
+        "Lexical": "love",
+        "ITN": "love",
+        "MaskedITN": "love",
+        "Display": "Love.",
+        "Words": [
+          {
+            "Word": "love",
+            "Offset": 574300000,
+            "Duration": 1600000,
+            "Confidence": 0.23259771
+          }
+        ]
+      },
+      {
+        "Confidence": 0.06866372,
+        "Lexical": "love love",
+        "ITN": "love love",
+        "MaskedITN": "love love",
+        "Display": "love love",
+        "Words": [
+          {
+            "Word": "love",
+            "Offset": 591100000,
+            "Duration": 5600000,
+            "Confidence": 0.07231396
+          },
+          {
+            "Word": "love",
+            "Offset": 597500000,
+            "Duration": 2000000,
+            "Confidence": 0.06501347
+          }
+        ]
+      },
+      {
+        "Confidence": 0.1148203,
+        "Lexical": "kidney ach",
+        "ITN": "kidney ach",
+        "MaskedITN": "kidney ach",
+        "Display": "kidney ach",
+        "Words": [
+          {
+            "Word": "kidney",
+            "Offset": 590700000,
+            "Duration": 7600000,
+            "Confidence": 0.09655338
+          },
+          {
+            "Word": "ach",
+            "Offset": 598300000,
+            "Duration": 1200000,
+            "Confidence": 0.13308723
+          }
+        ]
+      },
+      {
+        "Confidence": 0.1210473,
+        "Lexical": "love tum kidney",
+        "ITN": "love tum kidney",
+        "MaskedITN": "love tum kidney",
+        "Display": "love tum kidney",
+        "Words": [
+          {
+            "Word": "love",
+            "Offset": 591100000,
+            "Duration": 4000000,
+            "Confidence": 0.23259771
+          },
+          {
+            "Word": "tum",
+            "Offset": 595500000,
+            "Duration": 3200000,
+            "Confidence": 0.060534324
+          },
+          {
+            "Word": "kidney",
+            "Offset": 598700000,
+            "Duration": 2400000,
+            "Confidence": 0.07000989
+          }
+        ]
+      },
+      {
+        "Confidence": 0.12004881,
+        "Lexical": "love tum kidney ach",
+        "ITN": "love tum kidney ach",
+        "MaskedITN": "love tum kidney ach",
+        "Display": "love tum kidney ach",
+        "Words": [
+          {
+            "Word": "love",
+            "Offset": 590700000,
+            "Duration": 1600000,
+            "Confidence": 0.23259771
+          },
+          {
+            "Word": "tum",
+            "Offset": 592300000,
+            "Duration": 1600000,
+            "Confidence": 0.060534324
+          },
+          {
+            "Word": "kidney",
+            "Offset": 593900000,
+            "Duration": 4400000,
+            "Confidence": 0.07443583
+          },
+          {
+            "Word": "ach",
+            "Offset": 598300000,
+            "Duration": 1200000,
+            "Confidence": 0.11262739
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "58799390f5914c4b81d8e4ffc4cc4243",
+    "RecognitionStatus": "Success",
+    "Offset": 735200000,
+    "Duration": 26400000,
+    "Channel": 0,
+    "DisplayText": "Support, thank you so much.",
+    "NBest": [
+      {
+        "Confidence": 0.7539446,
+        "Lexical": "support thank you so much",
+        "ITN": "support thank you so much",
+        "MaskedITN": "support thank you so much",
+        "Display": "Support, thank you so much.",
+        "Words": [
+          {
+            "Word": "support",
+            "Offset": 735200000,
+            "Duration": 15200000,
+            "Confidence": 0.29145104
+          },
+          {
+            "Word": "thank",
+            "Offset": 753600000,
+            "Duration": 3200000,
+            "Confidence": 0.85049736
+          },
+          {
+            "Word": "you",
+            "Offset": 756800000,
+            "Duration": 1200000,
+            "Confidence": 0.90042627
+          },
+          {
+            "Word": "so",
+            "Offset": 758000000,
+            "Duration": 2000000,
+            "Confidence": 0.9301138
+          },
+          {
+            "Word": "much",
+            "Offset": 760000000,
+            "Duration": 1600000,
+            "Confidence": 0.7972344
+          }
+        ]
+      },
+      {
+        "Confidence": 0.81218064,
+        "Lexical": "thank you so much",
+        "ITN": "thank you so much",
+        "MaskedITN": "thank you so much",
+        "Display": "thank you so much",
+        "Words": [
+          {
+            "Word": "thank",
+            "Offset": 733600000,
+            "Duration": 4400000,
+            "Confidence": 0.7735689
+          },
+          {
+            "Word": "you",
+            "Offset": 738000000,
+            "Duration": 12000000,
+            "Confidence": 0.8653616
+          },
+          {
+            "Word": "so",
+            "Offset": 757600000,
+            "Duration": 2800000,
+            "Confidence": 0.8628406
+          },
+          {
+            "Word": "much",
+            "Offset": 760400000,
+            "Duration": 5200000,
+            "Confidence": 0.7469514
+          }
+        ]
+      },
+      {
+        "Confidence": 0.6358459,
+        "Lexical": "support thank you so much hari",
+        "ITN": "support thank you so much hari",
+        "MaskedITN": "support thank you so much hari",
+        "Display": "support thank you so much hari",
+        "Words": [
+          {
+            "Word": "support",
+            "Offset": 735200000,
+            "Duration": 15200000,
+            "Confidence": 0.29145104
+          },
+          {
+            "Word": "thank",
+            "Offset": 753600000,
+            "Duration": 3200000,
+            "Confidence": 0.85049736
+          },
+          {
+            "Word": "you",
+            "Offset": 756800000,
+            "Duration": 1200000,
+            "Confidence": 0.90042627
+          },
+          {
+            "Word": "so",
+            "Offset": 758000000,
+            "Duration": 2400000,
+            "Confidence": 0.9301138
+          },
+          {
+            "Word": "much",
+            "Offset": 760400000,
+            "Duration": 5200000,
+            "Confidence": 0.7972344
+          },
+          {
+            "Word": "hari",
+            "Offset": 781200000,
+            "Duration": 4100000,
+            "Confidence": 0.045352563
+          }
+        ]
+      },
+      {
+        "Confidence": 0.658815,
+        "Lexical": "thank you so much hari",
+        "ITN": "thank you so much hari",
+        "MaskedITN": "thank you so much hari",
+        "Display": "thank you so much hari",
+        "Words": [
+          {
+            "Word": "thank",
+            "Offset": 733600000,
+            "Duration": 4400000,
+            "Confidence": 0.7735689
+          },
+          {
+            "Word": "you",
+            "Offset": 738000000,
+            "Duration": 12000000,
+            "Confidence": 0.8653616
+          },
+          {
+            "Word": "so",
+            "Offset": 757600000,
+            "Duration": 2800000,
+            "Confidence": 0.8628406
+          },
+          {
+            "Word": "much",
+            "Offset": 760400000,
+            "Duration": 5200000,
+            "Confidence": 0.7469515
+          },
+          {
+            "Word": "hari",
+            "Offset": 781200000,
+            "Duration": 4100000,
+            "Confidence": 0.045352563
+          }
+        ]
+      },
+      {
+        "Confidence": 0.52147025,
+        "Lexical": "kitna support thank you so much",
+        "ITN": "kitna support thank you so much",
+        "MaskedITN": "kitna support thank you so much",
+        "Display": "kitna support thank you so much",
+        "Words": [
+          {
+            "Word": "kitna",
+            "Offset": 734000000,
+            "Duration": 6800000,
+            "Confidence": 0.04582151
+          },
+          {
+            "Word": "support",
+            "Offset": 740800000,
+            "Duration": 9600000,
+            "Confidence": 0.27086768
+          },
+          {
+            "Word": "thank",
+            "Offset": 753600000,
+            "Duration": 3200000,
+            "Confidence": 0.7056227
+          },
+          {
+            "Word": "you",
+            "Offset": 756800000,
+            "Duration": 1200000,
+            "Confidence": 0.74210936
+          },
+          {
+            "Word": "so",
+            "Offset": 758000000,
+            "Duration": 2400000,
+            "Confidence": 0.7934238
+          },
+          {
+            "Word": "much",
+            "Offset": 760400000,
+            "Duration": 5200000,
+            "Confidence": 0.57097644
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "db9e82f427504b7093c10982fbce0d4f",
+    "RecognitionStatus": "Success",
+    "Offset": 785300000,
+    "Duration": 9600000,
+    "Channel": 0,
+    "DisplayText": "Thank you, Vicki, about that.",
+    "NBest": [
+      {
+        "Confidence": 0.1732544,
+        "Lexical": "thank you vicki about that",
+        "ITN": "thank you vicki about that",
+        "MaskedITN": "thank you vicki about that",
+        "Display": "Thank you, Vicki, about that.",
+        "Words": [
+          {
+            "Word": "thank",
+            "Offset": 785300000,
+            "Duration": 1600000,
+            "Confidence": 0.23271224
+          },
+          {
+            "Word": "you",
+            "Offset": 786900000,
+            "Duration": 2000000,
+            "Confidence": 0.2374078
+          },
+          {
+            "Word": "vicki",
+            "Offset": 788900000,
+            "Duration": 2000000,
+            "Confidence": 0.07753912
+          },
+          {
+            "Word": "about",
+            "Offset": 790900000,
+            "Duration": 2000000,
+            "Confidence": 0.14355567
+          },
+          {
+            "Word": "that",
+            "Offset": 792900000,
+            "Duration": 2000000,
+            "Confidence": 0.1750572
+          }
+        ]
+      },
+      {
+        "Confidence": 0.15781313,
+        "Lexical": "thank you vicky about that",
+        "ITN": "thank you vicky about that",
+        "MaskedITN": "thank you vicky about that",
+        "Display": "thank you vicky about that",
+        "Words": [
+          {
+            "Word": "thank",
+            "Offset": 785700000,
+            "Duration": 2000000,
+            "Confidence": 0.23271224
+          },
+          {
+            "Word": "you",
+            "Offset": 798100000,
+            "Duration": 1200000,
+            "Confidence": 0.2374078
+          },
+          {
+            "Word": "vicky",
+            "Offset": 799300000,
+            "Duration": 2000000,
+            "Confidence": 0.061539136
+          },
+          {
+            "Word": "about",
+            "Offset": 801300000,
+            "Duration": 3200000,
+            "Confidence": 0.118558235
+          },
+          {
+            "Word": "that",
+            "Offset": 804500000,
+            "Duration": 2000000,
+            "Confidence": 0.13884825
+          }
+        ]
+      },
+      {
+        "Confidence": 0.0,
+        "Lexical": "",
+        "ITN": "",
+        "MaskedITN": "",
+        "Display": ""
+      },
+      {
+        "Confidence": 0.1656448,
+        "Lexical": "thank you vicki about that no no",
+        "ITN": "thank you vicki about that no no",
+        "MaskedITN": "thank you vicki about that no no",
+        "Display": "thank you vicki about that no no",
+        "Words": [
+          {
+            "Word": "thank",
+            "Offset": 785700000,
+            "Duration": 2000000,
+            "Confidence": 0.23271224
+          },
+          {
+            "Word": "you",
+            "Offset": 798100000,
+            "Duration": 1200000,
+            "Confidence": 0.2374078
+          },
+          {
+            "Word": "vicki",
+            "Offset": 799300000,
+            "Duration": 2000000,
+            "Confidence": 0.07753912
+          },
+          {
+            "Word": "about",
+            "Offset": 801300000,
+            "Duration": 3200000,
+            "Confidence": 0.14355567
+          },
+          {
+            "Word": "that",
+            "Offset": 804500000,
+            "Duration": 1600000,
+            "Confidence": 0.1750572
+          },
+          {
+            "Word": "no",
+            "Offset": 806100000,
+            "Duration": 2400000,
+            "Confidence": 0.07294416
+          },
+          {
+            "Word": "no",
+            "Offset": 808500000,
+            "Duration": 800000,
+            "Confidence": 0.22029732
+          }
+        ]
+      },
+      {
+        "Confidence": 0.15578586,
+        "Lexical": "no no",
+        "ITN": "no no",
+        "MaskedITN": "no no",
+        "Display": "no no",
+        "Words": [
+          {
+            "Word": "no",
+            "Offset": 798100000,
+            "Duration": 2800000,
+            "Confidence": 0.07660559
+          },
+          {
+            "Word": "no",
+            "Offset": 800900000,
+            "Duration": 8400000,
+            "Confidence": 0.23496614
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "b8dbabd3ed504f9193eb9486402e7097",
+    "RecognitionStatus": "Success",
+    "Offset": 1228300000,
+    "Duration": 129600000,
+    "Channel": 0,
+    "DisplayText": "Hi, Sandy, My name is Doctor James. I'm the eye specialist. That's our first time, so don't worry. I'm a friend of your husband. OK? If you're ready, let's head into the clinic, OK.",
+    "NBest": [
+      {
+        "Confidence": 0.76591223,
+        "Lexical": "hi sandy my name is doctor james i'm the eye specialist that's our first time so don't worry i'm a friend of your husband OK if you're ready let's head into the clinic OK",
+        "ITN": "hi sandy my name is doctor james i'm the eye specialist that's our first time so don't worry i'm a friend of your husband OK if you're ready let's head into the clinic OK",
+        "MaskedITN": "hi sandy my name is doctor james i'm the eye specialist that's our first time so don't worry i'm a friend of your husband ok if you're ready let's head into the clinic ok",
+        "Display": "Hi, Sandy, My name is Doctor James. I'm the eye specialist. That's our first time, so don't worry. I'm a friend of your husband. OK? If you're ready, let's head into the clinic, OK.",
+        "Words": [
+          {
+            "Word": "hi",
+            "Offset": 1228300000,
+            "Duration": 800000,
+            "Confidence": 0.045352563
+          },
+          {
+            "Word": "sandy",
+            "Offset": 1229100000,
+            "Duration": 4400000,
+            "Confidence": 0.05468472
+          },
+          {
+            "Word": "my",
+            "Offset": 1240300000,
+            "Duration": 800000,
+            "Confidence": 0.89650184
+          },
+          {
+            "Word": "name",
+            "Offset": 1241100000,
+            "Duration": 1600000,
+            "Confidence": 0.8928581
+          },
+          {
+            "Word": "is",
+            "Offset": 1242700000,
+            "Duration": 2000000,
+            "Confidence": 0.80594444
+          },
+          {
+            "Word": "doctor",
+            "Offset": 1244700000,
+            "Duration": 3200000,
+            "Confidence": 0.83988565
+          },
+          {
+            "Word": "james",
+            "Offset": 1247900000,
+            "Duration": 6800000,
+            "Confidence": 0.7402941
+          },
+          {
+            "Word": "i'm",
+            "Offset": 1257500000,
+            "Duration": 2400000,
+            "Confidence": 0.6860575
+          },
+          {
+            "Word": "the",
+            "Offset": 1259900000,
+            "Duration": 1200000,
+            "Confidence": 0.8930715
+          },
+          {
+            "Word": "eye",
+            "Offset": 1261100000,
+            "Duration": 1200000,
+            "Confidence": 0.8240853
+          },
+          {
+            "Word": "specialist",
+            "Offset": 1262300000,
+            "Duration": 8000000,
+            "Confidence": 0.79380554
+          },
+          {
+            "Word": "that's",
+            "Offset": 1276700000,
+            "Duration": 2800000,
+            "Confidence": 0.06420205
+          },
+          {
+            "Word": "our",
+            "Offset": 1279500000,
+            "Duration": 1200000,
+            "Confidence": 0.89683825
+          },
+          {
+            "Word": "first",
+            "Offset": 1280700000,
+            "Duration": 2400000,
+            "Confidence": 0.932895
+          },
+          {
+            "Word": "time",
+            "Offset": 1283100000,
+            "Duration": 2400000,
+            "Confidence": 0.93653816
+          },
+          {
+            "Word": "so",
+            "Offset": 1285500000,
+            "Duration": 4800000,
+            "Confidence": 0.7897889
+          },
+          {
+            "Word": "don't",
+            "Offset": 1290300000,
+            "Duration": 2400000,
+            "Confidence": 0.93514514
+          },
+          {
+            "Word": "worry",
+            "Offset": 1292700000,
+            "Duration": 5200000,
+            "Confidence": 0.93968856
+          },
+          {
+            "Word": "i'm",
+            "Offset": 1298700000,
+            "Duration": 1600000,
+            "Confidence": 0.72692955
+          },
+          {
+            "Word": "a",
+            "Offset": 1300300000,
+            "Duration": 400000,
+            "Confidence": 0.9258833
+          },
+          {
+            "Word": "friend",
+            "Offset": 1300700000,
+            "Duration": 2800000,
+            "Confidence": 0.94058424
+          },
+          {
+            "Word": "of",
+            "Offset": 1303500000,
+            "Duration": 800000,
+            "Confidence": 0.9221445
+          },
+          {
+            "Word": "your",
+            "Offset": 1304300000,
+            "Duration": 1600000,
+            "Confidence": 0.94500774
+          },
+          {
+            "Word": "husband",
+            "Offset": 1305900000,
+            "Duration": 4000000,
+            "Confidence": 0.94625175
+          },
+          {
+            "Word": "OK",
+            "Offset": 1321100000,
+            "Duration": 3600000,
+            "Confidence": 0.22180991
+          },
+          {
+            "Word": "if",
+            "Offset": 1324700000,
+            "Duration": 800000,
+            "Confidence": 0.78718036
+          },
+          {
+            "Word": "you're",
+            "Offset": 1325500000,
+            "Duration": 2400000,
+            "Confidence": 0.8376918
+          },
+          {
+            "Word": "ready",
+            "Offset": 1327900000,
+            "Duration": 4000000,
+            "Confidence": 0.9442476
+          },
+          {
+            "Word": "let's",
+            "Offset": 1332300000,
+            "Duration": 3600000,
+            "Confidence": 0.73169214
+          },
+          {
+            "Word": "head",
+            "Offset": 1336300000,
+            "Duration": 2000000,
+            "Confidence": 0.9436325
+          },
+          {
+            "Word": "into",
+            "Offset": 1338300000,
+            "Duration": 2000000,
+            "Confidence": 0.7947424
+          },
+          {
+            "Word": "the",
+            "Offset": 1340300000,
+            "Duration": 1200000,
+            "Confidence": 0.94067556
+          },
+          {
+            "Word": "clinic",
+            "Offset": 1341500000,
+            "Duration": 3600000,
+            "Confidence": 0.7530378
+          },
+          {
+            "Word": "OK",
+            "Offset": 1353900000,
+            "Duration": 4000000,
+            "Confidence": 0.7118627
+          }
+        ]
+      },
+      {
+        "Confidence": 0.76840746,
+        "Lexical": "hi sandy my name is doctor james i'm the eye specialist it's our first time so don't worry i'm a friend of your husband ok if you're ready let's head into the clinic ok",
+        "ITN": "hi sandy my name is doctor james i'm the eye specialist it's our first time so don't worry i'm a friend of your husband ok if you're ready let's head into the clinic ok",
+        "MaskedITN": "hi sandy my name is doctor james i'm the eye specialist it's our first time so don't worry i'm a friend of your husband ok if you're ready let's head into the clinic ok",
+        "Display": "hi sandy my name is doctor james i'm the eye specialist it's our first time so don't worry i'm a friend of your husband OK if you're ready let's head into the clinic OK",
+        "Words": [
+          {
+            "Word": "hi",
+            "Offset": 1228300000,
+            "Duration": 800000,
+            "Confidence": 0.045352563
+          },
+          {
+            "Word": "sandy",
+            "Offset": 1229100000,
+            "Duration": 4400000,
+            "Confidence": 0.05468472
+          },
+          {
+            "Word": "my",
+            "Offset": 1240300000,
+            "Duration": 800000,
+            "Confidence": 0.89650184
+          },
+          {
+            "Word": "name",
+            "Offset": 1241100000,
+            "Duration": 1600000,
+            "Confidence": 0.8928581
+          },
+          {
+            "Word": "is",
+            "Offset": 1242700000,
+            "Duration": 2000000,
+            "Confidence": 0.80594444
+          },
+          {
+            "Word": "doctor",
+            "Offset": 1244700000,
+            "Duration": 3200000,
+            "Confidence": 0.83988565
+          },
+          {
+            "Word": "james",
+            "Offset": 1247900000,
+            "Duration": 6800000,
+            "Confidence": 0.7402941
+          },
+          {
+            "Word": "i'm",
+            "Offset": 1257500000,
+            "Duration": 2400000,
+            "Confidence": 0.6860575
+          },
+          {
+            "Word": "the",
+            "Offset": 1259900000,
+            "Duration": 1200000,
+            "Confidence": 0.8930715
+          },
+          {
+            "Word": "eye",
+            "Offset": 1261100000,
+            "Duration": 1200000,
+            "Confidence": 0.8240853
+          },
+          {
+            "Word": "specialist",
+            "Offset": 1262300000,
+            "Duration": 8000000,
+            "Confidence": 0.79380554
+          },
+          {
+            "Word": "it's",
+            "Offset": 1277100000,
+            "Duration": 2400000,
+            "Confidence": 0.13863468
+          },
+          {
+            "Word": "our",
+            "Offset": 1279500000,
+            "Duration": 1200000,
+            "Confidence": 0.9049831
+          },
+          {
+            "Word": "first",
+            "Offset": 1280700000,
+            "Duration": 2400000,
+            "Confidence": 0.9341551
+          },
+          {
+            "Word": "time",
+            "Offset": 1283100000,
+            "Duration": 2400000,
+            "Confidence": 0.9375386
+          },
+          {
+            "Word": "so",
+            "Offset": 1285500000,
+            "Duration": 4800000,
+            "Confidence": 0.7897889
+          },
+          {
+            "Word": "don't",
+            "Offset": 1290300000,
+            "Duration": 2400000,
+            "Confidence": 0.93514514
+          },
+          {
+            "Word": "worry",
+            "Offset": 1292700000,
+            "Duration": 5200000,
+            "Confidence": 0.93968856
+          },
+          {
+            "Word": "i'm",
+            "Offset": 1298700000,
+            "Duration": 1600000,
+            "Confidence": 0.72692955
+          },
+          {
+            "Word": "a",
+            "Offset": 1300300000,
+            "Duration": 400000,
+            "Confidence": 0.9258833
+          },
+          {
+            "Word": "friend",
+            "Offset": 1300700000,
+            "Duration": 2800000,
+            "Confidence": 0.94058424
+          },
+          {
+            "Word": "of",
+            "Offset": 1303500000,
+            "Duration": 800000,
+            "Confidence": 0.9221445
+          },
+          {
+            "Word": "your",
+            "Offset": 1304300000,
+            "Duration": 1600000,
+            "Confidence": 0.94500774
+          },
+          {
+            "Word": "husband",
+            "Offset": 1305900000,
+            "Duration": 4000000,
+            "Confidence": 0.94625175
+          },
+          {
+            "Word": "OK",
+            "Offset": 1321100000,
+            "Duration": 3600000,
+            "Confidence": 0.22180991
+          },
+          {
+            "Word": "if",
+            "Offset": 1324700000,
+            "Duration": 800000,
+            "Confidence": 0.78718036
+          },
+          {
+            "Word": "you're",
+            "Offset": 1325500000,
+            "Duration": 2400000,
+            "Confidence": 0.8376918
+          },
+          {
+            "Word": "ready",
+            "Offset": 1327900000,
+            "Duration": 4000000,
+            "Confidence": 0.9442476
+          },
+          {
+            "Word": "let's",
+            "Offset": 1332300000,
+            "Duration": 3600000,
+            "Confidence": 0.73169214
+          },
+          {
+            "Word": "head",
+            "Offset": 1336300000,
+            "Duration": 2000000,
+            "Confidence": 0.9436325
+          },
+          {
+            "Word": "into",
+            "Offset": 1338300000,
+            "Duration": 2000000,
+            "Confidence": 0.7947424
+          },
+          {
+            "Word": "the",
+            "Offset": 1340300000,
+            "Duration": 1200000,
+            "Confidence": 0.94067556
+          },
+          {
+            "Word": "clinic",
+            "Offset": 1341500000,
+            "Duration": 3600000,
+            "Confidence": 0.7530378
+          },
+          {
+            "Word": "OK",
+            "Offset": 1353900000,
+            "Duration": 4000000,
+            "Confidence": 0.7118627
+          }
+        ]
+      },
+      {
+        "Confidence": 0.7618566,
+        "Lexical": "hi sandy my name is doctor james i'm the eye specialist that's our first time so don't worry i'm a friend of your husband okay if you're ready let's head into the clinic ok",
+        "ITN": "hi sandy my name is doctor james i'm the eye specialist that's our first time so don't worry i'm a friend of your husband okay if you're ready let's head into the clinic ok",
+        "MaskedITN": "hi sandy my name is doctor james i'm the eye specialist that's our first time so don't worry i'm a friend of your husband okay if you're ready let's head into the clinic ok",
+        "Display": "hi sandy my name is doctor james i'm the eye specialist that's our first time so don't worry i'm a friend of your husband okay if you're ready let's head into the clinic OK",
+        "Words": [
+          {
+            "Word": "hi",
+            "Offset": 1228300000,
+            "Duration": 800000,
+            "Confidence": 0.045352563
+          },
+          {
+            "Word": "sandy",
+            "Offset": 1229100000,
+            "Duration": 4400000,
+            "Confidence": 0.05468468
+          },
+          {
+            "Word": "my",
+            "Offset": 1240300000,
+            "Duration": 800000,
+            "Confidence": 0.89650184
+          },
+          {
+            "Word": "name",
+            "Offset": 1241100000,
+            "Duration": 1600000,
+            "Confidence": 0.8928581
+          },
+          {
+            "Word": "is",
+            "Offset": 1242700000,
+            "Duration": 2000000,
+            "Confidence": 0.80594444
+          },
+          {
+            "Word": "doctor",
+            "Offset": 1244700000,
+            "Duration": 3200000,
+            "Confidence": 0.83988565
+          },
+          {
+            "Word": "james",
+            "Offset": 1247900000,
+            "Duration": 6800000,
+            "Confidence": 0.7402941
+          },
+          {
+            "Word": "i'm",
+            "Offset": 1257500000,
+            "Duration": 2400000,
+            "Confidence": 0.6860575
+          },
+          {
+            "Word": "the",
+            "Offset": 1259900000,
+            "Duration": 1200000,
+            "Confidence": 0.8930715
+          },
+          {
+            "Word": "eye",
+            "Offset": 1261100000,
+            "Duration": 1200000,
+            "Confidence": 0.8240853
+          },
+          {
+            "Word": "specialist",
+            "Offset": 1262300000,
+            "Duration": 8000000,
+            "Confidence": 0.79380554
+          },
+          {
+            "Word": "that's",
+            "Offset": 1276700000,
+            "Duration": 2800000,
+            "Confidence": 0.06420205
+          },
+          {
+            "Word": "our",
+            "Offset": 1279500000,
+            "Duration": 1200000,
+            "Confidence": 0.89683825
+          },
+          {
+            "Word": "first",
+            "Offset": 1280700000,
+            "Duration": 2400000,
+            "Confidence": 0.932895
+          },
+          {
+            "Word": "time",
+            "Offset": 1283100000,
+            "Duration": 2400000,
+            "Confidence": 0.93653816
+          },
+          {
+            "Word": "so",
+            "Offset": 1285500000,
+            "Duration": 4800000,
+            "Confidence": 0.7897889
+          },
+          {
+            "Word": "don't",
+            "Offset": 1290300000,
+            "Duration": 2400000,
+            "Confidence": 0.93514514
+          },
+          {
+            "Word": "worry",
+            "Offset": 1292700000,
+            "Duration": 5200000,
+            "Confidence": 0.93968856
+          },
+          {
+            "Word": "i'm",
+            "Offset": 1298700000,
+            "Duration": 1600000,
+            "Confidence": 0.72692955
+          },
+          {
+            "Word": "a",
+            "Offset": 1300300000,
+            "Duration": 400000,
+            "Confidence": 0.9258833
+          },
+          {
+            "Word": "friend",
+            "Offset": 1300700000,
+            "Duration": 2800000,
+            "Confidence": 0.94058424
+          },
+          {
+            "Word": "of",
+            "Offset": 1303500000,
+            "Duration": 800000,
+            "Confidence": 0.9221445
+          },
+          {
+            "Word": "your",
+            "Offset": 1304300000,
+            "Duration": 1600000,
+            "Confidence": 0.94500774
+          },
+          {
+            "Word": "husband",
+            "Offset": 1305900000,
+            "Duration": 4000000,
+            "Confidence": 0.94625175
+          },
+          {
+            "Word": "okay",
+            "Offset": 1321100000,
+            "Duration": 3600000,
+            "Confidence": 0.100482196
+          },
+          {
+            "Word": "if",
+            "Offset": 1324700000,
+            "Duration": 800000,
+            "Confidence": 0.78178674
+          },
+          {
+            "Word": "you're",
+            "Offset": 1325500000,
+            "Duration": 2400000,
+            "Confidence": 0.8315266
+          },
+          {
+            "Word": "ready",
+            "Offset": 1327900000,
+            "Duration": 4000000,
+            "Confidence": 0.9392435
+          },
+          {
+            "Word": "let's",
+            "Offset": 1332300000,
+            "Duration": 3600000,
+            "Confidence": 0.73169214
+          },
+          {
+            "Word": "head",
+            "Offset": 1336300000,
+            "Duration": 2000000,
+            "Confidence": 0.9436325
+          },
+          {
+            "Word": "into",
+            "Offset": 1338300000,
+            "Duration": 2000000,
+            "Confidence": 0.7947424
+          },
+          {
+            "Word": "the",
+            "Offset": 1340300000,
+            "Duration": 1200000,
+            "Confidence": 0.94067556
+          },
+          {
+            "Word": "clinic",
+            "Offset": 1341500000,
+            "Duration": 3600000,
+            "Confidence": 0.7530378
+          },
+          {
+            "Word": "OK",
+            "Offset": 1353900000,
+            "Duration": 4000000,
+            "Confidence": 0.7118627
+          }
+        ]
+      },
+      {
+        "Confidence": 0.76435184,
+        "Lexical": "hi sandy my name is doctor james i'm the eye specialist it's our first time so don't worry i'm a friend of your husband okay if you're ready let's head into the clinic ok",
+        "ITN": "hi sandy my name is doctor james i'm the eye specialist it's our first time so don't worry i'm a friend of your husband okay if you're ready let's head into the clinic ok",
+        "MaskedITN": "hi sandy my name is doctor james i'm the eye specialist it's our first time so don't worry i'm a friend of your husband okay if you're ready let's head into the clinic ok",
+        "Display": "hi sandy my name is doctor james i'm the eye specialist it's our first time so don't worry i'm a friend of your husband okay if you're ready let's head into the clinic OK",
+        "Words": [
+          {
+            "Word": "hi",
+            "Offset": 1228300000,
+            "Duration": 800000,
+            "Confidence": 0.045352563
+          },
+          {
+            "Word": "sandy",
+            "Offset": 1229100000,
+            "Duration": 4400000,
+            "Confidence": 0.05468472
+          },
+          {
+            "Word": "my",
+            "Offset": 1240300000,
+            "Duration": 800000,
+            "Confidence": 0.89650184
+          },
+          {
+            "Word": "name",
+            "Offset": 1241100000,
+            "Duration": 1600000,
+            "Confidence": 0.8928581
+          },
+          {
+            "Word": "is",
+            "Offset": 1242700000,
+            "Duration": 2000000,
+            "Confidence": 0.80594444
+          },
+          {
+            "Word": "doctor",
+            "Offset": 1244700000,
+            "Duration": 3200000,
+            "Confidence": 0.83988565
+          },
+          {
+            "Word": "james",
+            "Offset": 1247900000,
+            "Duration": 6800000,
+            "Confidence": 0.7402941
+          },
+          {
+            "Word": "i'm",
+            "Offset": 1257500000,
+            "Duration": 2400000,
+            "Confidence": 0.6860575
+          },
+          {
+            "Word": "the",
+            "Offset": 1259900000,
+            "Duration": 1200000,
+            "Confidence": 0.8930715
+          },
+          {
+            "Word": "eye",
+            "Offset": 1261100000,
+            "Duration": 1200000,
+            "Confidence": 0.8240853
+          },
+          {
+            "Word": "specialist",
+            "Offset": 1262300000,
+            "Duration": 8000000,
+            "Confidence": 0.79380554
+          },
+          {
+            "Word": "it's",
+            "Offset": 1277100000,
+            "Duration": 2400000,
+            "Confidence": 0.13863468
+          },
+          {
+            "Word": "our",
+            "Offset": 1279500000,
+            "Duration": 1200000,
+            "Confidence": 0.9049831
+          },
+          {
+            "Word": "first",
+            "Offset": 1280700000,
+            "Duration": 2400000,
+            "Confidence": 0.9341551
+          },
+          {
+            "Word": "time",
+            "Offset": 1283100000,
+            "Duration": 2400000,
+            "Confidence": 0.9375386
+          },
+          {
+            "Word": "so",
+            "Offset": 1285500000,
+            "Duration": 4800000,
+            "Confidence": 0.7897889
+          },
+          {
+            "Word": "don't",
+            "Offset": 1290300000,
+            "Duration": 2400000,
+            "Confidence": 0.93514514
+          },
+          {
+            "Word": "worry",
+            "Offset": 1292700000,
+            "Duration": 5200000,
+            "Confidence": 0.93968856
+          },
+          {
+            "Word": "i'm",
+            "Offset": 1298700000,
+            "Duration": 1600000,
+            "Confidence": 0.72692955
+          },
+          {
+            "Word": "a",
+            "Offset": 1300300000,
+            "Duration": 400000,
+            "Confidence": 0.9258833
+          },
+          {
+            "Word": "friend",
+            "Offset": 1300700000,
+            "Duration": 2800000,
+            "Confidence": 0.94058424
+          },
+          {
+            "Word": "of",
+            "Offset": 1303500000,
+            "Duration": 800000,
+            "Confidence": 0.9221445
+          },
+          {
+            "Word": "your",
+            "Offset": 1304300000,
+            "Duration": 1600000,
+            "Confidence": 0.94500774
+          },
+          {
+            "Word": "husband",
+            "Offset": 1305900000,
+            "Duration": 4000000,
+            "Confidence": 0.94625175
+          },
+          {
+            "Word": "okay",
+            "Offset": 1321100000,
+            "Duration": 3600000,
+            "Confidence": 0.100482196
+          },
+          {
+            "Word": "if",
+            "Offset": 1324700000,
+            "Duration": 800000,
+            "Confidence": 0.78178674
+          },
+          {
+            "Word": "you're",
+            "Offset": 1325500000,
+            "Duration": 2400000,
+            "Confidence": 0.8315266
+          },
+          {
+            "Word": "ready",
+            "Offset": 1327900000,
+            "Duration": 4000000,
+            "Confidence": 0.9392435
+          },
+          {
+            "Word": "let's",
+            "Offset": 1332300000,
+            "Duration": 3600000,
+            "Confidence": 0.73169214
+          },
+          {
+            "Word": "head",
+            "Offset": 1336300000,
+            "Duration": 2000000,
+            "Confidence": 0.9436325
+          },
+          {
+            "Word": "into",
+            "Offset": 1338300000,
+            "Duration": 2000000,
+            "Confidence": 0.7947424
+          },
+          {
+            "Word": "the",
+            "Offset": 1340300000,
+            "Duration": 1200000,
+            "Confidence": 0.94067556
+          },
+          {
+            "Word": "clinic",
+            "Offset": 1341500000,
+            "Duration": 3600000,
+            "Confidence": 0.7530378
+          },
+          {
+            "Word": "OK",
+            "Offset": 1353900000,
+            "Duration": 4000000,
+            "Confidence": 0.7118627
+          }
+        ]
+      },
+      {
+        "Confidence": 0.7551917,
+        "Lexical": "hi sam my name is doctor james i'm the eye specialist it's our first time so don't worry i'm a friend of your husband ok if you're ready let's head into the clinic ok",
+        "ITN": "hi sam my name is doctor james i'm the eye specialist it's our first time so don't worry i'm a friend of your husband ok if you're ready let's head into the clinic ok",
+        "MaskedITN": "hi sam my name is doctor james i'm the eye specialist it's our first time so don't worry i'm a friend of your husband ok if you're ready let's head into the clinic ok",
+        "Display": "hi sam my name is doctor james i'm the eye specialist it's our first time so don't worry i'm a friend of your husband OK if you're ready let's head into the clinic OK",
+        "Words": [
+          {
+            "Word": "hi",
+            "Offset": 1228300000,
+            "Duration": 800000,
+            "Confidence": 0.045352563
+          },
+          {
+            "Word": "sam",
+            "Offset": 1229100000,
+            "Duration": 2000000,
+            "Confidence": 0.0525012
+          },
+          {
+            "Word": "my",
+            "Offset": 1232300000,
+            "Duration": 1200000,
+            "Confidence": 0.7244937
+          },
+          {
+            "Word": "name",
+            "Offset": 1241100000,
+            "Duration": 1600000,
+            "Confidence": 0.82816786
+          },
+          {
+            "Word": "is",
+            "Offset": 1242700000,
+            "Duration": 2000000,
+            "Confidence": 0.7230959
+          },
+          {
+            "Word": "doctor",
+            "Offset": 1244700000,
+            "Duration": 3200000,
+            "Confidence": 0.7751354
+          },
+          {
+            "Word": "james",
+            "Offset": 1247900000,
+            "Duration": 6800000,
+            "Confidence": 0.67743754
+          },
+          {
+            "Word": "i'm",
+            "Offset": 1257500000,
+            "Duration": 2400000,
+            "Confidence": 0.6860575
+          },
+          {
+            "Word": "the",
+            "Offset": 1259900000,
+            "Duration": 1200000,
+            "Confidence": 0.8930715
+          },
+          {
+            "Word": "eye",
+            "Offset": 1261100000,
+            "Duration": 1200000,
+            "Confidence": 0.8240853
+          },
+          {
+            "Word": "specialist",
+            "Offset": 1262300000,
+            "Duration": 8000000,
+            "Confidence": 0.79380554
+          },
+          {
+            "Word": "it's",
+            "Offset": 1277100000,
+            "Duration": 2400000,
+            "Confidence": 0.13863468
+          },
+          {
+            "Word": "our",
+            "Offset": 1279500000,
+            "Duration": 1200000,
+            "Confidence": 0.9049831
+          },
+          {
+            "Word": "first",
+            "Offset": 1280700000,
+            "Duration": 2400000,
+            "Confidence": 0.9341551
+          },
+          {
+            "Word": "time",
+            "Offset": 1283100000,
+            "Duration": 2400000,
+            "Confidence": 0.9375386
+          },
+          {
+            "Word": "so",
+            "Offset": 1285500000,
+            "Duration": 4800000,
+            "Confidence": 0.7897889
+          },
+          {
+            "Word": "don't",
+            "Offset": 1290300000,
+            "Duration": 2400000,
+            "Confidence": 0.93514514
+          },
+          {
+            "Word": "worry",
+            "Offset": 1292700000,
+            "Duration": 5200000,
+            "Confidence": 0.93968856
+          },
+          {
+            "Word": "i'm",
+            "Offset": 1298700000,
+            "Duration": 1600000,
+            "Confidence": 0.72692955
+          },
+          {
+            "Word": "a",
+            "Offset": 1300300000,
+            "Duration": 400000,
+            "Confidence": 0.9258833
+          },
+          {
+            "Word": "friend",
+            "Offset": 1300700000,
+            "Duration": 2800000,
+            "Confidence": 0.94058424
+          },
+          {
+            "Word": "of",
+            "Offset": 1303500000,
+            "Duration": 800000,
+            "Confidence": 0.9221445
+          },
+          {
+            "Word": "your",
+            "Offset": 1304300000,
+            "Duration": 1600000,
+            "Confidence": 0.94500774
+          },
+          {
+            "Word": "husband",
+            "Offset": 1305900000,
+            "Duration": 4000000,
+            "Confidence": 0.94625175
+          },
+          {
+            "Word": "OK",
+            "Offset": 1321100000,
+            "Duration": 3600000,
+            "Confidence": 0.22180991
+          },
+          {
+            "Word": "if",
+            "Offset": 1324700000,
+            "Duration": 800000,
+            "Confidence": 0.78718036
+          },
+          {
+            "Word": "you're",
+            "Offset": 1325500000,
+            "Duration": 2400000,
+            "Confidence": 0.8376918
+          },
+          {
+            "Word": "ready",
+            "Offset": 1327900000,
+            "Duration": 4000000,
+            "Confidence": 0.9442476
+          },
+          {
+            "Word": "let's",
+            "Offset": 1332300000,
+            "Duration": 3600000,
+            "Confidence": 0.73169214
+          },
+          {
+            "Word": "head",
+            "Offset": 1336300000,
+            "Duration": 2000000,
+            "Confidence": 0.9436325
+          },
+          {
+            "Word": "into",
+            "Offset": 1338300000,
+            "Duration": 2000000,
+            "Confidence": 0.7947424
+          },
+          {
+            "Word": "the",
+            "Offset": 1340300000,
+            "Duration": 1200000,
+            "Confidence": 0.94067556
+          },
+          {
+            "Word": "clinic",
+            "Offset": 1341500000,
+            "Duration": 3600000,
+            "Confidence": 0.7530378
+          },
+          {
+            "Word": "OK",
+            "Offset": 1353900000,
+            "Duration": 4000000,
+            "Confidence": 0.7118627
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "2fc29b2877f04b048786a8da000b3d71",
+    "RecognitionStatus": "Success",
+    "Offset": 1402900000,
+    "Duration": 8000000,
+    "Channel": 0,
+    "DisplayText": "Please have a seat.",
+    "NBest": [
+      {
+        "Confidence": 0.58306336,
+        "Lexical": "please have a seat",
+        "ITN": "please have a seat",
+        "MaskedITN": "please have a seat",
+        "Display": "Please have a seat.",
+        "Words": [
+          {
+            "Word": "please",
+            "Offset": 1402900000,
+            "Duration": 2800000,
+            "Confidence": 0.68578774
+          },
+          {
+            "Word": "have",
+            "Offset": 1405700000,
+            "Duration": 2000000,
+            "Confidence": 0.66938084
+          },
+          {
+            "Word": "a",
+            "Offset": 1407700000,
+            "Duration": 400000,
+            "Confidence": 0.44962692
+          },
+          {
+            "Word": "seat",
+            "Offset": 1408100000,
+            "Duration": 2800000,
+            "Confidence": 0.5274581
+          }
+        ]
+      },
+      {
+        "Confidence": 0.4668575,
+        "Lexical": "please have ac",
+        "ITN": "please have ac",
+        "MaskedITN": "please have ac",
+        "Display": "please have AC",
+        "Words": [
+          {
+            "Word": "please",
+            "Offset": 1402900000,
+            "Duration": 2800000,
+            "Confidence": 0.68578774
+          },
+          {
+            "Word": "have",
+            "Offset": 1405700000,
+            "Duration": 5200000,
+            "Confidence": 0.66938084
+          },
+          {
+            "Word": "AC",
+            "Offset": 1410900000,
+            "Duration": 800000,
+            "Confidence": 0.045403928
+          }
+        ]
+      },
+      {
+        "Confidence": 0.68578774,
+        "Lexical": "please",
+        "ITN": "please",
+        "MaskedITN": "please",
+        "Display": "please",
+        "Words": [
+          {
+            "Word": "please",
+            "Offset": 1402900000,
+            "Duration": 5600000,
+            "Confidence": 0.68578774
+          }
+        ]
+      },
+      {
+        "Confidence": 0.47591385,
+        "Lexical": "please have a seat a",
+        "ITN": "please have a seat a",
+        "MaskedITN": "please have a seat a",
+        "Display": "please have a seat a",
+        "Words": [
+          {
+            "Word": "please",
+            "Offset": 1402900000,
+            "Duration": 2800000,
+            "Confidence": 0.68578774
+          },
+          {
+            "Word": "have",
+            "Offset": 1405700000,
+            "Duration": 2000000,
+            "Confidence": 0.66938084
+          },
+          {
+            "Word": "a",
+            "Offset": 1407700000,
+            "Duration": 400000,
+            "Confidence": 0.44668797
+          },
+          {
+            "Word": "seat",
+            "Offset": 1408100000,
+            "Duration": 2400000,
+            "Confidence": 0.5274581
+          },
+          {
+            "Word": "a",
+            "Offset": 1410500000,
+            "Duration": 400000,
+            "Confidence": 0.050254706
+          }
+        ]
+      },
+      {
+        "Confidence": 0.59069276,
+        "Lexical": "please a",
+        "ITN": "please a",
+        "MaskedITN": "please a",
+        "Display": "please a",
+        "Words": [
+          {
+            "Word": "please",
+            "Offset": 1402900000,
+            "Duration": 8400000,
+            "Confidence": 0.68578774
+          },
+          {
+            "Word": "a",
+            "Offset": 1411300000,
+            "Duration": 400000,
+            "Confidence": 0.49559778
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "82e95e66dcb8411b8a59fa3cf94a5dcb",
+    "RecognitionStatus": "Success",
+    "Offset": 1481000000,
+    "Duration": 44200000,
+    "Channel": 0,
+    "DisplayText": "I'm sorry but your husband will have to wait outside. I need to focus on my patient.",
+    "NBest": [
+      {
+        "Confidence": 0.83362097,
+        "Lexical": "i'm sorry but your husband will have to wait outside i need to focus on my patient",
+        "ITN": "i'm sorry but your husband will have to wait outside i need to focus on my patient",
+        "MaskedITN": "i'm sorry but your husband will have to wait outside i need to focus on my patient",
+        "Display": "I'm sorry but your husband will have to wait outside. I need to focus on my patient.",
+        "Words": [
+          {
+            "Word": "i'm",
+            "Offset": 1481000000,
+            "Duration": 1600000,
+            "Confidence": 0.80865324
+          },
+          {
+            "Word": "sorry",
+            "Offset": 1482600000,
+            "Duration": 4000000,
+            "Confidence": 0.9446195
+          },
+          {
+            "Word": "but",
+            "Offset": 1486600000,
+            "Duration": 1600000,
+            "Confidence": 0.8346854
+          },
+          {
+            "Word": "your",
+            "Offset": 1488200000,
+            "Duration": 4000000,
+            "Confidence": 0.8228291
+          },
+          {
+            "Word": "husband",
+            "Offset": 1492200000,
+            "Duration": 4000000,
+            "Confidence": 0.96447885
+          },
+          {
+            "Word": "will",
+            "Offset": 1496200000,
+            "Duration": 1600000,
+            "Confidence": 0.8923381
+          },
+          {
+            "Word": "have",
+            "Offset": 1497800000,
+            "Duration": 1600000,
+            "Confidence": 0.9070517
+          },
+          {
+            "Word": "to",
+            "Offset": 1499400000,
+            "Duration": 1200000,
+            "Confidence": 0.9409062
+          },
+          {
+            "Word": "wait",
+            "Offset": 1500600000,
+            "Duration": 1600000,
+            "Confidence": 0.95614856
+          },
+          {
+            "Word": "outside",
+            "Offset": 1502200000,
+            "Duration": 6400000,
+            "Confidence": 0.84736776
+          },
+          {
+            "Word": "i",
+            "Offset": 1509400000,
+            "Duration": 400000,
+            "Confidence": 0.8147408
+          },
+          {
+            "Word": "need",
+            "Offset": 1509800000,
+            "Duration": 2000000,
+            "Confidence": 0.89664185
+          },
+          {
+            "Word": "to",
+            "Offset": 1511800000,
+            "Duration": 1200000,
+            "Confidence": 0.85461825
+          },
+          {
+            "Word": "focus",
+            "Offset": 1513000000,
+            "Duration": 5600000,
+            "Confidence": 0.9417571
+          },
+          {
+            "Word": "on",
+            "Offset": 1518600000,
+            "Duration": 800000,
+            "Confidence": 0.8237784
+          },
+          {
+            "Word": "my",
+            "Offset": 1521800000,
+            "Duration": 800000,
+            "Confidence": 0.67105335
+          },
+          {
+            "Word": "patient",
+            "Offset": 1522600000,
+            "Duration": 2600000,
+            "Confidence": 0.24988908
+          }
+        ]
+      },
+      {
+        "Confidence": 0.8226803,
+        "Lexical": "i'm sorry but your husband will have to wait outside i need to focus on my patients",
+        "ITN": "i'm sorry but your husband will have to wait outside i need to focus on my patients",
+        "MaskedITN": "i'm sorry but your husband will have to wait outside i need to focus on my patients",
+        "Display": "i'm sorry but your husband will have to wait outside i need to focus on my patients",
+        "Words": [
+          {
+            "Word": "i'm",
+            "Offset": 1481000000,
+            "Duration": 1600000,
+            "Confidence": 0.80865324
+          },
+          {
+            "Word": "sorry",
+            "Offset": 1482600000,
+            "Duration": 4000000,
+            "Confidence": 0.9446195
+          },
+          {
+            "Word": "but",
+            "Offset": 1486600000,
+            "Duration": 1600000,
+            "Confidence": 0.8346854
+          },
+          {
+            "Word": "your",
+            "Offset": 1488200000,
+            "Duration": 4000000,
+            "Confidence": 0.8228291
+          },
+          {
+            "Word": "husband",
+            "Offset": 1492200000,
+            "Duration": 4000000,
+            "Confidence": 0.96447885
+          },
+          {
+            "Word": "will",
+            "Offset": 1496200000,
+            "Duration": 1600000,
+            "Confidence": 0.8923381
+          },
+          {
+            "Word": "have",
+            "Offset": 1497800000,
+            "Duration": 1600000,
+            "Confidence": 0.9070517
+          },
+          {
+            "Word": "to",
+            "Offset": 1499400000,
+            "Duration": 1200000,
+            "Confidence": 0.9409062
+          },
+          {
+            "Word": "wait",
+            "Offset": 1500600000,
+            "Duration": 1600000,
+            "Confidence": 0.95614856
+          },
+          {
+            "Word": "outside",
+            "Offset": 1502200000,
+            "Duration": 6400000,
+            "Confidence": 0.84736776
+          },
+          {
+            "Word": "i",
+            "Offset": 1509400000,
+            "Duration": 400000,
+            "Confidence": 0.8147408
+          },
+          {
+            "Word": "need",
+            "Offset": 1509800000,
+            "Duration": 2000000,
+            "Confidence": 0.89664185
+          },
+          {
+            "Word": "to",
+            "Offset": 1511800000,
+            "Duration": 1200000,
+            "Confidence": 0.85461825
+          },
+          {
+            "Word": "focus",
+            "Offset": 1513000000,
+            "Duration": 5600000,
+            "Confidence": 0.9417571
+          },
+          {
+            "Word": "on",
+            "Offset": 1518600000,
+            "Duration": 800000,
+            "Confidence": 0.8237784
+          },
+          {
+            "Word": "my",
+            "Offset": 1521400000,
+            "Duration": 800000,
+            "Confidence": 0.67105335
+          },
+          {
+            "Word": "patients",
+            "Offset": 1522200000,
+            "Duration": 3000000,
+            "Confidence": 0.06389763
+          }
+        ]
+      },
+      {
+        "Confidence": 0.7803942,
+        "Lexical": "ok i'm sorry but your husband will have to wait outside i need to focus on my patient",
+        "ITN": "ok i'm sorry but your husband will have to wait outside i need to focus on my patient",
+        "MaskedITN": "ok i'm sorry but your husband will have to wait outside i need to focus on my patient",
+        "Display": "OK i'm sorry but your husband will have to wait outside i need to focus on my patient",
+        "Words": [
+          {
+            "Word": "OK",
+            "Offset": 1479800000,
+            "Duration": 1600000,
+            "Confidence": 0.071780354
+          },
+          {
+            "Word": "i'm",
+            "Offset": 1481400000,
+            "Duration": 1200000,
+            "Confidence": 0.67314374
+          },
+          {
+            "Word": "sorry",
+            "Offset": 1482600000,
+            "Duration": 4000000,
+            "Confidence": 0.92784554
+          },
+          {
+            "Word": "but",
+            "Offset": 1486600000,
+            "Duration": 1600000,
+            "Confidence": 0.7907276
+          },
+          {
+            "Word": "your",
+            "Offset": 1488200000,
+            "Duration": 4000000,
+            "Confidence": 0.8228291
+          },
+          {
+            "Word": "husband",
+            "Offset": 1492200000,
+            "Duration": 4000000,
+            "Confidence": 0.96447885
+          },
+          {
+            "Word": "will",
+            "Offset": 1496200000,
+            "Duration": 1600000,
+            "Confidence": 0.8923381
+          },
+          {
+            "Word": "have",
+            "Offset": 1497800000,
+            "Duration": 1600000,
+            "Confidence": 0.9070517
+          },
+          {
+            "Word": "to",
+            "Offset": 1499400000,
+            "Duration": 1200000,
+            "Confidence": 0.9409062
+          },
+          {
+            "Word": "wait",
+            "Offset": 1500600000,
+            "Duration": 1600000,
+            "Confidence": 0.95614856
+          },
+          {
+            "Word": "outside",
+            "Offset": 1502200000,
+            "Duration": 6400000,
+            "Confidence": 0.84736776
+          },
+          {
+            "Word": "i",
+            "Offset": 1509400000,
+            "Duration": 400000,
+            "Confidence": 0.8147408
+          },
+          {
+            "Word": "need",
+            "Offset": 1509800000,
+            "Duration": 2000000,
+            "Confidence": 0.89664185
+          },
+          {
+            "Word": "to",
+            "Offset": 1511800000,
+            "Duration": 1200000,
+            "Confidence": 0.85461825
+          },
+          {
+            "Word": "focus",
+            "Offset": 1513000000,
+            "Duration": 5600000,
+            "Confidence": 0.9417571
+          },
+          {
+            "Word": "on",
+            "Offset": 1518600000,
+            "Duration": 800000,
+            "Confidence": 0.8237784
+          },
+          {
+            "Word": "my",
+            "Offset": 1521800000,
+            "Duration": 800000,
+            "Confidence": 0.67105335
+          },
+          {
+            "Word": "patient",
+            "Offset": 1522600000,
+            "Duration": 2600000,
+            "Confidence": 0.24988908
+          }
+        ]
+      },
+      {
+        "Confidence": 0.7700614,
+        "Lexical": "ok i'm sorry but your husband will have to wait outside i need to focus on my patients",
+        "ITN": "ok i'm sorry but your husband will have to wait outside i need to focus on my patients",
+        "MaskedITN": "ok i'm sorry but your husband will have to wait outside i need to focus on my patients",
+        "Display": "OK i'm sorry but your husband will have to wait outside i need to focus on my patients",
+        "Words": [
+          {
+            "Word": "OK",
+            "Offset": 1479800000,
+            "Duration": 1600000,
+            "Confidence": 0.071780354
+          },
+          {
+            "Word": "i'm",
+            "Offset": 1481400000,
+            "Duration": 1200000,
+            "Confidence": 0.67314374
+          },
+          {
+            "Word": "sorry",
+            "Offset": 1482600000,
+            "Duration": 4000000,
+            "Confidence": 0.92784554
+          },
+          {
+            "Word": "but",
+            "Offset": 1486600000,
+            "Duration": 1600000,
+            "Confidence": 0.7907276
+          },
+          {
+            "Word": "your",
+            "Offset": 1488200000,
+            "Duration": 4000000,
+            "Confidence": 0.82282895
+          },
+          {
+            "Word": "husband",
+            "Offset": 1492200000,
+            "Duration": 4000000,
+            "Confidence": 0.96447885
+          },
+          {
+            "Word": "will",
+            "Offset": 1496200000,
+            "Duration": 1600000,
+            "Confidence": 0.8923381
+          },
+          {
+            "Word": "have",
+            "Offset": 1497800000,
+            "Duration": 1600000,
+            "Confidence": 0.9070517
+          },
+          {
+            "Word": "to",
+            "Offset": 1499400000,
+            "Duration": 1200000,
+            "Confidence": 0.9409062
+          },
+          {
+            "Word": "wait",
+            "Offset": 1500600000,
+            "Duration": 1600000,
+            "Confidence": 0.95614856
+          },
+          {
+            "Word": "outside",
+            "Offset": 1502200000,
+            "Duration": 6400000,
+            "Confidence": 0.84736776
+          },
+          {
+            "Word": "i",
+            "Offset": 1509400000,
+            "Duration": 400000,
+            "Confidence": 0.8147408
+          },
+          {
+            "Word": "need",
+            "Offset": 1509800000,
+            "Duration": 2000000,
+            "Confidence": 0.89664185
+          },
+          {
+            "Word": "to",
+            "Offset": 1511800000,
+            "Duration": 1200000,
+            "Confidence": 0.85461825
+          },
+          {
+            "Word": "focus",
+            "Offset": 1513000000,
+            "Duration": 5600000,
+            "Confidence": 0.9417571
+          },
+          {
+            "Word": "on",
+            "Offset": 1518600000,
+            "Duration": 800000,
+            "Confidence": 0.8237784
+          },
+          {
+            "Word": "my",
+            "Offset": 1521400000,
+            "Duration": 800000,
+            "Confidence": 0.67105335
+          },
+          {
+            "Word": "patients",
+            "Offset": 1522200000,
+            "Duration": 3000000,
+            "Confidence": 0.06389763
+          }
+        ]
+      },
+      {
+        "Confidence": 0.8216335,
+        "Lexical": "i'm sorry but your husband will have to wait outside i need to focus on my patience",
+        "ITN": "i'm sorry but your husband will have to wait outside i need to focus on my patience",
+        "MaskedITN": "i'm sorry but your husband will have to wait outside i need to focus on my patience",
+        "Display": "i'm sorry but your husband will have to wait outside i need to focus on my patience",
+        "Words": [
+          {
+            "Word": "i'm",
+            "Offset": 1481000000,
+            "Duration": 1600000,
+            "Confidence": 0.80865324
+          },
+          {
+            "Word": "sorry",
+            "Offset": 1482600000,
+            "Duration": 4000000,
+            "Confidence": 0.9446195
+          },
+          {
+            "Word": "but",
+            "Offset": 1486600000,
+            "Duration": 1600000,
+            "Confidence": 0.8346854
+          },
+          {
+            "Word": "your",
+            "Offset": 1488200000,
+            "Duration": 4000000,
+            "Confidence": 0.82282895
+          },
+          {
+            "Word": "husband",
+            "Offset": 1492200000,
+            "Duration": 4000000,
+            "Confidence": 0.96447885
+          },
+          {
+            "Word": "will",
+            "Offset": 1496200000,
+            "Duration": 1600000,
+            "Confidence": 0.8923381
+          },
+          {
+            "Word": "have",
+            "Offset": 1497800000,
+            "Duration": 1600000,
+            "Confidence": 0.9070517
+          },
+          {
+            "Word": "to",
+            "Offset": 1499400000,
+            "Duration": 1200000,
+            "Confidence": 0.9409062
+          },
+          {
+            "Word": "wait",
+            "Offset": 1500600000,
+            "Duration": 1600000,
+            "Confidence": 0.95614856
+          },
+          {
+            "Word": "outside",
+            "Offset": 1502200000,
+            "Duration": 6400000,
+            "Confidence": 0.84736776
+          },
+          {
+            "Word": "i",
+            "Offset": 1509400000,
+            "Duration": 400000,
+            "Confidence": 0.8147408
+          },
+          {
+            "Word": "need",
+            "Offset": 1509800000,
+            "Duration": 2000000,
+            "Confidence": 0.89664185
+          },
+          {
+            "Word": "to",
+            "Offset": 1511800000,
+            "Duration": 1200000,
+            "Confidence": 0.85461825
+          },
+          {
+            "Word": "focus",
+            "Offset": 1513000000,
+            "Duration": 5600000,
+            "Confidence": 0.9417571
+          },
+          {
+            "Word": "on",
+            "Offset": 1518600000,
+            "Duration": 800000,
+            "Confidence": 0.8237784
+          },
+          {
+            "Word": "my",
+            "Offset": 1521400000,
+            "Duration": 800000,
+            "Confidence": 0.67105335
+          },
+          {
+            "Word": "patience",
+            "Offset": 1522200000,
+            "Duration": 3000000,
+            "Confidence": 0.04610181
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "1a140a35365045afaf9c165a5a58c326",
+    "RecognitionStatus": "Success",
+    "Offset": 1538700000,
+    "Duration": 8400000,
+    "Channel": 0,
+    "DisplayText": "OK. Thank you.",
+    "NBest": [
+      {
+        "Confidence": 0.61155987,
+        "Lexical": "OK thank you",
+        "ITN": "OK thank you",
+        "MaskedITN": "ok thank you",
+        "Display": "OK. Thank you.",
+        "Words": [
+          {
+            "Word": "OK",
+            "Offset": 1538700000,
+            "Duration": 4800000,
+            "Confidence": 0.10628868
+          },
+          {
+            "Word": "thank",
+            "Offset": 1543500000,
+            "Duration": 2400000,
+            "Confidence": 0.8771121
+          },
+          {
+            "Word": "you",
+            "Offset": 1545900000,
+            "Duration": 1200000,
+            "Confidence": 0.85127884
+          }
+        ]
+      },
+      {
+        "Confidence": 0.4708463,
+        "Lexical": "okay thank you",
+        "ITN": "okay thank you",
+        "MaskedITN": "okay thank you",
+        "Display": "okay thank you",
+        "Words": [
+          {
+            "Word": "okay",
+            "Offset": 1538700000,
+            "Duration": 4800000,
+            "Confidence": 0.049931325
+          },
+          {
+            "Word": "thank",
+            "Offset": 1543500000,
+            "Duration": 2400000,
+            "Confidence": 0.6270741
+          },
+          {
+            "Word": "you",
+            "Offset": 1545900000,
+            "Duration": 1200000,
+            "Confidence": 0.7355334
+          }
+        ]
+      },
+      {
+        "Confidence": 0.37598228,
+        "Lexical": "oh ok thank you",
+        "ITN": "oh ok thank you",
+        "MaskedITN": "oh ok thank you",
+        "Display": "oh OK thank you",
+        "Words": [
+          {
+            "Word": "oh",
+            "Offset": 1534300000,
+            "Duration": 1600000,
+            "Confidence": 0.053870965
+          },
+          {
+            "Word": "OK",
+            "Offset": 1538700000,
+            "Duration": 4800000,
+            "Confidence": 0.15244024
+          },
+          {
+            "Word": "thank",
+            "Offset": 1543500000,
+            "Duration": 2400000,
+            "Confidence": 0.5889609
+          },
+          {
+            "Word": "you",
+            "Offset": 1545900000,
+            "Duration": 1200000,
+            "Confidence": 0.708657
+          }
+        ]
+      },
+      {
+        "Confidence": 0.6163306,
+        "Lexical": "thank you",
+        "ITN": "thank you",
+        "MaskedITN": "thank you",
+        "Display": "thank you",
+        "Words": [
+          {
+            "Word": "thank",
+            "Offset": 1543100000,
+            "Duration": 2800000,
+            "Confidence": 0.581167
+          },
+          {
+            "Word": "you",
+            "Offset": 1545900000,
+            "Duration": 1200000,
+            "Confidence": 0.6514943
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "a421f31c77404c119496eeca94bca4ee",
+    "RecognitionStatus": "Success",
+    "Offset": 1573500000,
+    "Duration": 29600000,
+    "Channel": 0,
+    "DisplayText": "OK zombies. So how long have you not been feeling well?",
+    "NBest": [
+      {
+        "Confidence": 0.7333181,
+        "Lexical": "OK zombies so how long have you not been feeling well",
+        "ITN": "OK zombies so how long have you not been feeling well",
+        "MaskedITN": "ok zombies so how long have you not been feeling well",
+        "Display": "OK zombies. So how long have you not been feeling well?",
+        "Words": [
+          {
+            "Word": "OK",
+            "Offset": 1573500000,
+            "Duration": 3600000,
+            "Confidence": 0.13079095
+          },
+          {
+            "Word": "zombies",
+            "Offset": 1577500000,
+            "Duration": 4800000,
+            "Confidence": 0.18489586
+          },
+          {
+            "Word": "so",
+            "Offset": 1582300000,
+            "Duration": 3600000,
+            "Confidence": 0.79812634
+          },
+          {
+            "Word": "how",
+            "Offset": 1585900000,
+            "Duration": 2000000,
+            "Confidence": 0.8132127
+          },
+          {
+            "Word": "long",
+            "Offset": 1587900000,
+            "Duration": 2000000,
+            "Confidence": 0.9368775
+          },
+          {
+            "Word": "have",
+            "Offset": 1589900000,
+            "Duration": 1600000,
+            "Confidence": 0.82614017
+          },
+          {
+            "Word": "you",
+            "Offset": 1591500000,
+            "Duration": 1600000,
+            "Confidence": 0.91832805
+          },
+          {
+            "Word": "not",
+            "Offset": 1593100000,
+            "Duration": 2400000,
+            "Confidence": 0.7652473
+          },
+          {
+            "Word": "been",
+            "Offset": 1595500000,
+            "Duration": 1600000,
+            "Confidence": 0.924299
+          },
+          {
+            "Word": "feeling",
+            "Offset": 1597100000,
+            "Duration": 3200000,
+            "Confidence": 0.9385857
+          },
+          {
+            "Word": "well",
+            "Offset": 1600300000,
+            "Duration": 2800000,
+            "Confidence": 0.82999617
+          }
+        ]
+      },
+      {
+        "Confidence": 0.730802,
+        "Lexical": "okay zombies so how long have you not been feeling well",
+        "ITN": "okay zombies so how long have you not been feeling well",
+        "MaskedITN": "okay zombies so how long have you not been feeling well",
+        "Display": "okay zombies so how long have you not been feeling well",
+        "Words": [
+          {
+            "Word": "okay",
+            "Offset": 1573500000,
+            "Duration": 3600000,
+            "Confidence": 0.13847904
+          },
+          {
+            "Word": "zombies",
+            "Offset": 1577500000,
+            "Duration": 4800000,
+            "Confidence": 0.16355748
+          },
+          {
+            "Word": "so",
+            "Offset": 1582300000,
+            "Duration": 3600000,
+            "Confidence": 0.7940048
+          },
+          {
+            "Word": "how",
+            "Offset": 1585900000,
+            "Duration": 2000000,
+            "Confidence": 0.80330783
+          },
+          {
+            "Word": "long",
+            "Offset": 1587900000,
+            "Duration": 2000000,
+            "Confidence": 0.9368775
+          },
+          {
+            "Word": "have",
+            "Offset": 1589900000,
+            "Duration": 1600000,
+            "Confidence": 0.82614017
+          },
+          {
+            "Word": "you",
+            "Offset": 1591500000,
+            "Duration": 1600000,
+            "Confidence": 0.91832805
+          },
+          {
+            "Word": "not",
+            "Offset": 1593100000,
+            "Duration": 2400000,
+            "Confidence": 0.7652473
+          },
+          {
+            "Word": "been",
+            "Offset": 1595500000,
+            "Duration": 1600000,
+            "Confidence": 0.924299
+          },
+          {
+            "Word": "feeling",
+            "Offset": 1597100000,
+            "Duration": 3200000,
+            "Confidence": 0.9385857
+          },
+          {
+            "Word": "well",
+            "Offset": 1600300000,
+            "Duration": 2800000,
+            "Confidence": 0.82999617
+          }
+        ]
+      },
+      {
+        "Confidence": 0.69360423,
+        "Lexical": "ok zombie so how long have you not been feeling well",
+        "ITN": "ok zombie so how long have you not been feeling well",
+        "MaskedITN": "ok zombie so how long have you not been feeling well",
+        "Display": "OK zombie so how long have you not been feeling well",
+        "Words": [
+          {
+            "Word": "OK",
+            "Offset": 1573500000,
+            "Duration": 3600000,
+            "Confidence": 0.13079095
+          },
+          {
+            "Word": "zombie",
+            "Offset": 1577500000,
+            "Duration": 4400000,
+            "Confidence": 0.04847539
+          },
+          {
+            "Word": "so",
+            "Offset": 1581900000,
+            "Duration": 4000000,
+            "Confidence": 0.6691083
+          },
+          {
+            "Word": "how",
+            "Offset": 1585900000,
+            "Duration": 2000000,
+            "Confidence": 0.76590765
+          },
+          {
+            "Word": "long",
+            "Offset": 1587900000,
+            "Duration": 2000000,
+            "Confidence": 0.89920604
+          },
+          {
+            "Word": "have",
+            "Offset": 1589900000,
+            "Duration": 1600000,
+            "Confidence": 0.776333
+          },
+          {
+            "Word": "you",
+            "Offset": 1591500000,
+            "Duration": 1600000,
+            "Confidence": 0.88169813
+          },
+          {
+            "Word": "not",
+            "Offset": 1593100000,
+            "Duration": 2400000,
+            "Confidence": 0.7652473
+          },
+          {
+            "Word": "been",
+            "Offset": 1595500000,
+            "Duration": 1600000,
+            "Confidence": 0.924299
+          },
+          {
+            "Word": "feeling",
+            "Offset": 1597100000,
+            "Duration": 3200000,
+            "Confidence": 0.9385857
+          },
+          {
+            "Word": "well",
+            "Offset": 1600300000,
+            "Duration": 2800000,
+            "Confidence": 0.82999617
+          }
+        ]
+      },
+      {
+        "Confidence": 0.67598766,
+        "Lexical": "ok zombies so how long have you not been feeling well and",
+        "ITN": "ok zombies so how long have you not been feeling well and",
+        "MaskedITN": "ok zombies so how long have you not been feeling well and",
+        "Display": "OK zombies so how long have you not been feeling well and",
+        "Words": [
+          {
+            "Word": "OK",
+            "Offset": 1573500000,
+            "Duration": 3600000,
+            "Confidence": 0.13079095
+          },
+          {
+            "Word": "zombies",
+            "Offset": 1577500000,
+            "Duration": 4800000,
+            "Confidence": 0.18489586
+          },
+          {
+            "Word": "so",
+            "Offset": 1582300000,
+            "Duration": 3600000,
+            "Confidence": 0.79812634
+          },
+          {
+            "Word": "how",
+            "Offset": 1585900000,
+            "Duration": 2000000,
+            "Confidence": 0.8132127
+          },
+          {
+            "Word": "long",
+            "Offset": 1587900000,
+            "Duration": 2000000,
+            "Confidence": 0.9368775
+          },
+          {
+            "Word": "have",
+            "Offset": 1589900000,
+            "Duration": 1600000,
+            "Confidence": 0.82614017
+          },
+          {
+            "Word": "you",
+            "Offset": 1591500000,
+            "Duration": 1600000,
+            "Confidence": 0.91832805
+          },
+          {
+            "Word": "not",
+            "Offset": 1593100000,
+            "Duration": 2400000,
+            "Confidence": 0.7652473
+          },
+          {
+            "Word": "been",
+            "Offset": 1595500000,
+            "Duration": 1600000,
+            "Confidence": 0.924299
+          },
+          {
+            "Word": "feeling",
+            "Offset": 1597100000,
+            "Duration": 3200000,
+            "Confidence": 0.9385857
+          },
+          {
+            "Word": "well",
+            "Offset": 1600300000,
+            "Duration": 1600000,
+            "Confidence": 0.82999617
+          },
+          {
+            "Word": "and",
+            "Offset": 1601900000,
+            "Duration": 1200000,
+            "Confidence": 0.045352563
+          }
+        ]
+      },
+      {
+        "Confidence": 0.67368126,
+        "Lexical": "okay zombies so how long have you not been feeling well and",
+        "ITN": "okay zombies so how long have you not been feeling well and",
+        "MaskedITN": "okay zombies so how long have you not been feeling well and",
+        "Display": "okay zombies so how long have you not been feeling well and",
+        "Words": [
+          {
+            "Word": "okay",
+            "Offset": 1573500000,
+            "Duration": 3600000,
+            "Confidence": 0.13847904
+          },
+          {
+            "Word": "zombies",
+            "Offset": 1577500000,
+            "Duration": 4800000,
+            "Confidence": 0.16355748
+          },
+          {
+            "Word": "so",
+            "Offset": 1582300000,
+            "Duration": 3600000,
+            "Confidence": 0.7940048
+          },
+          {
+            "Word": "how",
+            "Offset": 1585900000,
+            "Duration": 2000000,
+            "Confidence": 0.80330783
+          },
+          {
+            "Word": "long",
+            "Offset": 1587900000,
+            "Duration": 2000000,
+            "Confidence": 0.9368775
+          },
+          {
+            "Word": "have",
+            "Offset": 1589900000,
+            "Duration": 1600000,
+            "Confidence": 0.82614017
+          },
+          {
+            "Word": "you",
+            "Offset": 1591500000,
+            "Duration": 1600000,
+            "Confidence": 0.91832805
+          },
+          {
+            "Word": "not",
+            "Offset": 1593100000,
+            "Duration": 2400000,
+            "Confidence": 0.7652473
+          },
+          {
+            "Word": "been",
+            "Offset": 1595500000,
+            "Duration": 1600000,
+            "Confidence": 0.924299
+          },
+          {
+            "Word": "feeling",
+            "Offset": 1597100000,
+            "Duration": 3200000,
+            "Confidence": 0.9385857
+          },
+          {
+            "Word": "well",
+            "Offset": 1600300000,
+            "Duration": 1600000,
+            "Confidence": 0.82999617
+          },
+          {
+            "Word": "and",
+            "Offset": 1601900000,
+            "Duration": 1200000,
+            "Confidence": 0.045352563
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "3d02c4d48a3746b8b128af8ba700a36a",
+    "RecognitionStatus": "Success",
+    "Offset": 1618300000,
+    "Duration": 64000000,
+    "Channel": 0,
+    "DisplayText": "Around 10 years, 10 years, I see. And can you see these numbers on the blackboard here?",
+    "NBest": [
+      {
+        "Confidence": 0.63023555,
+        "Lexical": "around ten years ten years i see and can you see these numbers on the blackboard here",
+        "ITN": "around 10 years 10 years i see and can you see these numbers on the blackboard here",
+        "MaskedITN": "around 10 years 10 years i see and can you see these numbers on the blackboard here",
+        "Display": "Around 10 years, 10 years, I see. And can you see these numbers on the blackboard here?",
+        "Words": [
+          {
+            "Word": "around",
+            "Offset": 1618300000,
+            "Duration": 4400000,
+            "Confidence": 0.14455858
+          },
+          {
+            "Word": "ten",
+            "Offset": 1625100000,
+            "Duration": 4000000,
+            "Confidence": 0.36807203
+          },
+          {
+            "Word": "years",
+            "Offset": 1629100000,
+            "Duration": 4000000,
+            "Confidence": 0.28583264
+          },
+          {
+            "Word": "ten",
+            "Offset": 1637100000,
+            "Duration": 2400000,
+            "Confidence": 0.7342418
+          },
+          {
+            "Word": "years",
+            "Offset": 1639500000,
+            "Duration": 3600000,
+            "Confidence": 0.85986984
+          },
+          {
+            "Word": "i",
+            "Offset": 1643100000,
+            "Duration": 400000,
+            "Confidence": 0.2753261
+          },
+          {
+            "Word": "see",
+            "Offset": 1643500000,
+            "Duration": 3200000,
+            "Confidence": 0.54485446
+          },
+          {
+            "Word": "and",
+            "Offset": 1651100000,
+            "Duration": 5200000,
+            "Confidence": 0.7586052
+          },
+          {
+            "Word": "can",
+            "Offset": 1656700000,
+            "Duration": 2400000,
+            "Confidence": 0.7821257
+          },
+          {
+            "Word": "you",
+            "Offset": 1659100000,
+            "Duration": 1200000,
+            "Confidence": 0.82598907
+          },
+          {
+            "Word": "see",
+            "Offset": 1660300000,
+            "Duration": 1600000,
+            "Confidence": 0.9016521
+          },
+          {
+            "Word": "these",
+            "Offset": 1661900000,
+            "Duration": 2000000,
+            "Confidence": 0.73466915
+          },
+          {
+            "Word": "numbers",
+            "Offset": 1663900000,
+            "Duration": 7200000,
+            "Confidence": 0.8865918
+          },
+          {
+            "Word": "on",
+            "Offset": 1671100000,
+            "Duration": 1200000,
+            "Confidence": 0.8781355
+          },
+          {
+            "Word": "the",
+            "Offset": 1672300000,
+            "Duration": 1200000,
+            "Confidence": 0.83982676
+          },
+          {
+            "Word": "blackboard",
+            "Offset": 1673500000,
+            "Duration": 6000000,
+            "Confidence": 0.75142044
+          },
+          {
+            "Word": "here",
+            "Offset": 1679500000,
+            "Duration": 2800000,
+            "Confidence": 0.14223315
+          }
+        ]
+      },
+      {
+        "Confidence": 0.6867164,
+        "Lexical": "around ten years i see and can you see these numbers on the blackboard here",
+        "ITN": "around ten years i see and can you see these numbers on the blackboard here",
+        "MaskedITN": "around ten years i see and can you see these numbers on the blackboard here",
+        "Display": "around ten years i see and can you see these numbers on the blackboard here",
+        "Words": [
+          {
+            "Word": "around",
+            "Offset": 1618300000,
+            "Duration": 4400000,
+            "Confidence": 0.14455858
+          },
+          {
+            "Word": "ten",
+            "Offset": 1625100000,
+            "Duration": 4000000,
+            "Confidence": 0.9186436
+          },
+          {
+            "Word": "years",
+            "Offset": 1629100000,
+            "Duration": 4000000,
+            "Confidence": 0.8216733
+          },
+          {
+            "Word": "i",
+            "Offset": 1639900000,
+            "Duration": 400000,
+            "Confidence": 0.35733545
+          },
+          {
+            "Word": "see",
+            "Offset": 1641500000,
+            "Duration": 5200000,
+            "Confidence": 0.54845977
+          },
+          {
+            "Word": "and",
+            "Offset": 1651100000,
+            "Duration": 5200000,
+            "Confidence": 0.7674308
+          },
+          {
+            "Word": "can",
+            "Offset": 1656700000,
+            "Duration": 2400000,
+            "Confidence": 0.7821257
+          },
+          {
+            "Word": "you",
+            "Offset": 1659100000,
+            "Duration": 1200000,
+            "Confidence": 0.82598907
+          },
+          {
+            "Word": "see",
+            "Offset": 1660300000,
+            "Duration": 1600000,
+            "Confidence": 0.9016521
+          },
+          {
+            "Word": "these",
+            "Offset": 1661900000,
+            "Duration": 2000000,
+            "Confidence": 0.73466915
+          },
+          {
+            "Word": "numbers",
+            "Offset": 1663900000,
+            "Duration": 7200000,
+            "Confidence": 0.8865918
+          },
+          {
+            "Word": "on",
+            "Offset": 1671100000,
+            "Duration": 1200000,
+            "Confidence": 0.8781355
+          },
+          {
+            "Word": "the",
+            "Offset": 1672300000,
+            "Duration": 1200000,
+            "Confidence": 0.83982676
+          },
+          {
+            "Word": "blackboard",
+            "Offset": 1673500000,
+            "Duration": 6000000,
+            "Confidence": 0.75142044
+          },
+          {
+            "Word": "here",
+            "Offset": 1679500000,
+            "Duration": 2800000,
+            "Confidence": 0.14223315
+          }
+        ]
+      },
+      {
+        "Confidence": 0.58068717,
+        "Lexical": "around ten years up ten years i see and can you see these numbers on the blackboard here",
+        "ITN": "around ten years up ten years i see and can you see these numbers on the blackboard here",
+        "MaskedITN": "around ten years up ten years i see and can you see these numbers on the blackboard here",
+        "Display": "around ten years up ten years i see and can you see these numbers on the blackboard here",
+        "Words": [
+          {
+            "Word": "around",
+            "Offset": 1618300000,
+            "Duration": 4400000,
+            "Confidence": 0.14455858
+          },
+          {
+            "Word": "ten",
+            "Offset": 1625100000,
+            "Duration": 4000000,
+            "Confidence": 0.36807203
+          },
+          {
+            "Word": "years",
+            "Offset": 1629100000,
+            "Duration": 3600000,
+            "Confidence": 0.28583264
+          },
+          {
+            "Word": "up",
+            "Offset": 1632700000,
+            "Duration": 800000,
+            "Confidence": 0.046377715
+          },
+          {
+            "Word": "ten",
+            "Offset": 1637100000,
+            "Duration": 2400000,
+            "Confidence": 0.5301431
+          },
+          {
+            "Word": "years",
+            "Offset": 1639500000,
+            "Duration": 3600000,
+            "Confidence": 0.8018964
+          },
+          {
+            "Word": "i",
+            "Offset": 1643100000,
+            "Duration": 400000,
+            "Confidence": 0.26007676
+          },
+          {
+            "Word": "see",
+            "Offset": 1643500000,
+            "Duration": 3200000,
+            "Confidence": 0.5272846
+          },
+          {
+            "Word": "and",
+            "Offset": 1651100000,
+            "Duration": 5200000,
+            "Confidence": 0.74548364
+          },
+          {
+            "Word": "can",
+            "Offset": 1656700000,
+            "Duration": 2400000,
+            "Confidence": 0.7821257
+          },
+          {
+            "Word": "you",
+            "Offset": 1659100000,
+            "Duration": 1200000,
+            "Confidence": 0.82598907
+          },
+          {
+            "Word": "see",
+            "Offset": 1660300000,
+            "Duration": 1600000,
+            "Confidence": 0.9016521
+          },
+          {
+            "Word": "these",
+            "Offset": 1661900000,
+            "Duration": 2000000,
+            "Confidence": 0.73466915
+          },
+          {
+            "Word": "numbers",
+            "Offset": 1663900000,
+            "Duration": 7200000,
+            "Confidence": 0.8865918
+          },
+          {
+            "Word": "on",
+            "Offset": 1671100000,
+            "Duration": 1200000,
+            "Confidence": 0.8781355
+          },
+          {
+            "Word": "the",
+            "Offset": 1672300000,
+            "Duration": 1200000,
+            "Confidence": 0.83982676
+          },
+          {
+            "Word": "blackboard",
+            "Offset": 1673500000,
+            "Duration": 6000000,
+            "Confidence": 0.75142044
+          },
+          {
+            "Word": "here",
+            "Offset": 1679500000,
+            "Duration": 2800000,
+            "Confidence": 0.14223315
+          }
+        ]
+      },
+      {
+        "Confidence": 0.60647863,
+        "Lexical": "around ten years up ten years i see and can you see these numbers on the blackboard",
+        "ITN": "around ten years up ten years i see and can you see these numbers on the blackboard",
+        "MaskedITN": "around ten years up ten years i see and can you see these numbers on the blackboard",
+        "Display": "around ten years up ten years i see and can you see these numbers on the blackboard",
+        "Words": [
+          {
+            "Word": "around",
+            "Offset": 1618300000,
+            "Duration": 4400000,
+            "Confidence": 0.14455858
+          },
+          {
+            "Word": "ten",
+            "Offset": 1625100000,
+            "Duration": 4000000,
+            "Confidence": 0.36807218
+          },
+          {
+            "Word": "years",
+            "Offset": 1629100000,
+            "Duration": 3600000,
+            "Confidence": 0.2858327
+          },
+          {
+            "Word": "up",
+            "Offset": 1632700000,
+            "Duration": 800000,
+            "Confidence": 0.046377715
+          },
+          {
+            "Word": "ten",
+            "Offset": 1637100000,
+            "Duration": 2400000,
+            "Confidence": 0.5301431
+          },
+          {
+            "Word": "years",
+            "Offset": 1639500000,
+            "Duration": 3600000,
+            "Confidence": 0.8018964
+          },
+          {
+            "Word": "i",
+            "Offset": 1643100000,
+            "Duration": 400000,
+            "Confidence": 0.26007685
+          },
+          {
+            "Word": "see",
+            "Offset": 1643500000,
+            "Duration": 3200000,
+            "Confidence": 0.5272848
+          },
+          {
+            "Word": "and",
+            "Offset": 1651100000,
+            "Duration": 5200000,
+            "Confidence": 0.74548364
+          },
+          {
+            "Word": "can",
+            "Offset": 1656700000,
+            "Duration": 2400000,
+            "Confidence": 0.7821257
+          },
+          {
+            "Word": "you",
+            "Offset": 1659100000,
+            "Duration": 1200000,
+            "Confidence": 0.82598907
+          },
+          {
+            "Word": "see",
+            "Offset": 1660300000,
+            "Duration": 1600000,
+            "Confidence": 0.9016521
+          },
+          {
+            "Word": "these",
+            "Offset": 1661900000,
+            "Duration": 2000000,
+            "Confidence": 0.73466915
+          },
+          {
+            "Word": "numbers",
+            "Offset": 1663900000,
+            "Duration": 7200000,
+            "Confidence": 0.8865918
+          },
+          {
+            "Word": "on",
+            "Offset": 1671100000,
+            "Duration": 1200000,
+            "Confidence": 0.8781355
+          },
+          {
+            "Word": "the",
+            "Offset": 1672300000,
+            "Duration": 1200000,
+            "Confidence": 0.83982676
+          },
+          {
+            "Word": "blackboard",
+            "Offset": 1673500000,
+            "Duration": 8800000,
+            "Confidence": 0.75142044
+          }
+        ]
+      },
+      {
+        "Confidence": 0.5309178,
+        "Lexical": "around ten years up ten years i see and uh can you see these numbers on the blackboard here",
+        "ITN": "around ten years up ten years i see and uh can you see these numbers on the blackboard here",
+        "MaskedITN": "around ten years up ten years i see and uh can you see these numbers on the blackboard here",
+        "Display": "around ten years up ten years i see and uh can you see these numbers on the blackboard here",
+        "Words": [
+          {
+            "Word": "around",
+            "Offset": 1618300000,
+            "Duration": 4400000,
+            "Confidence": 0.14455858
+          },
+          {
+            "Word": "ten",
+            "Offset": 1625100000,
+            "Duration": 4000000,
+            "Confidence": 0.36807203
+          },
+          {
+            "Word": "years",
+            "Offset": 1629100000,
+            "Duration": 3600000,
+            "Confidence": 0.28583264
+          },
+          {
+            "Word": "up",
+            "Offset": 1632700000,
+            "Duration": 800000,
+            "Confidence": 0.046377715
+          },
+          {
+            "Word": "ten",
+            "Offset": 1637100000,
+            "Duration": 2400000,
+            "Confidence": 0.5301431
+          },
+          {
+            "Word": "years",
+            "Offset": 1639500000,
+            "Duration": 3600000,
+            "Confidence": 0.8018964
+          },
+          {
+            "Word": "i",
+            "Offset": 1643100000,
+            "Duration": 400000,
+            "Confidence": 0.26007676
+          },
+          {
+            "Word": "see",
+            "Offset": 1643500000,
+            "Duration": 3200000,
+            "Confidence": 0.5272846
+          },
+          {
+            "Word": "and",
+            "Offset": 1651100000,
+            "Duration": 5200000,
+            "Confidence": 0.74548364
+          },
+          {
+            "Word": "uh",
+            "Offset": 1656300000,
+            "Duration": 800000,
+            "Confidence": 0.04816662
+          },
+          {
+            "Word": "can",
+            "Offset": 1657100000,
+            "Duration": 2000000,
+            "Confidence": 0.75244385
+          },
+          {
+            "Word": "you",
+            "Offset": 1659100000,
+            "Duration": 1200000,
+            "Confidence": 0.7337702
+          },
+          {
+            "Word": "see",
+            "Offset": 1660300000,
+            "Duration": 1600000,
+            "Confidence": 0.824631
+          },
+          {
+            "Word": "these",
+            "Offset": 1661900000,
+            "Duration": 2000000,
+            "Confidence": 0.6052134
+          },
+          {
+            "Word": "numbers",
+            "Offset": 1663900000,
+            "Duration": 7200000,
+            "Confidence": 0.80187297
+          },
+          {
+            "Word": "on",
+            "Offset": 1671100000,
+            "Duration": 1200000,
+            "Confidence": 0.8781355
+          },
+          {
+            "Word": "the",
+            "Offset": 1672300000,
+            "Duration": 1200000,
+            "Confidence": 0.83982676
+          },
+          {
+            "Word": "blackboard",
+            "Offset": 1673500000,
+            "Duration": 6000000,
+            "Confidence": 0.75142044
+          },
+          {
+            "Word": "here",
+            "Offset": 1679500000,
+            "Duration": 2800000,
+            "Confidence": 0.14223315
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "a9aaaf894bd84d369fc6f91e966ac662",
+    "RecognitionStatus": "Success",
+    "Offset": 1726400000,
+    "Duration": 47600000,
+    "Channel": 0,
+    "DisplayText": "I see. OK, look at your eyes. Please let me take a quick look.",
+    "NBest": [
+      {
+        "Confidence": 0.83813715,
+        "Lexical": "i see OK look at your eyes please let me take a quick look",
+        "ITN": "i see OK look at your eyes please let me take a quick look",
+        "MaskedITN": "i see ok look at your eyes please let me take a quick look",
+        "Display": "I see. OK, look at your eyes. Please let me take a quick look.",
+        "Words": [
+          {
+            "Word": "i",
+            "Offset": 1726400000,
+            "Duration": 400000,
+            "Confidence": 0.83950233
+          },
+          {
+            "Word": "see",
+            "Offset": 1732400000,
+            "Duration": 5200000,
+            "Confidence": 0.91941375
+          },
+          {
+            "Word": "OK",
+            "Offset": 1737600000,
+            "Duration": 4400000,
+            "Confidence": 0.83963084
+          },
+          {
+            "Word": "look",
+            "Offset": 1743200000,
+            "Duration": 1600000,
+            "Confidence": 0.84905905
+          },
+          {
+            "Word": "at",
+            "Offset": 1744800000,
+            "Duration": 800000,
+            "Confidence": 0.94968647
+          },
+          {
+            "Word": "your",
+            "Offset": 1745600000,
+            "Duration": 2000000,
+            "Confidence": 0.858889
+          },
+          {
+            "Word": "eyes",
+            "Offset": 1747600000,
+            "Duration": 4400000,
+            "Confidence": 0.9629792
+          },
+          {
+            "Word": "please",
+            "Offset": 1752000000,
+            "Duration": 6000000,
+            "Confidence": 0.9242383
+          },
+          {
+            "Word": "let",
+            "Offset": 1764000000,
+            "Duration": 1200000,
+            "Confidence": 0.73712164
+          },
+          {
+            "Word": "me",
+            "Offset": 1765200000,
+            "Duration": 1600000,
+            "Confidence": 0.88078356
+          },
+          {
+            "Word": "take",
+            "Offset": 1766800000,
+            "Duration": 2800000,
+            "Confidence": 0.93392646
+          },
+          {
+            "Word": "a",
+            "Offset": 1769600000,
+            "Duration": 400000,
+            "Confidence": 0.8408172
+          },
+          {
+            "Word": "quick",
+            "Offset": 1770000000,
+            "Duration": 2400000,
+            "Confidence": 0.80421144
+          },
+          {
+            "Word": "look",
+            "Offset": 1772400000,
+            "Duration": 1600000,
+            "Confidence": 0.39366108
+          }
+        ]
+      },
+      {
+        "Confidence": 0.7581972,
+        "Lexical": "i see ok look at your eyes please just let me take a quick look",
+        "ITN": "i see ok look at your eyes please just let me take a quick look",
+        "MaskedITN": "i see ok look at your eyes please just let me take a quick look",
+        "Display": "i see OK look at your eyes please just let me take a quick look",
+        "Words": [
+          {
+            "Word": "i",
+            "Offset": 1726400000,
+            "Duration": 400000,
+            "Confidence": 0.83950233
+          },
+          {
+            "Word": "see",
+            "Offset": 1732400000,
+            "Duration": 5200000,
+            "Confidence": 0.91941375
+          },
+          {
+            "Word": "OK",
+            "Offset": 1737600000,
+            "Duration": 4400000,
+            "Confidence": 0.83963084
+          },
+          {
+            "Word": "look",
+            "Offset": 1743200000,
+            "Duration": 1600000,
+            "Confidence": 0.84905905
+          },
+          {
+            "Word": "at",
+            "Offset": 1744800000,
+            "Duration": 800000,
+            "Confidence": 0.94968647
+          },
+          {
+            "Word": "your",
+            "Offset": 1745600000,
+            "Duration": 2000000,
+            "Confidence": 0.858889
+          },
+          {
+            "Word": "eyes",
+            "Offset": 1747600000,
+            "Duration": 4400000,
+            "Confidence": 0.9629792
+          },
+          {
+            "Word": "please",
+            "Offset": 1752000000,
+            "Duration": 4000000,
+            "Confidence": 0.9242383
+          },
+          {
+            "Word": "just",
+            "Offset": 1756000000,
+            "Duration": 1600000,
+            "Confidence": 0.05479937
+          },
+          {
+            "Word": "let",
+            "Offset": 1764000000,
+            "Duration": 1200000,
+            "Confidence": 0.61784136
+          },
+          {
+            "Word": "me",
+            "Offset": 1765200000,
+            "Duration": 1600000,
+            "Confidence": 0.82978624
+          },
+          {
+            "Word": "take",
+            "Offset": 1766800000,
+            "Duration": 2800000,
+            "Confidence": 0.8828795
+          },
+          {
+            "Word": "a",
+            "Offset": 1769600000,
+            "Duration": 400000,
+            "Confidence": 0.73692197
+          },
+          {
+            "Word": "quick",
+            "Offset": 1770000000,
+            "Duration": 2400000,
+            "Confidence": 0.7136702
+          },
+          {
+            "Word": "look",
+            "Offset": 1772400000,
+            "Duration": 1600000,
+            "Confidence": 0.39366108
+          }
+        ]
+      },
+      {
+        "Confidence": 0.5736065,
+        "Lexical": "and let us do something i see ok look at your eyes please let me take a quick look",
+        "ITN": "and let us do something i see ok look at your eyes please let me take a quick look",
+        "MaskedITN": "and let us do something i see ok look at your eyes please let me take a quick look",
+        "Display": "and let us do something i see OK look at your eyes please let me take a quick look",
+        "Words": [
+          {
+            "Word": "and",
+            "Offset": 1718400000,
+            "Duration": 2000000,
+            "Confidence": 0.050848193
+          },
+          {
+            "Word": "let",
+            "Offset": 1720400000,
+            "Duration": 2800000,
+            "Confidence": 0.04915006
+          },
+          {
+            "Word": "us",
+            "Offset": 1723200000,
+            "Duration": 800000,
+            "Confidence": 0.050107434
+          },
+          {
+            "Word": "do",
+            "Offset": 1724000000,
+            "Duration": 800000,
+            "Confidence": 0.18361813
+          },
+          {
+            "Word": "something",
+            "Offset": 1724800000,
+            "Duration": 5200000,
+            "Confidence": 0.063774295
+          },
+          {
+            "Word": "i",
+            "Offset": 1732000000,
+            "Duration": 400000,
+            "Confidence": 0.62770534
+          },
+          {
+            "Word": "see",
+            "Offset": 1732400000,
+            "Duration": 5200000,
+            "Confidence": 0.630651
+          },
+          {
+            "Word": "OK",
+            "Offset": 1737600000,
+            "Duration": 4400000,
+            "Confidence": 0.51426846
+          },
+          {
+            "Word": "look",
+            "Offset": 1743200000,
+            "Duration": 1600000,
+            "Confidence": 0.57479674
+          },
+          {
+            "Word": "at",
+            "Offset": 1744800000,
+            "Duration": 800000,
+            "Confidence": 0.81697565
+          },
+          {
+            "Word": "your",
+            "Offset": 1745600000,
+            "Duration": 2000000,
+            "Confidence": 0.858889
+          },
+          {
+            "Word": "eyes",
+            "Offset": 1747600000,
+            "Duration": 4400000,
+            "Confidence": 0.9629792
+          },
+          {
+            "Word": "please",
+            "Offset": 1752000000,
+            "Duration": 6000000,
+            "Confidence": 0.9242383
+          },
+          {
+            "Word": "let",
+            "Offset": 1764000000,
+            "Duration": 1200000,
+            "Confidence": 0.73712164
+          },
+          {
+            "Word": "me",
+            "Offset": 1765200000,
+            "Duration": 1600000,
+            "Confidence": 0.88078356
+          },
+          {
+            "Word": "take",
+            "Offset": 1766800000,
+            "Duration": 2800000,
+            "Confidence": 0.93392646
+          },
+          {
+            "Word": "a",
+            "Offset": 1769600000,
+            "Duration": 400000,
+            "Confidence": 0.8408172
+          },
+          {
+            "Word": "quick",
+            "Offset": 1770000000,
+            "Duration": 2400000,
+            "Confidence": 0.80421144
+          },
+          {
+            "Word": "look",
+            "Offset": 1772400000,
+            "Duration": 1600000,
+            "Confidence": 0.39366108
+          }
+        ]
+      },
+      {
+        "Confidence": 0.5807941,
+        "Lexical": "and let us do some i see ok look at your eyes please let me take a quick look",
+        "ITN": "and let us do some i see ok look at your eyes please let me take a quick look",
+        "MaskedITN": "and let us do some i see ok look at your eyes please let me take a quick look",
+        "Display": "and let us do some i see OK look at your eyes please let me take a quick look",
+        "Words": [
+          {
+            "Word": "and",
+            "Offset": 1718400000,
+            "Duration": 2000000,
+            "Confidence": 0.050848193
+          },
+          {
+            "Word": "let",
+            "Offset": 1720400000,
+            "Duration": 2800000,
+            "Confidence": 0.04915006
+          },
+          {
+            "Word": "us",
+            "Offset": 1723200000,
+            "Duration": 800000,
+            "Confidence": 0.050107434
+          },
+          {
+            "Word": "do",
+            "Offset": 1724000000,
+            "Duration": 800000,
+            "Confidence": 0.18361813
+          },
+          {
+            "Word": "some",
+            "Offset": 1724800000,
+            "Duration": 5600000,
+            "Confidence": 0.07293682
+          },
+          {
+            "Word": "i",
+            "Offset": 1732000000,
+            "Duration": 400000,
+            "Confidence": 0.61300296
+          },
+          {
+            "Word": "see",
+            "Offset": 1732400000,
+            "Duration": 5200000,
+            "Confidence": 0.6736744
+          },
+          {
+            "Word": "OK",
+            "Offset": 1737600000,
+            "Duration": 4400000,
+            "Confidence": 0.55062246
+          },
+          {
+            "Word": "look",
+            "Offset": 1743200000,
+            "Duration": 1600000,
+            "Confidence": 0.61099964
+          },
+          {
+            "Word": "at",
+            "Offset": 1744800000,
+            "Duration": 800000,
+            "Confidence": 0.8434997
+          },
+          {
+            "Word": "your",
+            "Offset": 1745600000,
+            "Duration": 2000000,
+            "Confidence": 0.858889
+          },
+          {
+            "Word": "eyes",
+            "Offset": 1747600000,
+            "Duration": 4400000,
+            "Confidence": 0.9629792
+          },
+          {
+            "Word": "please",
+            "Offset": 1752000000,
+            "Duration": 6000000,
+            "Confidence": 0.9242383
+          },
+          {
+            "Word": "let",
+            "Offset": 1764000000,
+            "Duration": 1200000,
+            "Confidence": 0.73712164
+          },
+          {
+            "Word": "me",
+            "Offset": 1765200000,
+            "Duration": 1600000,
+            "Confidence": 0.88078356
+          },
+          {
+            "Word": "take",
+            "Offset": 1766800000,
+            "Duration": 2800000,
+            "Confidence": 0.93392646
+          },
+          {
+            "Word": "a",
+            "Offset": 1769600000,
+            "Duration": 400000,
+            "Confidence": 0.8408172
+          },
+          {
+            "Word": "quick",
+            "Offset": 1770000000,
+            "Duration": 2400000,
+            "Confidence": 0.80421144
+          },
+          {
+            "Word": "look",
+            "Offset": 1772400000,
+            "Duration": 1600000,
+            "Confidence": 0.39366108
+          }
+        ]
+      },
+      {
+        "Confidence": 0.8723277,
+        "Lexical": "i see ok look at your eyes please let me take a quick",
+        "ITN": "i see ok look at your eyes please let me take a quick",
+        "MaskedITN": "i see ok look at your eyes please let me take a quick",
+        "Display": "i see OK look at your eyes please let me take a quick",
+        "Words": [
+          {
+            "Word": "i",
+            "Offset": 1726400000,
+            "Duration": 400000,
+            "Confidence": 0.83950233
+          },
+          {
+            "Word": "see",
+            "Offset": 1732400000,
+            "Duration": 5200000,
+            "Confidence": 0.91941375
+          },
+          {
+            "Word": "OK",
+            "Offset": 1737600000,
+            "Duration": 4400000,
+            "Confidence": 0.83963084
+          },
+          {
+            "Word": "look",
+            "Offset": 1743200000,
+            "Duration": 1600000,
+            "Confidence": 0.84905905
+          },
+          {
+            "Word": "at",
+            "Offset": 1744800000,
+            "Duration": 800000,
+            "Confidence": 0.94968647
+          },
+          {
+            "Word": "your",
+            "Offset": 1745600000,
+            "Duration": 2000000,
+            "Confidence": 0.858889
+          },
+          {
+            "Word": "eyes",
+            "Offset": 1747600000,
+            "Duration": 4400000,
+            "Confidence": 0.9629792
+          },
+          {
+            "Word": "please",
+            "Offset": 1752000000,
+            "Duration": 6000000,
+            "Confidence": 0.9242383
+          },
+          {
+            "Word": "let",
+            "Offset": 1764000000,
+            "Duration": 1200000,
+            "Confidence": 0.73712164
+          },
+          {
+            "Word": "me",
+            "Offset": 1765200000,
+            "Duration": 1600000,
+            "Confidence": 0.88078356
+          },
+          {
+            "Word": "take",
+            "Offset": 1766800000,
+            "Duration": 2800000,
+            "Confidence": 0.93392646
+          },
+          {
+            "Word": "a",
+            "Offset": 1769600000,
+            "Duration": 400000,
+            "Confidence": 0.8408172
+          },
+          {
+            "Word": "quick",
+            "Offset": 1770000000,
+            "Duration": 2800000,
+            "Confidence": 0.80421144
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "c56e319a9d7b46f5b818636d3bf35156",
+    "RecognitionStatus": "Success",
+    "Offset": 1838500000,
+    "Duration": 10000000,
+    "Channel": 0,
+    "DisplayText": "OK. Thank you.",
+    "NBest": [
+      {
+        "Confidence": 0.70290136,
+        "Lexical": "OK thank you",
+        "ITN": "OK thank you",
+        "MaskedITN": "ok thank you",
+        "Display": "OK. Thank you.",
+        "Words": [
+          {
+            "Word": "OK",
+            "Offset": 1838500000,
+            "Duration": 2800000,
+            "Confidence": 0.8085778
+          },
+          {
+            "Word": "thank",
+            "Offset": 1841300000,
+            "Duration": 6000000,
+            "Confidence": 0.60545117
+          },
+          {
+            "Word": "you",
+            "Offset": 1847300000,
+            "Duration": 1200000,
+            "Confidence": 0.6946751
+          }
+        ]
+      },
+      {
+        "Confidence": 0.5081185,
+        "Lexical": "ok thank you ok",
+        "ITN": "ok thank you ok",
+        "MaskedITN": "ok thank you ok",
+        "Display": "OK thank you OK",
+        "Words": [
+          {
+            "Word": "OK",
+            "Offset": 1838500000,
+            "Duration": 2800000,
+            "Confidence": 0.68699527
+          },
+          {
+            "Word": "thank",
+            "Offset": 1841300000,
+            "Duration": 4000000,
+            "Confidence": 0.60545117
+          },
+          {
+            "Word": "you",
+            "Offset": 1845300000,
+            "Duration": 1200000,
+            "Confidence": 0.6946751
+          },
+          {
+            "Word": "OK",
+            "Offset": 1846500000,
+            "Duration": 1600000,
+            "Confidence": 0.045352563
+          }
+        ]
+      },
+      {
+        "Confidence": 0.8085778,
+        "Lexical": "ok",
+        "ITN": "ok",
+        "MaskedITN": "ok",
+        "Display": "OK",
+        "Words": [
+          {
+            "Word": "OK",
+            "Offset": 1838500000,
+            "Duration": 4400000,
+            "Confidence": 0.8085778
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "b5059ed3ee5a4dfeb1cab12e9d04b089",
+    "RecognitionStatus": "Success",
+    "Offset": 1912800000,
+    "Duration": 38800000,
+    "Channel": 0,
+    "DisplayText": "One more check here. How many fingers am I holding up?",
+    "NBest": [
+      {
+        "Confidence": 0.79191935,
+        "Lexical": "one more check here how many fingers am i holding up",
+        "ITN": "one more check here how many fingers am i holding up",
+        "MaskedITN": "one more check here how many fingers am i holding up",
+        "Display": "One more check here. How many fingers am I holding up?",
+        "Words": [
+          {
+            "Word": "one",
+            "Offset": 1912800000,
+            "Duration": 3600000,
+            "Confidence": 0.77435344
+          },
+          {
+            "Word": "more",
+            "Offset": 1916400000,
+            "Duration": 2400000,
+            "Confidence": 0.7710563
+          },
+          {
+            "Word": "check",
+            "Offset": 1918800000,
+            "Duration": 4400000,
+            "Confidence": 0.745892
+          },
+          {
+            "Word": "here",
+            "Offset": 1923200000,
+            "Duration": 6800000,
+            "Confidence": 0.83824587
+          },
+          {
+            "Word": "how",
+            "Offset": 1930400000,
+            "Duration": 2000000,
+            "Confidence": 0.8595295
+          },
+          {
+            "Word": "many",
+            "Offset": 1932400000,
+            "Duration": 2400000,
+            "Confidence": 0.9415593
+          },
+          {
+            "Word": "fingers",
+            "Offset": 1934800000,
+            "Duration": 8800000,
+            "Confidence": 0.9456667
+          },
+          {
+            "Word": "am",
+            "Offset": 1944400000,
+            "Duration": 1600000,
+            "Confidence": 0.8297156
+          },
+          {
+            "Word": "i",
+            "Offset": 1946000000,
+            "Duration": 400000,
+            "Confidence": 0.94880897
+          },
+          {
+            "Word": "holding",
+            "Offset": 1946400000,
+            "Duration": 4400000,
+            "Confidence": 0.96334875
+          },
+          {
+            "Word": "up",
+            "Offset": 1950800000,
+            "Duration": 800000,
+            "Confidence": 0.092935674
+          }
+        ]
+      },
+      {
+        "Confidence": 0.6624295,
+        "Lexical": "let's do one more check here how many fingers am i holding up",
+        "ITN": "let's do one more check here how many fingers am i holding up",
+        "MaskedITN": "let's do one more check here how many fingers am i holding up",
+        "Display": "let's do one more check here how many fingers am i holding up",
+        "Words": [
+          {
+            "Word": "let's",
+            "Offset": 1910400000,
+            "Duration": 2000000,
+            "Confidence": 0.048759032
+          },
+          {
+            "Word": "do",
+            "Offset": 1912400000,
+            "Duration": 1200000,
+            "Confidence": 0.1494529
+          },
+          {
+            "Word": "one",
+            "Offset": 1913600000,
+            "Duration": 2800000,
+            "Confidence": 0.6669562
+          },
+          {
+            "Word": "more",
+            "Offset": 1916400000,
+            "Duration": 2400000,
+            "Confidence": 0.7348199
+          },
+          {
+            "Word": "check",
+            "Offset": 1918800000,
+            "Duration": 4400000,
+            "Confidence": 0.71722794
+          },
+          {
+            "Word": "here",
+            "Offset": 1923200000,
+            "Duration": 6800000,
+            "Confidence": 0.7911765
+          },
+          {
+            "Word": "how",
+            "Offset": 1930400000,
+            "Duration": 2000000,
+            "Confidence": 0.78115547
+          },
+          {
+            "Word": "many",
+            "Offset": 1932400000,
+            "Duration": 2400000,
+            "Confidence": 0.9415593
+          },
+          {
+            "Word": "fingers",
+            "Offset": 1934800000,
+            "Duration": 8800000,
+            "Confidence": 0.9456667
+          },
+          {
+            "Word": "am",
+            "Offset": 1944400000,
+            "Duration": 1600000,
+            "Confidence": 0.8297156
+          },
+          {
+            "Word": "i",
+            "Offset": 1946000000,
+            "Duration": 400000,
+            "Confidence": 0.94880897
+          },
+          {
+            "Word": "holding",
+            "Offset": 1946400000,
+            "Duration": 4400000,
+            "Confidence": 0.96334875
+          },
+          {
+            "Word": "up",
+            "Offset": 1950800000,
+            "Duration": 800000,
+            "Confidence": 0.092935674
+          }
+        ]
+      },
+      {
+        "Confidence": 0.78800654,
+        "Lexical": "one more check here how many fingers am i holding out",
+        "ITN": "one more check here how many fingers am i holding out",
+        "MaskedITN": "one more check here how many fingers am i holding out",
+        "Display": "one more check here how many fingers am i holding out",
+        "Words": [
+          {
+            "Word": "one",
+            "Offset": 1912800000,
+            "Duration": 3600000,
+            "Confidence": 0.77435344
+          },
+          {
+            "Word": "more",
+            "Offset": 1916400000,
+            "Duration": 2400000,
+            "Confidence": 0.7710563
+          },
+          {
+            "Word": "check",
+            "Offset": 1918800000,
+            "Duration": 4400000,
+            "Confidence": 0.745892
+          },
+          {
+            "Word": "here",
+            "Offset": 1923200000,
+            "Duration": 6800000,
+            "Confidence": 0.83824587
+          },
+          {
+            "Word": "how",
+            "Offset": 1930400000,
+            "Duration": 2000000,
+            "Confidence": 0.8595295
+          },
+          {
+            "Word": "many",
+            "Offset": 1932400000,
+            "Duration": 2400000,
+            "Confidence": 0.9415593
+          },
+          {
+            "Word": "fingers",
+            "Offset": 1934800000,
+            "Duration": 8800000,
+            "Confidence": 0.9456667
+          },
+          {
+            "Word": "am",
+            "Offset": 1944400000,
+            "Duration": 1600000,
+            "Confidence": 0.8297156
+          },
+          {
+            "Word": "i",
+            "Offset": 1946000000,
+            "Duration": 400000,
+            "Confidence": 0.94880897
+          },
+          {
+            "Word": "holding",
+            "Offset": 1946400000,
+            "Duration": 4000000,
+            "Confidence": 0.96334875
+          },
+          {
+            "Word": "out",
+            "Offset": 1950400000,
+            "Duration": 1200000,
+            "Confidence": 0.04989495
+          }
+        ]
+      },
+      {
+        "Confidence": 0.65911865,
+        "Lexical": "let's do one more check here how many fingers am i holding out",
+        "ITN": "let's do one more check here how many fingers am i holding out",
+        "MaskedITN": "let's do one more check here how many fingers am i holding out",
+        "Display": "let's do one more check here how many fingers am i holding out",
+        "Words": [
+          {
+            "Word": "let's",
+            "Offset": 1910400000,
+            "Duration": 2000000,
+            "Confidence": 0.048759032
+          },
+          {
+            "Word": "do",
+            "Offset": 1912400000,
+            "Duration": 1200000,
+            "Confidence": 0.1494529
+          },
+          {
+            "Word": "one",
+            "Offset": 1913600000,
+            "Duration": 2800000,
+            "Confidence": 0.6669562
+          },
+          {
+            "Word": "more",
+            "Offset": 1916400000,
+            "Duration": 2400000,
+            "Confidence": 0.7348199
+          },
+          {
+            "Word": "check",
+            "Offset": 1918800000,
+            "Duration": 4400000,
+            "Confidence": 0.71722794
+          },
+          {
+            "Word": "here",
+            "Offset": 1923200000,
+            "Duration": 6800000,
+            "Confidence": 0.7911765
+          },
+          {
+            "Word": "how",
+            "Offset": 1930400000,
+            "Duration": 2000000,
+            "Confidence": 0.78115547
+          },
+          {
+            "Word": "many",
+            "Offset": 1932400000,
+            "Duration": 2400000,
+            "Confidence": 0.9415593
+          },
+          {
+            "Word": "fingers",
+            "Offset": 1934800000,
+            "Duration": 8800000,
+            "Confidence": 0.9456667
+          },
+          {
+            "Word": "am",
+            "Offset": 1944400000,
+            "Duration": 1600000,
+            "Confidence": 0.8297156
+          },
+          {
+            "Word": "i",
+            "Offset": 1946000000,
+            "Duration": 400000,
+            "Confidence": 0.94880897
+          },
+          {
+            "Word": "holding",
+            "Offset": 1946400000,
+            "Duration": 4000000,
+            "Confidence": 0.96334875
+          },
+          {
+            "Word": "out",
+            "Offset": 1950400000,
+            "Duration": 1200000,
+            "Confidence": 0.04989495
+          }
+        ]
+      },
+      {
+        "Confidence": 0.67312807,
+        "Lexical": "and one more check here how many fingers am i holding up",
+        "ITN": "and one more check here how many fingers am i holding up",
+        "MaskedITN": "and one more check here how many fingers am i holding up",
+        "Display": "and one more check here how many fingers am i holding up",
+        "Words": [
+          {
+            "Word": "and",
+            "Offset": 1910400000,
+            "Duration": 2800000,
+            "Confidence": 0.047878698
+          },
+          {
+            "Word": "one",
+            "Offset": 1913200000,
+            "Duration": 3200000,
+            "Confidence": 0.59000105
+          },
+          {
+            "Word": "more",
+            "Offset": 1916400000,
+            "Duration": 2400000,
+            "Confidence": 0.62358475
+          },
+          {
+            "Word": "check",
+            "Offset": 1918800000,
+            "Duration": 4400000,
+            "Confidence": 0.58865404
+          },
+          {
+            "Word": "here",
+            "Offset": 1923200000,
+            "Duration": 6800000,
+            "Confidence": 0.7173079
+          },
+          {
+            "Word": "how",
+            "Offset": 1930400000,
+            "Duration": 2000000,
+            "Confidence": 0.7880754
+          },
+          {
+            "Word": "many",
+            "Offset": 1932400000,
+            "Duration": 2400000,
+            "Confidence": 0.9415593
+          },
+          {
+            "Word": "fingers",
+            "Offset": 1934800000,
+            "Duration": 8800000,
+            "Confidence": 0.9456667
+          },
+          {
+            "Word": "am",
+            "Offset": 1944400000,
+            "Duration": 1600000,
+            "Confidence": 0.8297156
+          },
+          {
+            "Word": "i",
+            "Offset": 1946000000,
+            "Duration": 400000,
+            "Confidence": 0.94880897
+          },
+          {
+            "Word": "holding",
+            "Offset": 1946400000,
+            "Duration": 4400000,
+            "Confidence": 0.96334875
+          },
+          {
+            "Word": "up",
+            "Offset": 1950800000,
+            "Duration": 800000,
+            "Confidence": 0.092935674
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "86536234095c4ed99665c4608c3998ef",
+    "RecognitionStatus": "Success",
+    "Offset": 1989300000,
+    "Duration": 40400000,
+    "Channel": 0,
+    "DisplayText": "No, no, it's only one figure. OK, I just need to check your temperature.",
+    "NBest": [
+      {
+        "Confidence": 0.74616784,
+        "Lexical": "no no it's only one figure OK i just need to check your temperature",
+        "ITN": "no no it's only one figure OK i just need to check your temperature",
+        "MaskedITN": "no no it's only one figure ok i just need to check your temperature",
+        "Display": "No, no, it's only one figure. OK, I just need to check your temperature.",
+        "Words": [
+          {
+            "Word": "no",
+            "Offset": 1989300000,
+            "Duration": 3600000,
+            "Confidence": 0.5538157
+          },
+          {
+            "Word": "no",
+            "Offset": 1992900000,
+            "Duration": 2000000,
+            "Confidence": 0.8181854
+          },
+          {
+            "Word": "it's",
+            "Offset": 1994900000,
+            "Duration": 2000000,
+            "Confidence": 0.80792046
+          },
+          {
+            "Word": "only",
+            "Offset": 1996900000,
+            "Duration": 2000000,
+            "Confidence": 0.9122968
+          },
+          {
+            "Word": "one",
+            "Offset": 1998900000,
+            "Duration": 3600000,
+            "Confidence": 0.6980918
+          },
+          {
+            "Word": "figure",
+            "Offset": 2002500000,
+            "Duration": 2800000,
+            "Confidence": 0.2253488
+          },
+          {
+            "Word": "OK",
+            "Offset": 2008900000,
+            "Duration": 2800000,
+            "Confidence": 0.7823724
+          },
+          {
+            "Word": "i",
+            "Offset": 2011700000,
+            "Duration": 400000,
+            "Confidence": 0.4009582
+          },
+          {
+            "Word": "just",
+            "Offset": 2012100000,
+            "Duration": 1600000,
+            "Confidence": 0.81084687
+          },
+          {
+            "Word": "need",
+            "Offset": 2013700000,
+            "Duration": 1600000,
+            "Confidence": 0.8947605
+          },
+          {
+            "Word": "to",
+            "Offset": 2015300000,
+            "Duration": 1200000,
+            "Confidence": 0.9104104
+          },
+          {
+            "Word": "check",
+            "Offset": 2016500000,
+            "Duration": 2400000,
+            "Confidence": 0.9327134
+          },
+          {
+            "Word": "your",
+            "Offset": 2018900000,
+            "Duration": 1600000,
+            "Confidence": 0.7647219
+          },
+          {
+            "Word": "temperature",
+            "Offset": 2020500000,
+            "Duration": 9200000,
+            "Confidence": 0.93390715
+          }
+        ]
+      },
+      {
+        "Confidence": 0.6966051,
+        "Lexical": "no no it's only one finger ok i just need to check your temperature",
+        "ITN": "no no it's only one finger ok i just need to check your temperature",
+        "MaskedITN": "no no it's only one finger ok i just need to check your temperature",
+        "Display": "no no it's only one finger OK i just need to check your temperature",
+        "Words": [
+          {
+            "Word": "no",
+            "Offset": 1989300000,
+            "Duration": 3600000,
+            "Confidence": 0.5538157
+          },
+          {
+            "Word": "no",
+            "Offset": 1992900000,
+            "Duration": 2000000,
+            "Confidence": 0.8181854
+          },
+          {
+            "Word": "it's",
+            "Offset": 1994900000,
+            "Duration": 2000000,
+            "Confidence": 0.80792046
+          },
+          {
+            "Word": "only",
+            "Offset": 1996900000,
+            "Duration": 2000000,
+            "Confidence": 0.9122968
+          },
+          {
+            "Word": "one",
+            "Offset": 1998900000,
+            "Duration": 3600000,
+            "Confidence": 0.6980918
+          },
+          {
+            "Word": "finger",
+            "Offset": 2002500000,
+            "Duration": 3200000,
+            "Confidence": 0.047506575
+          },
+          {
+            "Word": "OK",
+            "Offset": 2008900000,
+            "Duration": 2800000,
+            "Confidence": 0.57683146
+          },
+          {
+            "Word": "i",
+            "Offset": 2011700000,
+            "Duration": 400000,
+            "Confidence": 0.37409708
+          },
+          {
+            "Word": "just",
+            "Offset": 2012100000,
+            "Duration": 1600000,
+            "Confidence": 0.67564297
+          },
+          {
+            "Word": "need",
+            "Offset": 2013700000,
+            "Duration": 1600000,
+            "Confidence": 0.8175508
+          },
+          {
+            "Word": "to",
+            "Offset": 2015300000,
+            "Duration": 1200000,
+            "Confidence": 0.8391894
+          },
+          {
+            "Word": "check",
+            "Offset": 2016500000,
+            "Duration": 2400000,
+            "Confidence": 0.9327134
+          },
+          {
+            "Word": "your",
+            "Offset": 2018900000,
+            "Duration": 1600000,
+            "Confidence": 0.7647219
+          },
+          {
+            "Word": "temperature",
+            "Offset": 2020500000,
+            "Duration": 9200000,
+            "Confidence": 0.93390715
+          }
+        ]
+      },
+      {
+        "Confidence": 0.7325027,
+        "Lexical": "no it's only one figure ok i just need to check your temperature",
+        "ITN": "no it's only one figure ok i just need to check your temperature",
+        "MaskedITN": "no it's only one figure ok i just need to check your temperature",
+        "Display": "no it's only one figure OK i just need to check your temperature",
+        "Words": [
+          {
+            "Word": "no",
+            "Offset": 1989300000,
+            "Duration": 5600000,
+            "Confidence": 0.8796974
+          },
+          {
+            "Word": "it's",
+            "Offset": 1994900000,
+            "Duration": 2000000,
+            "Confidence": 0.53402954
+          },
+          {
+            "Word": "only",
+            "Offset": 1996900000,
+            "Duration": 2000000,
+            "Confidence": 0.75467634
+          },
+          {
+            "Word": "one",
+            "Offset": 1998900000,
+            "Duration": 3600000,
+            "Confidence": 0.6980918
+          },
+          {
+            "Word": "figure",
+            "Offset": 2002500000,
+            "Duration": 2800000,
+            "Confidence": 0.2253488
+          },
+          {
+            "Word": "OK",
+            "Offset": 2008900000,
+            "Duration": 2800000,
+            "Confidence": 0.7823724
+          },
+          {
+            "Word": "i",
+            "Offset": 2011700000,
+            "Duration": 400000,
+            "Confidence": 0.4009582
+          },
+          {
+            "Word": "just",
+            "Offset": 2012100000,
+            "Duration": 1600000,
+            "Confidence": 0.81084687
+          },
+          {
+            "Word": "need",
+            "Offset": 2013700000,
+            "Duration": 1600000,
+            "Confidence": 0.8947605
+          },
+          {
+            "Word": "to",
+            "Offset": 2015300000,
+            "Duration": 1200000,
+            "Confidence": 0.9104104
+          },
+          {
+            "Word": "check",
+            "Offset": 2016500000,
+            "Duration": 2400000,
+            "Confidence": 0.9327134
+          },
+          {
+            "Word": "your",
+            "Offset": 2018900000,
+            "Duration": 1600000,
+            "Confidence": 0.7647219
+          },
+          {
+            "Word": "temperature",
+            "Offset": 2020500000,
+            "Duration": 9200000,
+            "Confidence": 0.93390715
+          }
+        ]
+      },
+      {
+        "Confidence": 0.6926121,
+        "Lexical": "no no it's only one figure ok just need to check your temperature",
+        "ITN": "no no it's only one figure ok just need to check your temperature",
+        "MaskedITN": "no no it's only one figure ok just need to check your temperature",
+        "Display": "no no it's only one figure OK just need to check your temperature",
+        "Words": [
+          {
+            "Word": "no",
+            "Offset": 1989300000,
+            "Duration": 3600000,
+            "Confidence": 0.5538157
+          },
+          {
+            "Word": "no",
+            "Offset": 1992900000,
+            "Duration": 2000000,
+            "Confidence": 0.8181854
+          },
+          {
+            "Word": "it's",
+            "Offset": 1994900000,
+            "Duration": 2000000,
+            "Confidence": 0.80792046
+          },
+          {
+            "Word": "only",
+            "Offset": 1996900000,
+            "Duration": 2000000,
+            "Confidence": 0.9122968
+          },
+          {
+            "Word": "one",
+            "Offset": 1998900000,
+            "Duration": 3600000,
+            "Confidence": 0.6980918
+          },
+          {
+            "Word": "figure",
+            "Offset": 2002500000,
+            "Duration": 2800000,
+            "Confidence": 0.2253488
+          },
+          {
+            "Word": "OK",
+            "Offset": 2008900000,
+            "Duration": 3200000,
+            "Confidence": 0.7823724
+          },
+          {
+            "Word": "just",
+            "Offset": 2012100000,
+            "Duration": 1600000,
+            "Confidence": 0.17205009
+          },
+          {
+            "Word": "need",
+            "Offset": 2013700000,
+            "Duration": 1600000,
+            "Confidence": 0.60793227
+          },
+          {
+            "Word": "to",
+            "Offset": 2015300000,
+            "Duration": 1200000,
+            "Confidence": 0.8569016
+          },
+          {
+            "Word": "check",
+            "Offset": 2016500000,
+            "Duration": 2400000,
+            "Confidence": 0.8929743
+          },
+          {
+            "Word": "your",
+            "Offset": 2018900000,
+            "Duration": 1600000,
+            "Confidence": 0.7421612
+          },
+          {
+            "Word": "temperature",
+            "Offset": 2020500000,
+            "Duration": 9200000,
+            "Confidence": 0.93390715
+          }
+        ]
+      },
+      {
+        "Confidence": 0.6791274,
+        "Lexical": "no it's only one finger ok i just need to check your temperature",
+        "ITN": "no it's only one finger ok i just need to check your temperature",
+        "MaskedITN": "no it's only one finger ok i just need to check your temperature",
+        "Display": "no it's only one finger OK i just need to check your temperature",
+        "Words": [
+          {
+            "Word": "no",
+            "Offset": 1989300000,
+            "Duration": 5600000,
+            "Confidence": 0.8796974
+          },
+          {
+            "Word": "it's",
+            "Offset": 1994900000,
+            "Duration": 2000000,
+            "Confidence": 0.53402954
+          },
+          {
+            "Word": "only",
+            "Offset": 1996900000,
+            "Duration": 2000000,
+            "Confidence": 0.75467634
+          },
+          {
+            "Word": "one",
+            "Offset": 1998900000,
+            "Duration": 3600000,
+            "Confidence": 0.6980918
+          },
+          {
+            "Word": "finger",
+            "Offset": 2002500000,
+            "Duration": 3200000,
+            "Confidence": 0.047506575
+          },
+          {
+            "Word": "OK",
+            "Offset": 2008900000,
+            "Duration": 2800000,
+            "Confidence": 0.57683146
+          },
+          {
+            "Word": "i",
+            "Offset": 2011700000,
+            "Duration": 400000,
+            "Confidence": 0.37409708
+          },
+          {
+            "Word": "just",
+            "Offset": 2012100000,
+            "Duration": 1600000,
+            "Confidence": 0.67564297
+          },
+          {
+            "Word": "need",
+            "Offset": 2013700000,
+            "Duration": 1600000,
+            "Confidence": 0.8175508
+          },
+          {
+            "Word": "to",
+            "Offset": 2015300000,
+            "Duration": 1200000,
+            "Confidence": 0.8391894
+          },
+          {
+            "Word": "check",
+            "Offset": 2016500000,
+            "Duration": 2400000,
+            "Confidence": 0.9327134
+          },
+          {
+            "Word": "your",
+            "Offset": 2018900000,
+            "Duration": 1600000,
+            "Confidence": 0.7647219
+          },
+          {
+            "Word": "temperature",
+            "Offset": 2020500000,
+            "Duration": 9200000,
+            "Confidence": 0.93390715
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "a1f594da65604ea59fbeb8cd669cde1c",
+    "RecognitionStatus": "Success",
+    "Offset": 2040900000,
+    "Duration": 56800000,
+    "Channel": 0,
+    "DisplayText": "I seem to have forgotten my thermometer. Could you take your mask off please and open your mouth?",
+    "NBest": [
+      {
+        "Confidence": 0.82036996,
+        "Lexical": "i seem to have forgotten my thermometer could you take your mask off please and open your mouth",
+        "ITN": "i seem to have forgotten my thermometer could you take your mask off please and open your mouth",
+        "MaskedITN": "i seem to have forgotten my thermometer could you take your mask off please and open your mouth",
+        "Display": "I seem to have forgotten my thermometer. Could you take your mask off please and open your mouth?",
+        "Words": [
+          {
+            "Word": "i",
+            "Offset": 2040900000,
+            "Duration": 400000,
+            "Confidence": 0.87553835
+          },
+          {
+            "Word": "seem",
+            "Offset": 2041300000,
+            "Duration": 3200000,
+            "Confidence": 0.5503767
+          },
+          {
+            "Word": "to",
+            "Offset": 2044500000,
+            "Duration": 1600000,
+            "Confidence": 0.9120526
+          },
+          {
+            "Word": "have",
+            "Offset": 2046100000,
+            "Duration": 2000000,
+            "Confidence": 0.7951314
+          },
+          {
+            "Word": "forgotten",
+            "Offset": 2048100000,
+            "Duration": 4400000,
+            "Confidence": 0.7910973
+          },
+          {
+            "Word": "my",
+            "Offset": 2052500000,
+            "Duration": 2000000,
+            "Confidence": 0.95185935
+          },
+          {
+            "Word": "thermometer",
+            "Offset": 2054500000,
+            "Duration": 10000000,
+            "Confidence": 0.78753525
+          },
+          {
+            "Word": "could",
+            "Offset": 2066100000,
+            "Duration": 4400000,
+            "Confidence": 0.8102332
+          },
+          {
+            "Word": "you",
+            "Offset": 2070500000,
+            "Duration": 1200000,
+            "Confidence": 0.8573413
+          },
+          {
+            "Word": "take",
+            "Offset": 2071700000,
+            "Duration": 2800000,
+            "Confidence": 0.82050455
+          },
+          {
+            "Word": "your",
+            "Offset": 2074500000,
+            "Duration": 1600000,
+            "Confidence": 0.95472574
+          },
+          {
+            "Word": "mask",
+            "Offset": 2076100000,
+            "Duration": 3200000,
+            "Confidence": 0.95307684
+          },
+          {
+            "Word": "off",
+            "Offset": 2079300000,
+            "Duration": 2000000,
+            "Confidence": 0.94474274
+          },
+          {
+            "Word": "please",
+            "Offset": 2081300000,
+            "Duration": 6000000,
+            "Confidence": 0.84186244
+          },
+          {
+            "Word": "and",
+            "Offset": 2087300000,
+            "Duration": 2400000,
+            "Confidence": 0.9602684
+          },
+          {
+            "Word": "open",
+            "Offset": 2089700000,
+            "Duration": 2400000,
+            "Confidence": 0.94316834
+          },
+          {
+            "Word": "your",
+            "Offset": 2092100000,
+            "Duration": 1600000,
+            "Confidence": 0.8579861
+          },
+          {
+            "Word": "mouth",
+            "Offset": 2093700000,
+            "Duration": 4000000,
+            "Confidence": 0.15915944
+          }
+        ]
+      },
+      {
+        "Confidence": 0.8141719,
+        "Lexical": "i seem to have forgotten my thermometer could you take your mask off please and open your mom",
+        "ITN": "i seem to have forgotten my thermometer could you take your mask off please and open your mom",
+        "MaskedITN": "i seem to have forgotten my thermometer could you take your mask off please and open your mom",
+        "Display": "i seem to have forgotten my thermometer could you take your mask off please and open your mom",
+        "Words": [
+          {
+            "Word": "i",
+            "Offset": 2040900000,
+            "Duration": 400000,
+            "Confidence": 0.87553835
+          },
+          {
+            "Word": "seem",
+            "Offset": 2041300000,
+            "Duration": 3200000,
+            "Confidence": 0.5503767
+          },
+          {
+            "Word": "to",
+            "Offset": 2044500000,
+            "Duration": 1600000,
+            "Confidence": 0.9120526
+          },
+          {
+            "Word": "have",
+            "Offset": 2046100000,
+            "Duration": 2000000,
+            "Confidence": 0.7951314
+          },
+          {
+            "Word": "forgotten",
+            "Offset": 2048100000,
+            "Duration": 4400000,
+            "Confidence": 0.7910973
+          },
+          {
+            "Word": "my",
+            "Offset": 2052500000,
+            "Duration": 2000000,
+            "Confidence": 0.95185935
+          },
+          {
+            "Word": "thermometer",
+            "Offset": 2054500000,
+            "Duration": 10000000,
+            "Confidence": 0.78753525
+          },
+          {
+            "Word": "could",
+            "Offset": 2066100000,
+            "Duration": 4400000,
+            "Confidence": 0.8102332
+          },
+          {
+            "Word": "you",
+            "Offset": 2070500000,
+            "Duration": 1200000,
+            "Confidence": 0.8573413
+          },
+          {
+            "Word": "take",
+            "Offset": 2071700000,
+            "Duration": 2800000,
+            "Confidence": 0.82050455
+          },
+          {
+            "Word": "your",
+            "Offset": 2074500000,
+            "Duration": 1600000,
+            "Confidence": 0.95472574
+          },
+          {
+            "Word": "mask",
+            "Offset": 2076100000,
+            "Duration": 3200000,
+            "Confidence": 0.95307684
+          },
+          {
+            "Word": "off",
+            "Offset": 2079300000,
+            "Duration": 2000000,
+            "Confidence": 0.94474274
+          },
+          {
+            "Word": "please",
+            "Offset": 2081300000,
+            "Duration": 6000000,
+            "Confidence": 0.84186244
+          },
+          {
+            "Word": "and",
+            "Offset": 2087300000,
+            "Duration": 2400000,
+            "Confidence": 0.9602684
+          },
+          {
+            "Word": "open",
+            "Offset": 2089700000,
+            "Duration": 2400000,
+            "Confidence": 0.94316834
+          },
+          {
+            "Word": "your",
+            "Offset": 2092100000,
+            "Duration": 1600000,
+            "Confidence": 0.8579861
+          },
+          {
+            "Word": "mom",
+            "Offset": 2093700000,
+            "Duration": 2400000,
+            "Confidence": 0.047594383
+          }
+        ]
+      },
+      {
+        "Confidence": 0.7158629,
+        "Lexical": "i seemed to have forgotten my thermometer could you take your mask off please and open your mouth",
+        "ITN": "i seemed to have forgotten my thermometer could you take your mask off please and open your mouth",
+        "MaskedITN": "i seemed to have forgotten my thermometer could you take your mask off please and open your mouth",
+        "Display": "i seemed to have forgotten my thermometer could you take your mask off please and open your mouth",
+        "Words": [
+          {
+            "Word": "i",
+            "Offset": 2040900000,
+            "Duration": 400000,
+            "Confidence": 0.87553835
+          },
+          {
+            "Word": "seemed",
+            "Offset": 2041300000,
+            "Duration": 3600000,
+            "Confidence": 0.045592185
+          },
+          {
+            "Word": "to",
+            "Offset": 2044900000,
+            "Duration": 1200000,
+            "Confidence": 0.30473074
+          },
+          {
+            "Word": "have",
+            "Offset": 2046100000,
+            "Duration": 2000000,
+            "Confidence": 0.32682836
+          },
+          {
+            "Word": "forgotten",
+            "Offset": 2048100000,
+            "Duration": 4400000,
+            "Confidence": 0.4903774
+          },
+          {
+            "Word": "my",
+            "Offset": 2052500000,
+            "Duration": 2000000,
+            "Confidence": 0.95185935
+          },
+          {
+            "Word": "thermometer",
+            "Offset": 2054500000,
+            "Duration": 10000000,
+            "Confidence": 0.78753525
+          },
+          {
+            "Word": "could",
+            "Offset": 2066100000,
+            "Duration": 4400000,
+            "Confidence": 0.8102332
+          },
+          {
+            "Word": "you",
+            "Offset": 2070500000,
+            "Duration": 1200000,
+            "Confidence": 0.8573413
+          },
+          {
+            "Word": "take",
+            "Offset": 2071700000,
+            "Duration": 2800000,
+            "Confidence": 0.82050455
+          },
+          {
+            "Word": "your",
+            "Offset": 2074500000,
+            "Duration": 1600000,
+            "Confidence": 0.95472574
+          },
+          {
+            "Word": "mask",
+            "Offset": 2076100000,
+            "Duration": 3200000,
+            "Confidence": 0.95307684
+          },
+          {
+            "Word": "off",
+            "Offset": 2079300000,
+            "Duration": 2000000,
+            "Confidence": 0.94474274
+          },
+          {
+            "Word": "please",
+            "Offset": 2081300000,
+            "Duration": 6000000,
+            "Confidence": 0.84186244
+          },
+          {
+            "Word": "and",
+            "Offset": 2087300000,
+            "Duration": 2400000,
+            "Confidence": 0.9602684
+          },
+          {
+            "Word": "open",
+            "Offset": 2089700000,
+            "Duration": 2400000,
+            "Confidence": 0.94316834
+          },
+          {
+            "Word": "your",
+            "Offset": 2092100000,
+            "Duration": 1600000,
+            "Confidence": 0.8579861
+          },
+          {
+            "Word": "mouth",
+            "Offset": 2093700000,
+            "Duration": 4000000,
+            "Confidence": 0.15915944
+          }
+        ]
+      },
+      {
+        "Confidence": 0.75312126,
+        "Lexical": "i seem to have forgotten my thermometer could you uh take your mask off please and open your mouth",
+        "ITN": "i seem to have forgotten my thermometer could you uh take your mask off please and open your mouth",
+        "MaskedITN": "i seem to have forgotten my thermometer could you uh take your mask off please and open your mouth",
+        "Display": "i seem to have forgotten my thermometer could you uh take your mask off please and open your mouth",
+        "Words": [
+          {
+            "Word": "i",
+            "Offset": 2040900000,
+            "Duration": 400000,
+            "Confidence": 0.87553835
+          },
+          {
+            "Word": "seem",
+            "Offset": 2041300000,
+            "Duration": 3200000,
+            "Confidence": 0.5503767
+          },
+          {
+            "Word": "to",
+            "Offset": 2044500000,
+            "Duration": 1600000,
+            "Confidence": 0.9120526
+          },
+          {
+            "Word": "have",
+            "Offset": 2046100000,
+            "Duration": 2000000,
+            "Confidence": 0.7951314
+          },
+          {
+            "Word": "forgotten",
+            "Offset": 2048100000,
+            "Duration": 4400000,
+            "Confidence": 0.7910973
+          },
+          {
+            "Word": "my",
+            "Offset": 2052500000,
+            "Duration": 2000000,
+            "Confidence": 0.95185935
+          },
+          {
+            "Word": "thermometer",
+            "Offset": 2054500000,
+            "Duration": 10000000,
+            "Confidence": 0.78753525
+          },
+          {
+            "Word": "could",
+            "Offset": 2066100000,
+            "Duration": 4000000,
+            "Confidence": 0.8102332
+          },
+          {
+            "Word": "you",
+            "Offset": 2070100000,
+            "Duration": 1200000,
+            "Confidence": 0.8573413
+          },
+          {
+            "Word": "uh",
+            "Offset": 2071300000,
+            "Duration": 800000,
+            "Confidence": 0.04803819
+          },
+          {
+            "Word": "take",
+            "Offset": 2072100000,
+            "Duration": 2400000,
+            "Confidence": 0.652795
+          },
+          {
+            "Word": "your",
+            "Offset": 2074500000,
+            "Duration": 1600000,
+            "Confidence": 0.8871891
+          },
+          {
+            "Word": "mask",
+            "Offset": 2076100000,
+            "Duration": 3200000,
+            "Confidence": 0.8861569
+          },
+          {
+            "Word": "off",
+            "Offset": 2079300000,
+            "Duration": 2000000,
+            "Confidence": 0.87498164
+          },
+          {
+            "Word": "please",
+            "Offset": 2081300000,
+            "Duration": 6000000,
+            "Confidence": 0.70839536
+          },
+          {
+            "Word": "and",
+            "Offset": 2087300000,
+            "Duration": 2400000,
+            "Confidence": 0.9602684
+          },
+          {
+            "Word": "open",
+            "Offset": 2089700000,
+            "Duration": 2400000,
+            "Confidence": 0.94316834
+          },
+          {
+            "Word": "your",
+            "Offset": 2092100000,
+            "Duration": 1600000,
+            "Confidence": 0.8579861
+          },
+          {
+            "Word": "mouth",
+            "Offset": 2093700000,
+            "Duration": 4000000,
+            "Confidence": 0.15915944
+          }
+        ]
+      },
+      {
+        "Confidence": 0.81405205,
+        "Lexical": "i seem to have forgotten my thermometer could you take your mask off please and open your moan",
+        "ITN": "i seem to have forgotten my thermometer could you take your mask off please and open your moan",
+        "MaskedITN": "i seem to have forgotten my thermometer could you take your mask off please and open your moan",
+        "Display": "i seem to have forgotten my thermometer could you take your mask off please and open your moan",
+        "Words": [
+          {
+            "Word": "i",
+            "Offset": 2040900000,
+            "Duration": 400000,
+            "Confidence": 0.87553835
+          },
+          {
+            "Word": "seem",
+            "Offset": 2041300000,
+            "Duration": 3200000,
+            "Confidence": 0.5503767
+          },
+          {
+            "Word": "to",
+            "Offset": 2044500000,
+            "Duration": 1600000,
+            "Confidence": 0.9120526
+          },
+          {
+            "Word": "have",
+            "Offset": 2046100000,
+            "Duration": 2000000,
+            "Confidence": 0.7951314
+          },
+          {
+            "Word": "forgotten",
+            "Offset": 2048100000,
+            "Duration": 4400000,
+            "Confidence": 0.7910973
+          },
+          {
+            "Word": "my",
+            "Offset": 2052500000,
+            "Duration": 2000000,
+            "Confidence": 0.95185935
+          },
+          {
+            "Word": "thermometer",
+            "Offset": 2054500000,
+            "Duration": 10000000,
+            "Confidence": 0.78753525
+          },
+          {
+            "Word": "could",
+            "Offset": 2066100000,
+            "Duration": 4400000,
+            "Confidence": 0.8102332
+          },
+          {
+            "Word": "you",
+            "Offset": 2070500000,
+            "Duration": 1200000,
+            "Confidence": 0.8573413
+          },
+          {
+            "Word": "take",
+            "Offset": 2071700000,
+            "Duration": 2800000,
+            "Confidence": 0.82050455
+          },
+          {
+            "Word": "your",
+            "Offset": 2074500000,
+            "Duration": 1600000,
+            "Confidence": 0.95472574
+          },
+          {
+            "Word": "mask",
+            "Offset": 2076100000,
+            "Duration": 3200000,
+            "Confidence": 0.95307684
+          },
+          {
+            "Word": "off",
+            "Offset": 2079300000,
+            "Duration": 2000000,
+            "Confidence": 0.94474274
+          },
+          {
+            "Word": "please",
+            "Offset": 2081300000,
+            "Duration": 6000000,
+            "Confidence": 0.84186244
+          },
+          {
+            "Word": "and",
+            "Offset": 2087300000,
+            "Duration": 2400000,
+            "Confidence": 0.9602684
+          },
+          {
+            "Word": "open",
+            "Offset": 2089700000,
+            "Duration": 2400000,
+            "Confidence": 0.94316834
+          },
+          {
+            "Word": "your",
+            "Offset": 2092100000,
+            "Duration": 1600000,
+            "Confidence": 0.8579861
+          },
+          {
+            "Word": "moan",
+            "Offset": 2093700000,
+            "Duration": 2400000,
+            "Confidence": 0.045436922
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "35ea942b2dac4def9513d25fa2f2e716",
+    "RecognitionStatus": "Success",
+    "Offset": 2145400000,
+    "Duration": 33600000,
+    "Channel": 0,
+    "DisplayText": "Let's use this.",
+    "NBest": [
+      {
+        "Confidence": 0.3127523,
+        "Lexical": "let's use this",
+        "ITN": "let's use this",
+        "MaskedITN": "let's use this",
+        "Display": "Let's use this.",
+        "Words": [
+          {
+            "Word": "let's",
+            "Offset": 2145400000,
+            "Duration": 2800000,
+            "Confidence": 0.045352563
+          },
+          {
+            "Word": "use",
+            "Offset": 2148200000,
+            "Duration": 1200000,
+            "Confidence": 0.225604
+          },
+          {
+            "Word": "this",
+            "Offset": 2174200000,
+            "Duration": 4800000,
+            "Confidence": 0.66730034
+          }
+        ]
+      },
+      {
+        "Confidence": 0.33625093,
+        "Lexical": "use this",
+        "ITN": "use this",
+        "MaskedITN": "use this",
+        "Display": "use this",
+        "Words": [
+          {
+            "Word": "use",
+            "Offset": 2146200000,
+            "Duration": 1200000,
+            "Confidence": 0.045352563
+          },
+          {
+            "Word": "this",
+            "Offset": 2174200000,
+            "Duration": 4800000,
+            "Confidence": 0.6271493
+          }
+        ]
+      },
+      {
+        "Confidence": 0.2190578,
+        "Lexical": "let's this",
+        "ITN": "let's this",
+        "MaskedITN": "let's this",
+        "Display": "let's this",
+        "Words": [
+          {
+            "Word": "let's",
+            "Offset": 2145400000,
+            "Duration": 2800000,
+            "Confidence": 0.045352563
+          },
+          {
+            "Word": "this",
+            "Offset": 2174200000,
+            "Duration": 4800000,
+            "Confidence": 0.39276302
+          }
+        ]
+      },
+      {
+        "Confidence": 0.045352563,
+        "Lexical": "this",
+        "ITN": "this",
+        "MaskedITN": "this",
+        "Display": "this",
+        "Words": [
+          {
+            "Word": "this",
+            "Offset": 2174200000,
+            "Duration": 4800000,
+            "Confidence": 0.045352563
+          }
+        ]
+      }
+    ]
+  }
+]

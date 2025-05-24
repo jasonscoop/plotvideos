@@ -3,10 +3,14 @@ import ftfy
 import unicodedata
 
 # Load the model once (globally)
-model = SentenceTransformer('distiluse-base-multilingual-cased-v2')
+model = None
 
 
 def compute_sentence_similarity(sentence1: str, sentence2: str) -> float:
+    global model
+    if model is None:
+        model = SentenceTransformer('distiluse-base-multilingual-cased-v2')
+
     s1 = normalize_sentence(sentence1)
     s2 = normalize_sentence(sentence2)
 

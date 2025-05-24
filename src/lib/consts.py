@@ -38,6 +38,11 @@ class VideoStatus(StrEnum):
     publish_failed = "publish_failed"
 
 
+class SubtitleType(StrEnum):
+    vtt = "vtt"
+    srt = "srt"
+
+
 ID_EXTRACTOR_MAP = {
     "www.pornhub.com": PornhubIdExtractor,
     "www.xhamster.com": XhamsterIdExtractor,

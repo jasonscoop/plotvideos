@@ -10,3 +10,5 @@ edge-tts==6.1.19
 pydub==0.25.1
 azure_cognitiveservices_speech==1.44.0
 moviepy==2.2.1
+sentence_transformers==4.1.0
+ftfy==6.3.1

@@ -13,6 +13,8 @@ from azure.cognitiveservices.speech import SpeechRecognizer
 
 from src.lib.config import AZURE_SPEECH_KEY, AZURE_SPEECH_REGION
 from src.utils import utils
+from src.utils.sentence_utils import compute_sentence_similarity
+
 
 def _format_text(text: str) -> str:
     # text = text.replace("\n", " ")
@@ -91,7 +93,13 @@ def create_subtitle(words: List[dict], text: str, subtitle_file: str):
             sub = unescape(sub)
             sub_line += " " + sub
             subs.append(sub)
-            sub_text = match_line(subs, sub_index)
+            current_line = script_lines[sub_index]
+            current_line_words = current_line.split()
+            sub_text = ""
+            if len(current_line_words) == len(subs) and compute_sentence_similarity(current_line, " ".join(subs)):
+                sub_text = " ".join(current_line_words)
+
+            # sub_text = match_line(subs, sub_index)
             if sub_text:
                 sub_index += 1
                 line = formatter(
@@ -151,4 +159,4 @@ def format_json_list(path):
 
 if __name__ == '__main__':
     text, words = format_json_list("/Users/garymeng/code/more/wuse/works/661bb3bde2251-small.srt-nbests.json")
-    create_subtitle(words=words, text=text, subtitle_file="/Users/garymeng/code/more/wuse/works/661bb3bde2251-small.srt-nbests.srt")
+    create_subtitle(words=words, text=text, subtitle_file="/Users/garymeng/code/more/wuse/works/661bb3bde2251-small.srt-nbests-2.srt")

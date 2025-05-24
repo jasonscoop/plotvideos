@@ -45,41 +45,36 @@ def create_subtitle(flatted_sub: FlattedSub, type: SubtitleType = SubtitleType.v
 
     start_time = -1.0
     final_items = []
-
     realtime_i = 0
     realtime_words = []
 
-    n = len(flatted_sub.words)
     script_line = script_lines[realtime_i]
-
     detected_language = get_lang(script_line)
-
     script_line_words = split_to_words(script_line, detected_language)
 
     for i, sub_word in enumerate(flatted_sub.words):
-        _start_time, end_time = sub_word.start_time, sub_word.end_time
         if start_time < 0:
-            start_time = _start_time
+            start_time = sub_word.start_time
 
         realtime_words.append(unescape(sub_word.word))
         realtime_line = join_to_text(realtime_words, detected_language)
 
-        if len(script_line_words) == len(realtime_words) and is_similar_sentence(script_line, realtime_line):
+        if len(script_line_words) == len(realtime_words) and (script_line == realtime_line or is_similar_sentence(script_line, realtime_line)):
             realtime_i += 1
             line = formatter(
                 idx=realtime_i,
                 start_time=start_time,
-                end_time=end_time,
+                end_time=sub_word.end_time,
                 sub_text=script_line,
             )
             final_items.append(line)
             start_time = -1.0
             realtime_words = []
-            try:
-                script_line = script_lines[realtime_i]
-                script_line_words = split_to_words(script_line, detected_language)
-            except IndexError:
+            if realtime_i == len(script_lines):
                 break
+            script_line = script_lines[realtime_i]
+            detected_language = get_lang(script_line)
+            script_line_words = split_to_words(script_line, detected_language)
 
     if len(final_items) != len(script_lines):
         logging.error(f"failed, sub_items len: {len(final_items)}, script_lines len: {len(script_lines)}")

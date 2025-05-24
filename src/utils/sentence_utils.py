@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import List
 from sentence_transformers import SentenceTransformer, util
 import ftfy
@@ -6,7 +7,7 @@ import unicodedata
 import fasttext
 
 from src.lib.config import MODELS_DIR
-from src.lib.consts import STOP_CHARS, NO_SPACE_LANGS
+from src.lib.consts import STOP_CHARS, NO_SPACE_LANGS, FASTTEXT_LANG_ALIAS
 
 similarity_model = None
 fasttext_model = fasttext.load_model(MODELS_DIR.joinpath("lid.176.bin").as_posix())
@@ -92,9 +93,20 @@ def split_to_sentences(s):
     return result
 
 
+def is_cjk(text: str) -> bool:
+    for char in text:
+        if '\u4e00' <= char <= '\u9fff':  # Common CJK Unified Ideographs
+            return True
+    return False
+
+
 def get_lang(text: str) -> str:
     labels, prob = fasttext_model.predict(text, k=1)
-    return labels[0].replace("__label__", "")
+    code = labels[0].replace("__label__", "")
+    code = FASTTEXT_LANG_ALIAS.get(code, code)
+    if is_cjk(text) and code not in {"zh", "ja", "ko"}:
+        return "zh"
+    return code
 
 
 def split_to_words(text: str, language: str) -> List[str]:
@@ -107,3 +119,22 @@ def join_to_text(words: List[str], language: str) -> str:
     if language in NO_SPACE_LANGS:
         return "".join(words)
     return " ".join(words)
+
+def split_universal(text: str) -> List[str]:
+    pattern = re.compile(
+        r"""
+        [\u4e00-\u9fff]              |  # Chinese
+        [\u3040-\u309f\u30a0-\u30ff] |  # Japanese Hiragana/Katakana
+        [\uac00-\ud7af]              |  # Korean Hangul
+        [\u0900-\u097F]              |  # Hindi/Marathi (Devanagari)
+        [\u0980-\u09FF]              |  # Bengali
+        [\u0600-\u06FF]              |  # Arabic, Urdu
+        [\u0400-\u04FF]              |  # Cyrillic (Russian)
+        [a-zA-Z]+(?:'[a-zA-Z]+)?     |  # English words + contractions like I'm, You're
+        [\u00C0-\u024F]+             |  # Latin Extended (e.g. é, ç)
+        \d+                          |  # Numbers
+        [^\w\s]                         # Punctuation and symbols
+        """,
+        re.VERBOSE | re.UNICODE
+    )
+    return pattern.findall(text)

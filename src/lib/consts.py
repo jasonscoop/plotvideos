@@ -5,8 +5,8 @@ from typing import List
 from src.utils.id_utils import PornhubIdExtractor, XhamsterIdExtractor, XvideosIdExtractor, EpornerIdExtractor, \
     YouJizzIdExtractor, RedTubeIdExtractor, YouPornIdExtractor, SpankBangIdExtractor
 
-
 NO_SPACE_LANGS = {'zh', 'ja', 'th', 'lo', 'km', 'my'}
+
 
 class BigLanguage(Enum):
     ENGLISH = ("en", "en-US", "English")
@@ -58,6 +58,22 @@ class BigLanguage(Enum):
         ]
 
 
+FASTTEXT_LANG_ALIAS = {
+    # Chinese and Dialects
+    "zh": "zh",
+    "zh-cn": "zh",
+    "zh-tw": "zh",
+    "yue": "zh",  # Cantonese
+    "wuu": "zh",  # Shanghainese
+    "hak": "zh",  # Hakka
+    "nan": "zh",  # Min Nan
+    "lzh": "zh",  # Classical Chinese
+    "cdo": "zh",  # Min Dong
+    "hsn": "zh",  # Xiang (Hunanese)
+    "xmf": "zh",  # 🛑 Mistaken as Chinese – normalize
+}
+
+
 class VideoStatus(StrEnum):
     added = "added"
     downloaded = "downloaded"
@@ -92,11 +108,11 @@ SUPPORTED_VIDEO_EXTENSIONS = {"3gp", "flv", "mp4", "webm"}
 
 STOP_CHARS = {
     ".", "!", "?", ",", ":", ";", "…", "‥",  # English & common
-    "。", "！", "？", "，", "、", "；", "：",        # Chinese/Japanese
-    "।",                                     # Hindi
-    "܀", "።", "፧",                           # Semitic (Syriac, Ge‘ez)
-    "؟", "؛",                                 # Arabic/Persian
-    "၊", "။",                                 # Burmese
-    "⸮", "⁇", "⁈", "⁉",                       # Rare multilingual
+    "。", "！", "？", "，", "、", "；", "：",  # Chinese/Japanese
+    "।",  # Hindi
+    "܀", "።", "፧",  # Semitic (Syriac, Ge‘ez)
+    "؟", "؛",  # Arabic/Persian
+    "၊", "။",  # Burmese
+    "⸮", "⁇", "⁈", "⁉",  # Rare multilingual
     "...",
 }

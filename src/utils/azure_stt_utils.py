@@ -71,7 +71,7 @@ def get_azure_results(audio_path: Path, duration: float):
         done = True
 
     def handle_session_stopped(evt):
-        logging.error("Session stopped")
+        logging.info("Session stopped")
         nonlocal done
         done = True
 

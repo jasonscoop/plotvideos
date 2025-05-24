@@ -1,5 +1,7 @@
+import time
 from datetime import datetime, timedelta, timezone
 import logging
+from functools import wraps
 
 from src.lib.config import LOGS_DIR
 
@@ -18,3 +20,14 @@ def init_logging(category: str):
                         datefmt='%Y-%d-%m %I:%M:%S',
                         level=logging.INFO,
                         handlers=[logging.FileHandler(filename), logging.StreamHandler()])
+
+
+def log_time(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        duration = time.time() - start
+        logging.info(f"Function '{func.__name__}' took {duration:.1f} seconds")
+        return result
+    return wrapper

@@ -1,18 +1,14 @@
 import json
 import os
-import re
 import logging
-import time
-from typing import List
+from pathlib import Path
 from xml.sax.saxutils import unescape
-from edge_tts import SubMaker, submaker
 from edge_tts.submaker import mktimestamp
 from moviepy.video.tools import subtitles
-import azure.cognitiveservices.speech as speechsdk
-from azure.cognitiveservices.speech import SpeechRecognizer
 
-from src.lib.config import AZURE_SPEECH_KEY, AZURE_SPEECH_REGION
+from src.lib.schemas import FlattedSub
 from src.utils import utils
+from src.utils.azure_stt_utils import media_to_wav, get_azure_results, flat_azure_result
 from src.utils.sentence_utils import compute_sentence_similarity
 
 
@@ -28,7 +24,7 @@ def _format_text(text: str) -> str:
     return text
 
 
-def create_subtitle(words: List[dict], text: str, subtitle_file: str):
+def create_subtitle(flatted_sub: FlattedSub, subtitle_file: Path):
     """
     优化字幕文件
     1. 将字幕文件按照标点符号分割成多行
@@ -36,7 +32,7 @@ def create_subtitle(words: List[dict], text: str, subtitle_file: str):
     3. 生成新的字幕文件
     """
 
-    text = _format_text(text)
+    text = _format_text(flatted_sub.text)
 
     def formatter(idx: int, start_time: float, end_time: float, sub_text: str) -> str:
         """
@@ -53,40 +49,12 @@ def create_subtitle(words: List[dict], text: str, subtitle_file: str):
     sub_index = 0
 
     script_lines = utils.split_string_by_punctuations(text)
-
-    def match_line(_subs: List[str], _sub_index: int):
-        _sub_line = " ".join(_subs)
-        if len(script_lines) <= _sub_index:
-            return ""
-
-        _line = script_lines[_sub_index]
-        if _sub_line.casefold() == _line.casefold():
-            return script_lines[_sub_index].strip()
-
-        script_lines_words = script_lines[_sub_index].split()
-        set1 = {s.casefold() for s in _subs}
-        set2 = {s.casefold() for s in script_lines_words}
-        if len(_subs) == len(script_lines_words) and set1 & set2:
-            return script_lines[_sub_index].strip()
-
-        _sub_line_ = re.sub(r"[^\w\s']", "", _sub_line)
-        _line_ = re.sub(r"[^\w\s']", "", _line)
-        if _sub_line_.casefold() == _line_.casefold():
-            return _line_.strip()
-
-        _sub_line_ = re.sub(r"\W+", "", _sub_line)
-        _line_ = re.sub(r"\W+", "", _line)
-        if _sub_line_.casefold() == _line_.casefold():
-            return _line.strip()
-
-        return ""
-
     sub_line = ""
     subs = []
     try:
-        for word in words:
-            sub = word["sub"]
-            _start_time, end_time = word["start_time"], word["end_time"]
+        for sub_word in flatted_sub.words:
+            sub = sub_word.word
+            _start_time, end_time = sub_word.start_time, sub_word.end_time
             if start_time < 0:
                 start_time = _start_time
 
@@ -126,10 +94,10 @@ def create_subtitle(words: List[dict], text: str, subtitle_file: str):
                 logging.error(f"failed, error: {str(e)}")
                 os.remove(subtitle_file)
         else:
-            with open("sub_items.json", "w", encoding="utf-8") as file:
+            with open("../../works/sub_items.json", "w", encoding="utf-8") as file:
                 file.write(json.dumps(sub_items, ensure_ascii=False, indent=2))
 
-            with open("script_lines.json", "w", encoding="utf-8") as file:
+            with open("../../works/script_lines.json", "w", encoding="utf-8") as file:
                 file.write(json.dumps(script_lines, ensure_ascii=False, indent=2))
 
             logging.warning(
@@ -140,23 +108,17 @@ def create_subtitle(words: List[dict], text: str, subtitle_file: str):
         logging.error(f"failed, error: {str(e)}")
 
 
-def format_json_list(path):
-    items = json.loads(open(path).read())
-    texts = []
-    words = []
+def generate_subtitle(video_path: Path):
+    wav_path = video_path.with_suffix(".wav")
+    subtitle_path = video_path.with_suffix(".srt")
 
-    for item in items:
-        texts.append(item["Display"])
-        for word in item["Words"]:
-            words.append({
-                "sub": word["Word"],
-                "start_time": word["Offset"],
-                "end_time": word["Offset"] + word["Duration"],
-            })
+    duration = media_to_wav(video_path, wav_path)
+    logging.info(f"Converted {video_path} to {wav_path}")
 
-    return " ".join(texts), words
+    azure_results = get_azure_results(wav_path, duration)
+    flatted_sub = flat_azure_result(azure_results)
+    logging.info(f"Got the azure results")
 
+    create_subtitle(flatted_sub, subtitle_path)
+    logging.info(f"Subtitle generated")
 
-if __name__ == '__main__':
-    text, words = format_json_list("/Users/garymeng/code/more/wuse/works/661bb3bde2251-small.srt-nbests.json")
-    create_subtitle(words=words, text=text, subtitle_file="/Users/garymeng/code/more/wuse/works/661bb3bde2251-small.srt-nbests-2.srt")

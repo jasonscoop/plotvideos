@@ -72,7 +72,7 @@ def get_azure_results(audio_path: Path, duration: float, lang: BigLanguage):
     speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationStrategy, "Default")
     # Silence timeout: Range [100, 5000] milliseconds
     # Lower values = more frequent breaks, higher values = longer segments
-    speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationSilenceTimeoutMs, "300")  # 0.3 seconds
+    speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationSilenceTimeoutMs, "100")  # 0.1 seconds
     # Maximum segment length, This prevents extremely long segments
     speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationMaximumTimeMs, "20000")  # 20 seconds max
 

@@ -1,9 +1,21 @@
+import re
+
 import fasttext
 import requests
 from src.lib.config import MODELS_DIR
 from src.lib.consts import FASTTEXT_LANG_ALIAS
 
 fasttext_model = None
+
+STOP_CHARS = (
+    ".!?,:;…‥"      # English & common
+    "。！？，、；："  # Chinese/Japanese
+    "।"             # Hindi
+    "܀።፧"           # Semitic (Syriac, Ge‘ez)
+    "؟؛"            # Arabic/Persian
+    "၊။"            # Burmese
+    "⸮⁇⁈⁉"          # Rare multilingual
+)
 
 
 def get_fasttext_model() -> fasttext.FastText:
@@ -36,3 +48,7 @@ def get_lang(text: str) -> str:
         return "zh"
 
     return code
+
+
+def replace_stop_chars(text: str) -> str:
+    return re.sub(f"[{re.escape(STOP_CHARS)}]", " ", text)

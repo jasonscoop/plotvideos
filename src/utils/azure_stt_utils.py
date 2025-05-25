@@ -9,7 +9,6 @@ from pathlib import Path
 
 from src.lib.config import AZURE_SPEECH_REGION, AZURE_SPEECH_KEY
 from src.lib.consts import BigLanguage
-from src.lib.schemas import FlattedSub, SubWord
 from src.utils.log_utils import log_time
 
 
@@ -65,17 +64,17 @@ def get_azure_results(audio_path: Path, duration: float, lang: BigLanguage):
 
     # Strategy options: "Default", "Time", "Semantic"
     # - Default: Standard Azure behavior
-    # - Time: Control via silence timeout and max time
     # - Semantic: AI-based phrase detection (no control properties)
-    # speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationStrategy, "Time")
-    speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationStrategy, "Semantic")
-    speech_config.enable_dictation()
+    # speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationStrategy, "Semantic")
+    # speech_config.enable_dictation()
 
+    # - Time: Control via silence timeout and max time
+    speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationStrategy, "Default")
     # Silence timeout: Range [100, 5000] milliseconds
     # Lower values = more frequent breaks, higher values = longer segments
-    # speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationSilenceTimeoutMs, "500")  # 0.8 seconds
-    # # Maximum segment length, This prevents extremely long segments
-    # speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationMaximumTimeMs, "20000")  # 20 seconds max
+    speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationSilenceTimeoutMs, "300")  # 0.3 seconds
+    # Maximum segment length, This prevents extremely long segments
+    speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationMaximumTimeMs, "20000")  # 20 seconds max
 
     # Connection timeouts (these are different from segmentation)
     speech_config.set_property(speechsdk.PropertyId.SpeechServiceConnection_InitialSilenceTimeoutMs, "3000")
@@ -130,29 +129,3 @@ def get_azure_results(audio_path: Path, duration: float, lang: BigLanguage):
     time.sleep(2)  # Give it time to process final results
 
     return results
-
-
-@log_time
-def flat_azure_result(azure_results) -> FlattedSub:
-    nbests = []
-    for result_json in azure_results:
-        if result_json.get("NBest", []):
-            nbests.append(result_json["NBest"][0])
-
-    if not nbests:
-        logging.warning("No valid nbests were generated!")
-        return FlattedSub()
-
-    texts = []
-    sub = FlattedSub()
-    for best in nbests:
-        texts.append(best["Display"])
-        for word in best["Words"]:
-            sub.words.append(SubWord(
-                word=word["Word"],
-                start_time=word["Offset"],
-                end_time=word["Offset"] + word["Duration"],
-            ))
-    sub.text = " ".join(texts)
-
-    return sub

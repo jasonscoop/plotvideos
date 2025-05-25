@@ -5,8 +5,6 @@ from typing import List
 from src.utils.id_utils import PornhubIdExtractor, XhamsterIdExtractor, XvideosIdExtractor, EpornerIdExtractor, \
     YouJizzIdExtractor, RedTubeIdExtractor, YouPornIdExtractor, SpankBangIdExtractor
 
-NO_SPACE_LANGS = {'zh', 'ja', 'th', 'lo', 'km', 'my'}
-
 
 class BigLanguage(Enum):
     ENGLISH = ("en", "en-US", "English")
@@ -105,14 +103,3 @@ ID_EXTRACTOR_MAP = {
 }
 
 SUPPORTED_VIDEO_EXTENSIONS = {"3gp", "flv", "mp4", "webm"}
-
-STOP_CHARS = {
-    ".", "!", "?", ",", ":", ";", "…", "‥",  # English & common
-    "。", "！", "？", "，", "、", "；", "：",  # Chinese/Japanese
-    "।",  # Hindi
-    "܀", "።", "፧",  # Semitic (Syriac, Ge‘ez)
-    "؟", "؛",  # Arabic/Persian
-    "၊", "။",  # Burmese
-    "⸮", "⁇", "⁈", "⁉",  # Rare multilingual
-    "...",
-}

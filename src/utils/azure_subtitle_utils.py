@@ -84,6 +84,25 @@ def create_subtitle(flatted_sub: FlattedSub, type: SubtitleType = SubtitleType.v
     return header + "\n".join(final_items) + "\n"
 
 
+def simple_create_subtitle(azure_results, type) -> str:
+    formatter = vtt_formatter if type == SubtitleType.vtt else srt_formatter
+    final_items = []
+    for i, item in enumerate(azure_results):
+        try:
+            line = formatter(
+                idx=i + 1,
+                start_time=item["Offset"],
+                end_time=item["Offset"] + item["Duration"],
+                sub_text=item["DisplayText"],
+            )
+        except Exception:
+            pass
+        final_items.append(line)
+
+    header = "WEBVTT\n\n" if type == SubtitleType.vtt else ""
+    return header + "\n".join(final_items) + "\n"
+
+
 def generate_subtitle(video_path: Path, sub_type: SubtitleType):
     wav_path = video_path.with_suffix(".wav")
     subtitle_path = video_path.with_suffix(f".{sub_type.value}")

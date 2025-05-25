@@ -56,13 +56,30 @@ def get_azure_results(audio_path: Path, duration: float, lang: BigLanguage):
     )
 
     # Enable detailed output with word-level timestamps
+    speech_config.set_profanity(speechsdk.enums.ProfanityOption.Raw)
     speech_config.request_word_level_timestamps()
     speech_config.output_format = speechsdk.OutputFormat.Detailed
 
-    # Configure timeouts (in milliseconds)
-    speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationSilenceTimeoutMs, "1000")
-    speech_config.set_property(speechsdk.PropertyId.SpeechServiceConnection_InitialSilenceTimeoutMs, "5000")
-    speech_config.set_property(speechsdk.PropertyId.SpeechServiceConnection_EndSilenceTimeoutMs, "2000")
+    # Configure segmentation for shorter segments
+    # IMPORTANT: Use correct property names and valid ranges from latest documentation
+
+    # Strategy options: "Default", "Time", "Semantic"
+    # - Default: Standard Azure behavior
+    # - Time: Control via silence timeout and max time
+    # - Semantic: AI-based phrase detection (no control properties)
+    # speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationStrategy, "Time")
+    speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationStrategy, "Semantic")
+    speech_config.enable_dictation()
+
+    # Silence timeout: Range [100, 5000] milliseconds
+    # Lower values = more frequent breaks, higher values = longer segments
+    # speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationSilenceTimeoutMs, "500")  # 0.8 seconds
+    # # Maximum segment length, This prevents extremely long segments
+    # speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationMaximumTimeMs, "20000")  # 20 seconds max
+
+    # Connection timeouts (these are different from segmentation)
+    speech_config.set_property(speechsdk.PropertyId.SpeechServiceConnection_InitialSilenceTimeoutMs, "3000")
+    speech_config.set_property(speechsdk.PropertyId.SpeechServiceConnection_EndSilenceTimeoutMs, "1000")
 
     # Create audio input
     audio_path_str = audio_path.as_posix() if isinstance(audio_path, Path) else audio_path

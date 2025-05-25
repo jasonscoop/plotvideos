@@ -4,7 +4,7 @@ import pytest
 
 from src.lib.consts import SubtitleType
 from src.utils.azure_stt_utils import flat_azure_result
-from src.utils.azure_subtitle_utils import generate_subtitle, create_subtitle
+from src.utils.azure_subtitle_utils import generate_subtitle, create_subtitle, simple_create_subtitle
 from tests import SUBTITLES_DIR
 
 
@@ -25,3 +25,17 @@ def test_create_subtitle(json_file):
 
     assert vtt == json_path.with_suffix(".vtt").read_text()
     assert srt == json_path.with_suffix(".srt").read_text()
+
+
+@pytest.mark.parametrize("json_file",[
+    "661bb3bde2251-small.azure-result-4.json",
+    "jiabin4.json",
+])
+def test_simple_create_subtitle(json_file):
+    json_path = SUBTITLES_DIR.joinpath(json_file)
+    azure_results = json.loads(json_path.read_text())
+    vtt = simple_create_subtitle(azure_results, SubtitleType.vtt)
+
+    json_path.with_suffix(".generated4.vtt").write_text(vtt)
+
+    assert vtt == json_path.with_suffix(".generated4.vtt").read_text()

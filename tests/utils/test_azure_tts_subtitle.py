@@ -3,7 +3,7 @@ import json
 from src.lib.config import VIDEOS_DIR
 from src.lib.consts import BigLanguage, SubtitleType
 from src.utils.azure_stt_utils import get_azure_results
-from src.utils.azure_subtitle_utils import simple_create_subtitle
+from src.utils.azure_subtitle_utils import azure_stt_results_to_subtitle
 
 
 def test_get_azure_results():
@@ -13,7 +13,7 @@ def test_get_azure_results():
     # j = json.loads(json_file1.read_text())
     json_file1.write_text(json.dumps(j, indent=2, ensure_ascii=False))
     azure_results = json.loads(json_file1.read_text())
-    vtt = simple_create_subtitle(azure_results, SubtitleType.vtt)
+    vtt = azure_stt_results_to_subtitle(azure_results, SubtitleType.vtt)
 
     json_file1.with_suffix(".generated6.vtt").write_text(vtt)
 
@@ -23,6 +23,6 @@ def test_get_azure_results():
     # j = json.loads(json_file2.read_text())
     json_file2.write_text(json.dumps(j, indent=2, ensure_ascii=False))
     azure_results = json.loads(json_file2.read_text())
-    vtt = simple_create_subtitle(azure_results, SubtitleType.vtt)
+    vtt = azure_stt_results_to_subtitle(azure_results, SubtitleType.vtt)
 
     json_file2.with_suffix(".generated6.vtt").write_text(vtt)

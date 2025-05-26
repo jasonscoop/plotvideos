@@ -24,16 +24,12 @@ def azure_stt_results_to_subtitle(azure_results, type) -> str:
     formatter = vtt_formatter if type == SubtitleType.vtt else srt_formatter
     final_items = []
     for i, item in enumerate(azure_results):
-        try:
-            line = formatter(
-                idx=i + 1,
-                start_time=item["Offset"],
-                end_time=item["Offset"] + item["Duration"],
-                sub_text=replace_stop_chars(item["DisplayText"]).strip(),
-            )
-        except Exception:
-            pass
-        final_items.append(line)
+        final_items.append(formatter(
+            idx=i + 1,
+            start_time=item["Offset"],
+            end_time=item["Offset"] + item["Duration"],
+            sub_text=replace_stop_chars(item["DisplayText"]).strip(),
+        ))
 
     header = "WEBVTT\n\n" if type == SubtitleType.vtt else ""
     return header + "\n".join(final_items) + "\n"

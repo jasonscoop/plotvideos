@@ -5,7 +5,7 @@ from edge_tts.submaker import mktimestamp
 
 from src.lib.consts import SubtitleType, BigLanguage
 from src.utils.azure_stt_utils import media_to_wav, get_azure_results
-from src.utils.string_utils import get_lang, replace_stop_chars
+from src.utils.string_utils import get_lang, split_by_stop_chars
 
 
 def srt_formatter(idx: int, start_time: float, end_time: float, sub_text: str) -> str:
@@ -28,7 +28,7 @@ def azure_stt_results_to_subtitle(azure_results, type) -> str:
             idx=i + 1,
             start_time=item["Offset"],
             end_time=item["Offset"] + item["Duration"],
-            sub_text=replace_stop_chars(item["DisplayText"]).strip(),
+            sub_text=split_by_stop_chars(item["DisplayText"]).strip(),
         ))
 
     header = "WEBVTT\n\n" if type == SubtitleType.vtt else ""

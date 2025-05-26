@@ -50,5 +50,6 @@ def get_lang(text: str) -> str:
     return code
 
 
-def replace_stop_chars(text: str) -> str:
-    return re.sub(f"[{re.escape(STOP_CHARS)}]", "\n", text)
+def split_by_stop_chars(text: str) -> str:
+    sentences = re.split(f"[{re.escape(STOP_CHARS)}]", text)
+    return "\n".join([s.strip() for s in sentences])

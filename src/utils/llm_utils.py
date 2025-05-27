@@ -24,7 +24,9 @@ Instructions:
 - Do NOT translate or remove formatting tags like <i>, <b>, <c>, etc.
 - ONLY translate the spoken text.
 - Keep line breaks and structure exactly as they are.
-- Do NOT return any explanations, headers, footers, or comments — only return the translated VTT content.
+- Do NOT return any explanations, headers, footers, or comments.
+- Do NOT wrap the response in triple backticks or any code block.
+- ONLY return the translated VTT content as plain text.
 
 Input:
 {vtt_content}"""}

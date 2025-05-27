@@ -26,11 +26,13 @@ class BigLanguage(Enum):
     TURKISH = ("tr", "tr-TR", "Turkish")
 
     @property
-    def iso639_code(self) -> str:
+    def short_code(self) -> str:
+        # iso639_code
         return self.value[0]
 
     @property
-    def bcp47_code(self) -> str:
+    def long_code(self) -> str:
+        # bcp47_code
         return self.value[1]
 
     @property
@@ -40,7 +42,7 @@ class BigLanguage(Enum):
     @classmethod
     def from_short_code(cls, code: str):
         for lang in cls:
-            if lang.iso639_code == code.lower():
+            if lang.short_code == code.lower():
                 return lang
 
         logger.error(f"[{code}] Language not found, set to default")
@@ -49,10 +51,10 @@ class BigLanguage(Enum):
     @classmethod
     def top4(cls) -> List[str]:
         return [
-            cls.ENGLISH.bcp47_code,
-            cls.CHINESE.bcp47_code,
-            cls.HINDI.bcp47_code,
-            cls.SPANISH.bcp47_code,
+            cls.ENGLISH.long_code,
+            cls.CHINESE.long_code,
+            cls.HINDI.long_code,
+            cls.SPANISH.long_code,
         ]
 
 

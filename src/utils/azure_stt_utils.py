@@ -37,10 +37,10 @@ def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000) -> 
 
 
 def get_language_candidates(lang: BigLanguage) -> List[str]:
-    if lang.bcp47_code in BigLanguage.top4():
+    if lang.long_code in BigLanguage.top4():
         return BigLanguage.top4()
 
-    return BigLanguage.top4()[:3] + [lang.bcp47_code]
+    return BigLanguage.top4()[:3] + [lang.long_code]
 
 
 @log_time

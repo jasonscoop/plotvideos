@@ -1,4 +1,4 @@
-import logging
+from loguru import logger
 import os
 import yt_dlp
 
@@ -15,7 +15,7 @@ def download_video(video: Video) -> (bool, str, str):
     filenames ={f"{video.original_id}.{ext}" for ext in SUPPORTED_VIDEO_EXTENSIONS}
 
     if any(video_dir.joinpath(filename).exists() for filename in filenames):
-        logging.warning("Video dir [%s] exists, ignore", video_dir)
+        logger.warning("Video dir [%s] exists, ignore", video_dir)
         return False, "", f"Video dir exists: [{video_dir}]"
 
     video_dir.mkdir(exist_ok=True, parents=True)
@@ -40,7 +40,7 @@ def download_video(video: Video) -> (bool, str, str):
                     return True, f"{video_uri_base}/{filename}", ""
         return False, "", "Can't find downloaded video file."
     except Exception as e:
-        logging.error(f"Failed to download {video.url}: {e}")
+        logger.error(f"Failed to download {video.url}: {e}")
         return False, "", str(e)
 
 
@@ -60,19 +60,19 @@ def download_videos():
             if not videos:
                 break
 
-            logging.info(f"Processing batch of {len(videos)} videos (last_id {last_id})")
+            logger.info(f"Processing batch of {len(videos)} videos (last_id {last_id})")
             for video in videos:
-                logging.info(f"Downloading: {video.title} ({video.url})")
+                logger.info(f"Downloading: {video.title} ({video.url})")
                 success, file_path, error = download_video(video)
                 if success:
                     video.status = VideoStatus.downloaded
                     video.path = file_path
                     video.failed_reason = ""
-                    logging.info(f"Downloaded successfully: {file_path}")
+                    logger.info(f"Downloaded successfully: {file_path}")
                 else:
                     video.status = VideoStatus.download_failed
                     video.failed_reason = error[:1000]  # Truncate if too long
-                    logging.error(f"Download failed: {error}")
+                    logger.error(f"Download failed: {error}")
                 session.commit()
             last_id = videos[-1].id
     finally:
@@ -83,5 +83,5 @@ if __name__ == "__main__":
     init_logging("download-videos")
     # download_videos()
     r = download_video(Video(url="https://www.pornhub.com/view_video.php?viewkey=661bb3bde2251", original_id="661bb3bde2251", host="www.pornhub.com"))
-    logging.info(r)
-    logging.info("All done!")
+    logger.info(r)
+    logger.info("All done!")

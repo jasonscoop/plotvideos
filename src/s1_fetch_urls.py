@@ -2,7 +2,7 @@ import traceback
 
 import requests
 from urllib.parse import urlparse
-import logging
+from loguru import logger
 
 from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL, KEYWORDS
 from src.lib.connection import SessionLocal
@@ -30,7 +30,7 @@ def fetch_and_save_videos(max_page=3):
     session = SessionLocal()
 
     for keyword in KEYWORDS:
-        logging.info(f"Fetching videos for keyword: {keyword}")
+        logger.info(f"Fetching videos for keyword: {keyword}")
 
         for page in range(1, max_page):
             data = fetch_video_urls(keyword, page)
@@ -44,7 +44,7 @@ def fetch_and_save_videos(max_page=3):
                 name = site["site"]["name"]
                 id_extractor = ID_EXTRACTOR_MAP.get(host)()
                 if not id_extractor:
-                    logging.error("Can not find a extractor for host %s", host)
+                    logger.error("Can not find a extractor for host %s", host)
                     continue
 
                 try:
@@ -62,14 +62,14 @@ def fetch_and_save_videos(max_page=3):
                                 status=VideoStatus.added
                             ))
                     added, updated = batch_add(session, videos, keyword)
-                    logging.info("Site [%s] get [%s] videos and updated [%s] added [%s]", name, len(site["links"]), updated, added)
+                    logger.info("Site [%s] get [%s] videos and updated [%s] added [%s]", name, len(site["links"]), updated, added)
                 except Exception as e:
-                    logging.error(f"Error fetching/saving videos: {e}")
+                    logger.error(f"Error fetching/saving videos: {e}")
                     traceback.print_exc()
                     session.rollback()
 
             if page > max_page:
-                logging.info("Reach the max page, break")
+                logger.info("Reach the max page, break")
                 break
 
     session.close()
@@ -77,4 +77,4 @@ def fetch_and_save_videos(max_page=3):
 if __name__ == "__main__":
     init_logging("fetch-urls")
     fetch_and_save_videos()
-    logging.info("All done!")
+    logger.info("All done!")

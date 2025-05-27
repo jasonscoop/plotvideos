@@ -1,4 +1,4 @@
-import logging
+from loguru import logger
 from typing import List
 
 import azure.cognitiveservices.speech as speechsdk
@@ -96,17 +96,17 @@ def get_azure_results(audio_path: Path, duration: float, lang: BigLanguage):
         if evt.result.reason == speechsdk.ResultReason.RecognizedSpeech:
             if evt.result.text.strip():  # Only process non-empty results
                 results.append(json.loads(evt.result.json))
-                logging.info(f"Recognized: {evt.result.text}")
+                logger.info(f"Recognized: {evt.result.text}")
 
     def handle_canceled(evt):
-        logging.error(f"Recognition canceled: {evt.reason}")
+        logger.error(f"Recognition canceled: {evt.reason}")
         if evt.reason == speechsdk.CancellationReason.Error:
-            logging.error(f"Error details: {evt.error_details}")
+            logger.error(f"Error details: {evt.error_details}")
         nonlocal done
         done = True
 
     def handle_session_stopped(evt):
-        logging.info("Session stopped")
+        logger.info("Session stopped")
         nonlocal done
         done = True
 

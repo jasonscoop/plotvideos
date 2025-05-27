@@ -1,4 +1,4 @@
-import logging
+from loguru import logger
 from enum import StrEnum, Enum
 from typing import List
 
@@ -43,7 +43,7 @@ class BigLanguage(Enum):
             if lang.iso639_code == code.lower():
                 return lang
 
-        logging.error(f"[{code}] Language not found, set to default")
+        logger.error(f"[{code}] Language not found, set to default")
         return cls.ENGLISH
 
     @classmethod

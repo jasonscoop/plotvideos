@@ -1,6 +1,6 @@
 import json
 import locale
-import logging
+from loguru import logger
 import os
 import string
 import threading
@@ -126,7 +126,7 @@ def run_in_background(func, *args, **kwargs):
         try:
             func(*args, **kwargs)
         except Exception as e:
-            logging.error(f"run_in_background error: {e}")
+            logger.error(f"run_in_background error: {e}")
 
     thread = threading.Thread(target=run)
     thread.start()

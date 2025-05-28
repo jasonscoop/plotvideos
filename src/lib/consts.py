@@ -1,6 +1,7 @@
-from loguru import logger
 from enum import StrEnum, Enum
 from typing import List
+
+from loguru import logger
 
 from src.utils.id_utils import PornhubIdExtractor, XhamsterIdExtractor, XvideosIdExtractor, EpornerIdExtractor, \
     YouJizzIdExtractor, RedTubeIdExtractor, YouPornIdExtractor, SpankBangIdExtractor
@@ -21,9 +22,6 @@ class BigLanguage(Enum):
     GERMAN = ("de", "de-DE", "German")
     JAPANESE = ("ja", "ja-JP", "Japanese")
     SWAHILI = ("sw", "sw-KE", "Swahili")
-    MARATHI = ("mr", "mr-IN", "Marathi")
-    TELUGU = ("te", "te-IN", "Telugu")
-    TURKISH = ("tr", "tr-TR", "Turkish")
 
     @property
     def short_code(self) -> str:

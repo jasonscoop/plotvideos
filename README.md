@@ -5,7 +5,8 @@
 Automated pipeline to:
 - Fetch videos via RapidAPI
 - Download with yt-dlp
-- Generate subtitles with azure api 
+- Remove start ad clip and recognize watermarker
+- Generate subtitles with azure api
 - Translate title and subtitles
 - Publish to MediaCMS
 

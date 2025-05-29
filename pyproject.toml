@@ -1,0 +1,30 @@
+[project]
+name = "wuse"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "azure-cognitiveservices-speech==1.44.0",
+    "fasttext==0.9.3",
+    "ffmpeg-python==0.2.0",
+    "loguru==0.7.3",
+    "moviepy==2.2.1",
+    "numpy==1.26.4",
+    "openai==1.82.0",
+    "pillow==11.2.1",
+    "psycopg2-binary>=2.9.10",
+    "pydantic==2.11.5",
+    "pydub==0.25.1",
+    "pytesseract==0.3.13",
+    "python-dotenv>=1.1.0",
+    "requests>=2.32.3",
+    "sqlalchemy>=2.0.41",
+    "tenacity==9.1.2",
+    "yt-dlp>=2025.5.22",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]

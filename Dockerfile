@@ -1,0 +1,1 @@
+RUN apt-get install tesseract-ocr ffmpeg

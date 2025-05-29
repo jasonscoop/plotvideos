@@ -1,11 +1,23 @@
 import json
-from loguru import logger
 from pathlib import Path
-from edge_tts.submaker import mktimestamp
+
+from loguru import logger
 
 from src.lib.consts import SubtitleType, BigLanguage
 from src.utils.azure_stt_utils import media_to_wav, get_azure_results
 from src.utils.string_utils import get_lang, split_by_stop_chars
+
+
+def mktimestamp(timestamp: float) -> str:
+    """
+    Convert a time in seconds to a string timestamp in the format:
+    "HH:MM:SS.mmm"
+    """
+    hours = int(timestamp // 3600)
+    minutes = int((timestamp % 3600) // 60)
+    seconds = int(timestamp % 60)
+    milliseconds = int((timestamp - int(timestamp)) * 1000)
+    return f"{hours:02}:{minutes:02}:{seconds:02}.{milliseconds:03}"
 
 
 def srt_formatter(idx: int, start_time: float, end_time: float, sub_text: str) -> str:
@@ -54,5 +66,3 @@ def generate_subtitle(title, video_path: Path, sub_type: SubtitleType):
     subtitle_path.write_text(subtitle)
 
     logger.info(f"[{video_path.name}] Generated subtitle")
-
-

@@ -29,7 +29,7 @@ class Keyword(Base):
 class Video(Base):
     __tablename__ = 'videos'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    host = Column(String(50), nullable=False)
+    host = Column(String(50), nullable=False, index=True)
     original_id = Column(String(80), nullable=False)
     title = Column(String(512), nullable=False)
     url = Column(String(512), nullable=False, unique=True)
@@ -44,6 +44,7 @@ class Video(Base):
     downloaded_duration = Column(Integer, nullable=False, default=0)
     downloaded_tags = Column(JSON, nullable=False, default=[])
     downloaded_categories = Column(JSON, nullable=False, default=[])
+    file_size = Column(Integer, nullable=False, default=0)
 
     keywords = relationship("Keyword", secondary=video_keywords, back_populates="videos")
 

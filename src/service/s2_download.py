@@ -31,6 +31,8 @@ def download_videos(batch_size: int = 10):
 
                 try:
                     video_filename, info = download_remote_video(video.url, path.parent)
+                    file_size = path.parent.joinpath(video_filename).stat().st_size
+
                     video.status = VideoStatus.downloaded
                     video.video_filename = video_filename
                     video.downloaded_title = info.get("title", "")
@@ -38,6 +40,7 @@ def download_videos(batch_size: int = 10):
                     video.downloaded_tags = info.get("tags", [])
                     video.downloaded_categories = info.get("categories", [])
                     video.downloaded_duration = info.get("duration", 0)
+                    video.file_size = file_size
                     logger.info(f"Downloaded successfully: {video.title}")
                 except Exception as e:
                     video.status = VideoStatus.download_failed
@@ -51,9 +54,5 @@ def download_videos(batch_size: int = 10):
 
 if __name__ == "__main__":
     init_logging("download")
-    # download_videos()
-    r = download_remote_video(
-        Video(url="https://www.pornhub.com/view_video.php?viewkey=661bb3bde2251", original_id="661bb3bde2251",
-              host="www.pornhub.com"))
-    logger.info(r)
+    download_videos()
     logger.info("All done!")

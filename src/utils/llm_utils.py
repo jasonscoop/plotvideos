@@ -6,7 +6,7 @@ from src.lib.consts import BigLanguage
 
 
 @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
-def ask_azure_openai(vtt_content: str, language: BigLanguage) -> str:
+def translate_vtt(vtt_content: str, language: BigLanguage) -> str:
     url = f"{LLM_BASE_URL}/openai/deployments/{LLM_MODEL}/chat/completions?api-version={LLM_API_VERSION}"
 
     headers = {

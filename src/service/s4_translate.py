@@ -1,16 +1,62 @@
 from loguru import logger
 
-from src.lib.consts import BigLanguage
-from src.utils.llm_utils import ask_azure_openai
+from src.lib.connection import SessionLocal
+from src.lib.consts import BigLanguage, VideoStatus, DB_ERROR_LOG_LENGTH
+from src.lib.models import Video
+from src.lib.schemas import StorePath
+from src.utils.llm_utils import translate_vtt
 from src.utils.log_utils import init_logging
-from tests import SUBTITLES_DIR
+
+
+def process_subtitled_videos(batch_size: int = 10):
+    """Process videos that have been subtitled but not yet translated"""
+    session = SessionLocal()
+    last_id = 0
+
+    try:
+        while True:
+            videos = (
+                session.query(Video)
+                .filter(Video.status == VideoStatus.subtitled, Video.id > last_id)
+                .order_by(Video.id)
+                .limit(batch_size)
+                .all()
+            )
+            if not videos:
+                break
+
+            logger.info(f"Processing batch of {len(videos)} videos (last_id {last_id})")
+            for video in videos:
+                logger.info(f"Translating subtitles for: {video.title}")
+                path = StorePath(video.host, video.original_id)
+
+                try:
+                    # Read the original VTT file
+                    vtt_content = path.vtt.read_text()
+
+                    # Create translated_vtts directory if it doesn't exist
+                    path.translated_vtts.mkdir(exist_ok=True)
+
+                    # Translate to all supported languages
+                    for lang in BigLanguage:
+                        translated_vtt = translate_vtt(vtt_content, lang)
+                        translated_file = path.translated_vtts / f"{lang.short_code}.vtt"
+                        translated_file.write_text(translated_vtt)
+                        logger.info(f"Translated to {lang.full_name} successfully")
+
+                    video.status = VideoStatus.translated
+                    logger.info(f"Translated all languages successfully for: {video.title}")
+                except Exception as e:
+                    video.status = VideoStatus.translate_failed
+                    video.failed_reason = str(e)[:DB_ERROR_LOG_LENGTH]
+                    logger.error(f"Translation failed: {e}")
+
+                session.commit()
+            last_id = videos[-1].id
+    finally:
+        session.close()
+
 
 if __name__ == '__main__':
     init_logging("translate")
-    vtt = SUBTITLES_DIR.joinpath("azure-results-661bb3bde2251.vtt").read_text()
-    # expected = SUBTITLES_DIR.joinpath("azure-results-661bb3bde2251.zh-CN.vtt").read_text()
-
-    for lang in BigLanguage:
-        actual = ask_azure_openai(vtt, lang)
-        SUBTITLES_DIR.joinpath(f"azure-results-661bb3bde2251.{lang.long_code}.vtt").write_text(actual)
-        logger.info(f"Translated to [{lang.long_code}: {lang.full_name}]")
+    process_subtitled_videos()

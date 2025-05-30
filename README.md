@@ -10,3 +10,7 @@ Automated pipeline to:
 - Translate title and subtitles
 - Publish to MediaCMS
 
+# Hosts
+- https://www.hostinger.com/pricing?content=vps-hosting
+- https://www.kamatera.com/pricing/
+- https://contabo.com/en/vps/cloud-vps-10/?image=ubuntu.332&qty=1&contract=12&storage-type=cloud-vps-10-150-gb-ssd

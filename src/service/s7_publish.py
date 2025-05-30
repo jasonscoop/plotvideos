@@ -129,9 +129,6 @@ def publish_video_to_wordpress(video: Video) -> Tuple[bool, str]:
         with httpx.Client() as client:
             lang_post_maps = {}
 
-            # Get keywords for the video
-            keyword_names = [kw.name for kw in video.keywords if kw.enabled]
-
             # Process each supported language
             for lang in BigLanguage:
                 # Find translation for this language
@@ -145,10 +142,8 @@ def publish_video_to_wordpress(video: Video) -> Tuple[bool, str]:
                     logger.warning(f"No translation found for language {lang.short_code}, skipping...")
                     continue
 
-                # Combine video keywords with translated categories
-                all_categories = list(set(translation["categories"] + keyword_names))
+                all_categories = list(set(translation["categories"] + [video.keyword]))
 
-                # Create post with translated content and keywords
                 post = create_post(
                     client=client,
                     title=translation["title"],
@@ -163,7 +158,7 @@ def publish_video_to_wordpress(video: Video) -> Tuple[bool, str]:
                 lang_post_maps[lang.short_code] = post["id"]
                 logger.info(f"✅ [{lang.short_code}] post created with ID: {post['id']} "
                             f"with {len(translation['tags'])} tags and {len(all_categories)} categories "
-                            f"(including {len(keyword_names)} keywords)")
+                            f"(including {len(video.keyword)} keyword)")
 
             # Link the posts in different languages
             if len(lang_post_maps) > 1:

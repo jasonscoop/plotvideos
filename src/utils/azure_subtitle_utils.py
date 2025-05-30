@@ -33,9 +33,10 @@ def vtt_formatter(idx: int, start_time: float, end_time: float, sub_text: str) -
     return f"{start_t} --> {end_t}\n{sub_text}\n"
 
 
-def azure_stt_results_to_subtitle(azure_results, type) -> str:
+def azure_stt_results_to_subtitle(azure_results, type) -> (str, str):
     formatter = vtt_formatter if type == SubtitleType.vtt else srt_formatter
     final_items = []
+    subtitle_contents = []
     for i, item in enumerate(azure_results):
         final_items.append(formatter(
             idx=i + 1,
@@ -43,9 +44,10 @@ def azure_stt_results_to_subtitle(azure_results, type) -> str:
             end_time=item["Offset"] + item["Duration"],
             sub_text=split_by_stop_chars(item["DisplayText"]).strip(),
         ))
+        subtitle_contents.append(item["DisplayText"])
 
     header = "WEBVTT\n\n" if type == SubtitleType.vtt else ""
-    return header + "\n".join(final_items) + "\n"
+    return header + "\n".join(final_items) + "\n", "\n\n".join(subtitle_contents)
 
 
 def generate_subtitle(video: Video):
@@ -60,7 +62,8 @@ def generate_subtitle(video: Video):
     azure_results = get_azure_results(path.wav, duration, language)
     path.azure_results.write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))
 
-    vtt_content = azure_stt_results_to_subtitle(azure_results, SubtitleType.vtt)
+    vtt_content, subtitle_content = azure_stt_results_to_subtitle(azure_results, SubtitleType.vtt)
     path.vtt.write_text(vtt_content)
 
     logger.info(f"[{video_path.name}] Generated subtitle, detected as '{language}'")
+    return subtitle_content

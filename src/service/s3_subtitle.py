@@ -1,7 +1,6 @@
 from loguru import logger
-from sqlalchemy.orm import Session
 
-from src.lib.connection import SessionLocal, engine
+from src.lib.connection import SessionLocal
 from src.lib.models import Video, VideoStatus
 from src.utils.azure_subtitle_utils import generate_subtitle
 from src.utils.log_utils import init_logging
@@ -27,7 +26,8 @@ def process_downloaded_videos(batch_size: int = 10):
             for video in videos:
                 logger.info(f"Generating subtitle for: {video.title}")
                 try:
-                    generate_subtitle(video)
+                    subtitle_content = generate_subtitle(video)
+                    video.subtitle_content = subtitle_content
                     video.status = VideoStatus.subtitled
                     logger.info(f"Generated subtitle successfully for: {video.title}")
                 except Exception as e:

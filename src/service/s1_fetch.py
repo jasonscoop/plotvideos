@@ -67,8 +67,7 @@ def fetch_and_save_videos(max_page=3):
                             status=VideoStatus.fetched
                         ))
                     added, updated = batch_add(session, videos, keyword)
-                    logger.info("Site [%s] get [%s] videos and updated [%s] added [%s]", name, len(site["links"]),
-                                updated, added)
+                    logger.info(f"[{name}] get [{len(site["links"])}] videos, updated [{updated}] added [{added}]")
                 except Exception as e:
                     logger.error(f"Error fetching/saving videos: {e}")
                     traceback.print_exc()
@@ -83,5 +82,5 @@ def fetch_and_save_videos(max_page=3):
 
 if __name__ == "__main__":
     init_logging("fetch")
-    fetch_and_save_videos()
+    fetch_and_save_videos(2)
     logger.info("All done!")

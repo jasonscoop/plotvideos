@@ -73,15 +73,17 @@ FASTTEXT_LANG_ALIAS = {
 
 
 class VideoStatus(StrEnum):
-    added = "added"
+    fetched = "fetched"
     downloaded = "downloaded"
-    subtitle_extracted = "subtitle_extracted"
-    subtitle_translated = "subtitle_translated"
+    subtitled = "subtitled"
+    translated = "translated"
+    uploaded = "uploaded"
     published = "published"
 
     download_failed = "download_failed"
-    subtitle_extracted_failed = "subtitle_extracted_failed"
-    subtitle_translate_failed = "subtitle_translate_failed"
+    subtitle_failed = "subtitle_failed"
+    translate_failed = "translate_failed"
+    upload_failed = "upload_failed"
     publish_failed = "publish_failed"
 
 

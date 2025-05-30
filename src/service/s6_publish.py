@@ -60,8 +60,8 @@ def publish_video_to_wordpress(video: Video) -> Tuple[bool, str]:
                 # Create English post
                 post = create_post(
                     client=client,
-                    title=f"Video {video.id}",  # You might want to use a better title
-                    content=video.title,  # You might want to use better content
+                    title=f"Video {video.id}",  # todo: You might want to use a better title
+                    content=content,  # todo: You might want to use better content
                     lang=lang.short_code,
                     image_url=video.url  # You might want to use a thumbnail URL instead
                 )

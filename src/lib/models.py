@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Enum as SAEnum, Table, ForeignKey, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Enum as SAEnum, Table, ForeignKey, Boolean, DateTime, JSON
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
 
@@ -34,7 +34,9 @@ class Video(Base):
     title = Column(String(512), nullable=False)
     url = Column(String(512), nullable=False, unique=True)
     path = Column(String(50), nullable=False, default="")
-    status = Column(SAEnum(VideoStatus), default=VideoStatus.added, nullable=False)
+    bunny_response = Column(JSON, nullable=False, default={})
+    title_translations = Column(JSON, nullable=False, default=[])
+    status = Column(SAEnum(VideoStatus), default=VideoStatus.fetched, nullable=False)
     failed_reason = Column(String(1000), nullable=False, default="")
 
     keywords = relationship("Keyword", secondary=video_keywords, back_populates="videos")

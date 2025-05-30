@@ -9,6 +9,7 @@ from src.lib.config import WP_BASE_URL, WP_USERNAME, WP_PASSWORD
 from src.lib.connection import engine
 from src.lib.consts import VideoStatus, VIDEO_EMBED_TEMPLATE, BigLanguage
 from src.lib.models import Video
+from src.utils.log_utils import init_logging
 
 # === Configuration ===
 API_URL = f"{WP_BASE_URL}/wp-json/wp/v2/posts"
@@ -97,4 +98,5 @@ def process_pending_videos():
 
 
 if __name__ == "__main__":
+    init_logging("publish")
     process_pending_videos()

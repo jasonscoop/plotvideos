@@ -11,7 +11,7 @@ from src.utils.azure_subtitle_utils import generate_subtitle
 from src.utils.log_utils import init_logging
 
 if __name__ == '__main__':
-    init_logging("subtitles")
+    init_logging("subtitle")
     dir_path = "/works/videos"
     files = []
     for filename in os.listdir(dir_path):

@@ -39,6 +39,12 @@ class Video(Base):
     status = Column(SAEnum(VideoStatus), default=VideoStatus.fetched, nullable=False)
     failed_reason = Column(String(1000), nullable=False, default="")
 
+    downloaded_title = Column(String(512), nullable=False, default="")
+    downloaded_description = Column(String(1000), nullable=False, default="")
+    downloaded_duration = Column(Integer, nullable=False, default=0)
+    downloaded_tags = Column(JSON, nullable=False, default=[])
+    downloaded_categories = Column(JSON, nullable=False, default=[])
+
     keywords = relationship("Keyword", secondary=video_keywords, back_populates="videos")
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)

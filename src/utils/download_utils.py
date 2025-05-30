@@ -7,7 +7,7 @@ from src.lib.config import YT_DLP_PROXY
 
 
 @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
-def download_remote_video(url: str, video_save_dir: Path):
+def download_remote_video(url: str, video_save_dir: Path) -> (str, dict):
     video_save_dir.mkdir(exist_ok=True, parents=True)
     output_template = str(video_save_dir.joinpath(f"%(id)s.%(ext)s"))
     ydl_opts = {
@@ -23,4 +23,4 @@ def download_remote_video(url: str, video_save_dir: Path):
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
-        return Path(ydl.prepare_filename(info)).name
+        return Path(ydl.prepare_filename(info)).name, info

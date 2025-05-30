@@ -41,3 +41,37 @@ Input:
     content = result["choices"][0]["message"]["content"]
 
     return content
+
+
+@retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
+def translate_title(title: str, language: BigLanguage) -> str:
+    url = f"{LLM_BASE_URL}/openai/deployments/{LLM_MODEL}/chat/completions?api-version={LLM_API_VERSION}"
+
+    headers = {
+        "Content-Type": "application/json",
+        "api-key": LLM_API_KEY
+    }
+
+    data = {
+        "messages": [
+            {"role": "system", "content": "You are a title translator."},
+            {"role": "user", "content": f"""Translate the following title into {language.full_name}. 
+            
+Instructions:
+- Preserve any numbers or special characters
+- Keep the translation natural and fluent
+- Do NOT add any explanations or comments
+- Return ONLY the translated title
+
+Title: {title}"""}
+        ],
+        "temperature": 0.5
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    response.raise_for_status()
+
+    result = response.json()
+    content = result["choices"][0]["message"]["content"]
+
+    return content.strip()

@@ -1,18 +1,18 @@
+import os
 import re
 import traceback
-import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+
 from loguru import logger
 
 from src.lib.consts import SubtitleType
 from src.utils.azure_subtitle_utils import generate_subtitle
 from src.utils.log_utils import init_logging
 
-
 if __name__ == '__main__':
     init_logging("subtitles")
-    dir_path = "/Users/garymeng/code/more/wuse/works/videos"
+    dir_path = "/works/videos"
     files = []
     for filename in os.listdir(dir_path):
         full_path = os.path.join(dir_path, filename)

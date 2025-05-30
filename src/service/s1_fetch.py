@@ -1,15 +1,15 @@
 import traceback
+from urllib.parse import urlparse
 
 import requests
-from urllib.parse import urlparse
 from loguru import logger
 
 from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL
 from src.lib.connection import SessionLocal
 from src.lib.consts import ID_EXTRACTOR_MAP
-from src.utils.log_utils import init_logging
-from src.lib.models import Video, VideoStatus, Keyword
 from src.lib.crud import batch_add, get_all_keywords
+from src.lib.models import Video, VideoStatus
+from src.utils.log_utils import init_logging
 
 
 def fetch_video_urls(query: str, page: int):
@@ -26,10 +26,11 @@ def fetch_video_urls(query: str, page: int):
     response.raise_for_status()
     return response.json()
 
+
 def fetch_and_save_videos(max_page=3):
     session = SessionLocal()
     keywords = [keyword.name for keyword in get_all_keywords(session)]
-    
+
     if not keywords:
         logger.warning("No keywords found in database. Please add some keywords first.")
         return
@@ -59,14 +60,15 @@ def fetch_and_save_videos(max_page=3):
                             continue
 
                         videos.append(Video(
-                                title=link.get('title'),
-                                url=link.get('url'),
-                                original_id=id_extractor.get(link.get('url')),
-                                host=host,
-                                status=VideoStatus.added
-                            ))
+                            title=link.get('title'),
+                            url=link.get('url'),
+                            original_id=id_extractor.get(link.get('url')),
+                            host=host,
+                            status=VideoStatus.fetched
+                        ))
                     added, updated = batch_add(session, videos, keyword)
-                    logger.info("Site [%s] get [%s] videos and updated [%s] added [%s]", name, len(site["links"]), updated, added)
+                    logger.info("Site [%s] get [%s] videos and updated [%s] added [%s]", name, len(site["links"]),
+                                updated, added)
                 except Exception as e:
                     logger.error(f"Error fetching/saving videos: {e}")
                     traceback.print_exc()
@@ -77,6 +79,7 @@ def fetch_and_save_videos(max_page=3):
                 break
 
     session.close()
+
 
 if __name__ == "__main__":
     init_logging("fetch-urls")

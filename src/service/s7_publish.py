@@ -1,5 +1,5 @@
 from base64 import b64encode
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 
 import httpx
 from loguru import logger
@@ -12,7 +12,7 @@ from src.lib.models import Video
 from src.utils.log_utils import init_logging
 
 # === Configuration ===
-API_URL = f"{WP_BASE_URL}/wp-json/wp/v2/posts"
+API_URL = f"{WP_BASE_URL}/wp-json/wp/v2"
 CREDENTIALS = b64encode(f"{WP_USERNAME}:{WP_PASSWORD}".encode()).decode("utf-8")
 HEADERS = {
     "Authorization": f"Basic {CREDENTIALS}",
@@ -20,26 +20,76 @@ HEADERS = {
 }
 
 
-def create_post(client: httpx.Client, title: str, content: str, lang: str, image_url: str) -> Dict:
-    """Create a new WordPress post."""
+def create_or_get_terms(client: httpx.Client, terms: List[str], taxonomy: str, lang: str) -> List[int]:
+    """Create or get WordPress terms (tags or categories) and return their IDs."""
+    term_ids = []
+
+    for term in terms:
+        # First try to get existing term
+        response = client.get(f"{API_URL}/{taxonomy}", params={
+            "search": term,
+            "lang": lang,
+            "per_page": 1
+        })
+        response.raise_for_status()
+
+        if response.json():
+            # Term exists, use its ID
+            term_ids.append(response.json()[0]["id"])
+        else:
+            # Term doesn't exist, create it
+            try:
+                create_response = client.post(
+                    f"{API_URL}/{taxonomy}",
+                    json={
+                        "name": term,
+                        "lang": lang
+                    },
+                    headers=HEADERS
+                )
+                create_response.raise_for_status()
+                term_ids.append(create_response.json()["id"])
+            except Exception as e:
+                logger.error(f"Failed to create {taxonomy} '{term}': {str(e)}")
+                continue
+
+    return term_ids
+
+
+def create_post(client: httpx.Client, title: str, content: str, description: str,
+                tags: list, categories: list, lang: str, image_url: str) -> Dict:
+    """Create a new WordPress post with translated content and term IDs."""
+    # Get or create tags and categories
+    tag_ids = create_or_get_terms(client, tags, "tags", lang)
+    category_ids = create_or_get_terms(client, categories, "categories", lang)
+
+    # Format the content with description and video embed
+    formatted_content = f"""
+{content}
+
+{description}
+"""
+
     data = {
         "title": title,
-        "content": content,
+        "content": formatted_content,
         "status": "publish",
         "lang": lang,
+        "tags": tag_ids,
+        "categories": category_ids,
         "meta": {
             "_harikrutfiwu_url": image_url,
             "_harikrutfiwu_alt": title
         }
     }
 
-    response = client.post(API_URL, json=data, headers=HEADERS)
+    response = client.post(f"{API_URL}/posts", json=data, headers=HEADERS)
     response.raise_for_status()
     return response.json()
 
 
 def link_posts(client: httpx.Client, link_maps: dict) -> Dict:
-    """Link English and Chinese posts together."""
+    """Link posts in different languages together."""
     link_data = {
         "posts": link_maps
     }
@@ -52,39 +102,92 @@ def link_posts(client: httpx.Client, link_maps: dict) -> Dict:
     return response.json()
 
 
+def get_translation_for_lang(translations: list, lang_code: str) -> dict:
+    """Helper function to get translation for a specific language"""
+    for trans in translations:
+        if trans["lang"] == lang_code:
+            return trans
+    return None
+
+
 def publish_video_to_wordpress(video: Video) -> Tuple[bool, str]:
-    content = VIDEO_EMBED_TEMPLATE.format(library_id=0, video_id=0)
+    # Check bunny video details first
+    library_id = video.bunny_response.get("libraryId")
+    video_id = video.bunny_response.get("guid")
+
+    if not library_id or not video_id:
+        error_msg = f"Missing bunny video details - libraryId: {library_id}, guid: {video_id}"
+        logger.error(error_msg)
+        return False, error_msg
+
+    video_embed = VIDEO_EMBED_TEMPLATE.format(
+        library_id=library_id,
+        video_id=video_id
+    )
+
     try:
         with httpx.Client() as client:
             lang_post_maps = {}
+
+            # Get keywords for the video
+            keyword_names = [kw.name for kw in video.keywords if kw.enabled]
+
+            # Process each supported language
             for lang in BigLanguage:
-                # Create English post
+                # Find translation for this language
+                translation = None
+                for trans in video.title_translations:
+                    if trans["lang"] == lang.short_code:
+                        translation = trans
+                        break
+
+                if not translation:
+                    logger.warning(f"No translation found for language {lang.short_code}, skipping...")
+                    continue
+
+                # Combine video keywords with translated categories
+                all_categories = list(set(translation["categories"] + keyword_names))
+
+                # Create post with translated content and keywords
                 post = create_post(
                     client=client,
-                    title=f"Video {video.id}",  # todo: You might want to use a better title
-                    content=content,  # todo: You might want to use better content
+                    title=translation["title"],
+                    content=video_embed,
+                    description=translation["description"],
+                    tags=translation["tags"],
+                    categories=all_categories,
                     lang=lang.short_code,
-                    image_url=video.url  # You might want to use a thumbnail URL instead
+                    image_url=video.url
                 )
-                lang_post_maps[lang.short_code] = post["id"]
-                logger.info(f"✅ [{lang}] post created with ID: {post['id']}")
 
-            # Link the posts
-            link_result = link_posts(client, lang_post_maps)
-            logger.info("✅ Posts linked:", link_result)
+                lang_post_maps[lang.short_code] = post["id"]
+                logger.info(f"✅ [{lang.short_code}] post created with ID: {post['id']} "
+                            f"with {len(translation['tags'])} tags and {len(all_categories)} categories "
+                            f"(including {len(keyword_names)} keywords)")
+
+            # Link the posts in different languages
+            if len(lang_post_maps) > 1:
+                link_result = link_posts(client, lang_post_maps)
+                logger.info(f"✅ Posts linked: {link_result}")
 
             return True, ""
     except Exception as e:
+        logger.error(f"Failed to publish video: {str(e)}")
         return False, str(e)
 
 
 def process_pending_videos():
     with Session(engine) as session:
+        # Only process videos that have been meta translated
         pending_videos = session.query(Video).filter(
-            Video.status == VideoStatus.subtitle_translated
+            Video.status == VideoStatus.meta_translated
         ).all()
 
         for video in pending_videos:
+            if not video.title_translations:
+                logger.warning(f"Video {video.id} has no translations, skipping...")
+                continue
+
             success, error = publish_video_to_wordpress(video)
             if success:
                 video.status = VideoStatus.published
@@ -92,7 +195,7 @@ def process_pending_videos():
             else:
                 video.status = VideoStatus.publish_failed
                 video.failed_reason = error[:1000]
-                logger.info(f"Failed to publish video {video.id}: {error}")
+                logger.error(f"Failed to publish video {video.id}: {error}")
 
             session.commit()
 

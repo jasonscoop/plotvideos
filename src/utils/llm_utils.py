@@ -75,3 +75,61 @@ Title: {title}"""}
     content = result["choices"][0]["message"]["content"]
 
     return content.strip()
+
+
+@retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
+def translate_video_content(content: dict, language: BigLanguage) -> dict:
+    """
+    Translate all video content (title, description, tags, categories) at once.
+    
+    Args:
+        content: dict containing title, description, tags, and categories
+        language: target language
+    """
+    url = f"{LLM_BASE_URL}/openai/deployments/{LLM_MODEL}/chat/completions?api-version={LLM_API_VERSION}"
+
+    headers = {
+        "Content-Type": "application/json",
+        "api-key": LLM_API_KEY
+    }
+
+    data = {
+        "messages": [
+            {"role": "system", "content": "You are a video content translator."},
+            {"role": "user", "content": f"""Translate the following video content into {language.full_name}. 
+            Return the result in a JSON format.
+
+Input Content:
+Title: {content['title']}
+Description: {content['description']}
+Tags: {', '.join(content['tags'])}
+Categories: {', '.join(content['categories'])}
+
+Instructions:
+- Translate all content naturally and fluently
+- Keep special characters and numbers unchanged
+- For tags and categories, translate each item and keep them as a list
+- Return ONLY a valid JSON object with the following structure:
+{{
+    "title": "<translated title>",
+    "description": "<translated description>",
+    "tags": ["<translated tag 1>", "<translated tag 2>", ...],
+    "categories": ["<translated category 1>", "<translated category 2>", ...]
+}}"""}
+        ],
+        "temperature": 0.5
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    response.raise_for_status()
+
+    result = response.json()
+    content = result["choices"][0]["message"]["content"]
+    
+    # Parse the JSON response
+    import json
+    try:
+        translated_content = json.loads(content.strip())
+        return translated_content
+    except json.JSONDecodeError as e:
+        raise Exception(f"Failed to parse LLM response as JSON: {str(e)}")

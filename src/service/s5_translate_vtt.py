@@ -44,10 +44,10 @@ def process_subtitled_videos(batch_size: int = 10):
                         translated_file.write_text(translated_vtt)
                         logger.info(f"Translated to {lang.full_name} successfully")
 
-                    video.status = VideoStatus.translated
+                    video.status = VideoStatus.vtt_translated
                     logger.info(f"Translated all languages successfully for: {video.title}")
                 except Exception as e:
-                    video.status = VideoStatus.translate_failed
+                    video.status = VideoStatus.vtt_translate_failed
                     video.failed_reason = str(e)[:DB_ERROR_LOG_LENGTH]
                     logger.error(f"Translation failed: {e}")
 

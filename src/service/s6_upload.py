@@ -19,7 +19,7 @@ def process_translated_videos(batch_size: int = 10):
         while True:
             videos = (
                 session.query(Video)
-                .filter(Video.status == VideoStatus.translated, Video.id > last_id)
+                .filter(Video.status == VideoStatus.meta_translated, Video.id > last_id)
                 .order_by(Video.id)
                 .limit(batch_size)
                 .all()

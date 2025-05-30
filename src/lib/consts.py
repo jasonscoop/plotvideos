@@ -78,13 +78,15 @@ class VideoStatus(StrEnum):
     fetched = "fetched"
     downloaded = "downloaded"
     subtitled = "subtitled"
-    translated = "translated"
+    meta_translated = "meta_translated"
+    vtt_translated = "vtt_translated"
     uploaded = "uploaded"
     published = "published"
 
     download_failed = "download_failed"
     subtitle_failed = "subtitle_failed"
-    translate_failed = "translate_failed"
+    meta_translate_failed = "meta_translate_failed"
+    vtt_translate_failed = "vtt_translate_failed"
     upload_failed = "upload_failed"
     publish_failed = "publish_failed"
 

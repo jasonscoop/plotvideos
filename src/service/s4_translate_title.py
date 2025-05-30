@@ -96,6 +96,40 @@ def process_video_content_translation(video_id: int) -> None:
             session.commit()
 
 
+def process_all_pending_videos():
+    """Process all videos that need translation from the database."""
+    with Session(engine) as session:
+        # Get all videos that are downloaded but not translated
+        pending_videos = session.query(Video).filter(
+            Video.status == VideoStatus.downloaded
+        ).all()
+
+        total_videos = len(pending_videos)
+        if total_videos == 0:
+            logger.info("No pending videos found for translation")
+            return
+
+        logger.info(f"Found {total_videos} videos pending translation")
+        
+        success_count = 0
+        fail_count = 0
+
+        for index, video in enumerate(pending_videos, 1):
+            try:
+                logger.info(f"Processing video {video.id} ({index}/{total_videos})")
+                process_video_content_translation(video.id)
+                success_count += 1
+            except Exception as e:
+                logger.error(f"Failed to process video {video.id}: {str(e)}")
+                fail_count += 1
+                continue
+
+        logger.info(f"Translation processing completed:")
+        logger.info(f"- Total videos: {total_videos}")
+        logger.info(f"- Successfully translated: {success_count}")
+        logger.info(f"- Failed: {fail_count}")
+
+
 if __name__ == "__main__":
     # For testing
     import sys
@@ -104,4 +138,6 @@ if __name__ == "__main__":
         video_id = int(sys.argv[1])
         process_video_content_translation(video_id)
     else:
-        print("Please provide a video ID as argument")
+        # If no video ID is provided, process all pending videos
+        logger.info("No video ID provided, processing all pending videos...")
+        process_all_pending_videos()

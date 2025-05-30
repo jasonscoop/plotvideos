@@ -58,5 +58,5 @@ def process_subtitled_videos(batch_size: int = 10):
 
 
 if __name__ == '__main__':
-    init_logging("translate")
+    init_logging("translate_vtt")
     process_subtitled_videos()

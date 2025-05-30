@@ -1,9 +1,10 @@
 import json
-from pathlib import Path
 
 from loguru import logger
 
 from src.lib.consts import SubtitleType, BigLanguage
+from src.lib.models import Video
+from src.lib.schemas import StorePath
 from src.utils.azure_stt_utils import media_to_wav, get_azure_results
 from src.utils.string_utils import get_lang, split_by_stop_chars
 
@@ -47,22 +48,19 @@ def azure_stt_results_to_subtitle(azure_results, type) -> str:
     return header + "\n".join(final_items) + "\n"
 
 
-def generate_subtitle(title, video_path: Path, sub_type: SubtitleType):
-    wav_path = video_path.with_suffix(".wav")
-    subtitle_path = video_path.with_suffix(f".{sub_type.value}")
-    azure_results_file = video_path.with_suffix(f".azure-results.json")
+def generate_subtitle(video: Video):
+    path = StorePath(video.host, video.original_id)
+    video_path = path.parent / video.video_filename
+    if not video_path.exists():
+        raise Exception(f"Video {video.original_id}-{video_path} does not exist")
 
-    duration = media_to_wav(video_path, wav_path)
-    logger.info(f"[{video_path.name}] Converted wav")
+    duration = media_to_wav(video_path, path.wav)
+    language = BigLanguage.from_short_code(get_lang(video.title))
 
-    language = BigLanguage.from_short_code(get_lang(title))
-    logger.info(f"[{video_path.name}] Detected language: {language}")
+    azure_results = get_azure_results(path.wav, duration, language)
+    path.azure_results.write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))
 
-    azure_results = get_azure_results(wav_path, duration, language)
-    azure_results_file.write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))
-    logger.info(f"[{video_path.name}] Wrote azure_results")
+    vtt_content = azure_stt_results_to_subtitle(azure_results, SubtitleType.vtt)
+    path.vtt.write_text(vtt_content)
 
-    subtitle = azure_stt_results_to_subtitle(azure_results, sub_type)
-    subtitle_path.write_text(subtitle)
-
-    logger.info(f"[{video_path.name}] Generated subtitle")
+    logger.info(f"[{video_path.name}] Generated subtitle, detected as '{language}'")

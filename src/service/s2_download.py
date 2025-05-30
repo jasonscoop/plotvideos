@@ -27,7 +27,7 @@ def download_videos(batch_size: int = 10):
             logger.info(f"Processing batch of {len(videos)} videos (last_id {last_id})")
             for video in videos:
                 logger.info(f"Downloading: {video.title} ({video.url})")
-                path = StorePath.generate(video.host, video.original_id)
+                path = StorePath(video.host, video.original_id)
 
                 try:
                     video_filename, info = download_remote_video(video.url, path.parent)

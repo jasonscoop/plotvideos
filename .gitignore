@@ -44,3 +44,4 @@ htmlcov/
 # macOS
 .DS_Store
 works/
+_keyframes/

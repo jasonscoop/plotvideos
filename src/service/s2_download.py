@@ -1,3 +1,5 @@
+import traceback
+
 from loguru import logger
 
 from src.lib.connection import SessionLocal
@@ -46,6 +48,7 @@ def download_videos(batch_size: int = 10):
                     video.status = VideoStatus.failed_downloaded
                     video.failed_reason = str(e)[:DB_ERROR_LOG_LENGTH]  # Truncate if too long
                     logger.error(f"Download failed: {e}")
+                    traceback.print_exc()
                 session.commit()
             last_id = videos[-1].id
     finally:

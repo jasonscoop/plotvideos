@@ -1,3 +1,4 @@
+import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict
 
@@ -18,6 +19,7 @@ def translate_content_for_language(content: dict, lang: BigLanguage) -> tuple[Bi
         return lang, translated
     except Exception as e:
         logger.error(f"Failed to translate to {lang.full_name}: {str(e)}")
+        traceback.print_exc()
         raise
 
 
@@ -49,6 +51,7 @@ def translate_content_concurrent(content: dict, languages: List[BigLanguage], ma
             except Exception as e:
                 failed_languages.append(lang)
                 logger.error(f"Translation failed for {lang.full_name}: {str(e)}")
+                traceback.print_exc()
 
     if failed_languages:
         failed_langs = ", ".join(lang.full_name for lang in failed_languages)
@@ -87,6 +90,7 @@ def process_video_batch(video_batch: List[Video], languages: List[BigLanguage]) 
                 video.status = VideoStatus.failed_meta_translated
                 video.failed_reason = error_msg[:DB_ERROR_LOG_LENGTH]
                 fail_count += 1
+                traceback.print_exc()
 
         # Commit all changes for the batch
         session.commit()

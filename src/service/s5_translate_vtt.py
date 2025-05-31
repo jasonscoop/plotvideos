@@ -1,3 +1,5 @@
+import traceback
+
 from loguru import logger
 
 from src.lib.connection import SessionLocal
@@ -50,6 +52,7 @@ def process_subtitled_videos(batch_size: int = 10):
                     video.status = VideoStatus.failed_vtt_translated
                     video.failed_reason = str(e)[:DB_ERROR_LOG_LENGTH]
                     logger.error(f"Translation failed: {e}")
+                    traceback.print_exc()
 
                 session.commit()
             last_id = videos[-1].id

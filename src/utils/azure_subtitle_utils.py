@@ -10,16 +10,19 @@ from src.utils.azure_stt_utils import media_to_wav, get_azure_results
 from src.utils.string_utils import get_lang, split_by_stop_chars
 
 
-def mktimestamp(timestamp: float) -> str:
+def mktimestamp(time_unit: float) -> str:
     """
-    Convert a time in seconds to a string timestamp in the format:
-    "HH:MM:SS.mmm"
+    mktimestamp returns the timecode of the subtitle.
+
+    The timecode is in the format of 00:00:00.000.
+
+    Returns:
+        str: The timecode of the subtitle.
     """
-    hours = int(timestamp // 3600)
-    minutes = int((timestamp % 3600) // 60)
-    seconds = int(timestamp % 60)
-    milliseconds = int((timestamp - int(timestamp)) * 1000)
-    return f"{hours:02}:{minutes:02}:{seconds:02}.{milliseconds:03}"
+    hour = math.floor(time_unit / 10 ** 7 / 3600)
+    minute = math.floor((time_unit / 10 ** 7 / 60) % 60)
+    seconds = (time_unit / 10 ** 7) % 60
+    return f"{hour:02d}:{minute:02d}:{seconds:06.3f}"
 
 
 def srt_formatter(idx: int, start_time: float, end_time: float, sub_text: str) -> str:

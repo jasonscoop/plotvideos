@@ -1,3 +1,5 @@
+import json
+
 import requests
 from tenacity import stop_after_attempt, retry, wait_fixed
 
@@ -125,11 +127,5 @@ Instructions:
 
     result = response.json()
     content = result["choices"][0]["message"]["content"]
-    
-    # Parse the JSON response
-    import json
-    try:
-        translated_content = json.loads(content.strip())
-        return translated_content
-    except json.JSONDecodeError as e:
-        raise Exception(f"Failed to parse LLM response as JSON: {str(e)}")
+
+    return json.loads(content.strip())

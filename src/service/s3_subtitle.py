@@ -1,3 +1,5 @@
+import traceback
+
 from loguru import logger
 
 from src.lib.config import MAX_ACCEPT_VIDEO_SIZE
@@ -47,6 +49,7 @@ def process_downloaded_videos(batch_size: int = 10):
                     video.status = VideoStatus.failed_subtitled
                     video.failed_reason = str(e)[:1000]  # Truncate if too long
                     logger.error(f"Failed to generate subtitle: {e}")
+                    traceback.print_exc()
                 session.commit()
             last_id = videos[-1].id
     finally:

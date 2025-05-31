@@ -1,3 +1,4 @@
+import traceback
 from base64 import b64encode
 from typing import Dict, Tuple, List
 
@@ -51,6 +52,7 @@ def create_or_get_terms(client: httpx.Client, terms: List[str], taxonomy: str, l
                 term_ids.append(create_response.json()["id"])
             except Exception as e:
                 logger.error(f"Failed to create {taxonomy} '{term}': {str(e)}")
+                traceback.print_exc()
                 continue
 
     return term_ids
@@ -168,6 +170,7 @@ def publish_video_to_wordpress(video: Video) -> Tuple[bool, str]:
             return True, ""
     except Exception as e:
         logger.error(f"Failed to publish video: {str(e)}")
+        traceback.print_exc()
         return False, str(e)
 
 

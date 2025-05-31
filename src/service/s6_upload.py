@@ -1,3 +1,5 @@
+import traceback
+
 from loguru import logger
 
 from src.lib.config import BUNNY_API_KEY, BUNNY_LIBRARY_ID
@@ -53,7 +55,7 @@ def process_translated_videos(batch_size: int = 10):
                             logger.info(f"Uploaded subtitle for language: {lang_code}")
                         except Exception as e:
                             logger.error(f"Failed to upload subtitle for language {lang_code}: {e}")
-                            # Continue with other subtitles even if one fails
+                            traceback.print_exc()
 
                     video.status = VideoStatus.uploaded
                     logger.info(f"Successfully uploaded video and subtitles: {video.title}")
@@ -61,6 +63,7 @@ def process_translated_videos(batch_size: int = 10):
                     video.status = VideoStatus.failed_uploaded
                     video.failed_reason = str(e)[:DB_ERROR_LOG_LENGTH]
                     logger.error(f"Upload failed: {e}")
+                    traceback.print_exc()
 
                 session.commit()
             last_id = videos[-1].id

@@ -27,7 +27,6 @@ class Video(Base):
     url = Column(String(512), nullable=False, unique=True)
     video_filename = Column(String(100), nullable=False, default="")
     keyword = Column(String(50), nullable=False, default="")
-    bunny_response = Column(JSON, nullable=False, default={})
     meta_translations = Column(JSON, nullable=False, default=[])
     status = Column(SAEnum(VideoStatus), default=VideoStatus.fetched, nullable=False)
     failed_reason = Column(String(1000), nullable=False, default="")
@@ -43,6 +42,7 @@ class Video(Base):
     file_size = Column(Integer, nullable=False, default=0)
     subtitle_content = Column(Text, nullable=False, default="")
     duration = Column(Integer, nullable=False, default=0)
+    bunny_video_id = Column(String(48), nullable=False, default="")
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)

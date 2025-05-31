@@ -18,7 +18,7 @@ def translate_content_for_language(content: dict, lang: BigLanguage) -> tuple[Bi
         translated = translate_video_content(content, lang)
         return lang, translated
     except Exception as e:
-        logger.error(f"Failed to translate to {lang.full_name}: {str(e)}")
+        logger.error(f"Failed to translate to {lang.short_code}: {str(e)}")
         traceback.print_exc()
         raise
 
@@ -49,11 +49,11 @@ def translate_content_concurrent(content: dict, languages: List[BigLanguage], ma
                 })
             except Exception as e:
                 failed_languages.append(lang)
-                logger.error(f"Translation failed for {lang.full_name}: {str(e)}")
+                logger.error(f"Translation failed for {lang.long_code}: {str(e)}")
                 traceback.print_exc()
 
     if failed_languages:
-        failed_langs = ", ".join(lang.full_name for lang in failed_languages)
+        failed_langs = ", ".join(lang.long_code for lang in failed_languages)
         raise Exception(f"Translation failed for languages: {failed_langs}")
 
     return translations

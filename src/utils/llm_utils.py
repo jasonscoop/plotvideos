@@ -16,7 +16,7 @@ def translate_vtt(vtt_content: str, language: BigLanguage) -> str:
     data = {
         "messages": [
             {"role": "system", "content": "You are a subtitle translator."},
-            {"role": "user", "content": f"""Translate the following VTT subtitle content into {language.full_name}, while strictly preserving the original WebVTT format. 
+            {"role": "user", "content": f"""Translate the following VTT subtitle content into {language.long_code}, while strictly preserving the original WebVTT format. 
 
 Instructions:
 - Do NOT change the timestamps.
@@ -47,7 +47,7 @@ def translate_video_content(content: dict, language: BigLanguage) -> dict:
     data = {
         "messages": [
             {"role": "system", "content": "You are a video content translator."},
-            {"role": "user", "content": f"""Translate the following video content into {language.full_name}. 
+            {"role": "user", "content": f"""Translate the following video content into {language.long_code}. 
 
 Input Content:
 Title: {content['title']}

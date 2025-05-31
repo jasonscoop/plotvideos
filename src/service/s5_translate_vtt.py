@@ -48,7 +48,7 @@ def process_subtitled_videos(batch_size: int = 10):
                         translated_vtt = translate_vtt(vtt_content, lang)
                         translated_file = path.translated_vtts / f"{lang.short_code}.vtt"
                         translated_file.write_text(translated_vtt)
-                        logger.info(f"[{video.id}] Translated to {lang.full_name} successfully")
+                        logger.info(f"[{video.id}] Translated to {lang.short_code} successfully")
 
                     video.status = VideoStatus.vtt_translated
                     logger.info(f"Translated all languages successfully for: {video.title}")

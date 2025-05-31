@@ -188,7 +188,7 @@ def process_pending_videos():
                 video.status = VideoStatus.published
                 logger.info(f"Successfully published video {video.id}")
             else:
-                video.status = VideoStatus.publish_failed
+                video.status = VideoStatus.failed_published
                 video.failed_reason = error[:1000]
                 logger.error(f"Failed to publish video {video.id}: {error}")
 

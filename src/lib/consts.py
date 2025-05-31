@@ -83,12 +83,16 @@ class VideoStatus(StrEnum):
     uploaded = "uploaded"
     published = "published"
 
-    download_failed = "download_failed"
-    subtitle_failed = "subtitle_failed"
-    meta_translate_failed = "meta_translate_failed"
-    vtt_translate_failed = "vtt_translate_failed"
-    upload_failed = "upload_failed"
-    publish_failed = "publish_failed"
+    failed_downloaded = "failed_downloaded"
+    failed_subtitled = "failed_subtitled"
+    failed_meta_translated = "failed_meta_translated"
+    failed_vtt_translated = "failed_vtt_translated"
+    failed_uploaded = "failed_uploaded"
+    failed_published = "failed_published"
+
+    skipped_due_to_size = "skipped_due_to_size"
+    skipped_due_to_low_speech = "skipped_due_to_low_speech"
+    skipped_due_to_short_speech = "skipped_due_to_short_speech"
 
 
 class SubtitleType(StrEnum):

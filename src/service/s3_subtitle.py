@@ -1,5 +1,6 @@
 from loguru import logger
 
+from src.lib.config import MAX_ACCEPT_VIDEO_SIZE
 from src.lib.connection import SessionLocal
 from src.lib.models import Video, VideoStatus
 from src.utils.azure_subtitle_utils import generate_subtitle
@@ -24,14 +25,23 @@ def process_downloaded_videos(batch_size: int = 10):
 
             logger.info(f"Processing batch of {len(videos)} videos (last_id {last_id})")
             for video in videos:
+                if video.file_size > MAX_ACCEPT_VIDEO_SIZE:
+                    video.status = VideoStatus.skipped_due_to_size
+                    video.failed_reason = f"[{video.id}] Video size exceeded: {video.file_size} > {MAX_ACCEPT_VIDEO_SIZE}."
+                    logger.info(
+                        f"[{video.id}] Video size exceeded: has size {video.file_size}  > {MAX_ACCEPT_VIDEO_SIZE}")
+                    continue
+
                 logger.info(f"Generating subtitle for: {video.title}")
                 try:
-                    subtitle_content = generate_subtitle(video)
+                    subtitle_content, duration, pre_detected = generate_subtitle(video)
                     video.subtitle_content = subtitle_content
+                    video.duration = duration
+                    video.pre_detected_result = pre_detected.dump_json()
                     video.status = VideoStatus.subtitled
                     logger.info(f"Generated subtitle successfully for: {video.title}")
                 except Exception as e:
-                    video.status = VideoStatus.subtitle_failed
+                    video.status = VideoStatus.failed_subtitled
                     video.failed_reason = str(e)[:1000]  # Truncate if too long
                     logger.error(f"Failed to generate subtitle: {e}")
                 session.commit()

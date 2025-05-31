@@ -58,7 +58,7 @@ def process_translated_videos(batch_size: int = 10):
                     video.status = VideoStatus.uploaded
                     logger.info(f"Successfully uploaded video and subtitles: {video.title}")
                 except Exception as e:
-                    video.status = VideoStatus.upload_failed
+                    video.status = VideoStatus.failed_uploaded
                     video.failed_reason = str(e)[:DB_ERROR_LOG_LENGTH]
                     logger.error(f"Upload failed: {e}")
 

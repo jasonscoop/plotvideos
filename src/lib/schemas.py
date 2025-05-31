@@ -1,3 +1,5 @@
+from pydantic import BaseModel
+
 from src.lib.config import VIDEOS_DIR
 
 
@@ -9,3 +11,11 @@ class StorePath:
         self.translated_vtts = self.parent / "subtitles"
         self.azure_results = self.parent / "azure-results.json"
         self.wav = self.parent / "audio.wav"
+
+
+class PreDetectResult(BaseModel):
+    text: str
+    lang: str
+    speech_seconds: float
+    total_seconds: float
+    speech_ratio: float

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Enum as SAEnum, Boolean, DateTime, JSON
+from sqlalchemy import Column, Integer, String, Enum as SAEnum, Boolean, DateTime, JSON, Text
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql import func
 
@@ -37,7 +37,12 @@ class Video(Base):
     downloaded_duration = Column(Integer, nullable=False, default=0)
     downloaded_tags = Column(JSON, nullable=False, default=[])
     downloaded_categories = Column(JSON, nullable=False, default=[])
+
+    pre_detected_result = Column(JSON, nullable=False, default={})
+
     file_size = Column(Integer, nullable=False, default=0)
+    subtitle_content = Column(Text, nullable=False, default="")
+    duration = Column(Integer, nullable=False, default=0)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)

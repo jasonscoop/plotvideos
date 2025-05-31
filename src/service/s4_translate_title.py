@@ -84,7 +84,7 @@ def process_video_batch(video_batch: List[Video], languages: List[BigLanguage]) 
             except Exception as e:
                 error_msg = f"Content translation failed: {str(e)}"
                 logger.error(f"Error processing video {video.id}: {error_msg}")
-                video.status = VideoStatus.meta_translate_failed
+                video.status = VideoStatus.failed_meta_translated
                 video.failed_reason = error_msg[:DB_ERROR_LOG_LENGTH]
                 fail_count += 1
 

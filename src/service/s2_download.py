@@ -43,7 +43,7 @@ def download_videos(batch_size: int = 10):
                     video.file_size = file_size
                     logger.info(f"Downloaded successfully: {video.title}")
                 except Exception as e:
-                    video.status = VideoStatus.download_failed
+                    video.status = VideoStatus.failed_downloaded
                     video.failed_reason = str(e)[:DB_ERROR_LOG_LENGTH]  # Truncate if too long
                     logger.error(f"Download failed: {e}")
                 session.commit()

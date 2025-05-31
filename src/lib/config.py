@@ -14,18 +14,14 @@ LOGS_DIR = WORKS_DIR.joinpath("logs")
 LOGS_DIR.mkdir(exist_ok=True)
 MODELS_DIR = WORKS_DIR.joinpath("models")
 
-WHISPER_MODELS_DIR = WORKS_DIR.joinpath("models")
-WHISPER_MODELS_DIR.mkdir(exist_ok=True)
-
 POSTGRES_URL = getenv("POSTGRES_URL")
 
 RAPIDAPI_URL = getenv("RAPIDAPI_URL", "https://quality-porn.p.rapidapi.com/search")
 RAPIDAPI_KEY = getenv("RAPIDAPI_KEY")
 
-REDIS_HOST = getenv("REDIS_HOST", "localhost")
-REDIS_PORT = getenv("REDIS_PORT", "6379")
-
 YT_DLP_PROXY = getenv("YT_DLP_PROXY", None)
+
+MAX_ACCEPT_VIDEO_SIZE = getenv("MAX_ACCEPT_VIDEO_SIZE", 300_000_000)
 
 AZURE_SPEECH_KEY = getenv("AZURE_SPEECH_KEY")
 AZURE_SPEECH_REGION = getenv("AZURE_SPEECH_REGION")

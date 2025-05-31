@@ -125,6 +125,6 @@ BUNNEY_COLLECTION_MAP = {
     "spankbang.com": "97e2e3e6-0103-4179-898b-94b0bb7ed1b5",
 }
 
-VIDEO_EMBED_TEMPLATE = """<!-- wp:bunnycdn/block-stream-video {"library_id":"{library_id}","collection_id":"","video_id":"{video_id}","token_authentication":false,"responsive":true} -->
+VIDEO_EMBED_TEMPLATE = """<!-- wp:bunnycdn/block-stream-video {{"library_id":"{library_id}","collection_id":"","video_id":"{video_id}","token_authentication":false,"responsive":true}} -->
 <div class="wp-block-bunnycdn-block-stream-video"><div style="position:relative;padding-top:56.25%;width:100%"><iframe src="https://iframe.mediadelivery.net/embed/{library_id}/{video_id}?autoplay=false&amp;loop=false&amp;muted=false&amp;preload=false&amp;responsive=true" loading="lazy" style="border:0;position:absolute;top:0;height:100%;width:100%" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen></iframe></div></div>
 <!-- /wp:bunnycdn/block-stream-video -->"""

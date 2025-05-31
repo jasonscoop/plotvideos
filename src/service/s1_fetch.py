@@ -1,4 +1,5 @@
 import traceback
+from typing import List
 from urllib.parse import urlparse
 
 import requests
@@ -8,7 +9,7 @@ from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL
 from src.lib.connection import SessionLocal
 from src.lib.consts import ID_EXTRACTOR_MAP
 from src.lib.crud import batch_add, get_all_keywords
-from src.lib.models import Video, VideoStatus
+from src.lib.models import Video, VideoStatus, Keyword
 from src.utils.log_utils import init_logging
 
 
@@ -29,7 +30,7 @@ def fetch_video_urls(query: str, page: int):
 
 def fetch_and_save_videos(max_page=3):
     session = SessionLocal()
-    keywords = [keyword.name for keyword in get_all_keywords(session)]
+    keywords: List[Keyword] = get_all_keywords(session)
 
     if not keywords:
         logger.warning("No keywords found in database. Please add some keywords first.")
@@ -39,7 +40,7 @@ def fetch_and_save_videos(max_page=3):
         logger.info(f"Fetching videos for keyword: {keyword}")
 
         for page in range(1, max_page):
-            data = fetch_video_urls(keyword, page)
+            data = fetch_video_urls(keyword.name, page)
             sites = data.get('data', [])
             for site in sites:
                 if not site["links"]:

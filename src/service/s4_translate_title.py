@@ -78,7 +78,7 @@ def process_video_batch(video_batch: List[Video], languages: List[BigLanguage]) 
                 translations = translate_content_concurrent(content, languages)
 
                 # Update video with translations and status
-                video.meta_translations = translations
+                video.title_translations = translations
                 video.status = VideoStatus.meta_translated
                 success_count += 1
                 logger.info(f"Successfully translated video {video.id}")

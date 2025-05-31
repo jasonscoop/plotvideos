@@ -7,13 +7,13 @@ def get_all_keywords(session: Session) -> list[Keyword]:
     return session.query(Keyword).filter(Keyword.enabled == True).all()
 
 
-def batch_add(session: Session, videos, keyword: str) -> (int, int):
+def batch_add(session: Session, videos, keyword: Keyword) -> (int, int):
     added = updated = 0
 
     for video in videos:
         old: Video = session.query(Video).filter(Video.url == video.url).first()
         if not old:
-            video.keyword = keyword
+            video.keyword_id = keyword.id
             session.add(video)
             added += 1
 

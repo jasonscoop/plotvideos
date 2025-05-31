@@ -6,7 +6,7 @@ import httpx
 from loguru import logger
 from sqlalchemy.orm import Session
 
-from src.lib.config import WP_BASE_URL, WP_USERNAME, WP_PASSWORD
+from src.lib.config import WP_BASE_URL, WP_USERNAME, WP_PASSWORD, BUNNY_LIBRARY_ID, BUNNY_CDN_DOMAIN
 from src.lib.connection import engine
 from src.lib.consts import VideoStatus, VIDEO_EMBED_TEMPLATE, BigLanguage
 from src.lib.models import Video
@@ -104,27 +104,12 @@ def link_posts(client: httpx.Client, link_maps: dict) -> Dict:
     return response.json()
 
 
-def get_translation_for_lang(translations: list, lang_code: str) -> dict:
-    """Helper function to get translation for a specific language"""
-    for trans in translations:
-        if trans["lang"] == lang_code:
-            return trans
-    return None
-
-
 def publish_video_to_wordpress(video: Video) -> Tuple[bool, str]:
-    # Check bunny video details first
-    library_id = video.bunny_response.get("libraryId")
-    video_id = video.bunny_response.get("guid")
-
-    if not library_id or not video_id:
-        error_msg = f"Missing bunny video details - libraryId: {library_id}, guid: {video_id}"
-        logger.error(error_msg)
-        return False, error_msg
+    assert BUNNY_LIBRARY_ID and video.bunny_video_id, "Bunny library ID and video ID not set"
 
     video_embed = VIDEO_EMBED_TEMPLATE.format(
-        library_id=library_id,
-        video_id=video_id
+        library_id=BUNNY_LIBRARY_ID,
+        video_id=video.bunny_video_id
     )
 
     try:
@@ -151,10 +136,10 @@ def publish_video_to_wordpress(video: Video) -> Tuple[bool, str]:
                     title=translation["title"],
                     content=video_embed,
                     description=translation["description"],
-                    tags=translation["tags"],
-                    categories=all_categories,
+                    tags=translation["tags"],  # todo: use translated one
+                    categories=all_categories,  # todo: use translated one
                     lang=lang.short_code,
-                    image_url=video.url
+                    image_url=f"https://{BUNNY_CDN_DOMAIN}/{video.bunny_video_id}/thumbnail.jpg"
                 )
 
                 lang_post_maps[lang.short_code] = post["id"]

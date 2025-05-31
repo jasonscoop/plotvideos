@@ -33,6 +33,7 @@ LLM_API_VERSION = getenv("LLM_API_VERSION")
 
 BUNNY_API_KEY = getenv("BUNNY_API_KEY")
 BUNNY_LIBRARY_ID = getenv("BUNNY_LIBRARY_ID")
+BUNNY_CDN_DOMAIN = getenv("BUNNY_CDN_DOMAIN")
 
 # WordPress Configuration
 WP_BASE_URL = getenv("WP_BASE_URL", "https://wp.garymeng.com")

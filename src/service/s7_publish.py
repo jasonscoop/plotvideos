@@ -74,7 +74,7 @@ def create_post(client: httpx.Client, title: str, content: str,
 def link_posts(client: httpx.Client, link_maps: dict) -> Dict:
     response = client.post(
         f"{WP_BASE_URL}/wp-json/custom/v1/link-posts",
-        json={"posts": link_maps},
+        json=link_maps,
         headers=HEADERS
     )
     response.raise_for_status()

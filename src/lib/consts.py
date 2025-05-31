@@ -93,6 +93,7 @@ class VideoStatus(StrEnum):
     skipped_due_to_size = "skipped_due_to_size"
     skipped_due_to_low_speech = "skipped_due_to_low_speech"
     skipped_due_to_short_speech = "skipped_due_to_short_speech"
+    skipped_due_to_empty_subtitle = "skipped_due_to_empty_subtitle"
 
 
 class SubtitleType(StrEnum):

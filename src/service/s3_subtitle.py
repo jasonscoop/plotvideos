@@ -30,14 +30,17 @@ def process_downloaded_videos(batch_size: int = 10):
                     video.failed_reason = f"[{video.id}] Video size exceeded: {video.file_size} > {MAX_ACCEPT_VIDEO_SIZE}."
                     logger.info(
                         f"[{video.id}] Video size exceeded: has size {video.file_size}  > {MAX_ACCEPT_VIDEO_SIZE}")
+                    session.commit()
                     continue
 
                 logger.info(f"Generating subtitle for: {video.title}")
                 try:
                     subtitle_content, duration, pre_detected = generate_subtitle(video)
                     video.subtitle_content = subtitle_content
+                    if len(subtitle_content.strip()) == 0:
+                        video.status = VideoStatus.skipped_due_to_empty_subtitle
                     video.duration = duration
-                    video.pre_detected_result = pre_detected.dump_json()
+                    video.pre_detected_result = pre_detected.to_json()
                     video.status = VideoStatus.subtitled
                     logger.info(f"Generated subtitle successfully for: {video.title}")
                 except Exception as e:

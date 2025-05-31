@@ -8,6 +8,7 @@ dependencies = [
     "azure-cognitiveservices-speech==1.44.0",
     "fasttext==0.9.3",
     "ffmpeg-python==0.2.0",
+    "google-cloud-translate>=3.20.2",
     "loguru==0.7.3",
     "moviepy==2.2.1",
     "numpy==1.26.4",

@@ -38,3 +38,7 @@ BUNNY_LIBRARY_ID = getenv("BUNNY_LIBRARY_ID")
 WP_BASE_URL = getenv("WP_BASE_URL", "https://wp.garymeng.com")
 WP_USERNAME = getenv("WP_USERNAME")
 WP_PASSWORD = getenv("WP_PASSWORD")
+
+# Google Cloud Configuration
+GOOGLE_PROJECT_ID = getenv("GOOGLE_PROJECT_ID")
+GOOGLE_CREDENTIALS_JSON = getenv("GOOGLE_CREDENTIALS_JSON")

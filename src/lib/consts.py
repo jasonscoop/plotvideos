@@ -23,7 +23,7 @@ class BigLanguage(Enum):
     INDONESIAN = ("id", "id-ID", "Indonesian")
     GERMAN = ("de", "de-DE", "German")
     JAPANESE = ("ja", "ja-JP", "Japanese")
-    SWAHILI = ("sw", "sw-KE", "Swahili")
+    KOREAN = ("ko", "ko-KR", "Korean")
 
     @property
     def short_code(self) -> str:
@@ -57,6 +57,11 @@ class BigLanguage(Enum):
             cls.SPANISH.long_code,
         ]
 
+
+langs = []
+for lang in BigLanguage:
+    langs.append(lang.short_code)
+print(", ".join(langs))
 
 FASTTEXT_LANG_ALIAS = {
     # Chinese and Dialects

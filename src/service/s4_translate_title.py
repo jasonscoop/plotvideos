@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from src.lib.connection import engine
 from src.lib.consts import VideoStatus, BigLanguage, DB_ERROR_LOG_LENGTH
 from src.lib.models import Video
-from src.utils.llm_utils import translate_video_content
+from src.utils.google_translate_utils import translate_video_content
 from src.utils.log_utils import init_logging
 
 
@@ -44,7 +44,6 @@ def translate_content_concurrent(content: dict, languages: List[BigLanguage], ma
                 translations.append({
                     "lang": result_lang.short_code,
                     "title": translated_content["title"],
-                    "description": translated_content["description"],
                     "tags": translated_content["tags"],
                     "categories": translated_content["categories"]
                 })
@@ -71,7 +70,6 @@ def process_video_batch(video_batch: List[Video], languages: List[BigLanguage]) 
                 # Prepare content for translation
                 content = {
                     "title": video.downloaded_title or video.title,
-                    "description": video.downloaded_description,
                     "tags": video.downloaded_tags,
                     "categories": video.downloaded_categories
                 }
@@ -80,7 +78,7 @@ def process_video_batch(video_batch: List[Video], languages: List[BigLanguage]) 
                 translations = translate_content_concurrent(content, languages)
 
                 # Update video with translations and status
-                video.title_translations = translations
+                video.meta_translations = translations
                 video.status = VideoStatus.meta_translated
                 success_count += 1
                 logger.info(f"Successfully translated video {video.id}")

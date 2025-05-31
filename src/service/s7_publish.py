@@ -135,7 +135,7 @@ def publish_video_to_wordpress(video: Video) -> Tuple[bool, str]:
             for lang in BigLanguage:
                 # Find translation for this language
                 translation = None
-                for trans in video.title_translations:
+                for trans in video.meta_translations:
                     if trans["lang"] == lang.short_code:
                         translation = trans
                         break
@@ -182,7 +182,7 @@ def process_pending_videos():
         ).all()
 
         for video in pending_videos:
-            if not video.title_translations:
+            if not video.meta_translations:
                 logger.warning(f"Video {video.id} has no translations, skipping...")
                 continue
 

@@ -29,6 +29,10 @@ def process_subtitled_videos(batch_size: int = 10):
 
             logger.info(f"Processing batch of {len(videos)} videos (last_id {last_id})")
             for video in videos:
+                if len(video.subtitle_content.strip()) == 0:
+                    logger.warning(f"Video {video.id} has no subtitle, skipping")
+                    continue
+
                 logger.info(f"Translating subtitles for: {video.title}")
                 path = StorePath(video.host, video.original_id)
 
@@ -44,7 +48,7 @@ def process_subtitled_videos(batch_size: int = 10):
                         translated_vtt = translate_vtt(vtt_content, lang)
                         translated_file = path.translated_vtts / f"{lang.short_code}.vtt"
                         translated_file.write_text(translated_vtt)
-                        logger.info(f"Translated to {lang.full_name} successfully")
+                        logger.info(f"[{video.id}] Translated to {lang.full_name} successfully")
 
                     video.status = VideoStatus.vtt_translated
                     logger.info(f"Translated all languages successfully for: {video.title}")

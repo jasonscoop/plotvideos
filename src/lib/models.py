@@ -28,7 +28,7 @@ class Video(Base):
     video_filename = Column(String(100), nullable=False, default="")
     keyword = Column(String(50), nullable=False, default="")
     bunny_response = Column(JSON, nullable=False, default={})
-    title_translations = Column(JSON, nullable=False, default=[])
+    meta_translations = Column(JSON, nullable=False, default=[])
     status = Column(SAEnum(VideoStatus), default=VideoStatus.fetched, nullable=False)
     failed_reason = Column(String(1000), nullable=False, default="")
 

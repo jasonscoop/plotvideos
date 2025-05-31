@@ -1,4 +1,4 @@
-from src.utils.audio_utils import detect_talking_whisper
+from src.utils.audio_utils import detect_talking_whisper, detect_languages
 
 
 def test_detect_speech():
@@ -10,3 +10,8 @@ def test_detect_speech():
     print("68334391e0051",
           detect_talking_whisper(
               "/Users/garymeng/code/more/wuse/works/videos/www.pornhub.com/68/68334391e0051/audio.wav"))
+
+
+def test_detect_languages():
+    langs = detect_languages("/Users/garymeng/code/more/wuse/works/videos/www.pornhub.com/68/6808ced982194/audio.wav")
+    assert langs == []

@@ -1,4 +1,5 @@
 import json
+import re
 
 import requests
 from tenacity import stop_after_attempt, retry, wait_fixed
@@ -6,16 +7,12 @@ from tenacity import stop_after_attempt, retry, wait_fixed
 from src.lib.config import LLM_BASE_URL, LLM_MODEL, LLM_API_VERSION, LLM_API_KEY
 from src.lib.consts import BigLanguage
 
+url = f"{LLM_BASE_URL}/openai/deployments/{LLM_MODEL}/chat/completions?api-version={LLM_API_VERSION}"
+headers = {"Content-Type": "application/json", "api-key": LLM_API_KEY}
+
 
 @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
 def translate_vtt(vtt_content: str, language: BigLanguage) -> str:
-    url = f"{LLM_BASE_URL}/openai/deployments/{LLM_MODEL}/chat/completions?api-version={LLM_API_VERSION}"
-
-    headers = {
-        "Content-Type": "application/json",
-        "api-key": LLM_API_KEY
-    }
-
     data = {
         "messages": [
             {"role": "system", "content": "You are a subtitle translator."},
@@ -46,60 +43,11 @@ Input:
 
 
 @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
-def translate_title(title: str, language: BigLanguage) -> str:
-    url = f"{LLM_BASE_URL}/openai/deployments/{LLM_MODEL}/chat/completions?api-version={LLM_API_VERSION}"
-
-    headers = {
-        "Content-Type": "application/json",
-        "api-key": LLM_API_KEY
-    }
-
-    data = {
-        "messages": [
-            {"role": "system", "content": "You are a title translator."},
-            {"role": "user", "content": f"""Translate the following title into {language.full_name}. 
-            
-Instructions:
-- Preserve any numbers or special characters
-- Keep the translation natural and fluent
-- Do NOT add any explanations or comments
-- Return ONLY the translated title
-
-Title: {title}"""}
-        ],
-        "temperature": 0.5
-    }
-
-    response = requests.post(url, headers=headers, json=data)
-    response.raise_for_status()
-
-    result = response.json()
-    content = result["choices"][0]["message"]["content"]
-
-    return content.strip()
-
-
-@retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
 def translate_video_content(content: dict, language: BigLanguage) -> dict:
-    """
-    Translate all video content (title, description, tags, categories) at once.
-    
-    Args:
-        content: dict containing title, description, tags, and categories
-        language: target language
-    """
-    url = f"{LLM_BASE_URL}/openai/deployments/{LLM_MODEL}/chat/completions?api-version={LLM_API_VERSION}"
-
-    headers = {
-        "Content-Type": "application/json",
-        "api-key": LLM_API_KEY
-    }
-
     data = {
         "messages": [
             {"role": "system", "content": "You are a video content translator."},
             {"role": "user", "content": f"""Translate the following video content into {language.full_name}. 
-            Return the result in a JSON format.
 
 Input Content:
 Title: {content['title']}
@@ -111,13 +59,15 @@ Instructions:
 - Translate all content naturally and fluently
 - Keep special characters and numbers unchanged
 - For tags and categories, translate each item and keep them as a list
-- Return ONLY a valid JSON object with the following structure:
+- Return a valid JSON object without any explanations, wrapper, headers, footers, or comments.
+- The return JSON structure should be:
 {{
     "title": "<translated title>",
     "description": "<translated description>",
     "tags": ["<translated tag 1>", "<translated tag 2>", ...],
     "categories": ["<translated category 1>", "<translated category 2>", ...]
-}}"""}
+}}
+"""}
         ],
         "temperature": 0.5
     }
@@ -128,4 +78,11 @@ Instructions:
     result = response.json()
     content = result["choices"][0]["message"]["content"]
 
-    return json.loads(content.strip())
+    cleaned = remove_code_block_wrapper(content)
+    return json.loads(cleaned)
+
+
+def remove_code_block_wrapper(text):
+    if not text.strip():
+        return text
+    return re.sub(r'^```\w*\n|\n```$', '', text.strip())

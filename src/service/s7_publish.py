@@ -21,37 +21,39 @@ HEADERS = {
 }
 
 
-def create_or_get_terms(client: httpx.Client, terms: List[str], taxonomy: str, lang: str) -> List[int]:
+def create_or_get_terms(terms: List[str], taxonomy: str, lang: str) -> List[int]:
     term_ids = []
-    for term in terms:
-        response = client.get(f"{API_URL}/{taxonomy}", params={
-            "search": term,
-            "lang": lang,
-            "per_page": 1
-        })
-        response.raise_for_status()
-        data = response.json()
-        if data:
-            term_ids.append(data[0]["id"])
-        else:
-            create_response = client.post(
-                f"{API_URL}/{taxonomy}",
-                json={
-                    "name": term,
-                    "lang": lang
-                },
-                headers=HEADERS
-            )
-            create_response.raise_for_status()
-            term_ids.append(create_response.json()["id"])
+    with httpx.Client() as client:
+        # todo: map the language for terms
+        for term in terms:
+            response = client.get(f"{API_URL}/{taxonomy}", params={
+                "search": term,
+                "lang": lang,
+                "per_page": 1
+            })
+            response.raise_for_status()
+            data = response.json()
+            if data:
+                term_ids.append(data[0]["id"])
+            else:
+                create_response = client.post(
+                    f"{API_URL}/{taxonomy}",
+                    json={
+                        "name": term,
+                        "lang": lang
+                    },
+                    headers=HEADERS
+                )
+                create_response.raise_for_status()
+                term_ids.append(create_response.json()["id"])
 
     return term_ids
 
 
-def create_post(client: httpx.Client, title: str, content: str,
+def create_post(title: str, content: str,
                 tags: list, categories: list, lang: str, image_url: str) -> Dict:
-    tag_ids = create_or_get_terms(client, tags, "tags", lang)
-    category_ids = create_or_get_terms(client, categories, "categories", lang)
+    tag_ids = create_or_get_terms(tags, "tags", lang)
+    category_ids = create_or_get_terms(categories, "categories", lang)
 
     data = {
         "title": title,
@@ -66,19 +68,21 @@ def create_post(client: httpx.Client, title: str, content: str,
         }
     }
 
-    response = client.post(f"{API_URL}/posts", json=data, headers=HEADERS)
-    response.raise_for_status()
-    return response.json()
+    with httpx.Client() as client:
+        response = client.post(f"{API_URL}/posts", json=data, headers=HEADERS)
+        response.raise_for_status()
+        return response.json()
 
 
-def link_posts(client: httpx.Client, link_maps: dict) -> Dict:
-    response = client.post(
-        f"{WP_BASE_URL}/wp-json/custom/v1/link-posts",
-        json=link_maps,
-        headers=HEADERS
-    )
-    response.raise_for_status()
-    return response.json()
+def link_posts(link_maps: dict) -> Dict:
+    with httpx.Client() as client:
+        response = client.post(
+            f"{WP_BASE_URL}/wp-json/custom/v1/link-posts",
+            json=link_maps,
+            headers=HEADERS
+        )
+        response.raise_for_status()
+        return response.json()
 
 
 def publish_video_to_wordpress(video: Video):
@@ -92,26 +96,23 @@ def publish_video_to_wordpress(video: Video):
     categories = {c.lang: c.translation for c in video.terms if c.type == "category"}
     tags = {c.lang: c.translation for c in video.terms if c.type == "tags"}
 
-    with httpx.Client() as client:
-        lang_post_maps = {}
+    lang_post_maps = {}
+    for lang in BigLanguage:
+        post = create_post(
+            title=video.title_translations.get(lang.short_code, video.title),
+            content=video_embed,
+            tags=tags.get(lang.short_code, video.downloaded_tags),
+            categories=categories.get(lang.short_code, video.downloaded_categories),
+            lang=lang.short_code,
+            image_url=f"https://{BUNNY_CDN_DOMAIN}/{video.bunny_video_id}/thumbnail.jpg"
+        )
 
-        for lang in BigLanguage:
-            post = create_post(
-                client=client,
-                title=video.title_translations.get(lang.short_code, video.title),
-                content=video_embed,
-                tags=tags.get(lang.short_code, video.downloaded_tags),
-                categories=categories.get(lang.short_code, video.downloaded_categories),
-                lang=lang.short_code,
-                image_url=f"https://{BUNNY_CDN_DOMAIN}/{video.bunny_video_id}/thumbnail.jpg"
-            )
+        lang_post_maps[lang.short_code] = post["id"]
+        logger.info(f"✅ [{lang.short_code}] post created with ID: {post['id']}")
 
-            lang_post_maps[lang.short_code] = post["id"]
-            logger.info(f"✅ [{lang.short_code}] post created with ID: {post['id']}")
-
-        if len(lang_post_maps) > 1:
-            link_result = link_posts(client, lang_post_maps)
-            logger.info(f"✅ Posts linked: {link_result}")
+    if len(lang_post_maps) > 1:
+        link_result = link_posts(lang_post_maps)
+        logger.info(f"✅ Posts linked: {link_result}")
 
 
 def process_pending_videos(batch_size=10):

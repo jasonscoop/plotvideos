@@ -40,7 +40,7 @@ def process_downloaded_videos(batch_size: int = 10):
                     if len(subtitle_content.strip()) == 0:
                         video.status = VideoStatus.skipped_due_to_empty_subtitle
                     video.duration = duration
-                    video.pre_detected_result = pre_detected.to_json()
+                    video.pre_detected_result = pre_detected.model_dump()
                     video.status = VideoStatus.subtitled
                     logger.info(f"Generated subtitle successfully for: {video.title}")
                 except Exception as e:

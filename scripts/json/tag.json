@@ -1,0 +1,618 @@
+[
+  {
+    "id": 1191,
+    "count": 0,
+    "description": "",
+    "link": "https://wp.garymeng.com/sw/tag/asian-sw",
+    "name": "asian",
+    "slug": "asian-sw",
+    "taxonomy": "post_tag",
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags/1191",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/taxonomies/post_tag"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/posts?tags=1191"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 1119,
+    "count": 0,
+    "description": "",
+    "link": "https://wp.garymeng.com/ja/tag/asian-ja",
+    "name": "asian",
+    "slug": "asian-ja",
+    "taxonomy": "post_tag",
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags/1119",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/taxonomies/post_tag"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/posts?tags=1119"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 1047,
+    "count": 0,
+    "description": "",
+    "link": "https://wp.garymeng.com/de/tag/asian-de",
+    "name": "asian",
+    "slug": "asian-de",
+    "taxonomy": "post_tag",
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags/1047",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/taxonomies/post_tag"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/posts?tags=1047"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 935,
+    "count": 0,
+    "description": "",
+    "link": "https://wp.garymeng.com/id/tag/asian-id",
+    "name": "asian",
+    "slug": "asian-id",
+    "taxonomy": "post_tag",
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags/935",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/taxonomies/post_tag"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/posts?tags=935"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 863,
+    "count": 0,
+    "description": "",
+    "link": "https://wp.garymeng.com/ur/tag/asian-ur",
+    "name": "asian",
+    "slug": "asian-ur",
+    "taxonomy": "post_tag",
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags/863",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/taxonomies/post_tag"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/posts?tags=863"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 791,
+    "count": 0,
+    "description": "",
+    "link": "https://wp.garymeng.com/ru/tag/asian-ru",
+    "name": "asian",
+    "slug": "asian-ru",
+    "taxonomy": "post_tag",
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags/791",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/taxonomies/post_tag"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/posts?tags=791"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 719,
+    "count": 0,
+    "description": "",
+    "link": "https://wp.garymeng.com/pt/tag/asian-pt",
+    "name": "asian",
+    "slug": "asian-pt",
+    "taxonomy": "post_tag",
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags/719",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/taxonomies/post_tag"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/posts?tags=719"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 94,
+    "count": 0,
+    "description": "",
+    "link": "https://wp.garymeng.com/tag/asian",
+    "name": "asian",
+    "slug": "asian",
+    "taxonomy": "post_tag",
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags/94",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/taxonomies/post_tag"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/posts?tags=94"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 647,
+    "count": 0,
+    "description": "",
+    "link": "https://wp.garymeng.com/bn/tag/asian-bn",
+    "name": "asian",
+    "slug": "asian-bn",
+    "taxonomy": "post_tag",
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags/647",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/taxonomies/post_tag"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/posts?tags=647"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 575,
+    "count": 0,
+    "description": "",
+    "link": "https://wp.garymeng.com/fr/tag/asian-fr",
+    "name": "asian",
+    "slug": "asian-fr",
+    "taxonomy": "post_tag",
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags/575",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/taxonomies/post_tag"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/posts?tags=575"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 503,
+    "count": 0,
+    "description": "",
+    "link": "https://wp.garymeng.com/ar/tag/asian-ar",
+    "name": "asian",
+    "slug": "asian-ar",
+    "taxonomy": "post_tag",
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags/503",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/taxonomies/post_tag"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/posts?tags=503"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 431,
+    "count": 0,
+    "description": "",
+    "link": "https://wp.garymeng.com/es/tag/asian-es",
+    "name": "asian",
+    "slug": "asian-es",
+    "taxonomy": "post_tag",
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags/431",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/taxonomies/post_tag"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/posts?tags=431"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 359,
+    "count": 0,
+    "description": "",
+    "link": "https://wp.garymeng.com/hi/tag/asian-hi",
+    "name": "asian",
+    "slug": "asian-hi",
+    "taxonomy": "post_tag",
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags/359",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/taxonomies/post_tag"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/posts?tags=359"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 227,
+    "count": 0,
+    "description": "",
+    "link": "https://wp.garymeng.com/zh/tag/asian-zh",
+    "name": "asian",
+    "slug": "asian-zh",
+    "taxonomy": "post_tag",
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags/227",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/tags"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/taxonomies/post_tag"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://wp.garymeng.com/wp-json/wp/v2/posts?tags=227"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  }
+]

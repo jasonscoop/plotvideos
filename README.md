@@ -11,12 +11,6 @@ Automated pipeline to:
 - Translate title and subtitles
 - Publish to MediaCMS
 
-```shell
-docker compose up --build --no-deps -e  LT_LOAD_ONLY=en,zh,hi,es,ar,fr,bn,pt,ru,ur,id,de,ja,sw
-docker build -f ./docker/Dockerfile --build-arg models="en,zh,hi,es,ar,fr,bn,pt,ru,ur,id,de,ja,sw" .
-./run.sh --load_only_lang_codes en,zh,hi,es,ar,fr,bn,pt,ru,ur,id,de,ja,sw
-```
-
 # Hosts
 
 - https://www.hostinger.com/pricing?content=vps-hosting

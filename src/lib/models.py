@@ -1,9 +1,10 @@
 from sqlalchemy import Column, Integer, String, Enum, Boolean, DateTime, JSON, Text, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
+from sqlalchemy.sql.schema import UniqueConstraint
 
 from src.lib.connection import engine
-from src.lib.consts import VideoStatus
+from src.lib.consts import VideoStatus, TermType
 
 Base = declarative_base()
 
@@ -26,7 +27,7 @@ class VideoTerms(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     video_id = Column(Integer, ForeignKey('videos.id'), nullable=False)
     term_id = Column(Integer, ForeignKey('terms.id'), nullable=False)
-    type = Column(String(20), nullable=False)  # 'category' or 'tag'
+    type = Column(Enum(TermType), nullable=False)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
@@ -75,6 +76,8 @@ class Terms(Base):
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    __table_args__ = (UniqueConstraint("term", "lang"),)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 from src.lib.config import VIDEOS_DIR
+from src.lib.consts import BigLanguage
 
 
 class StorePath:
@@ -19,3 +20,9 @@ class PreDetectResult(BaseModel):
     speech_seconds: float
     total_seconds: float
     speech_ratio: float
+
+
+class TermResult(BaseModel):
+    id: int
+    name: str
+    lang: BigLanguage

@@ -9,6 +9,11 @@ from src.utils.id_utils import PornhubIdExtractor, XhamsterIdExtractor, XvideosI
 DB_ERROR_LOG_LENGTH = 1000
 
 
+class TermType(StrEnum):
+    category = "categories"
+    tag = "tags"
+
+
 class BigLanguage(Enum):
     ENGLISH = ("en", "en-US", "English")
     CHINESE = ("zh", "zh-CN", "简体中文")
@@ -40,12 +45,12 @@ class BigLanguage(Enum):
         return self.value[2]
 
     @classmethod
-    def from_short_code(cls, code: str):
+    def from_short_code(cls, short_code: str):
         for lang in cls:
-            if lang.short_code == code.lower():
+            if lang.short_code == short_code.lower():
                 return lang
 
-        logger.error(f"[{code}] Language not found, set to default")
+        logger.error(f"[{short_code}] Language not found, set to default")
         return cls.ENGLISH
 
     @classmethod

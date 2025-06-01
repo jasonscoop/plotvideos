@@ -11,14 +11,15 @@ from src.utils.wp_utils import wp_get_terms_lang_map_id, wp_create_term, wp_link
 
 
 def create_or_get_term(term: str, translations: dict, term_type: TermType, lang: BigLanguage) -> int:
-    term_dict = wp_get_terms_lang_map_id(term, term_type, len(BigLanguage))
+    term_dict = wp_get_terms_lang_map_id(translations.get((term, lang)), term_type, len(BigLanguage))
     if lang in term_dict:
         return term_dict[lang]
 
     link_map = {}
     for l in BigLanguage:
-        if l in term_dict:
-            link_map[l.short_code] = term_dict[l]
+        old_term_dict = wp_get_terms_lang_map_id(translations.get((term, l)), term_type, len(BigLanguage))
+        if l in old_term_dict:
+            link_map[l.short_code] = old_term_dict[l]
         else:
             link_map[l.short_code] = wp_create_term(translations.get((term, l)), term_type, l)
 
@@ -36,7 +37,7 @@ def create_post(video: Video, lang: BigLanguage) -> dict:
     term_translations = {(t.term, t.lang): t.translation for t in video.terms}
 
     for t in video.terms.items():
-        if t.type == TermType.tag:
+        if t.type == TermType.post_tag:
             tag_ids.append(create_or_get_term(t.term, term_translations, t.type, lang))
         else:
             category_ids.append(create_or_get_term(t.term, term_translations, t.type, lang))

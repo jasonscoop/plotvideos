@@ -4,8 +4,10 @@ from src.service.s7_publish import create_or_get_term
 
 def test_create_or_get_term():
     translations = {
-        ("Flower", BigLanguage.ENGLISH): "Flower",
+        ("Flower", BigLanguage.JAPANESE): "花",
         ("Flower", BigLanguage.CHINESE): "花",
+        ("Flower", BigLanguage.ENGLISH): "Flower",
+
         ("Flower", BigLanguage.HINDI): "फूल",
         ("Flower", BigLanguage.SPANISH): "Flor",
         ("Flower", BigLanguage.ARABIC): "ورد",
@@ -16,8 +18,8 @@ def test_create_or_get_term():
         ("Flower", BigLanguage.URDU): "پھول",
         ("Flower", BigLanguage.INDONESIAN): "Bunga",
         ("Flower", BigLanguage.GERMAN): "Blume",
-        ("Flower", BigLanguage.JAPANESE): "花",
+
         ("Flower", BigLanguage.SWAHILI): "Maua",
     }
-    term_id = create_or_get_term("Flower", translations, TermType.category, BigLanguage.ENGLISH)
+    term_id = create_or_get_term("Flower", translations, TermType.category, BigLanguage.JAPANESE)
     assert isinstance(term_id, int)

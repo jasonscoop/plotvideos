@@ -11,7 +11,7 @@ DB_ERROR_LOG_LENGTH = 1000
 
 class TermType(StrEnum):
     category = "categories"
-    tag = "tags"
+    post_tag = "tags"
 
 
 class BigLanguage(Enum):

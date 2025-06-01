@@ -45,10 +45,11 @@ def wp_get_terms(search: str, term_type: TermType, per_page=1):
 def wp_create_term(name: str, term_type: TermType, lang: BigLanguage) -> int:
     with httpx.Client() as client:
         response = client.post(
-            f"{WP_API_URL}/{term_type.value}",
+            f"{WP_BASE_URL}/wp-json/custom/v1/create-term",
             json={
                 "name": name,
                 "lang": lang.short_code,
+                "taxonomy": term_type.name,
             },
             headers=HEADERS
         )

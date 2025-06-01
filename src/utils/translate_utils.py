@@ -7,6 +7,8 @@ from src.lib.consts import BigLanguage
 
 
 def translate_texts(texts: List[str], lang: BigLanguage):
+    assert RAPIDAPI_AI_TRANSLATE_KEY_URL, "Please set the RAPIDAPI_AI_TRANSLATE_KEY_URL environment variable"
+    
     url = "https://ai-translate.p.rapidapi.com/translateHtml"
 
     payload = {

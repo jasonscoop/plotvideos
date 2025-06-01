@@ -1,0 +1,24 @@
+from typing import List
+
+import requests
+
+from src.lib.config import RAPIDAPI_AI_TRANSLATE_KEY_URL
+from src.lib.consts import BigLanguage
+
+
+def translate_texts(texts: List[str], lang: BigLanguage):
+    url = "https://ai-translate.p.rapidapi.com/translateHtml"
+
+    payload = {
+        "texts": texts,
+        "tl": lang.short_code,
+        "sl": "auto"
+    }
+    headers = {
+        "x-rapidapi-key": requests.get(RAPIDAPI_AI_TRANSLATE_KEY_URL).text.strip(),
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+    response.raise_for_status()
+    return response.json()["data"][0]

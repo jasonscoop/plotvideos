@@ -16,3 +16,8 @@ Automated pipeline to:
 - https://www.hostinger.com/pricing?content=vps-hosting
 - https://www.kamatera.com/pricing/
 - https://contabo.com/en/vps/cloud-vps-10/?image=ubuntu.332&qty=1&contract=12&storage-type=cloud-vps-10-150-gb-ssd
+
+# Translators
+
+- https://rapidapi.com/IRCTCAPI/api/google-translator9
+- https://rapidapi.com/robust-api-robust-api-default/api/google-translate113

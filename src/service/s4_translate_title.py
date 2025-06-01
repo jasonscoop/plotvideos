@@ -1,5 +1,4 @@
 import traceback
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict
 
 from loguru import logger
@@ -8,55 +7,36 @@ from sqlalchemy.orm import Session
 from src.lib.connection import engine
 from src.lib.consts import VideoStatus, BigLanguage, DB_ERROR_LOG_LENGTH
 from src.lib.models import Video
-from src.utils.google_translate_utils import translate_video_content
 from src.utils.log_utils import init_logging
+from src.utils.translate_utils import translate_texts
 
 
-def translate_content_for_language(content: dict, lang: BigLanguage) -> tuple[BigLanguage, dict]:
-    """Translate all content to a specific language"""
+def translate_video_content(content: dict, lang: BigLanguage) -> dict:
+    """Translate video content to a specific language"""
     try:
-        translated = translate_video_content(content, lang)
-        return lang, translated
-    except Exception as e:
-        logger.error(f"Failed to translate to {lang.short_code}: {str(e)}")
-        traceback.print_exc()
-        raise
-
-
-def translate_content_concurrent(content: dict, languages: List[BigLanguage], max_workers: int = 5) -> Dict:
-    """Translate all content to multiple languages concurrently"""
-    translations = []
-    failed_languages = []
-
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        # Submit all translation tasks
-        future_to_lang = {
-            executor.submit(translate_content_for_language, content, lang): lang
-            for lang in languages
+        # Prepare texts to translate
+        texts_to_translate = [
+            content["title"],
+            *content["tags"],
+            *content["categories"]
+        ]
+        
+        # Translate all texts at once
+        translated_texts = translate_texts(texts_to_translate, lang)
+        
+        # Split translated texts back into title, tags, and categories
+        translated_title = translated_texts[0]
+        translated_tags = translated_texts[1:1+len(content["tags"])]
+        translated_categories = translated_texts[1+len(content["tags"]):]
+        
+        return {
+            "title": translated_title,
+            "tags": translated_tags,
+            "categories": translated_categories
         }
-
-        # Process completed translations
-        for future in as_completed(future_to_lang):
-            lang = future_to_lang[future]
-            try:
-                result_lang, translated_content = future.result()
-                # Store translations by language code
-                translations.append({
-                    "lang": result_lang.short_code,
-                    "title": translated_content["title"],
-                    "tags": translated_content["tags"],
-                    "categories": translated_content["categories"]
-                })
-            except Exception as e:
-                failed_languages.append(lang)
-                logger.error(f"Translation failed for {lang.long_code}: {str(e)}")
-                traceback.print_exc()
-
-    if failed_languages:
-        failed_langs = ", ".join(lang.long_code for lang in failed_languages)
-        raise Exception(f"Translation failed for languages: {failed_langs}")
-
-    return translations
+    except Exception as e:
+        logger.error(f"Translation failed for {lang.short_code}: {str(e)}")
+        raise
 
 
 def process_video_batch(video_batch: List[Video], languages: List[BigLanguage]) -> tuple[int, int]:
@@ -74,14 +54,27 @@ def process_video_batch(video_batch: List[Video], languages: List[BigLanguage]) 
                     "categories": video.downloaded_categories
                 }
 
-                # Get translations for all languages
-                translations = translate_content_concurrent(content, languages)
+                translations = []
+                # Translate for each language sequentially
+                for lang in languages:
+                    try:
+                        translated_content = translate_video_content(content, lang)
+                        translations.append({
+                            "lang": lang.short_code,
+                            "title": translated_content["title"],
+                            "tags": translated_content["tags"],
+                            "categories": translated_content["categories"]
+                        })
+                        logger.info(f"Successfully translated video {video.id} to {lang.long_code}")
+                    except Exception as e:
+                        logger.error(f"Failed to translate video {video.id} to {lang.long_code}: {str(e)}")
+                        raise
 
                 # Update video with translations and status
                 video.title_translations = translations
                 video.status = VideoStatus.meta_translated
                 success_count += 1
-                logger.info(f"Successfully translated video {video.id}")
+                logger.info(f"Successfully translated video {video.id} to all languages")
             except Exception as e:
                 error_msg = f"Content translation failed: {str(e)}"
                 logger.error(f"Error processing video {video.id}: {error_msg}")

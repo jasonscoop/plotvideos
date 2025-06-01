@@ -7,18 +7,20 @@ from src.lib.connection import engine
 from src.lib.consts import VideoStatus, BigLanguage, DB_ERROR_LOG_LENGTH, TermType
 from src.lib.models import Video
 from src.utils.log_utils import init_logging
-from src.utils.wp_utils import wp_get_terms_result, wp_create_term, wp_link_terms, wp_link_posts, wp_create_post
+from src.utils.wp_utils import wp_get_terms_lang_map_id, wp_create_term, wp_link_terms, wp_link_posts, wp_create_post
 
 
 def create_or_get_term(term: str, translations: dict, term_type: TermType, lang: BigLanguage) -> int:
-    all_terms = wp_get_terms_result(term, term_type, len(BigLanguage))
-    term_dict = {t.lang.short_code: t for t in all_terms}
-    if lang.short_code in term_dict:
-        return term_dict[lang.short_code].id
+    term_dict = wp_get_terms_lang_map_id(term, term_type, len(BigLanguage))
+    if lang in term_dict:
+        return term_dict[lang]
 
     link_map = {}
     for l in BigLanguage:
-        link_map[l.short_code] = wp_create_term(translations.get((term, l)), term_type, l)
+        if l in term_dict:
+            link_map[l.short_code] = term_dict[l]
+        else:
+            link_map[l.short_code] = wp_create_term(translations.get((term, l)), term_type, l)
 
     logger.info(f"Created all language for [{term_type}] [{term}]")
 

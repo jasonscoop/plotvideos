@@ -7,7 +7,6 @@ import httpx
 from src.lib.config import WP_BASE_URL, WP_USERNAME, WP_PASSWORD, BUNNY_CDN_DOMAIN, BUNNY_LIBRARY_ID
 from src.lib.consts import BigLanguage, TermType, VIDEO_EMBED_TEMPLATE
 from src.lib.models import Video
-from src.lib.schemas import TermResult
 
 WP_API_URL = f"{WP_BASE_URL}/wp-json/wp/v2"
 CREDENTIALS = b64encode(f"{WP_USERNAME}:{WP_PASSWORD}".encode()).decode("utf-8")
@@ -26,17 +25,9 @@ def wp_parse_lang(url: str) -> BigLanguage:
     return BigLanguage.from_short_code(parts[0])
 
 
-def wp_get_terms_result(search: str, term_type: TermType, per_page=1) -> List[
-    TermResult]:
+def wp_get_terms_lang_map_id(search: str, term_type: TermType, per_page=1) -> dict:
     results = wp_get_terms(search, term_type, per_page)
-    taxonomies = []
-    for result in results:
-        taxonomies.append(TermResult(
-            id=result["id"],
-            name=result["name"],
-            lang=wp_parse_lang(result["link"]),
-        ))
-    return taxonomies
+    return {wp_parse_lang(r["link"]): r["id"] for r in results}
 
 
 def wp_get_terms(search: str, term_type: TermType, per_page=1):

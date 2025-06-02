@@ -10,8 +10,9 @@ DB_ERROR_LOG_LENGTH = 1000
 
 
 class TermType(StrEnum):
-    category = "categories"
-    post_tag = "tags"
+    """name is for code, value is for wp endpoint calling"""
+    categories = "category"
+    tags = "post_tag"
 
 
 class Language(Enum):

@@ -1,0 +1,75 @@
+{
+  "taxonomy": "category",
+  "translations": {
+    "en": [
+      "sun",
+      "moon",
+      "star wars"
+    ],
+    "zh": [
+      "太阳",
+      "月亮",
+      "星际大战"
+    ],
+    "hi": [
+      "सूरज",
+      "चाँद",
+      "स्टार वार्स"
+    ],
+    "es": [
+      "sol",
+      "luna",
+      "la guerra de las galaxias"
+    ],
+    "ar": [
+      "شمس",
+      "قمر",
+      "حرب النجوم"
+    ],
+    "fr": [
+      "soleil",
+      "lune",
+      "la guerre des étoiles"
+    ],
+    "bn": [
+      "সূর্য",
+      "চাঁদ",
+      "স্টার ওয়ার্স"
+    ],
+    "pt": [
+      "sol",
+      "lua",
+      "guerra nas estrelas"
+    ],
+    "ru": [
+      "солнце",
+      "луна",
+      "звёздные войны"
+    ],
+    "ur": [
+      "سورج",
+      "چاند",
+      "سٹار وارز"
+    ],
+    "id": [
+      "matahari",
+      "bulan",
+      "perang bintang"
+    ],
+    "de": [
+      "Sonne",
+      "Mond",
+      "Krieg der Sterne"
+    ],
+    "ja": [
+      "太陽",
+      "月",
+      "スター・ウォーズ"
+    ],
+    "sw": [
+      "jua",
+      "mwezi",
+      "vita vya nyota"
+    ]
+  }
+}

@@ -2,81 +2,50 @@ import traceback
 
 from loguru import logger
 
+from src.crud.video_crud import VideoCrud
 from src.lib.consts import VideoStatus, Language, DB_ERROR_LOG_LENGTH, TermType
 from src.lib.models import Video
+from src.lib.schemas import TaxonomyIn
 from src.utils.log_utils import init_logging
-from src.utils.wp_utils import wp_get_terms_lang_map_id, wp_create_term, wp_link_terms, wp_link_posts, wp_create_post
+from src.utils.wp_utils import wp_link_posts, wp_create_post, wp_batch_get_or_add_terms
 
 
-def create_or_get_term(term: str, translations: dict, term_type: TermType, lang: Language) -> int:
-    term_dict = wp_get_terms_lang_map_id(translations.get((term, lang)), term_type, len(Language))
-    if lang in term_dict:
-        return term_dict[lang]
-
-    link_map = {}
-    for l in Language:
-        old_term_dict = wp_get_terms_lang_map_id(translations.get((term, l)), term_type, len(Language))
-        if l in old_term_dict:
-            link_map[l.short_code] = old_term_dict[l]
-        else:
-            link_map[l.short_code] = wp_create_term(translations.get((term, l)), term_type, l)
-
-    logger.info(f"Created all language for [{term_type}] [{term}]")
-
-    wp_link_terms(link_map, term_type)
-    logger.info(f"Linked all language for [{term_type}] [{term}]")
-
-    return link_map[lang.short_code]
-
-
-def create_post(video: Video, lang: Language) -> dict:
-    tag_ids = category_ids = []
-
-    term_translations = {(t.term, t.lang): t.translation for t in video.terms}
-
-    for t in video.terms.items():
-        if t.type == TermType.post_tag:
-            tag_ids.append(create_or_get_term(t.term, term_translations, t.type, lang))
-        else:
-            category_ids.append(create_or_get_term(t.term, term_translations, t.type, lang))
-
-    return wp_create_post(video, lang, tag_ids, category_ids)
-
-
-def publish_video_to_wordpress(video: Video):
+def publish_video(video: Video):
     lang_post_maps = {}
-    for lang in Language:
-        post = create_post(video, lang)
+    tag_ids = wp_batch_get_or_add_terms(TaxonomyIn(taxonomy=TermType.tags, translations=video.tag_translations))
+    logger.info(f"[{video.id}] added tags")
 
+    category_ids = wp_batch_get_or_add_terms(
+        TaxonomyIn(taxonomy=TermType.categories, translations=video.category_translations))
+    logger.info(f"[{video.id}] added categories")
+
+    for lang in Language:
+        post = wp_create_post(video, lang, tag_ids[lang.short_code], category_ids[lang.short_code])
         lang_post_maps[lang.short_code] = post["id"]
-        logger.info(f"✅ [{lang.short_code}] post created with ID: {post['id']}")
 
     if len(lang_post_maps) > 1:
-        link_result = wp_link_posts(lang_post_maps)
-        logger.info(f"✅ Posts linked: {link_result}")
+        wp_link_posts(lang_post_maps)
+    logger.info(f"[{video.id}] added and linked")
+    VideoCrud.update_status(video.id, VideoStatus.published)
 
 
 def process_pending_videos(batch_size=10):
     last_id = 0
     while True:
-        with get_db() as session:
-            pending_videos = session.query(Video).filter(Video.status == VideoStatus.uploaded,
-                                                         Video.id > last_id).limit(batch_size).all()
-            if not pending_videos:
-                break
+        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.uploaded)
+        if not videos:
+            break
 
-            for video in pending_videos:
-                try:
-                    publish_video_to_wordpress(video)
-                    video.status = VideoStatus.published
-                    logger.info(f"Successfully published video {video.id}")
-                except Exception as e:
-                    video.status = VideoStatus.failed_published
-                    video.failed_reason = str(e)[:DB_ERROR_LOG_LENGTH]
-                    logger.error(f"Failed to publish video {video.id}: {str(e)}")
-                    traceback.print_exc()
+        for video in videos:
+            try:
+                publish_video(video)
+                logger.info(f"[{video.id}] published")
+            except Exception as e:
+                VideoCrud.update_status(video.id, VideoStatus.failed_published, str(e)[:DB_ERROR_LOG_LENGTH])
+                logger.error(f"[{video.id}] failed to translate: {str(e)}")
+                traceback.print_exc()
 
-                session.commit()
+        last_id = videos[-1].id
 
 
 if __name__ == "__main__":

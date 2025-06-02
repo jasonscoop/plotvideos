@@ -5,8 +5,9 @@ from urllib.parse import urlparse
 import httpx
 
 from src.lib.config import WP_BASE_URL, WP_USERNAME, WP_PASSWORD, BUNNY_CDN_DOMAIN, BUNNY_LIBRARY_ID
-from src.lib.consts import Language, TermType, VIDEO_EMBED_TEMPLATE
+from src.lib.consts import Language, VIDEO_EMBED_TEMPLATE
 from src.lib.models import Video
+from src.lib.schemas import TaxonomyIn
 
 WP_API_URL = f"{WP_BASE_URL}/wp-json/wp/v2"
 CREDENTIALS = b64encode(f"{WP_USERNAME}:{WP_PASSWORD}".encode()).decode("utf-8")
@@ -25,57 +26,11 @@ def wp_parse_lang(url: str) -> Language:
     return Language.from_short_code(parts[0])
 
 
-def wp_get_terms_lang_map_id(search: str, term_type: TermType, per_page=1) -> dict:
-    results = wp_get_terms(search, term_type, per_page)
-    return {wp_parse_lang(r["link"]): r["id"] for r in results}
-
-
-def wp_get_terms(search: str, term_type: TermType, per_page=1):
-    with httpx.Client() as client:
-        params = {
-            "search": search,
-            "per_page": per_page,
-        }
-
-        response = client.get(f"{WP_API_URL}/{term_type.value}", params=params)
-        response.raise_for_status()
-        return response.json()
-
-
-def wp_create_term(name: str, term_type: TermType, lang: Language) -> int:
-    with httpx.Client() as client:
-        response = client.post(
-            f"{WP_BASE_URL}/wp-json/custom/v1/create-term",
-            json={
-                "name": name,
-                "lang": lang.short_code,
-                "taxonomy": term_type.name,
-            },
-            headers=HEADERS
-        )
-        response.raise_for_status()
-        return response.json()["id"]
-
-
 def wp_link_posts(link_maps: dict) -> Dict:
     with httpx.Client() as client:
         response = client.post(
             f"{WP_BASE_URL}/wp-json/custom/v1/link-posts",
             json=link_maps,
-            headers=HEADERS
-        )
-        response.raise_for_status()
-        return response.json()
-
-
-def wp_link_terms(link_maps: dict, taxonomy: TermType) -> Dict:
-    with httpx.Client() as client:
-        response = client.post(
-            f"{WP_BASE_URL}/wp-json/custom/v1/link-terms",
-            json={
-                "taxonomy": taxonomy.name,
-                "translations": link_maps,
-            },
             headers=HEADERS
         )
         response.raise_for_status()
@@ -103,5 +58,17 @@ def wp_create_post(video: Video, lang: Language, tag_ids: List[int], category_id
 
     with httpx.Client() as client:
         response = client.post(f"{WP_API_URL}/posts", json=data, headers=HEADERS)
+        response.raise_for_status()
+        return response.json()
+
+
+def wp_batch_get_or_add_terms(data: TaxonomyIn) -> Dict[str, List[int]]:
+    with httpx.Client() as client:
+        response = client.post(
+            f"{WP_BASE_URL}/wp-json/custom/v1/import-translated-terms",
+            json=data.model_dump(),
+            headers=HEADERS,
+            timeout=30
+        )
         response.raise_for_status()
         return response.json()

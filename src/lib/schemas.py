@@ -1,6 +1,9 @@
+from typing import List, Dict
+
 from pydantic import BaseModel
 
 from src.lib.config import VIDEOS_DIR
+from src.lib.consts import TermType
 
 
 class StorePath:
@@ -19,3 +22,8 @@ class PreDetectResult(BaseModel):
     speech_seconds: float
     total_seconds: float
     speech_ratio: float
+
+
+class TaxonomyIn(BaseModel):
+    taxonomy: TermType
+    translations: Dict[str, List[str]]

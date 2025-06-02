@@ -5,14 +5,14 @@ import requests
 from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.config import LLM_BASE_URL, LLM_MODEL, LLM_API_VERSION, LLM_API_KEY
-from src.lib.consts import BigLanguage
+from src.lib.consts import Language
 
 url = f"{LLM_BASE_URL}/openai/deployments/{LLM_MODEL}/chat/completions?api-version={LLM_API_VERSION}"
 headers = {"Content-Type": "application/json", "api-key": LLM_API_KEY}
 
 
 @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
-def translate_vtt(vtt_content: str, language: BigLanguage) -> str:
+def translate_vtt(vtt_content: str, language: Language) -> str:
     data = {
         "messages": [
             {"role": "system", "content": "You are a subtitle translator."},
@@ -43,7 +43,7 @@ Input:
 
 
 @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
-def translate_video_content(content: dict, language: BigLanguage) -> dict:
+def translate_video_content(content: dict, language: Language) -> dict:
     data = {
         "messages": [
             {"role": "system", "content": "You are a video content translator."},

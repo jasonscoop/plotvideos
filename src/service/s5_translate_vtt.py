@@ -3,7 +3,7 @@ import traceback
 from loguru import logger
 
 from src.lib.connection import SessionLocal
-from src.lib.consts import BigLanguage, VideoStatus, DB_ERROR_LOG_LENGTH
+from src.lib.consts import Language, VideoStatus, DB_ERROR_LOG_LENGTH
 from src.lib.models import Video
 from src.lib.schemas import StorePath
 from src.utils.llm_utils import translate_vtt
@@ -44,7 +44,7 @@ def process_subtitled_videos(batch_size: int = 10):
                     path.translated_vtts.mkdir(exist_ok=True)
 
                     # Translate to all supported languages
-                    for lang in BigLanguage:
+                    for lang in Language:
                         translated_vtt = translate_vtt(vtt_content, lang)
                         translated_file = path.translated_vtts / f"{lang.short_code}.vtt"
                         translated_file.write_text(translated_vtt)

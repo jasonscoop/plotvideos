@@ -33,16 +33,13 @@ def download_videos(batch_size: int = 10):
 
                 try:
                     video_filename, info = download_remote_video(video.url, path.parent)
-                    file_size = path.parent.joinpath(video_filename).stat().st_size
 
                     video.status = VideoStatus.downloaded
-                    video.video_filename = video_filename
-                    video.downloaded_title = info.get("title", "")
-                    video.downloaded_description = info.get("description", "")
-                    video.downloaded_tags = info.get("tags", [])
-                    video.downloaded_categories = info.get("categories", [])
-                    video.downloaded_duration = info.get("duration", 0)
-                    video.file_size = file_size
+                    video.filename = video_filename
+                    video.tags = info.get("tags", [])
+                    video.categories = info.get("categories", [])
+                    video.duration = info.get("duration", 0)
+                    video.file_size = path.parent.joinpath(video_filename).stat().st_size
                     logger.info(f"Downloaded successfully: {video.title}")
                 except Exception as e:
                     video.status = VideoStatus.failed_downloaded

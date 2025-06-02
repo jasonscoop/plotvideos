@@ -1,14 +1,14 @@
-from loguru import logger
+import json
+import time
+from pathlib import Path
 from typing import List
 
 import azure.cognitiveservices.speech as speechsdk
-import json
+from loguru import logger
 from pydub import AudioSegment
-import time
-from pathlib import Path
 
 from src.lib.config import AZURE_SPEECH_REGION, AZURE_SPEECH_KEY
-from src.lib.consts import BigLanguage
+from src.lib.consts import Language
 from src.utils.log_utils import log_time
 
 
@@ -33,18 +33,16 @@ def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000) -> 
         ]
     )
 
-    return len(audio) / 1000.0
 
+def get_language_candidates(lang: Language) -> List[str]:
+    if lang.long_code in Language.top4():
+        return Language.top4()
 
-def get_language_candidates(lang: BigLanguage) -> List[str]:
-    if lang.long_code in BigLanguage.top4():
-        return BigLanguage.top4()
-
-    return BigLanguage.top4()[:3] + [lang.long_code]
+    return Language.top4()[:3] + [lang.long_code]
 
 
 @log_time
-def get_azure_results(audio_path: Path, duration: float, lang: BigLanguage):
+def get_azure_results(audio_path: Path, duration: float, lang: Language):
     # Configure speech recognition
     speech_config = speechsdk.SpeechConfig(subscription=AZURE_SPEECH_KEY, region=AZURE_SPEECH_REGION)
     # speech_config.speech_recognition_language = "en-US"

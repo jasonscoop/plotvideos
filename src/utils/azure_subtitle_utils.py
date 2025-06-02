@@ -2,7 +2,7 @@ import json
 
 from loguru import logger
 
-from src.lib.consts import SubtitleType, BigLanguage
+from src.lib.consts import SubtitleType, Language
 from src.lib.models import Video
 from src.lib.schemas import StorePath, PreDetectResult
 from src.utils.audio_utils import detect_talking_whisper
@@ -56,20 +56,20 @@ def azure_stt_results_to_subtitle(azure_results, type) -> (str, str):
 
 def generate_subtitle(video: Video) -> (str, int, PreDetectResult):
     path = StorePath(video.host, video.original_id)
-    video_path = path.parent / video.video_filename
+    video_path = path.parent / video.filename
     if not video_path.exists():
         raise Exception(f"Video {video.original_id}-{video_path} does not exist")
 
-    duration = media_to_wav(video_path, path.wav)
-    language = BigLanguage.from_short_code(get_lang(video.title))
+    media_to_wav(video_path, path.wav)
+    language = Language.from_short_code(get_lang(video.title))
 
     detected_result = detect_talking_whisper(video_path)
 
-    azure_results = get_azure_results(path.wav, duration, language)
+    azure_results = get_azure_results(path.wav, video.duration, language)
     path.azure_results.write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))
 
     vtt_content, subtitle_content = azure_stt_results_to_subtitle(azure_results, SubtitleType.vtt)
     path.vtt.write_text(vtt_content)
 
     logger.info(f"[{video_path.name}] Generated subtitle, detected as '{language}'")
-    return subtitle_content.strip(), int(duration), detected_result
+    return subtitle_content.strip(), detected_result

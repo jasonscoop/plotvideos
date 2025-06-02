@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 import httpx
 
 from src.lib.config import WP_BASE_URL, WP_USERNAME, WP_PASSWORD, BUNNY_CDN_DOMAIN, BUNNY_LIBRARY_ID
-from src.lib.consts import BigLanguage, TermType, VIDEO_EMBED_TEMPLATE
+from src.lib.consts import Language, TermType, VIDEO_EMBED_TEMPLATE
 from src.lib.models import Video
 
 WP_API_URL = f"{WP_BASE_URL}/wp-json/wp/v2"
@@ -16,13 +16,13 @@ HEADERS = {
 }
 
 
-def wp_parse_lang(url: str) -> BigLanguage:
+def wp_parse_lang(url: str) -> Language:
     path = urlparse(url).path
     parts = path.strip('/').split('/')
     if len(parts) == 0 or len(parts[0]) != 2:
-        return BigLanguage.ENGLISH
+        return Language.ENGLISH
 
-    return BigLanguage.from_short_code(parts[0])
+    return Language.from_short_code(parts[0])
 
 
 def wp_get_terms_lang_map_id(search: str, term_type: TermType, per_page=1) -> dict:
@@ -42,7 +42,7 @@ def wp_get_terms(search: str, term_type: TermType, per_page=1):
         return response.json()
 
 
-def wp_create_term(name: str, term_type: TermType, lang: BigLanguage) -> int:
+def wp_create_term(name: str, term_type: TermType, lang: Language) -> int:
     with httpx.Client() as client:
         response = client.post(
             f"{WP_BASE_URL}/wp-json/custom/v1/create-term",
@@ -82,7 +82,7 @@ def wp_link_terms(link_maps: dict, taxonomy: TermType) -> Dict:
         return response.json()
 
 
-def wp_create_post(video: Video, lang: BigLanguage, tag_ids: List[int], category_ids: List[int]) -> dict:
+def wp_create_post(video: Video, lang: Language, tag_ids: List[int], category_ids: List[int]) -> dict:
     assert BUNNY_LIBRARY_ID and video.bunny_video_id, "Bunny library ID and video ID not set"
     video_embed = VIDEO_EMBED_TEMPLATE.format(
         library_id=BUNNY_LIBRARY_ID,

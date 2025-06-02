@@ -1,23 +1,21 @@
 import traceback
 
 from loguru import logger
-from sqlalchemy.orm import Session
 
-from src.lib.connection import engine
-from src.lib.consts import VideoStatus, BigLanguage, DB_ERROR_LOG_LENGTH, TermType
+from src.lib.consts import VideoStatus, Language, DB_ERROR_LOG_LENGTH, TermType
 from src.lib.models import Video
 from src.utils.log_utils import init_logging
 from src.utils.wp_utils import wp_get_terms_lang_map_id, wp_create_term, wp_link_terms, wp_link_posts, wp_create_post
 
 
-def create_or_get_term(term: str, translations: dict, term_type: TermType, lang: BigLanguage) -> int:
-    term_dict = wp_get_terms_lang_map_id(translations.get((term, lang)), term_type, len(BigLanguage))
+def create_or_get_term(term: str, translations: dict, term_type: TermType, lang: Language) -> int:
+    term_dict = wp_get_terms_lang_map_id(translations.get((term, lang)), term_type, len(Language))
     if lang in term_dict:
         return term_dict[lang]
 
     link_map = {}
-    for l in BigLanguage:
-        old_term_dict = wp_get_terms_lang_map_id(translations.get((term, l)), term_type, len(BigLanguage))
+    for l in Language:
+        old_term_dict = wp_get_terms_lang_map_id(translations.get((term, l)), term_type, len(Language))
         if l in old_term_dict:
             link_map[l.short_code] = old_term_dict[l]
         else:
@@ -31,7 +29,7 @@ def create_or_get_term(term: str, translations: dict, term_type: TermType, lang:
     return link_map[lang.short_code]
 
 
-def create_post(video: Video, lang: BigLanguage) -> dict:
+def create_post(video: Video, lang: Language) -> dict:
     tag_ids = category_ids = []
 
     term_translations = {(t.term, t.lang): t.translation for t in video.terms}
@@ -47,7 +45,7 @@ def create_post(video: Video, lang: BigLanguage) -> dict:
 
 def publish_video_to_wordpress(video: Video):
     lang_post_maps = {}
-    for lang in BigLanguage:
+    for lang in Language:
         post = create_post(video, lang)
 
         lang_post_maps[lang.short_code] = post["id"]
@@ -61,7 +59,7 @@ def publish_video_to_wordpress(video: Video):
 def process_pending_videos(batch_size=10):
     last_id = 0
     while True:
-        with Session(engine) as session:
+        with get_db() as session:
             pending_videos = session.query(Video).filter(Video.status == VideoStatus.uploaded,
                                                          Video.id > last_id).limit(batch_size).all()
             if not pending_videos:

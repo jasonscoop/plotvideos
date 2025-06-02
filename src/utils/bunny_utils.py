@@ -4,7 +4,7 @@ from typing import Dict
 
 import requests
 
-from src.lib.consts import BUNNEY_COLLECTION_MAP, BigLanguage
+from src.lib.consts import BUNNEY_COLLECTION_MAP, Language
 from src.lib.models import Video
 from src.lib.schemas import StorePath
 
@@ -26,7 +26,7 @@ class BunnyStreamClient:
         self.vtt_headers = {**self.headers, "Content-Type": "text/vtt"}
 
     def upload_video(self, video: Video, path: StorePath) -> str:
-        video_path = path.parent / video.video_filename
+        video_path = path.parent / video.filename
         if not video_path.exists():
             raise FileNotFoundError(f"[{video.id}] Video file not found: {video_path}")
 
@@ -57,7 +57,7 @@ class BunnyStreamClient:
             self,
             video_guid: str,
             vtt_path: Path,
-            lang: BigLanguage,
+            lang: Language,
     ) -> Dict:
         url = f"{self.base_url}/{self.library_id}/videos/{video_guid}/captions/{lang.short_code}"
         with open(vtt_path, "rb") as f:

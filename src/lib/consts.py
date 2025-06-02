@@ -14,7 +14,7 @@ class TermType(StrEnum):
     post_tag = "tags"
 
 
-class BigLanguage(Enum):
+class Language(Enum):
     ENGLISH = ("en", "en-US", "English")
     CHINESE = ("zh", "zh-CN", "简体中文")
     HINDI = ("hi", "hi-IN", "हिन्दी")

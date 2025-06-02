@@ -4,11 +4,11 @@ from urllib.parse import urlparse
 
 import requests
 from loguru import logger
+from src.crud.crud import batch_add, get_all_keywords
 
 from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL
 from src.lib.connection import SessionLocal
 from src.lib.consts import ID_EXTRACTOR_MAP
-from src.lib.crud import batch_add, get_all_keywords
 from src.lib.models import Video, VideoStatus, Keyword
 from src.utils.log_utils import init_logging
 

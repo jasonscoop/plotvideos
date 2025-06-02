@@ -1,25 +1,25 @@
-from src.lib.consts import BigLanguage, TermType
+from src.lib.consts import Language, TermType
 from src.service.s7_publish import create_or_get_term
 
 
 def test_create_or_get_term():
     translations = {
-        ("Flower", BigLanguage.JAPANESE): "花",
-        ("Flower", BigLanguage.CHINESE): "花",
-        ("Flower", BigLanguage.ENGLISH): "Flower",
+        ("Flower", Language.JAPANESE): "花",
+        ("Flower", Language.CHINESE): "花",
+        ("Flower", Language.ENGLISH): "Flower",
 
-        ("Flower", BigLanguage.HINDI): "फूल",
-        ("Flower", BigLanguage.SPANISH): "Flor",
-        ("Flower", BigLanguage.ARABIC): "ورد",
-        ("Flower", BigLanguage.FRENCH): "Fleur",
-        ("Flower", BigLanguage.BENGALI): "ফুল",
-        ("Flower", BigLanguage.PORTUGUESE): "Flor",
-        ("Flower", BigLanguage.RUSSIAN): "Цветок",
-        ("Flower", BigLanguage.URDU): "پھول",
-        ("Flower", BigLanguage.INDONESIAN): "Bunga",
-        ("Flower", BigLanguage.GERMAN): "Blume",
+        ("Flower", Language.HINDI): "फूल",
+        ("Flower", Language.SPANISH): "Flor",
+        ("Flower", Language.ARABIC): "ورد",
+        ("Flower", Language.FRENCH): "Fleur",
+        ("Flower", Language.BENGALI): "ফুল",
+        ("Flower", Language.PORTUGUESE): "Flor",
+        ("Flower", Language.RUSSIAN): "Цветок",
+        ("Flower", Language.URDU): "پھول",
+        ("Flower", Language.INDONESIAN): "Bunga",
+        ("Flower", Language.GERMAN): "Blume",
 
-        ("Flower", BigLanguage.SWAHILI): "Maua",
+        ("Flower", Language.SWAHILI): "Maua",
     }
-    term_id = create_or_get_term("Flower", translations, TermType.category, BigLanguage.JAPANESE)
+    term_id = create_or_get_term("Flower", translations, TermType.category, Language.JAPANESE)
     assert isinstance(term_id, int)

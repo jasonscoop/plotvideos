@@ -37,11 +37,10 @@ def process_downloaded_videos(batch_size: int = 10):
 
                 logger.info(f"Generating subtitle for: {video.title}")
                 try:
-                    subtitle_content, duration, pre_detected = generate_subtitle(video)
+                    subtitle_content, pre_detected = generate_subtitle(video)
                     video.subtitle_content = subtitle_content
                     if len(subtitle_content.strip()) == 0:
                         video.status = VideoStatus.skipped_due_to_empty_subtitle
-                    video.duration = duration
                     video.pre_detected_result = pre_detected.model_dump()
                     video.status = VideoStatus.subtitled
                     logger.info(f"Generated subtitle successfully for: {video.title}")

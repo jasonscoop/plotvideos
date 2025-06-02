@@ -4,7 +4,7 @@ from loguru import logger
 
 from src.lib.config import BUNNY_API_KEY, BUNNY_LIBRARY_ID
 from src.lib.connection import SessionLocal
-from src.lib.consts import VideoStatus, DB_ERROR_LOG_LENGTH, BigLanguage
+from src.lib.consts import VideoStatus, DB_ERROR_LOG_LENGTH, Language
 from src.lib.models import Video
 from src.lib.schemas import StorePath
 from src.utils.bunny_utils import BunnyStreamClient
@@ -37,13 +37,13 @@ def process_translated_videos(batch_size: int = 10):
                 try:
                     # guid = bunny_client.upload_video(video, path)
                     guid = video.bunny_video_id
-                    for lang in BigLanguage:
+                    for lang in Language:
                         vtt_file = path.translated_vtts / f"{lang.short_code}.vtt"
                         if not vtt_file.exists():
                             logger.warning(f"Subtitle file not found: {vtt_file}")
                             continue
                         bunny_client.upload_subtitle(guid, vtt_file, lang)
-                        
+
                     video.status = VideoStatus.uploaded
                     video.bunny_video_id = guid
                     logger.info(f"[{video.id}] Successfully uploaded video and subtitles: {video.title}")

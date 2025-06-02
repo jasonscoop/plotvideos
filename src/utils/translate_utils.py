@@ -3,12 +3,12 @@ from typing import List
 import requests
 
 from src.lib.config import RAPIDAPI_AI_TRANSLATE_KEY_URL
-from src.lib.consts import BigLanguage
+from src.lib.consts import Language
 
 
-def translate_texts(texts: List[str], lang: BigLanguage):
+def translate_texts(texts: List[str], lang: Language):
     assert RAPIDAPI_AI_TRANSLATE_KEY_URL, "Please set the RAPIDAPI_AI_TRANSLATE_KEY_URL environment variable"
-    
+
     url = "https://ai-translate.p.rapidapi.com/translateHtml"
 
     payload = {

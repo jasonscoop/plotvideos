@@ -38,9 +38,10 @@ def process_subtitled_videos(batch_size: int = 10):
                     translated_vtt = translate_vtt(vtt_content, lang)
                     translated_file = path.translated_vtts / f"{lang.short_code}.vtt"
                     translated_file.write_text(translated_vtt)
+                    logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translated '{lang.short_code}'")
 
                 VideoCrud.update_status(video.id, VideoStatus.vtt_translated)
-                logger.info(f"[{video.id} | {video.host} | {video.original_id}] ")
+                logger.info(f"[{video.id} | {video.host} | {video.original_id}] all vtt translated")
             except Exception as e:
                 reason = str(e)[:DB_ERROR_LOG_LENGTH]
                 VideoCrud.update_status(video.id, VideoStatus.failed_vtt_translated, reason)
@@ -53,3 +54,4 @@ def process_subtitled_videos(batch_size: int = 10):
 if __name__ == '__main__':
     init_logging("translate_vtt")
     process_subtitled_videos()
+    logger.info("All vtts translated")

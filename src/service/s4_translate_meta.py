@@ -59,3 +59,4 @@ def translate_meta_infos(batch_size: int = 10):
 if __name__ == "__main__":
     init_logging("meta_translate")
     translate_meta_infos()
+    logger.info("All metas translated")

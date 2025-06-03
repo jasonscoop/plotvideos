@@ -83,4 +83,4 @@ def fetch_and_save_videos(max_page=1, batch_size=3):
 if __name__ == "__main__":
     init_logging("fetch")
     fetch_and_save_videos(2)
-    logger.info("All done!")
+    logger.info("All fetched")

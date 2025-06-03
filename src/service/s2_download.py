@@ -49,4 +49,4 @@ def download_videos(batch_size: int = 10):
 if __name__ == "__main__":
     init_logging("download")
     download_videos()
-    logger.info("All done!")
+    logger.info("All downloaded")

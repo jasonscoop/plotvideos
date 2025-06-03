@@ -56,3 +56,4 @@ def process_pending_videos(batch_size=10):
 if __name__ == "__main__":
     init_logging("publish")
     process_pending_videos()
+    logger.info("All published")

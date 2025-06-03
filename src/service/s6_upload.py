@@ -36,6 +36,7 @@ def upload_videos(batch_size: int = 10):
                     bunny_client.upload_subtitle(guid, vtt_file, lang)
 
                 VideoCrud.update({
+                    "id": video.id,
                     "bunny_video_id": guid,
                     "status": VideoStatus.uploaded
                 })

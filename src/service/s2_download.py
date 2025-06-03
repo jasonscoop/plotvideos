@@ -28,6 +28,7 @@ def download_videos(batch_size: int = 10):
             try:
                 video_filename, info = download_remote_video(video.url, path.parent)
                 VideoCrud.update({
+                    "id": video.id,
                     "status": VideoStatus.downloaded,
                     "filename": video_filename,
                     "tags": info.get("tags", []),

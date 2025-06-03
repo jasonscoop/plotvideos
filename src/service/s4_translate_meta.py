@@ -27,7 +27,8 @@ def translate_video(video: Video):
         "id": video.id,
         "title_translations": title_translations,
         "tags_translations": tags_translations,
-        "categories_translations": categories_translations
+        "categories_translations": categories_translations,
+        "status": VideoStatus.meta_translated
     })
 
 

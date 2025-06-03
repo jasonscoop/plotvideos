@@ -3,7 +3,8 @@ import traceback
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
-from src.lib.consts import VideoStatus, Language, DB_ERROR_LOG_LENGTH, TermType
+from src.lib.consts import DB_ERROR_LOG_LENGTH
+from src.lib.enums import VideoStatus, Language, TermType
 from src.lib.models import Video
 from src.lib.schemas import TaxonomyIn
 from src.utils.log_utils import init_logging

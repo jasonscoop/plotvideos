@@ -1,6 +1,6 @@
 import json
 
-from src.lib.consts import Language
+from src.lib.enums import Language
 from src.utils.llm_utils import translate_vtt, translate_video_content
 from tests import SUBTITLES_DIR
 

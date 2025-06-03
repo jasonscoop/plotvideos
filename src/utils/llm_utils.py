@@ -5,7 +5,7 @@ import requests
 from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.config import LLM_BASE_URL, LLM_MODEL, LLM_API_VERSION, LLM_API_KEY
-from src.lib.consts import Language
+from src.lib.enums import Language
 
 url = f"{LLM_BASE_URL}/openai/deployments/{LLM_MODEL}/chat/completions?api-version={LLM_API_VERSION}"
 headers = {"Content-Type": "application/json", "api-key": LLM_API_KEY}

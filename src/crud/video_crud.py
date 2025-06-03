@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy.orm import undefer
 
 from src.lib.connection import get_db
-from src.lib.consts import VideoStatus
+from src.lib.enums import VideoStatus
 from src.lib.models import Video
 
 

@@ -4,7 +4,8 @@ from typing import List, Dict
 import httpx
 
 from src.lib.config import WP_BASE_URL, WP_USERNAME, WP_PASSWORD, BUNNY_CDN_DOMAIN, BUNNY_LIBRARY_ID
-from src.lib.consts import Language, VIDEO_EMBED_TEMPLATE
+from src.lib.consts import VIDEO_EMBED_TEMPLATE
+from src.lib.enums import Language
 from src.lib.models import Video
 from src.lib.schemas import TaxonomyIn
 

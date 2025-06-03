@@ -8,7 +8,7 @@ from loguru import logger
 from pydub import AudioSegment
 
 from src.lib.config import AZURE_SPEECH_REGION, AZURE_SPEECH_KEY
-from src.lib.consts import Language
+from src.lib.enums import Language
 from src.utils.log_utils import log_time
 
 

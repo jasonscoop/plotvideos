@@ -1,12 +1,12 @@
 import json
+
 import pytest
 
-from src.lib.consts import SubtitleType
 from src.utils.azure_subtitle_utils import azure_stt_results_to_subtitle
 from tests import SUBTITLES_DIR
 
 
-@pytest.mark.parametrize("json_file",[
+@pytest.mark.parametrize("json_file", [
     "661bb3bde2251-small.azure-result-4.json",
     "jiabin4.json",
 ])

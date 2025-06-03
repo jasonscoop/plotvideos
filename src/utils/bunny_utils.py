@@ -4,7 +4,8 @@ from typing import Dict
 
 import requests
 
-from src.lib.consts import BUNNEY_COLLECTION_MAP, Language
+from src.lib.consts import BUNNEY_COLLECTION_MAP
+from src.lib.enums import Language
 from src.lib.models import Video
 from src.lib.schemas import StorePath
 

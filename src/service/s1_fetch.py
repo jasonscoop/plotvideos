@@ -9,7 +9,8 @@ from src.crud.keyword_crud import KeywordCrud
 from src.crud.video_crud import VideoCrud
 from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL
 from src.lib.consts import ID_EXTRACTOR_MAP
-from src.lib.models import Video, VideoStatus, Keyword
+from src.lib.enums import VideoStatus
+from src.lib.models import Video, Keyword
 from src.utils.log_utils import init_logging
 
 

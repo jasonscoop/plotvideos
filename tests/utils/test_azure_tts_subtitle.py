@@ -1,7 +1,7 @@
 import json
 
 from src.lib.config import VIDEOS_DIR
-from src.lib.consts import Language, SubtitleType
+from src.lib.enums import Language
 from src.utils.azure_stt_utils import get_azure_results
 from src.utils.azure_subtitle_utils import azure_stt_results_to_subtitle
 

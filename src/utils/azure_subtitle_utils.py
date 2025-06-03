@@ -2,7 +2,7 @@ import json
 
 from loguru import logger
 
-from src.lib.consts import SubtitleType, Language
+from src.lib.enums import Language
 from src.lib.models import Video
 from src.lib.schemas import StorePath, PreDetectResult
 from src.utils.audio_utils import detect_talking_whisper

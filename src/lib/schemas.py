@@ -3,7 +3,7 @@ from typing import List, Dict
 from pydantic import BaseModel
 
 from src.lib.config import VIDEOS_DIR
-from src.lib.consts import TermType
+from src.lib.enums import TermType
 
 
 class StorePath:

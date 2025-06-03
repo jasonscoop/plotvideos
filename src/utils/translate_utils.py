@@ -3,7 +3,7 @@ from typing import List
 import requests
 
 from src.lib.config import RAPIDAPI_AI_TRANSLATE_KEY_URL
-from src.lib.consts import Language
+from src.lib.enums import Language
 
 
 def translate_texts(texts: List[str], lang: Language):

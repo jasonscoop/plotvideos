@@ -4,7 +4,8 @@ from loguru import logger
 
 from src.crud.video_crud import VideoCrud
 from src.lib.config import BUNNY_API_KEY, BUNNY_LIBRARY_ID
-from src.lib.consts import VideoStatus, DB_ERROR_LOG_LENGTH, Language
+from src.lib.consts import DB_ERROR_LOG_LENGTH
+from src.lib.enums import VideoStatus, Language
 from src.lib.schemas import StorePath
 from src.utils.bunny_utils import BunnyStreamClient
 from src.utils.log_utils import init_logging

@@ -4,7 +4,7 @@ from sqlalchemy.sql import func
 from sqlalchemy.sql.schema import UniqueConstraint
 
 from src.lib.connection import engine
-from src.lib.consts import VideoStatus
+from src.lib.enums import VideoStatus
 
 Base = declarative_base()
 

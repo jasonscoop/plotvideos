@@ -1,6 +1,5 @@
 from base64 import b64encode
 from typing import List, Dict
-from urllib.parse import urlparse
 
 import httpx
 
@@ -15,15 +14,6 @@ HEADERS = {
     "Authorization": f"Basic {CREDENTIALS}",
     "Content-Type": "application/json"
 }
-
-
-def wp_parse_lang(url: str) -> Language:
-    path = urlparse(url).path
-    parts = path.strip('/').split('/')
-    if len(parts) == 0 or len(parts[0]) != 2:
-        return Language.ENGLISH
-
-    return Language.from_short_code(parts[0])
 
 
 def wp_link_posts(link_maps: dict) -> Dict:

@@ -35,12 +35,12 @@ def fetch_and_save_videos(max_page=1, batch_size=3):
     while True:
         keywords: List[Keyword] = KeywordCrud.batch_get(last_id=last_id, batch_size=batch_size)
         if not keywords:
-            logger.warning("No keywords found in database. Please add some keywords first.")
+            logger.warning("No more keywords found in database.")
             break
 
         last_id = keywords[-1].id
         for keyword in keywords:
-            logger.info(f"Fetching videos for keyword: {keyword}")
+            logger.info(f"Fetching videos for keyword: {keyword.name}")
 
             for page in range(1, max_page):
                 data = fetch_video_urls(keyword.name, page)
@@ -71,8 +71,8 @@ def fetch_and_save_videos(max_page=1, batch_size=3):
                                 status=VideoStatus.fetched,
                                 keyword=keyword.name,
                             ))
-                        added, updated = VideoCrud.batch_add(videos)
-                        logger.info(f"[{name}] get [{len(site["links"])}] videos, updated [{updated}] added [{added}]")
+                        added = VideoCrud.batch_add(videos)
+                        logger.info(f"[{name}] fetched, added [{added}/{len(videos)}]")
                     except Exception as e:
                         logger.error(f"Error fetching/saving videos: {e}")
                         traceback.print_exc()

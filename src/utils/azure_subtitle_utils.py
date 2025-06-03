@@ -1,8 +1,12 @@
 import json
+import math
+from typing import List
 
+from encodings.aliases import aliases
 from loguru import logger
+from sqlalchemy.cyextension.collections import OrderedSet
 
-from src.lib.enums import Language
+from src.lib.enums import Language, SubtitleType
 from src.lib.models import Video
 from src.lib.schemas import StorePath, PreDetectResult
 from src.utils.audio_utils import detect_talking_whisper
@@ -54,6 +58,25 @@ def azure_stt_results_to_subtitle(azure_results, type) -> (str, str):
     return header + "\n".join(final_items) + "\n", "\n\n".join(subtitle_contents)
 
 
+def get_texts_lang_codes(texts: List[str]) -> List[str]:
+    langs = OrderedSet()
+    texts = [t.lower() for t in texts]
+
+    for text in texts:
+        for l in Language:
+            if l.native_name.lower() in text:
+                langs.add(l.short_code)
+
+            for alias in l.aliases:
+                if alias.lower() in text:
+                    langs.add(l.short_code)
+
+    for text in texts:
+        langs.update(get_lang(text))
+
+    return list(langs)
+
+
 def generate_subtitle(video: Video) -> (str, int, PreDetectResult):
     path = StorePath(video.host, video.original_id)
     video_path = path.parent / video.filename
@@ -61,15 +84,15 @@ def generate_subtitle(video: Video) -> (str, int, PreDetectResult):
         raise Exception(f"Video {video.original_id}-{video_path} does not exist")
 
     media_to_wav(video_path, path.wav)
-    language = Language.from_short_code(get_lang(video.title))
+    codes = get_texts_lang_codes([video.title] + video.tags + video.categories)
 
     detected_result = detect_talking_whisper(video_path)
 
-    azure_results = get_azure_results(path.wav, video.duration, language)
+    azure_results = get_azure_results(path.wav, video.duration, codes)
     path.azure_results.write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))
 
     vtt_content, subtitle_content = azure_stt_results_to_subtitle(azure_results, SubtitleType.vtt)
     path.vtt.write_text(vtt_content)
 
-    logger.info(f"[{video_path.name}] Generated subtitle, detected as '{language}'")
+    logger.info(f"[{video_path.name}] Generated subtitle, detected as '{codes}'")
     return subtitle_content.strip(), detected_result

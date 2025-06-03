@@ -34,22 +34,24 @@ def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000) -> 
     )
 
 
-def get_language_candidates(lang: Language) -> List[str]:
-    if lang.long_code in Language.top4():
-        return Language.top4()
+def get_language_candidates(lang_short_codes: List[str]) -> List[str]:
+    valid_codes = [code for code in lang_short_codes if Language.valid_short_code(code)]
+    n = len(valid_codes)
+    if n >= 4:
+        return valid_codes[:4]
 
-    return Language.top4()[:3] + [lang.long_code]
+    return valid_codes + Language.top4()[:4 - n]
 
 
 @log_time
-def get_azure_results(audio_path: Path, duration: float, lang: Language):
+def get_azure_results(audio_path: Path, duration: float, lang_short_codes: List[str]):
     # Configure speech recognition
     speech_config = speechsdk.SpeechConfig(subscription=AZURE_SPEECH_KEY, region=AZURE_SPEECH_REGION)
     # speech_config.speech_recognition_language = "en-US"
 
     # Languages
     auto_detect_source_language_config = speechsdk.languageconfig.AutoDetectSourceLanguageConfig(
-        languages=get_language_candidates(lang),
+        languages=get_language_candidates(lang_short_codes),
     )
 
     # Enable detailed output with word-level timestamps

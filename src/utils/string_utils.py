@@ -1,20 +1,22 @@
 import re
+from typing import Set
 
 import fasttext
 import requests
+
 from src.lib.config import MODELS_DIR
 from src.lib.consts import FASTTEXT_LANG_ALIAS
 
 fasttext_model = None
 
 STOP_CHARS = (
-    ".!?,:;…‥"      # English & common
+    ".!?,:;…‥"  # English & common
     "。！？，、；："  # Chinese/Japanese
-    "।"             # Hindi
-    "܀።፧"           # Semitic (Syriac, Ge‘ez)
-    "؟؛"            # Arabic/Persian
-    "၊။"            # Burmese
-    "⸮⁇⁈⁉"          # Rare multilingual
+    "।"  # Hindi
+    "܀።፧"  # Semitic (Syriac, Ge‘ez)
+    "؟؛"  # Arabic/Persian
+    "၊။"  # Burmese
+    "⸮⁇⁈⁉"  # Rare multilingual
 )
 
 
@@ -40,14 +42,22 @@ def is_cjk(text: str) -> bool:
     return False
 
 
-def get_lang(text: str) -> str:
-    labels, prob = get_fasttext_model().predict(text, k=1)
-    code = labels[0].replace("__label__", "")
-    code = FASTTEXT_LANG_ALIAS.get(code, code)
-    if is_cjk(text) and code not in {"zh", "ja", "ko"}:
-        return "zh"
+def get_lang(text: str) -> Set[str]:
+    labels, probs = get_fasttext_model().predict(text, k=5)
+    codes = []
+    for i, p in enumerate(probs):
+        if p > 0.5:
+            code = labels[i].replace("__label__", "")
+            code = FASTTEXT_LANG_ALIAS.get(code, code)
 
-    return code
+            if is_cjk(text) and code not in {"zh", "ja", "ko"}:
+                code = "zh"
+            elif code == "tl":
+                # always replace Tagalog with English
+                code = "en"
+            codes.append(code)
+
+    return set(codes)
 
 
 def split_by_stop_chars(text: str) -> str:

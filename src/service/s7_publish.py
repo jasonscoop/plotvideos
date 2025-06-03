@@ -43,10 +43,10 @@ def process_pending_videos(batch_size=10):
         for video in videos:
             try:
                 publish_video(video)
-                logger.info(f"[{video.id}] published")
+                logger.info(f"[{video.id} | {video.host} | {video.original_id}]  published")
             except Exception as e:
-                VideoCrud.update_status(video.id, VideoStatus.failed_published, str(e)[:DB_ERROR_LOG_LENGTH])
-                logger.error(f"[{video.id}] failed to translate: {str(e)}")
+                reason = str(e)[:DB_ERROR_LOG_LENGTH]
+                VideoCrud.update_status(video.id, VideoStatus.failed_published, reason)
                 exception_count += 1
                 if exception_count >= 3:
                     raise e

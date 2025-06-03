@@ -74,7 +74,6 @@ def fetch_and_save_videos(max_page=1, batch_size=3):
                         added = VideoCrud.batch_add(videos)
                         logger.info(f"[{name}] fetched, added [{added}/{len(videos)}]")
                     except Exception as e:
-                        logger.error(f"Error fetching/saving videos: {e}")
                         exception_count += 1
                         if exception_count >= 3:
                             raise e

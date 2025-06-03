@@ -1,5 +1,5 @@
 from enum import StrEnum, Enum
-from typing import List
+from typing import List, Optional
 
 from encodings.aliases import aliases
 
@@ -72,18 +72,21 @@ class Language(Enum):
         return self.value[3]
 
     @classmethod
-    def valid_short_code(cls, short_code: str) -> bool:
+    def from_short_code(cls, short_code: str) -> Optional["Language"]:
         for lang in cls:
             if lang.short_code == short_code.lower():
-                return True
+                return lang
 
-        return False
+        return None
 
     @classmethod
-    def top4(cls) -> List[str]:
-        return [
-            cls.ENGLISH.long_code,
-            cls.CHINESE.long_code,
-            cls.HINDI.long_code,
-            cls.SPANISH.long_code,
-        ]
+    def from_long_code(cls, long_code: str) -> Optional["Language"]:
+        for lang in cls:
+            if lang.long_code.lower() == long_code.lower():
+                return lang
+
+        return None
+
+    @classmethod
+    def top4(cls) -> List["Language"]:
+        return [cls.ENGLISH, cls.CHINESE, cls.HINDI, cls.SPANISH]

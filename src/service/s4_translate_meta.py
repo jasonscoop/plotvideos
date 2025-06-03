@@ -34,7 +34,7 @@ def translate_video(video: Video):
 def translate_meta_infos(batch_size: int = 10):
     last_id = 0
     exception_count = 0
-    
+
     while True:
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.subtitled)
         if not videos:
@@ -43,10 +43,10 @@ def translate_meta_infos(batch_size: int = 10):
         for video in videos:
             try:
                 translate_video(video)
-                logger.info(f"[{video.id}: {video.title}] translated")
+                logger.info(f"[{video.id} | {video.host} | {video.original_id}] translated")
             except Exception as e:
-                VideoCrud.update_status(video.id, VideoStatus.failed_meta_translated, str(e)[:DB_ERROR_LOG_LENGTH])
-                logger.error(f"[{video.id}: {video.title}] failed to translate: {str(e)}")
+                reason = str(e)[:DB_ERROR_LOG_LENGTH]
+                VideoCrud.update_status(video.id, VideoStatus.failed_meta_translated, reason)
                 exception_count += 1
                 if exception_count >= 3:
                     raise e

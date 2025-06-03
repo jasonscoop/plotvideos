@@ -21,10 +21,8 @@ def upload_videos(batch_size: int = 10):
         if not videos:
             break
 
-        logger.info(f"Processing batch of {len(videos)} videos (last_id {last_id})")
         last_id = videos[-1].id
         for video in videos:
-            logger.info(f"[{video.id}] Uploading video and subtitles for: {video.title}")
             path = StorePath(video.host, video.original_id)
 
             try:
@@ -32,7 +30,7 @@ def upload_videos(batch_size: int = 10):
                 for lang in Language:
                     vtt_file = path.translated_vtts / f"{lang.short_code}.vtt"
                     if not vtt_file.exists():
-                        logger.warning(f"[{video.id}] subtitle file not found: {vtt_file}")
+                        logger.warning(f"[{video.id} | {video.host} | {video.original_id}] vtt not found, skipped")
                         continue
                     bunny_client.upload_subtitle(guid, vtt_file, lang)
 
@@ -41,7 +39,7 @@ def upload_videos(batch_size: int = 10):
                     "bunny_video_id": guid,
                     "status": VideoStatus.uploaded
                 })
-                logger.info(f"[{video.id}] Successfully uploaded video and subtitles: {video.title}")
+                logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded")
             except Exception as e:
                 reason = str(e)[:DB_ERROR_LOG_LENGTH]
                 VideoCrud.update_status(video.id, VideoStatus.failed_uploaded, reason)

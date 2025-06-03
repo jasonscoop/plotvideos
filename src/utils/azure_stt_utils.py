@@ -9,11 +9,9 @@ from pydub import AudioSegment
 
 from src.lib.config import AZURE_SPEECH_REGION, AZURE_SPEECH_KEY
 from src.lib.enums import Language
-from src.utils.log_utils import log_time
 
 
-@log_time
-def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000) -> float:
+def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000):
     audio = AudioSegment.from_file(video_path)
 
     # Optimize for speech recognition:
@@ -34,24 +32,30 @@ def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000) -> 
     )
 
 
-def get_language_candidates(lang_short_codes: List[str]) -> List[str]:
-    valid_codes = [code for code in lang_short_codes if Language.valid_short_code(code)]
-    n = len(valid_codes)
+def get_language_candidates(short_codes: List[str]) -> List[Language]:
+    valid_languages = []
+    for s in short_codes:
+        language = Language.from_short_code(s)
+        if language:
+            valid_languages.append(language)
+
+    n = len(valid_languages)
     if n >= 4:
-        return valid_codes[:4]
+        return valid_languages[:4]
 
-    return valid_codes + Language.top4()[:4 - n]
+    return valid_languages + Language.top4()[:4 - n]
 
 
-@log_time
 def get_azure_results(audio_path: Path, duration: float, lang_short_codes: List[str]):
+    assert Path(audio_path).exists(), f"Audio file [{audio_path}] not found"
+
     # Configure speech recognition
     speech_config = speechsdk.SpeechConfig(subscription=AZURE_SPEECH_KEY, region=AZURE_SPEECH_REGION)
     # speech_config.speech_recognition_language = "en-US"
 
-    # Languages
+    languages = get_language_candidates(lang_short_codes)
     auto_detect_source_language_config = speechsdk.languageconfig.AutoDetectSourceLanguageConfig(
-        languages=get_language_candidates(lang_short_codes),
+        languages=[l.long_code for l in languages],
     )
 
     # Enable detailed output with word-level timestamps

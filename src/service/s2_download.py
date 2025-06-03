@@ -19,11 +19,10 @@ def download_videos(batch_size: int = 10):
         if not videos:
             break
 
-        logger.info(f"Processing batch of {len(videos)} videos (last_id {last_id})")
         last_id = videos[-1].id
 
         for video in videos:
-            logger.info(f"Downloading: {video.title} ({video.url})")
+            logger.info(f"[{video.id} | {video.host} | {video.original_id}] started")
             path = StorePath(video.host, video.original_id)
 
             try:
@@ -37,11 +36,10 @@ def download_videos(batch_size: int = 10):
                     "duration": info.get("duration", 0),
                     "file_size": path.parent.joinpath(video_filename).stat().st_size
                 })
-                logger.info(f"[{video.id}: {video.title}] Downloaded")
+                logger.info(f"[{video.id} | {video.host} | {video.original_id}]  Downloaded")
             except Exception as e:
                 reason = str(e)[:DB_ERROR_LOG_LENGTH]
                 VideoCrud.update_status(video.id, VideoStatus.failed_downloaded, reason)
-                logger.error(f"Download failed: {reason}")
                 exception_count += 1
                 if exception_count >= 3:
                     raise e

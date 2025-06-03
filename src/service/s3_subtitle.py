@@ -4,6 +4,7 @@ from loguru import logger
 
 from src.crud.video_crud import VideoCrud
 from src.lib.config import MAX_ACCEPT_VIDEO_SIZE
+from src.lib.consts import DB_ERROR_LOG_LENGTH
 from src.lib.models import VideoStatus
 from src.utils.azure_subtitle_utils import generate_subtitle
 from src.utils.log_utils import init_logging
@@ -22,7 +23,7 @@ def process_downloaded_videos(batch_size: int = 10):
 
         for video in videos:
             if video.file_size > MAX_ACCEPT_VIDEO_SIZE:
-                reason = f"[{video.id}] Video size exceeded: has size {video.file_size}  > {MAX_ACCEPT_VIDEO_SIZE}"
+                reason = f"[{video.id} | {video.host} | {video.original_id}] size exceeded: {MAX_ACCEPT_VIDEO_SIZE}"
                 VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_size, reason)
                 logger.info(reason)
                 continue
@@ -33,11 +34,11 @@ def process_downloaded_videos(batch_size: int = 10):
                     "subtitle_content": generate_subtitle(video),
                     "status": VideoStatus.subtitled
                 })
-                logger.info(f"Generated subtitle successfully for: {video.title}")
+                logger.info(
+                    f"[{video.id} | {video.host} | {video.original_id}] subtitle generated")
             except Exception as e:
-                reason = str(e)[:1000]
+                reason = str(e)[:DB_ERROR_LOG_LENGTH]
                 VideoCrud.update_status(video.id, VideoStatus.failed_subtitled, reason)
-                logger.error(f"Failed to generate subtitle: {reason}")
                 exception_count += 1
                 if exception_count >= 3:
                     raise e

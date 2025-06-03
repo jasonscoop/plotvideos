@@ -24,10 +24,10 @@ def process_subtitled_videos(batch_size: int = 10):
         for video in videos:
             if len(video.subtitle_content.strip()) == 0:
                 VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_empty_subtitle, reason="No subtitle")
-                logger.warning(f"Video {video.id} has no subtitle, skipping")
+                logger.warning(f"[{video.id} | {video.host} | {video.original_id}] no subtitle, skipping")
                 continue
 
-            logger.info(f"Translating subtitles for: {video.title}")
+            logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translation started")
             path = StorePath(video.host, video.original_id)
 
             try:
@@ -38,14 +38,12 @@ def process_subtitled_videos(batch_size: int = 10):
                     translated_vtt = translate_vtt(vtt_content, lang)
                     translated_file = path.translated_vtts / f"{lang.short_code}.vtt"
                     translated_file.write_text(translated_vtt)
-                    logger.info(f"[{video.id}] Translated to {lang.short_code} successfully")
 
                 VideoCrud.update_status(video.id, VideoStatus.vtt_translated)
-                logger.info(f"Translated all languages successfully for: {video.title}")
+                logger.info(f"[{video.id} | {video.host} | {video.original_id}] ")
             except Exception as e:
                 reason = str(e)[:DB_ERROR_LOG_LENGTH]
                 VideoCrud.update_status(video.id, VideoStatus.failed_vtt_translated, reason)
-                logger.error(f"Translation failed: {reason}")
                 exception_count += 1
                 if exception_count >= 3:
                     raise e

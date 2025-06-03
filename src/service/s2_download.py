@@ -36,7 +36,7 @@ def download_videos(batch_size: int = 10):
                     "duration": info.get("duration", 0),
                     "file_size": path.parent.joinpath(video_filename).stat().st_size
                 })
-                logger.info(f"Downloaded successfully: {video.title}")
+                logger.info(f"[{video.id}: {video.title}] Downloaded")
             except Exception as e:
                 reason = str(e)[:DB_ERROR_LOG_LENGTH]
                 VideoCrud.update_status(video.id, VideoStatus.failed_downloaded, reason)

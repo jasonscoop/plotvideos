@@ -2,66 +2,49 @@ import traceback
 
 from loguru import logger
 
-from src.lib.connection import SessionLocal
+from src.crud.video_crud import VideoCrud
 from src.lib.consts import Language, VideoStatus, DB_ERROR_LOG_LENGTH
-from src.lib.models import Video
 from src.lib.schemas import StorePath
 from src.utils.llm_utils import translate_vtt
 from src.utils.log_utils import init_logging
 
 
 def process_subtitled_videos(batch_size: int = 10):
-    """Process videos that have been subtitled but not yet translated"""
-    session = SessionLocal()
     last_id = 0
 
-    try:
-        while True:
-            videos = (
-                session.query(Video)
-                .filter(Video.status == VideoStatus.meta_translated, Video.id > last_id)
-                .order_by(Video.id)
-                .limit(batch_size)
-                .all()
-            )
-            if not videos:
-                break
+    while True:
+        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.meta_translated)
+        if not videos:
+            break
 
-            logger.info(f"Processing batch of {len(videos)} videos (last_id {last_id})")
-            for video in videos:
-                if len(video.subtitle_content.strip()) == 0:
-                    logger.warning(f"Video {video.id} has no subtitle, skipping")
-                    continue
+        last_id = videos[-1].id
 
-                logger.info(f"Translating subtitles for: {video.title}")
-                path = StorePath(video.host, video.original_id)
+        for video in videos:
+            if len(video.subtitle_content.strip()) == 0:
+                VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_empty_subtitle, reason="No subtitle")
+                logger.warning(f"Video {video.id} has no subtitle, skipping")
+                continue
 
-                try:
-                    # Read the original VTT file
-                    vtt_content = path.vtt.read_text()
+            logger.info(f"Translating subtitles for: {video.title}")
+            path = StorePath(video.host, video.original_id)
 
-                    # Create translated_vtts directory if it doesn't exist
-                    path.translated_vtts.mkdir(exist_ok=True)
+            try:
+                vtt_content = path.vtt.read_text()
+                path.translated_vtts.mkdir(exist_ok=True)
 
-                    # Translate to all supported languages
-                    for lang in Language:
-                        translated_vtt = translate_vtt(vtt_content, lang)
-                        translated_file = path.translated_vtts / f"{lang.short_code}.vtt"
-                        translated_file.write_text(translated_vtt)
-                        logger.info(f"[{video.id}] Translated to {lang.short_code} successfully")
+                for lang in Language:
+                    translated_vtt = translate_vtt(vtt_content, lang)
+                    translated_file = path.translated_vtts / f"{lang.short_code}.vtt"
+                    translated_file.write_text(translated_vtt)
+                    logger.info(f"[{video.id}] Translated to {lang.short_code} successfully")
 
-                    video.status = VideoStatus.vtt_translated
-                    logger.info(f"Translated all languages successfully for: {video.title}")
-                except Exception as e:
-                    video.status = VideoStatus.failed_vtt_translated
-                    video.failed_reason = str(e)[:DB_ERROR_LOG_LENGTH]
-                    logger.error(f"Translation failed: {e}")
-                    traceback.print_exc()
-
-                session.commit()
-            last_id = videos[-1].id
-    finally:
-        session.close()
+                VideoCrud.update_status(video.id, VideoStatus.vtt_translated)
+                logger.info(f"Translated all languages successfully for: {video.title}")
+            except Exception as e:
+                reason = str(e)[:DB_ERROR_LOG_LENGTH]
+                VideoCrud.update_status(video.id, VideoStatus.failed_vtt_translated, reason)
+                logger.error(f"Translation failed: {reason}")
+                traceback.print_exc()
 
 
 if __name__ == '__main__':

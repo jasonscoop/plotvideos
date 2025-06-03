@@ -8,7 +8,7 @@ from loguru import logger
 from src.crud.keyword_crud import KeywordCrud
 from src.crud.video_crud import VideoCrud
 from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL
-from src.lib.consts import ID_EXTRACTOR_MAP
+from src.lib.consts import WEBSITES
 from src.lib.enums import VideoStatus
 from src.lib.models import Video, Keyword
 from src.utils.log_utils import init_logging
@@ -35,12 +35,11 @@ def fetch_and_save_videos(max_page=1, batch_size=3):
     while True:
         keywords: List[Keyword] = KeywordCrud.batch_get(last_id=last_id, batch_size=batch_size)
         if not keywords:
-            logger.warning("No more keywords found in database.")
             break
 
         last_id = keywords[-1].id
         for keyword in keywords:
-            logger.info(f"Fetching videos for keyword: {keyword.name}")
+            logger.info(f"Fetching videos for keyword [{keyword.name}]")
 
             for page in range(1, max_page):
                 data = fetch_video_urls(keyword.name, page)
@@ -52,7 +51,7 @@ def fetch_and_save_videos(max_page=1, batch_size=3):
                     videos = []
                     host = site["site"]["host"]
                     name = site["site"]["name"]
-                    id_extractor = ID_EXTRACTOR_MAP.get(host)()
+                    id_extractor = WEBSITES.get(host)["id_extractor"]()
                     if not id_extractor:
                         logger.error("Can not find a extractor for host %s", host)
                         continue
@@ -76,10 +75,6 @@ def fetch_and_save_videos(max_page=1, batch_size=3):
                     except Exception as e:
                         logger.error(f"Error fetching/saving videos: {e}")
                         traceback.print_exc()
-
-                if page > max_page:
-                    logger.info("Reach the max page, break")
-                    break
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ from typing import Dict
 
 import requests
 
-from src.lib.consts import BUNNEY_COLLECTION_MAP
+from src.lib.consts import BUNNEY_COLLECTION_MAP, WEBSITES
 from src.lib.enums import Language
 from src.lib.models import Video
 from src.lib.schemas import StorePath
@@ -37,7 +37,7 @@ class BunnyStreamClient:
             headers=self.headers,
             json={
                 "title": video.title or video_path.stem,
-                "collectionId": BUNNEY_COLLECTION_MAP[video.host]
+                "collectionId": WEBSITES[video.host]["bunny_collection_id"]
             }
         )
         create_response.raise_for_status()

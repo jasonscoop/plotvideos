@@ -60,3 +60,9 @@ class YouJizzIdExtractor(IdExtractor):
     def get(self, url):
         match = re.search(r'-(\d+)\.html$', url)
         return match.group(1) if match else ""
+
+
+class YoutubeIdExtractor(IdExtractor):
+    def get(self, url):
+        parsed_url = urlparse(url)
+        return parse_qs(parsed_url.query).get('v', [""])[0]

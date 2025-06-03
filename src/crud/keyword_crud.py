@@ -1,5 +1,6 @@
 from typing import List
 
+from src.lib.connection import get_db
 from src.lib.models import Video, Keyword
 
 

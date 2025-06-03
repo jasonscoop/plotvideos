@@ -4,10 +4,10 @@ from urllib.parse import urlparse
 
 import requests
 from loguru import logger
-from src.crud.crud import batch_add, get_all_keywords
 
+from src.crud.keyword_crud import KeywordCrud
+from src.crud.video_crud import VideoCrud
 from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL
-from src.lib.connection import SessionLocal
 from src.lib.consts import ID_EXTRACTOR_MAP
 from src.lib.models import Video, VideoStatus, Keyword
 from src.utils.log_utils import init_logging
@@ -28,57 +28,56 @@ def fetch_video_urls(query: str, page: int):
     return response.json()
 
 
-def fetch_and_save_videos(max_page=3):
-    session = SessionLocal()
-    keywords: List[Keyword] = get_all_keywords(session)
+def fetch_and_save_videos(max_page=1, batch_size=3):
+    last_id = 0
 
-    if not keywords:
-        logger.warning("No keywords found in database. Please add some keywords first.")
-        return
+    while True:
+        keywords: List[Keyword] = KeywordCrud.batch_get(last_id=last_id, batch_size=batch_size)
+        if not keywords:
+            logger.warning("No keywords found in database. Please add some keywords first.")
+            break
 
-    for keyword in keywords:
-        logger.info(f"Fetching videos for keyword: {keyword}")
+        for keyword in keywords:
+            logger.info(f"Fetching videos for keyword: {keyword}")
 
-        for page in range(1, max_page):
-            data = fetch_video_urls(keyword.name, page)
-            sites = data.get('data', [])
-            for site in sites:
-                if not site["links"]:
-                    continue
+            for page in range(1, max_page):
+                data = fetch_video_urls(keyword.name, page)
+                sites = data.get('data', [])
+                for site in sites:
+                    if not site["links"]:
+                        continue
 
-                videos = []
-                host = site["site"]["host"]
-                name = site["site"]["name"]
-                id_extractor = ID_EXTRACTOR_MAP.get(host)()
-                if not id_extractor:
-                    logger.error("Can not find a extractor for host %s", host)
-                    continue
+                    videos = []
+                    host = site["site"]["host"]
+                    name = site["site"]["name"]
+                    id_extractor = ID_EXTRACTOR_MAP.get(host)()
+                    if not id_extractor:
+                        logger.error("Can not find a extractor for host %s", host)
+                        continue
 
-                try:
-                    for link in site["links"]:
-                        title = link.get('title')
-                        if not title:
-                            continue
+                    try:
+                        for link in site["links"]:
+                            title = link.get('title')
+                            if not title:
+                                continue
 
-                        videos.append(Video(
-                            title=link.get('title'),
-                            url=link.get('url'),
-                            original_id=id_extractor.get(link.get('url')),
-                            host=host,
-                            status=VideoStatus.fetched
-                        ))
-                    added, updated = batch_add(session, videos, keyword)
-                    logger.info(f"[{name}] get [{len(site["links"])}] videos, updated [{updated}] added [{added}]")
-                except Exception as e:
-                    logger.error(f"Error fetching/saving videos: {e}")
-                    traceback.print_exc()
-                    session.rollback()
+                            videos.append(Video(
+                                title=link.get('title'),
+                                url=link.get('url'),
+                                original_id=id_extractor.get(link.get('url')),
+                                host=host,
+                                status=VideoStatus.fetched,
+                                keyword=keyword.name,
+                            ))
+                        added, updated = VideoCrud.batch_add(videos)
+                        logger.info(f"[{name}] get [{len(site["links"])}] videos, updated [{updated}] added [{added}]")
+                    except Exception as e:
+                        logger.error(f"Error fetching/saving videos: {e}")
+                        traceback.print_exc()
 
-            if page > max_page:
-                logger.info("Reach the max page, break")
-                break
-
-    session.close()
+                if page > max_page:
+                    logger.info("Reach the max page, break")
+                    break
 
 
 if __name__ == "__main__":

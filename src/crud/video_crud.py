@@ -19,6 +19,15 @@ class VideoCrud:
                 .all()
 
     @classmethod
+    def batch_add(cls, videos: List[Video]) -> List[Video]:
+        with get_db() as session:
+            for video in videos:
+                old = session.query(Video).filter(Video.url == video.url).first()
+                if old is None:
+                    session.add(video)
+            session.commit()
+
+    @classmethod
     def update_meta_translations(cls,
                                  video_id: int,
                                  title_translations: dict,

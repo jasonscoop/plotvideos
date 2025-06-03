@@ -32,11 +32,14 @@ def publish_video(video: Video):
 
 def process_pending_videos(batch_size=10):
     last_id = 0
+    exception_count = 0
+
     while True:
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.uploaded)
         if not videos:
             break
 
+        last_id = videos[-1].id
         for video in videos:
             try:
                 publish_video(video)
@@ -44,9 +47,10 @@ def process_pending_videos(batch_size=10):
             except Exception as e:
                 VideoCrud.update_status(video.id, VideoStatus.failed_published, str(e)[:DB_ERROR_LOG_LENGTH])
                 logger.error(f"[{video.id}] failed to translate: {str(e)}")
+                exception_count += 1
+                if exception_count >= 3:
+                    raise e
                 traceback.print_exc()
-
-        last_id = videos[-1].id
 
 
 if __name__ == "__main__":

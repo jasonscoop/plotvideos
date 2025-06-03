@@ -11,13 +11,13 @@ from src.utils.log_utils import init_logging
 
 def process_downloaded_videos(batch_size: int = 10):
     last_id = 0
+    exception_count = 0
 
     while True:
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.downloaded)
         if not videos:
             break
 
-        logger.info(f"Processing batch of {len(videos)} videos (last_id {last_id})")
         last_id = videos[-1].id
 
         for video in videos:
@@ -28,11 +28,9 @@ def process_downloaded_videos(batch_size: int = 10):
                 continue
 
             try:
-                subtitle_content, pre_detected = generate_subtitle(video)
                 VideoCrud.update({
                     "id": video.id,
-                    "subtitle_content": subtitle_content,
-                    "pre_detected_result": pre_detected.model_dump(),
+                    "subtitle_content": generate_subtitle(video),
                     "status": VideoStatus.subtitled
                 })
                 logger.info(f"Generated subtitle successfully for: {video.title}")
@@ -40,6 +38,9 @@ def process_downloaded_videos(batch_size: int = 10):
                 reason = str(e)[:1000]
                 VideoCrud.update_status(video.id, VideoStatus.failed_subtitled, reason)
                 logger.error(f"Failed to generate subtitle: {reason}")
+                exception_count += 1
+                if exception_count >= 3:
+                    raise e
                 traceback.print_exc()
 
 

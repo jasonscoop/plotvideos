@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, Enum, Boolean, DateTime, JSON, Text
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql import func
-from sqlalchemy.sql.schema import UniqueConstraint
 
 from src.lib.connection import engine
 from src.lib.enums import VideoStatus
@@ -41,26 +40,11 @@ class Video(Base):
     tag_translations = Column(JSON, nullable=False, default={})
     category_translations = Column(JSON, nullable=False, default={})
 
-    pre_detected_result = Column(JSON, nullable=False, default={})
     subtitle_content = Column(Text, nullable=False, default="")
-
     bunny_video_id = Column(String(48), nullable=False, default="")
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
-
-
-class Terms(Base):
-    __tablename__ = 'terms'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    term = Column(String(200), nullable=False)
-    lang = Column(String(2), nullable=False, default="")
-    translation = Column(String(200), nullable=False, default="")
-
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
-
-    __table_args__ = (UniqueConstraint("term", "lang"),)
 
 
 if __name__ == "__main__":

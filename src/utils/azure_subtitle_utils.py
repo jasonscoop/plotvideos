@@ -2,14 +2,12 @@ import json
 import math
 from typing import List
 
-from encodings.aliases import aliases
 from loguru import logger
 from sqlalchemy.cyextension.collections import OrderedSet
 
 from src.lib.enums import Language, SubtitleType
 from src.lib.models import Video
-from src.lib.schemas import StorePath, PreDetectResult
-from src.utils.audio_utils import detect_talking_whisper
+from src.lib.schemas import StorePath
 from src.utils.azure_stt_utils import media_to_wav, get_azure_results
 from src.utils.string_utils import get_lang, split_by_stop_chars
 
@@ -77,17 +75,15 @@ def get_texts_lang_codes(texts: List[str]) -> List[str]:
     return list(langs)
 
 
-def generate_subtitle(video: Video) -> (str, int, PreDetectResult):
+def generate_subtitle(video: Video) -> str:
     path = StorePath(video.host, video.original_id)
     video_path = path.parent / video.filename
     if not video_path.exists():
         raise Exception(f"Video {video.original_id}-{video_path} does not exist")
 
     media_to_wav(video_path, path.wav)
+
     codes = get_texts_lang_codes([video.title] + video.tags + video.categories)
-
-    detected_result = detect_talking_whisper(video_path)
-
     azure_results = get_azure_results(path.wav, video.duration, codes)
     path.azure_results.write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))
 
@@ -95,4 +91,4 @@ def generate_subtitle(video: Video) -> (str, int, PreDetectResult):
     path.vtt.write_text(vtt_content)
 
     logger.info(f"[{video_path.name}] Generated subtitle, detected as '{codes}'")
-    return subtitle_content.strip(), detected_result
+    return subtitle_content.strip()

@@ -14,6 +14,7 @@ from src.utils.log_utils import init_logging
 def upload_videos(batch_size: int = 10):
     bunny_client = BunnyStreamClient(BUNNY_API_KEY, BUNNY_LIBRARY_ID)
     last_id = 0
+    exception_count = 0
 
     while True:
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.vtt_translated)
@@ -44,6 +45,9 @@ def upload_videos(batch_size: int = 10):
             except Exception as e:
                 reason = str(e)[:DB_ERROR_LOG_LENGTH]
                 VideoCrud.update_status(video.id, VideoStatus.failed_uploaded, reason)
+                exception_count += 1
+                if exception_count >= 3:
+                    raise e
                 traceback.print_exc()
 
 

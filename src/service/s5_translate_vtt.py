@@ -12,6 +12,7 @@ from src.utils.log_utils import init_logging
 
 def process_subtitled_videos(batch_size: int = 10):
     last_id = 0
+    exception_count = 0
 
     while True:
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.meta_translated)
@@ -45,6 +46,9 @@ def process_subtitled_videos(batch_size: int = 10):
                 reason = str(e)[:DB_ERROR_LOG_LENGTH]
                 VideoCrud.update_status(video.id, VideoStatus.failed_vtt_translated, reason)
                 logger.error(f"Translation failed: {reason}")
+                exception_count += 1
+                if exception_count >= 3:
+                    raise e
                 traceback.print_exc()
 
 

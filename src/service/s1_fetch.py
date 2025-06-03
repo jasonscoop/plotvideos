@@ -31,6 +31,7 @@ def fetch_video_urls(query: str, page: int):
 
 def fetch_and_save_videos(max_page=1, batch_size=3):
     last_id = 0
+    exception_count = 0
 
     while True:
         keywords: List[Keyword] = KeywordCrud.batch_get(last_id=last_id, batch_size=batch_size)
@@ -74,6 +75,9 @@ def fetch_and_save_videos(max_page=1, batch_size=3):
                         logger.info(f"[{name}] fetched, added [{added}/{len(videos)}]")
                     except Exception as e:
                         logger.error(f"Error fetching/saving videos: {e}")
+                        exception_count += 1
+                        if exception_count >= 3:
+                            raise e
                         traceback.print_exc()
 
 

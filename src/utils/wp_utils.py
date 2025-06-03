@@ -54,6 +54,8 @@ def wp_create_post(video: Video, lang: Language, tag_ids: List[int], category_id
 
 
 def wp_batch_get_or_add_terms(data: TaxonomyIn) -> Dict[str, List[int]]:
+    if len(data.translations) == 0:
+        return {}
     with httpx.Client() as client:
         response = client.post(
             f"{WP_BASE_URL}/wp-json/custom/v1/import-translated-terms",

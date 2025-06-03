@@ -14,23 +14,23 @@ from src.utils.wp_utils import wp_link_posts, wp_create_post, wp_batch_get_or_ad
 def publish_video(video: Video):
     lang_post_maps = {}
     tag_ids = wp_batch_get_or_add_terms(TaxonomyIn(taxonomy=TermType.tags, translations=video.tag_translations))
-    logger.info(f"[{video.id}] added tags")
+    logger.info(f"[{video.id} | {video.host} | {video.original_id}] added tags")
 
     category_ids = wp_batch_get_or_add_terms(
         TaxonomyIn(taxonomy=TermType.categories, translations=video.category_translations))
-    logger.info(f"[{video.id}] added categories")
+    logger.info(f"[{video.id} | {video.host} | {video.original_id}] added categories")
 
     for lang in Language:
-        post = wp_create_post(video, lang, tag_ids[lang.short_code], category_ids[lang.short_code])
+        post = wp_create_post(video, lang, tag_ids.get(lang.short_code, []), category_ids.get(lang.short_code, []))
         lang_post_maps[lang.short_code] = post["id"]
 
     if len(lang_post_maps) > 1:
         wp_link_posts(lang_post_maps)
-    logger.info(f"[{video.id}] added and linked")
+    logger.info(f"[{video.id} | {video.host} | {video.original_id}] post added and linked")
     VideoCrud.update_status(video.id, VideoStatus.published)
 
 
-def process_pending_videos(batch_size=10):
+def publish_videos(batch_size=10):
     last_id = 0
     exception_count = 0
 
@@ -43,7 +43,7 @@ def process_pending_videos(batch_size=10):
         for video in videos:
             try:
                 publish_video(video)
-                logger.info(f"[{video.id} | {video.host} | {video.original_id}]  published")
+                logger.info(f"[{video.id} | {video.host} | {video.original_id}] published")
             except Exception as e:
                 reason = str(e)[:DB_ERROR_LOG_LENGTH]
                 VideoCrud.update_status(video.id, VideoStatus.failed_published, reason)
@@ -55,5 +55,5 @@ def process_pending_videos(batch_size=10):
 
 if __name__ == "__main__":
     init_logging("publish")
-    process_pending_videos()
+    publish_videos()
     logger.info("All published")

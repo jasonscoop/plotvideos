@@ -22,7 +22,12 @@ def translate_video(video: Video):
         tags_translations[lang.short_code] = translated[1:len(video.tags) + 1]
         categories_translations[lang.short_code] = translated[len(video.category_translations) + 1:]
 
-    VideoCrud.update_meta_translations(video.id, title_translations, tags_translations, categories_translations)
+    VideoCrud.update({
+        "id": video.id,
+        "title_translations": title_translations,
+        "tags_translations": tags_translations,
+        "categories_translations": categories_translations
+    })
 
 
 def translate_meta_infos(batch_size: int = 10):

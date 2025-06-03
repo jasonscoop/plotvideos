@@ -41,21 +41,6 @@ class VideoCrud:
             session.commit()
 
     @classmethod
-    def update_meta_translations(cls,
-                                 video_id: int,
-                                 title_translations: dict,
-                                 tag_translations: dict,
-                                 category_translations: dict) -> None:
-        with get_db() as session:
-            video = session.query(Video).filter(Video.id == video_id).first()
-            if video:
-                video.title_translations = title_translations
-                video.tag_translations = tag_translations
-                video.category_translations = category_translations
-                video.status = VideoStatus.meta_translated
-                session.commit()
-
-    @classmethod
     def update_status(cls, video_id: int, status: VideoStatus, reason: str = ""):
         with get_db() as session:
             video = session.query(Video).filter(Video.id == video_id).first()

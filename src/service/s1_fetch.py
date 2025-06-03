@@ -37,6 +37,7 @@ def fetch_and_save_videos(max_page=1, batch_size=3):
             logger.warning("No keywords found in database. Please add some keywords first.")
             break
 
+        last_id = keywords[-1].id
         for keyword in keywords:
             logger.info(f"Fetching videos for keyword: {keyword}")
 

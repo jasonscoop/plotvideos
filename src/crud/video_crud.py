@@ -27,6 +27,19 @@ class VideoCrud:
                     session.add(video)
             session.commit()
 
+    @staticmethod
+    def update(data: dict):
+        if "id" not in data:
+            raise KeyError("Video id is required")
+
+        with get_db() as session:
+            old = session.query(Video).get(data["id"])
+            for key, value in data.items():
+                if value is not None and hasattr(old, key):
+                    setattr(old, key, value)
+
+            session.commit()
+
     @classmethod
     def update_meta_translations(cls,
                                  video_id: int,

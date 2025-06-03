@@ -19,6 +19,8 @@ def download_videos(batch_size: int = 10):
             break
 
         logger.info(f"Processing batch of {len(videos)} videos (last_id {last_id})")
+        last_id = videos[-1].id
+
         for video in videos:
             logger.info(f"Downloading: {video.title} ({video.url})")
             path = StorePath(video.host, video.original_id)
@@ -38,8 +40,6 @@ def download_videos(batch_size: int = 10):
                 video.failed_reason = str(e)[:DB_ERROR_LOG_LENGTH]  # Truncate if too long
                 logger.error(f"Download failed: {e}")
                 traceback.print_exc()
-
-        last_id = videos[-1].id
 
 
 if __name__ == "__main__":

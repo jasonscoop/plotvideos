@@ -27,18 +27,19 @@ def download_videos(batch_size: int = 10):
 
             try:
                 video_filename, info = download_remote_video(video.url, path.parent)
-
-                video.status = VideoStatus.downloaded
-                video.filename = video_filename
-                video.tags = info.get("tags", [])
-                video.categories = info.get("categories", [])
-                video.duration = info.get("duration", 0)
-                video.file_size = path.parent.joinpath(video_filename).stat().st_size
+                VideoCrud.update({
+                    "status": VideoStatus.downloaded,
+                    "filename": video_filename,
+                    "tags": info.get("tags", []),
+                    "categories": info.get("categories", []),
+                    "duration": info.get("duration", 0),
+                    "file_size": path.parent.joinpath(video_filename).stat().st_size
+                })
                 logger.info(f"Downloaded successfully: {video.title}")
             except Exception as e:
-                video.status = VideoStatus.failed_downloaded
-                video.failed_reason = str(e)[:DB_ERROR_LOG_LENGTH]  # Truncate if too long
-                logger.error(f"Download failed: {e}")
+                reason = str(e)[:DB_ERROR_LOG_LENGTH]
+                VideoCrud.update_status(video.id, VideoStatus.failed_downloaded, reason)
+                logger.error(f"Download failed: {reason}")
                 traceback.print_exc()
 
 

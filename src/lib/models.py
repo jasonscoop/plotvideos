@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Enum, Boolean, DateTime, JSON, Text
+from sqlalchemy import Column, Integer, String, Enum, Boolean, DateTime, JSON, Text, Float
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql import func
 
@@ -36,6 +36,9 @@ class Video(Base):
     tags = Column(JSON, nullable=False, default=[])
     categories = Column(JSON, nullable=False, default=[])
     file_size = Column(Integer, nullable=False, default=0)
+    width = Column(Integer, nullable=False, default=0)
+    height = Column(Integer, nullable=False, default=0)
+    aspect_ratio = Column(Float, nullable=False, default=0.0)
     duration = Column(Integer, nullable=False, default=0)
 
     title_translations = Column(JSON, nullable=False, default={})

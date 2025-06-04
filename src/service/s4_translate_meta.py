@@ -14,21 +14,21 @@ from src.utils.translate_utils import translate_texts
 
 def translate_video(video: Video):
     title_translations = defaultdict()
-    tags_translations = defaultdict()
-    categories_translations = defaultdict()
+    tag_translations = defaultdict()
+    category_translations = defaultdict()
 
     for lang in Language:
         translated = translate_texts([video.title] + video.tags + video.categories, lang)
 
         title_translations[lang.short_code] = translated[0]
-        tags_translations[lang.short_code] = translated[1:len(video.tags) + 1]
-        categories_translations[lang.short_code] = translated[len(video.category_translations) + 1:]
+        tag_translations[lang.short_code] = translated[1:len(video.tags) + 1]
+        category_translations[lang.short_code] = translated[len(video.category_translations) + 1:]
 
     VideoCrud.update({
         "id": video.id,
         "title_translations": title_translations,
-        "tags_translations": tags_translations,
-        "categories_translations": categories_translations,
+        "tag_translations": tag_translations,
+        "category_translations": category_translations,
         "status": VideoStatus.meta_translated
     })
 

@@ -1,9 +1,11 @@
+import re
 from base64 import b64encode
 from typing import List, Dict
+from urllib.parse import urlparse
 
 import httpx
 
-from src.lib.config import WP_BASE_URL, WP_USERNAME, WP_PASSWORD, BUNNY_CDN_DOMAIN, BUNNY_LIBRARY_ID
+from src.lib.config import WP_BASE_URL, WP_USERNAME, WP_PASSWORD, BUNNY_CDN_DOMAIN, BUNNY_LIBRARY_ID, WP_DEFAULT_USER_ID
 from src.lib.consts import VIDEO_EMBED_TEMPLATE
 from src.lib.enums import Language
 from src.lib.models import Video
@@ -28,7 +30,7 @@ def wp_link_posts(link_maps: dict) -> Dict:
         return response.json()
 
 
-def wp_create_post(video: Video, lang: Language, tag_ids: List[int], category_ids: List[int]) -> dict:
+def wp_create_post(video: Video, author_id, lang: Language, tag_ids: List[int], category_ids: List[int]) -> dict:
     assert BUNNY_LIBRARY_ID and video.bunny_video_id, "Bunny library ID and video ID not set"
     video_embed = VIDEO_EMBED_TEMPLATE.format(
         library_id=BUNNY_LIBRARY_ID,
@@ -41,6 +43,7 @@ def wp_create_post(video: Video, lang: Language, tag_ids: List[int], category_id
         "lang": lang.short_code,
         "tags": tag_ids,
         "categories": category_ids,
+        "author": author_id,
         "meta": {
             "_harikrutfiwu_url": f"https://{BUNNY_CDN_DOMAIN}/{video.bunny_video_id}/thumbnail.jpg",
             "_harikrutfiwu_alt": video.title
@@ -65,3 +68,26 @@ def wp_batch_get_or_add_terms(data: TaxonomyIn) -> Dict[str, List[int]]:
         )
         response.raise_for_status()
         return response.json()
+
+
+def wp_get_or_create_user(author_name, author_url) -> int:
+    if not author_name.strip() or not author_url.strip():
+        return WP_DEFAULT_USER_ID
+
+    parts = urlparse(author_url)
+    username = re.sub(r"\W+", "_", author_name.strip().lower())
+
+    payload = {
+        "username": f"{username}_{parts.netloc}".replace(".", "_"),
+        "email": f"{username}@{parts.netloc}",
+        "name": author_name
+    }
+
+    with httpx.Client() as client:
+        response = client.post(
+            f"{WP_BASE_URL}/wp-json/custom/v1/get_or_create_user",
+            json=payload,
+            headers=HEADERS,
+        )
+        response.raise_for_status()
+        return response.json()["id"]

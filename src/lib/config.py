@@ -39,6 +39,7 @@ BUNNY_CDN_DOMAIN = getenv("BUNNY_CDN_DOMAIN")
 WP_BASE_URL = getenv("WP_BASE_URL", "https://wp.garymeng.com")
 WP_USERNAME = getenv("WP_USERNAME")
 WP_PASSWORD = getenv("WP_PASSWORD")
+WP_DEFAULT_USER_ID = int(getenv("WP_DEFAULT_USER_ID", 1))
 
 # Google Cloud Configuration
 GOOGLE_PROJECT_ID = getenv("GOOGLE_PROJECT_ID")

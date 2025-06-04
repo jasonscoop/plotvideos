@@ -8,7 +8,7 @@ from src.lib.enums import VideoStatus, Language, TermType
 from src.lib.models import Video
 from src.lib.schemas import TaxonomyIn
 from src.utils.log_utils import init_logging
-from src.utils.wp_utils import wp_link_posts, wp_create_post, wp_batch_get_or_add_terms
+from src.utils.wp_utils import wp_link_posts, wp_create_post, wp_batch_get_or_add_terms, wp_get_or_create_user
 
 
 def publish_video(video: Video):
@@ -20,8 +20,11 @@ def publish_video(video: Video):
         TaxonomyIn(taxonomy=TermType.categories, translations=video.category_translations))
     logger.info(f"[{video.id} | {video.host} | {video.original_id}] added categories")
 
+    author_id = wp_get_or_create_user(video.author_name, video.author_url)
+
     for lang in Language:
-        post = wp_create_post(video, lang, tag_ids.get(lang.short_code, []), category_ids.get(lang.short_code, []))
+        post = wp_create_post(video, author_id, lang, tag_ids.get(lang.short_code, []),
+                              category_ids.get(lang.short_code, []))
         lang_post_maps[lang.short_code] = post["id"]
 
     if len(lang_post_maps) > 1:

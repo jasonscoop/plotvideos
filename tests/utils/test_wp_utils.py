@@ -1,7 +1,9 @@
 import json
 
+import pytest
+
 from src.lib.schemas import TaxonomyIn
-from src.utils.wp_utils import wp_batch_get_or_add_terms
+from src.utils.wp_utils import wp_batch_get_or_add_terms, wp_custom_get_or_create_user
 from tests import FILES_DIR
 
 
@@ -21,3 +23,16 @@ def test_wp_batch_get_or_add_terms_4_tag():
     assert len(result["en"]) == 4
     for term_id in result["en"]:
         assert isinstance(term_id, int)
+
+
+@pytest.mark.parametrize("name, url", [
+    ("The name", "   "),
+    ("", "https://www.youtube.com/profile/fullu/"),
+    ("Moon Cresta", "https://www.youtube.com/profile/MoonCresta/"),
+    ("javhd", "https://www.vdieohub.com/channels/javhd"),
+    ("lilyxoxoles", "https://www.good.com/model/lilyxoxoles"),
+    ("lilyxoxoles", "https://news.com/model/lilyxoxoles"),
+    ("what is@👌", "https://news.com/model/tummy"),
+])
+def test_wp_custom_get_or_create_user(name, url):
+    assert isinstance(wp_custom_get_or_create_user(name, url), int)

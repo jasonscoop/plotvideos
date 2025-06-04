@@ -24,6 +24,8 @@ class Video(Base):
     host = Column(String(50), nullable=False, index=True)
     title = Column(String(512), nullable=False)
     original_id = Column(String(80), nullable=False)
+    author_name = Column(String(100), nullable=False, default="")
+    author_url = Column(String(500), nullable=False, default="")
     url = Column(String(512), nullable=False, unique=True)
     filename = Column(String(100), nullable=False, default="")
     keyword = Column(String(50), nullable=False)

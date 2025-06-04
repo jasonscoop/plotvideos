@@ -1,3 +1,4 @@
+import json
 import traceback
 
 from loguru import logger
@@ -22,11 +23,12 @@ def download_videos(batch_size: int = 10):
         last_id = videos[-1].id
 
         for video in videos:
-            logger.info(f"[{video.id} | {video.host} | {video.original_id}] started")
+            logger.info(f"[{video.id} | {video.host} | {video.original_id}] download started")
             path = StorePath(video.host, video.original_id)
 
             try:
                 video_filename, info = download_remote_video(video.url, path.parent)
+                path.parent.joinpath(f"info-{video.id}.json").write_text(json.dumps(info))
                 VideoCrud.update({
                     "id": video.id,
                     "status": VideoStatus.downloaded,

@@ -40,7 +40,7 @@ def fetch_and_save_videos(max_page=1, batch_size=3):
 
         last_id = keywords[-1].id
         for keyword in keywords:
-            logger.info(f"Fetching videos for keyword [{keyword.name}]")
+            logger.info(f"[{keyword.name}] keyword fetching started")
 
             for page in range(1, max_page):
                 data = fetch_video_urls(keyword.name, page)
@@ -70,6 +70,8 @@ def fetch_and_save_videos(max_page=1, batch_size=3):
                                 host=host,
                                 status=VideoStatus.fetched,
                                 keyword=keyword.name,
+                                author_name=link.get('channel', "").get("name", ""),
+                                author_url=link.get('channel', "").get("url", ""),
                             ))
                         added = VideoCrud.batch_add(videos)
                         logger.info(f"[{name}] fetched, added [{added}/{len(videos)}]")

@@ -31,52 +31,42 @@ WEBSITES = {
     "www.pornhub.com": {
         "id_extractor": PornhubIdExtractor,
         "bunny_collection_id": "e3edc1ee-ecab-4451-bff2-fdeafb779415",
-        "disabled": False
     },
     "www.xhamster.com": {
         "id_extractor": XhamsterIdExtractor,
         "bunny_collection_id": "af16977f-15cf-4e1c-8b85-b6bf6dfc59e2",
-        "disabled": False
     },
     "www.xvideos.com": {
         "id_extractor": XvideosIdExtractor,
         "bunny_collection_id": "a9d247b3-b562-44ed-8c6f-aa05d4532811",
-        "disabled": False
     },
     "www.eporner.com": {
         "id_extractor": EpornerIdExtractor,
         "bunny_collection_id": "0ed26c1b-56ad-4057-b89e-3cc013b773ed",
-        "disabled": False
     },
     "www.youjizz.com": {
         "id_extractor": YouJizzIdExtractor,
         "bunny_collection_id": "49ed13c7-1491-4f55-9728-e78ad45814a4",
-        "disabled": False
     },
     "www.redtube.com": {
         "id_extractor": RedTubeIdExtractor,
         "bunny_collection_id": "e5682a25-bd3a-4111-8e60-8ad077ff6fe9",
-        "disabled": False
     },
     "www.youporn.com": {
         "id_extractor": YouPornIdExtractor,
         "bunny_collection_id": "dcf8cba2-896e-41f1-b6aa-ef281b27b47d",
-        "disabled": False
     },
     "www.pornhd.com": {
         "id_extractor": PornhubIdExtractor,
         "bunny_collection_id": "2df6932e-6079-47a8-b469-57eeda34a0cd",
-        "disabled": False
     },
     "spankbang.com": {
         "id_extractor": SpankBangIdExtractor,
         "bunny_collection_id": "97e2e3e6-0103-4179-898b-94b0bb7ed1b5",
-        "disabled": False
     },
     "www.youtube.com": {
         "id_extractor": YoutubeIdExtractor,
         "bunny_collection_id": "05e03c5f-35c4-4db7-b8eb-ab60caabfc8a",
-        "disabled": False
     }
 }
 

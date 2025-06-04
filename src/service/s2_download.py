@@ -1,4 +1,3 @@
-import json
 import sys
 import traceback
 
@@ -30,7 +29,6 @@ def download_videos(batch_size: int = 10, host: str = ""):
 
             try:
                 video_filename, info = download_remote_video(video.url, path.parent)
-                path.parent.joinpath(f"info-{video.id}.json").write_text(json.dumps(info))
                 VideoCrud.update({
                     "id": video.id,
                     "status": VideoStatus.downloaded,

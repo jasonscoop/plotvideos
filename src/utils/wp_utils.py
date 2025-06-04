@@ -10,6 +10,7 @@ from src.lib.consts import VIDEO_EMBED_TEMPLATE
 from src.lib.enums import Language
 from src.lib.models import Video
 from src.lib.schemas import TaxonomyIn
+from src.utils.string_utils import hash_to_base62
 
 WP_API_URL = f"{WP_BASE_URL}/wp-json/wp/v2"
 CREDENTIALS = b64encode(f"{WP_USERNAME}:{WP_PASSWORD}".encode()).decode("utf-8")
@@ -70,12 +71,18 @@ def wp_batch_get_or_add_terms(data: TaxonomyIn) -> Dict[str, List[int]]:
         return response.json()
 
 
+def is_valid_username(s):
+    return re.fullmatch(r'[a-zA-Z0-9_]', s) is not None
+
+
 def wp_get_or_create_user(author_name, author_url) -> int:
     if not author_name.strip() or not author_url.strip():
         return WP_DEFAULT_USER_ID
 
     parts = urlparse(author_url)
     username = re.sub(r"\W+", "_", author_name.strip().lower())
+    if not is_valid_username(username):
+        username = hash_to_base62(username)
 
     payload = {
         "username": f"{username}_{parts.netloc}".replace(".", "_"),

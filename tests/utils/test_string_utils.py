@@ -1,6 +1,6 @@
 import pytest
 
-from src.utils.string_utils import get_lang
+from src.utils.string_utils import get_lang, hash_to_base62
 
 
 @pytest.mark.parametrize("s, expected", [
@@ -28,3 +28,7 @@ from src.utils.string_utils import get_lang
 ])
 def test_get_lang(s, expected):
     assert get_lang(s) == expected
+
+
+def test_hash_to_base62():
+    assert hash_to_base62("abc", 12) == ""

@@ -3,7 +3,7 @@ import json
 import pytest
 
 from src.lib.schemas import TaxonomyIn
-from src.utils.wp_utils import wp_batch_get_or_add_terms, wp_custom_get_or_create_user
+from src.utils.wp_utils import wp_batch_get_or_add_terms, wp_get_or_create_user
 from tests import FILES_DIR
 
 
@@ -35,4 +35,4 @@ def test_wp_batch_get_or_add_terms_4_tag():
     ("what is@👌", "https://news.com/model/tummy"),
 ])
 def test_wp_custom_get_or_create_user(name, url):
-    assert isinstance(wp_custom_get_or_create_user(name, url), int)
+    assert isinstance(wp_get_or_create_user(name, url), int)

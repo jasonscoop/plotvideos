@@ -9,12 +9,16 @@ from src.lib.models import Video
 
 class VideoCrud:
     @classmethod
-    def batch_get(cls, last_id: int, batch_size: int, status: VideoStatus) -> List[Video]:
+    def batch_get(cls, last_id: int, batch_size: int, status: VideoStatus, host: str = "") -> List[Video]:
         with get_db() as session:
-            return session.query(Video) \
+            query = session.query(Video) \
                 .options(undefer("*")) \
-                .filter(Video.status == status, Video.id > last_id) \
-                .order_by(Video.id.asc()) \
+                .filter(Video.status == status, Video.id > last_id)
+
+            if host:
+                query = query.filter(Video.host == host)
+
+            return query.order_by(Video.id.asc()) \
                 .limit(batch_size) \
                 .all()
 
@@ -50,5 +54,5 @@ class VideoCrud:
             video = session.query(Video).filter(Video.id == video_id).first()
             if video:
                 video.status = status
-                video.reason = reason
+                video.failed_reason = reason
                 session.commit()

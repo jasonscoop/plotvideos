@@ -43,7 +43,7 @@ def process_subtitled_videos(batch_size: int = 10):
                 VideoCrud.update_status(video.id, VideoStatus.vtt_translated)
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] all vtt translated")
             except Exception as e:
-                reason = str(e).strip()[:DB_ERROR_LOG_LENGTH]
+                reason = str(e)[:DB_ERROR_LOG_LENGTH]
                 VideoCrud.update_status(video.id, VideoStatus.failed_vtt_translated, reason)
                 exception_count += 1
                 if exception_count >= 3:

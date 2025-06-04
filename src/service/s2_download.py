@@ -1,4 +1,5 @@
 import json
+import sys
 import traceback
 
 from loguru import logger
@@ -11,12 +12,13 @@ from src.utils.download_utils import download_remote_video
 from src.utils.log_utils import init_logging
 
 
-def download_videos(batch_size: int = 10):
+def download_videos(batch_size: int = 10, host: str = ""):
     last_id = 0
     exception_count = 0
+    logger.info(f"[{host}] download started")
 
     while True:
-        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.fetched)
+        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.fetched, host)
         if not videos:
             break
 
@@ -43,7 +45,7 @@ def download_videos(batch_size: int = 10):
                 })
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}]  Downloaded")
             except Exception as e:
-                reason = str(e).strip()[:DB_ERROR_LOG_LENGTH]
+                reason = str(e)[:DB_ERROR_LOG_LENGTH]
                 VideoCrud.update_status(video.id, VideoStatus.failed_downloaded, reason)
                 exception_count += 1
                 if exception_count >= 3:
@@ -53,5 +55,6 @@ def download_videos(batch_size: int = 10):
 
 if __name__ == "__main__":
     init_logging("download")
-    download_videos()
+    host = sys.argv[1] if len(sys.argv) > 1 else ""
+    download_videos(10, host)
     logger.info("All downloaded")

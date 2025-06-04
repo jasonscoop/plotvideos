@@ -48,7 +48,7 @@ def publish_videos(batch_size=10):
                 publish_video(video)
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] published")
             except Exception as e:
-                reason = str(e).strip()[:DB_ERROR_LOG_LENGTH]
+                reason = str(e)[:DB_ERROR_LOG_LENGTH]
                 VideoCrud.update_status(video.id, VideoStatus.failed_published, reason)
                 exception_count += 1
                 if exception_count >= 3:

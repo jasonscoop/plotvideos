@@ -2,6 +2,7 @@ import json
 
 import pytest
 
+from src.lib.enums import Language
 from src.lib.schemas import TaxonomyIn
 from src.utils.wp_utils import wp_batch_get_or_add_terms, wp_get_or_create_user
 from tests import FILES_DIR
@@ -23,6 +24,16 @@ def test_wp_batch_get_or_add_terms_4_tag():
     assert len(result["en"]) == 4
     for term_id in result["en"]:
         assert isinstance(term_id, int)
+
+
+def test_wp_batch_get_or_add_terms_big():
+    translations = TaxonomyIn(**json.loads(FILES_DIR.joinpath("jsons/tag_translations_big.json").read_text()))
+    result = wp_batch_get_or_add_terms(translations)
+    assert len(result) == 14
+    for lang, ids in result.items():
+        assert Language.from_short_code(lang) is not None
+        for id in ids:
+            assert isinstance(id, int)
 
 
 @pytest.mark.parametrize("name, url", [

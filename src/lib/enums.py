@@ -1,8 +1,6 @@
 from enum import StrEnum, Enum
 from typing import List, Optional
 
-from encodings.aliases import aliases
-
 
 class TermType(StrEnum):
     """name is for code, value is for wp endpoint calling"""

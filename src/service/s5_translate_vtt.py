@@ -1,5 +1,6 @@
 import sys
 import traceback
+from concurrent.futures import ThreadPoolExecutor
 
 from loguru import logger
 
@@ -9,6 +10,13 @@ from src.lib.enums import VideoStatus, Language
 from src.lib.schemas import StorePath
 from src.utils.llm_utils import translate_vtt
 from src.utils.log_utils import init_logging
+
+
+def translate_and_save(lang, vtt_content, path, video):
+    translated_vtt = translate_vtt(vtt_content, lang)
+    translated_file = path.translated_vtts / f"{lang.short_code}.vtt"
+    translated_file.write_text(translated_vtt)
+    logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translated '{lang.short_code}'")
 
 
 def process_subtitled_videos(batch_size: int = 10, host: str = ""):
@@ -35,11 +43,13 @@ def process_subtitled_videos(batch_size: int = 10, host: str = ""):
                 vtt_content = path.vtt.read_text()
                 path.translated_vtts.mkdir(exist_ok=True)
 
-                for lang in Language:
-                    translated_vtt = translate_vtt(vtt_content, lang)
-                    translated_file = path.translated_vtts / f"{lang.short_code}.vtt"
-                    translated_file.write_text(translated_vtt)
-                    logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translated '{lang.short_code}'")
+                with ThreadPoolExecutor(max_workers=len(Language)) as executor:
+                    futures = [
+                        executor.submit(translate_and_save, lang, vtt_content, path, video)
+                        for lang in Language
+                    ]
+                    for future in futures:
+                        future.result()
 
                 VideoCrud.update_status(video.id, VideoStatus.vtt_translated)
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] all vtt translated")

@@ -6,6 +6,7 @@ from typing import List
 import azure.cognitiveservices.speech as speechsdk
 from loguru import logger
 from pydub import AudioSegment
+from sqlalchemy.cyextension.collections import OrderedSet
 
 from src.lib.config import AZURE_SPEECH_REGION, AZURE_SPEECH_KEY
 from src.lib.enums import Language
@@ -39,11 +40,10 @@ def get_language_candidates(short_codes: List[str]) -> List[Language]:
         if language:
             valid_languages.append(language)
 
-    n = len(valid_languages)
-    if n >= 4:
-        return valid_languages[:4]
+    langs = OrderedSet(valid_languages)
+    langs.update(Language.top4())
 
-    return valid_languages + Language.top4()[:4 - n]
+    return [l.long_code for l in langs[:4]]
 
 
 def get_azure_results(audio_path: Path, duration: float, lang_short_codes: List[str]):

@@ -40,7 +40,7 @@ def download_videos(batch_size: int = 10):
                 })
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}]  Downloaded")
             except Exception as e:
-                reason = str(e)[:DB_ERROR_LOG_LENGTH]
+                reason = str(e).strip()[:DB_ERROR_LOG_LENGTH]
                 VideoCrud.update_status(video.id, VideoStatus.failed_downloaded, reason)
                 exception_count += 1
                 if exception_count >= 3:

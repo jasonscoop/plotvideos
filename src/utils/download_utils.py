@@ -18,7 +18,6 @@ def download_remote_video(url: str, video_save_dir: Path) -> (str, dict):
         'noplaylist': True,
         'writesubtitles': False,
         'writeautomaticsub': False,
-        'nocheckcertificate': True,
         'proxy': YT_DLP_PROXY
     }
 

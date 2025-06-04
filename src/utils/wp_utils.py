@@ -73,6 +73,8 @@ def filter_out_long_terms(data: TaxonomyIn) -> TaxonomyIn:
 
 
 def wp_batch_get_or_add_terms(data: TaxonomyIn) -> Dict[str, List[int]]:
+    data = filter_out_long_terms(data)
+    
     if len(data.translations) == 0:
         return {}
     with httpx.Client() as client:

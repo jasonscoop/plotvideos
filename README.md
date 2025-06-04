@@ -21,3 +21,13 @@ Automated pipeline to:
 
 - https://rapidapi.com/IRCTCAPI/api/google-translator9
 - https://rapidapi.com/robust-api-robust-api-default/api/google-translate113
+
+# Errors
+
+## Could not insert term into the database.
+
+```sql
+SELECT MAX(term_id) + 1 AS next_auto_increment
+FROM wp_terms;
+ALTER TABLE wp_terms AUTO_INCREMENT = 4819;
+```

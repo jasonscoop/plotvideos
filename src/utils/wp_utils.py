@@ -1,12 +1,12 @@
 import re
 from base64 import b64encode
 from typing import List, Dict
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote
 
 import httpx
 
 from src.lib.config import WP_BASE_URL, WP_USERNAME, WP_PASSWORD, BUNNY_CDN_DOMAIN, BUNNY_LIBRARY_ID, WP_DEFAULT_USER_ID
-from src.lib.consts import VIDEO_EMBED_TEMPLATE
+from src.lib.consts import VIDEO_EMBED_TEMPLATE, WP_TERM_MAX_LENGTH
 from src.lib.enums import Language
 from src.lib.models import Video
 from src.lib.schemas import TaxonomyIn
@@ -55,6 +55,21 @@ def wp_create_post(video: Video, author_id, lang: Language, tag_ids: List[int], 
         response = client.post(f"{WP_API_URL}/posts", json=data, headers=HEADERS)
         response.raise_for_status()
         return response.json()
+
+
+def filter_out_long_terms(data: TaxonomyIn) -> TaxonomyIn:
+    long_indexes = set()
+    for lang, terms in data.translations.items():
+        for i, term in enumerate(terms):
+            url_encoded = quote(term.replace(" ", "-"))
+            if len(term) > WP_TERM_MAX_LENGTH or len(url_encoded) > WP_TERM_MAX_LENGTH:
+                long_indexes.add(i)
+
+    for lang, terms in data.translations.items():
+        for i in sorted(long_indexes, reverse=True):
+            if i < len(terms):
+                terms.pop(i)
+    return data
 
 
 def wp_batch_get_or_add_terms(data: TaxonomyIn) -> Dict[str, List[int]]:

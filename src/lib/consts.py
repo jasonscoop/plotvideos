@@ -11,6 +11,7 @@ from src.utils.id_utils import (
 )
 
 DB_ERROR_LOG_LENGTH = 1000
+WP_TERM_MAX_LENGTH = 180
 
 FASTTEXT_LANG_ALIAS = {
     # Chinese and Dialects

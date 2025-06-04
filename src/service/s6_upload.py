@@ -1,3 +1,4 @@
+import sys
 import traceback
 
 from loguru import logger
@@ -11,13 +12,13 @@ from src.utils.bunny_utils import BunnyStreamClient
 from src.utils.log_utils import init_logging
 
 
-def upload_videos(batch_size: int = 10):
+def upload_videos(batch_size: int = 10, host: str = ""):
     bunny_client = BunnyStreamClient(BUNNY_API_KEY, BUNNY_LIBRARY_ID)
     last_id = 0
     exception_count = 0
 
     while True:
-        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.vtt_translated)
+        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.vtt_translated, host)
         if not videos:
             break
 
@@ -51,5 +52,6 @@ def upload_videos(batch_size: int = 10):
 
 if __name__ == '__main__':
     init_logging("upload")
-    upload_videos()
+    host = sys.argv[1] if len(sys.argv) > 1 else ""
+    upload_videos(10, host)
     logger.info("All uploaded")

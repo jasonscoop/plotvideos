@@ -1,3 +1,4 @@
+import sys
 import traceback
 
 from loguru import logger
@@ -33,12 +34,12 @@ def publish_video(video: Video):
     VideoCrud.update_status(video.id, VideoStatus.published)
 
 
-def publish_videos(batch_size=10):
+def publish_videos(batch_size=10, host: str = ""):
     last_id = 0
     exception_count = 0
 
     while True:
-        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.uploaded)
+        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.uploaded, host)
         if not videos:
             break
 
@@ -58,5 +59,6 @@ def publish_videos(batch_size=10):
 
 if __name__ == "__main__":
     init_logging("publish")
-    publish_videos()
+    host = sys.argv[1] if len(sys.argv) > 1 else ""
+    publish_videos(10, host)
     logger.info("All published")

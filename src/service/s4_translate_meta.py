@@ -1,3 +1,4 @@
+import sys
 import traceback
 from collections import defaultdict
 
@@ -32,12 +33,12 @@ def translate_video(video: Video):
     })
 
 
-def translate_meta_infos(batch_size: int = 10):
+def translate_meta_infos(batch_size: int = 10, host: str = ""):
     last_id = 0
     exception_count = 0
 
     while True:
-        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.subtitled)
+        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.subtitled, host)
         if not videos:
             break
 
@@ -58,5 +59,6 @@ def translate_meta_infos(batch_size: int = 10):
 
 if __name__ == "__main__":
     init_logging("meta_translate")
-    translate_meta_infos()
+    host = sys.argv[1] if len(sys.argv) > 1 else ""
+    translate_meta_infos(10, host)
     logger.info("All metas translated")

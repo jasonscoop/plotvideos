@@ -1,3 +1,4 @@
+import sys
 import traceback
 
 from loguru import logger
@@ -10,12 +11,12 @@ from src.utils.azure_subtitle_utils import generate_subtitle
 from src.utils.log_utils import init_logging
 
 
-def process_downloaded_videos(batch_size: int = 10):
+def subtitle_videos(batch_size: int = 10, host: str = ""):
     last_id = 0
     exception_count = 0
 
     while True:
-        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.downloaded)
+        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.downloaded, host)
         if not videos:
             break
 
@@ -47,5 +48,6 @@ def process_downloaded_videos(batch_size: int = 10):
 
 if __name__ == '__main__':
     init_logging("subtitle")
-    process_downloaded_videos()
+    host = sys.argv[1] if len(sys.argv) > 1 else ""
+    subtitle_videos(10, host)
     logger.info("All subtitles generated")

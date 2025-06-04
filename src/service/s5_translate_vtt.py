@@ -1,3 +1,4 @@
+import sys
 import traceback
 
 from loguru import logger
@@ -10,12 +11,12 @@ from src.utils.llm_utils import translate_vtt
 from src.utils.log_utils import init_logging
 
 
-def process_subtitled_videos(batch_size: int = 10):
+def process_subtitled_videos(batch_size: int = 10, host: str = ""):
     last_id = 0
     exception_count = 0
 
     while True:
-        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.meta_translated)
+        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.meta_translated, host)
         if not videos:
             break
 
@@ -53,5 +54,6 @@ def process_subtitled_videos(batch_size: int = 10):
 
 if __name__ == '__main__':
     init_logging("translate_vtt")
-    process_subtitled_videos()
+    host = sys.argv[1] if len(sys.argv) > 1 else ""
+    process_subtitled_videos(10, host)
     logger.info("All vtts translated")

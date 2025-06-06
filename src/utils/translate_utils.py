@@ -8,7 +8,7 @@ from src.lib.enums import Language
 
 
 @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
-def translate_texts(texts: List[str], lang: Language):
+def translate_texts(texts: List[str], lang: Language) -> List[str]:
     assert RAPIDAPI_AI_TRANSLATE_KEY_URL, "Please set the RAPIDAPI_AI_TRANSLATE_KEY_URL environment variable"
 
     url = "https://ai-translate.p.rapidapi.com/translateHtml"

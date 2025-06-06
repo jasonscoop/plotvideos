@@ -2,21 +2,33 @@ import sys
 import traceback
 from concurrent.futures import ThreadPoolExecutor
 
+import webvtt
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
 from src.lib.consts import DB_ERROR_LOG_LENGTH
 from src.lib.enums import VideoStatus, Language
 from src.lib.schemas import StorePath
-from src.utils.llm_utils import translate_vtt
 from src.utils.log_utils import init_logging
+from src.utils.translate_utils import translate_texts
 
 
 def translate_and_save(lang, vtt_content, path, video):
-    translated_vtt = translate_vtt(vtt_content, lang)
+    translated = translate_vtt_content(vtt_content, lang)
     translated_file = path.translated_vtts / f"{lang.short_code}.vtt"
-    translated_file.write_text(translated_vtt)
+    translated_file.write_text(translated)
     logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translated '{lang.short_code}'")
+
+
+def translate_vtt_content(vtt_content, lang) -> str:
+    vtt = webvtt.from_string(vtt_content)
+    texts = [c.text for c in vtt]
+    translated_texts = translate_texts(texts, lang)
+
+    for i, t in enumerate(translated_texts):
+        vtt.captions[i].text = t
+
+    return vtt.content
 
 
 def process_subtitled_videos(batch_size: int = 10, host: str = ""):

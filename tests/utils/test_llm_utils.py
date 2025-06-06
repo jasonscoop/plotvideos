@@ -13,6 +13,14 @@ def test_ask_azure_openai():
     assert actual == expected
 
 
+def test_ask_azure_openai_es():
+    vtt = SUBTITLES_DIR.joinpath("es/subtitle.vtt").read_text()
+    expected = SUBTITLES_DIR.joinpath("es/es.vtt").read_text()
+
+    actual = translate_vtt(vtt, Language.SPANISH)
+    assert actual == expected
+
+
 def test_translate_video_content():
     actual = translate_video_content({
         "title": "what is you name?",

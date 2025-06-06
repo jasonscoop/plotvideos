@@ -30,7 +30,7 @@ def translate_and_save(lang, vtt_content, path, video):
     translated_vtt = llm_translate_vtt(vtt_content, lang)
     if not is_valid_vtt(translated_vtt):
         logger.warning(
-            f"[{video.id} | {video.host} | {video.original_id}] Translated with llm failed, using google translator")
+            f"[{video.id} | {video.host} | {video.original_id}] Translated with llm failed, using google translator '{lang.short_code}'")
         translated_vtt = google_translate_vtt(vtt_content, lang)
 
     translated_file = path.translated_vtts / f"{lang.short_code}.vtt"

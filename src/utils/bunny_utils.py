@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict
 
 import requests
+from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.consts import WEBSITES
 from src.lib.enums import Language
@@ -26,6 +27,7 @@ class BunnyStreamClient:
         self.video_headers = {**self.headers, "Content-Type": "application/octet-stream"}
         self.vtt_headers = {**self.headers, "Content-Type": "text/vtt"}
 
+    @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
     def upload_video(self, video: Video, path: StorePath) -> str:
         video_path = path.parent / video.filename
         if not video_path.exists():
@@ -54,6 +56,7 @@ class BunnyStreamClient:
 
         return video_data["guid"]
 
+    @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
     def upload_subtitle(
             self,
             video_guid: str,

@@ -33,7 +33,7 @@ def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000):
     )
 
 
-def get_language_candidates(short_codes: List[str]) -> List[Language]:
+def get_language_candidates(short_codes: List[str]) -> List[str]:
     valid_languages = []
     for s in short_codes:
         language = Language.from_short_code(s)
@@ -55,7 +55,7 @@ def get_azure_results(audio_path: Path, duration: float, lang_short_codes: List[
 
     languages = get_language_candidates(lang_short_codes)
     auto_detect_source_language_config = speechsdk.languageconfig.AutoDetectSourceLanguageConfig(
-        languages=[l.long_code for l in languages],
+        languages=languages,
     )
 
     # Enable detailed output with word-level timestamps

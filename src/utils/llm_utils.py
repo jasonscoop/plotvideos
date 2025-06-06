@@ -2,6 +2,7 @@ import json
 import re
 
 import requests
+from requests.exceptions import HTTPError
 from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.config import LLM_BASE_URL, LLM_MODEL, LLM_API_VERSION, LLM_API_KEY
@@ -12,7 +13,7 @@ headers = {"Content-Type": "application/json", "api-key": LLM_API_KEY}
 
 
 @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
-def translate_vtt(vtt_content: str, language: Language) -> str:
+def llm_translate_vtt(vtt_content: str, language: Language) -> str:
     data = {
         "messages": [
             {"role": "system", "content": "You are a subtitle translator."},
@@ -34,12 +35,14 @@ Input:
     }
 
     response = requests.post(url, headers=headers, json=data)
-    response.raise_for_status()
+    try:
+        response.raise_for_status()
+    except HTTPError as e:
+        # due to the prompt triggering Azure OpenAI's content management policy. 
+        if e.response.status_code == 400 and e.response.reason == "Bad Request":
+            return ""
 
-    result = response.json()
-    content = result["choices"][0]["message"]["content"]
-
-    return content
+    return response.json()["choices"][0]["message"]["content"]
 
 
 @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)

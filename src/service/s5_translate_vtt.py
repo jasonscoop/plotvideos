@@ -9,18 +9,13 @@ from src.crud.video_crud import VideoCrud
 from src.lib.consts import DB_ERROR_LOG_LENGTH
 from src.lib.enums import VideoStatus, Language
 from src.lib.schemas import StorePath
+from src.utils.llm_utils import llm_translate_vtt
 from src.utils.log_utils import init_logging
 from src.utils.translate_utils import translate_texts
+from src.utils.vtt_utils import is_valid_vtt
 
 
-def translate_and_save(lang, vtt_content, path, video):
-    translated = translate_vtt_content(vtt_content, lang)
-    translated_file = path.translated_vtts / f"{lang.short_code}.vtt"
-    translated_file.write_text(translated)
-    logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translated '{lang.short_code}'")
-
-
-def translate_vtt_content(vtt_content, lang) -> str:
+def google_translate_vtt(vtt_content, lang) -> str:
     vtt = webvtt.from_string(vtt_content)
     texts = [c.text for c in vtt]
     translated_texts = translate_texts(texts, lang)
@@ -29,6 +24,18 @@ def translate_vtt_content(vtt_content, lang) -> str:
         vtt.captions[i].text = t
 
     return vtt.content
+
+
+def translate_and_save(lang, vtt_content, path, video):
+    translated_vtt = llm_translate_vtt(vtt_content, lang)
+    if not is_valid_vtt(translated_vtt):
+        logger.warning(
+            f"[{video.id} | {video.host} | {video.original_id}] Translated with llm failed, using google translator")
+        translated_vtt = google_translate_vtt(vtt_content, lang)
+
+    translated_file = path.translated_vtts / f"{lang.short_code}.vtt"
+    translated_file.write_text(translated_vtt)
+    logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translated '{lang.short_code}'")
 
 
 def process_subtitled_videos(batch_size: int = 10, host: str = ""):

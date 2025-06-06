@@ -1,7 +1,7 @@
 import json
 
 from src.lib.enums import Language
-from src.utils.llm_utils import translate_vtt, translate_video_content
+from src.utils.llm_utils import llm_translate_vtt, translate_video_content
 from tests import SUBTITLES_DIR
 
 
@@ -9,15 +9,15 @@ def test_ask_azure_openai():
     vtt = SUBTITLES_DIR.joinpath("azure-results-661bb3bde2251.vtt").read_text()
     expected = SUBTITLES_DIR.joinpath("azure-results-661bb3bde2251.zh-CN.vtt").read_text()
 
-    actual = translate_vtt(vtt, Language.CHINESE)
+    actual = llm_translate_vtt(vtt, Language.CHINESE)
     assert actual == expected
 
 
 def test_ask_azure_openai_es():
-    vtt = SUBTITLES_DIR.joinpath("es/subtitle.vtt").read_text()
-    expected = SUBTITLES_DIR.joinpath("es/es.vtt").read_text()
+    vtt = SUBTITLES_DIR.joinpath("small/subtitle.vtt").read_text()
+    expected = SUBTITLES_DIR.joinpath("small/es.vtt").read_text()
 
-    actual = translate_vtt(vtt, Language.SPANISH)
+    actual = llm_translate_vtt(vtt, Language.SPANISH)
     assert actual == expected
 
 

@@ -6,11 +6,13 @@ from typing import Set
 
 import fasttext
 import requests
+import tiktoken
 
 from src.lib.config import MODELS_DIR
 from src.lib.consts import FASTTEXT_LANG_ALIAS
 
 fasttext_model = None
+enc = tiktoken.encoding_for_model("gpt-4")
 
 STOP_CHARS = (
     ".!?,:;…‥"  # English & common
@@ -90,3 +92,7 @@ def hash_to_base62(s, length: int = 10):
     hash_int = int.from_bytes(hash_bytes[:bytes_needed], 'big')
     base62 = base62_encode(hash_int)
     return base62[:length]
+
+
+def get_tokens(text: str) -> int:
+    return len(enc.encode(text))

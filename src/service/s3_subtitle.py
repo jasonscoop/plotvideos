@@ -9,6 +9,7 @@ from src.lib.consts import DB_ERROR_LOG_LENGTH
 from src.lib.models import VideoStatus
 from src.utils.azure_subtitle_utils import generate_subtitle
 from src.utils.log_utils import init_logging
+from src.utils.string_utils import get_tokens
 
 
 def subtitle_videos(batch_size: int = 10, host: str = ""):
@@ -30,9 +31,13 @@ def subtitle_videos(batch_size: int = 10, host: str = ""):
                 continue
 
             try:
+                subtitle_content = generate_subtitle(video)
+                tokens = get_tokens(subtitle_content)
                 VideoCrud.update({
                     "id": video.id,
-                    "subtitle_content": generate_subtitle(video),
+                    "subtitle_content": subtitle_content,
+                    "subtitle_tokens": tokens,
+                    "subtitle_duration_ratio": round(tokens / video.duration, 1),
                     "status": VideoStatus.subtitled
                 })
                 logger.info(

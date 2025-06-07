@@ -6,6 +6,7 @@ import webvtt
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
+from src.lib.config import SUBTITLE_TOKEN_RATIO_THRESHOLD
 from src.lib.consts import DB_ERROR_LOG_LENGTH
 from src.lib.enums import VideoStatus, Language
 from src.lib.schemas import StorePath
@@ -53,6 +54,11 @@ def process_subtitled_videos(batch_size: int = 10, host: str = ""):
             if len(video.subtitle_content.strip()) == 0:
                 VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_empty_subtitle, reason="No subtitle")
                 logger.warning(f"[{video.id} | {video.host} | {video.original_id}] no subtitle, skipping")
+                continue
+
+            if video.subtitle_duration_ratio < SUBTITLE_TOKEN_RATIO_THRESHOLD:
+                VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_low_speech, reason="Low speech")
+                logger.warning(f"[{video.id} | {video.host} | {video.original_id}] low speech, skipping")
                 continue
 
             logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translation started")

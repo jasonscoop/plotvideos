@@ -1,3 +1,4 @@
+import asyncio
 import sys
 import traceback
 
@@ -9,6 +10,7 @@ from src.lib.consts import DB_ERROR_LOG_LENGTH
 from src.lib.enums import VideoStatus, Language
 from src.lib.schemas import StorePath
 from src.utils.bunny_utils import BunnyStreamClient
+from src.utils.file_utils import upload_dir_to_s3
 from src.utils.log_utils import init_logging
 
 
@@ -40,6 +42,7 @@ def upload_videos(batch_size: int = 10, host: str = ""):
                     "bunny_video_id": guid,
                     "status": VideoStatus.uploaded
                 })
+                asyncio.run(upload_dir_to_s3, path.parent, path.prefix)
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded")
             except Exception as e:
                 reason = str(e)[:DB_ERROR_LOG_LENGTH]

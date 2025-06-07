@@ -3,6 +3,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from src.utils.env_utils import get_str
+
 load_dotenv()
 
 ROOT_DIR = Path(__file__).parent.parent.parent
@@ -46,3 +48,8 @@ GOOGLE_PROJECT_ID = getenv("GOOGLE_PROJECT_ID")
 GOOGLE_CREDENTIALS_JSON = getenv("GOOGLE_CREDENTIALS_JSON")
 
 RAPIDAPI_AI_TRANSLATE_KEY_URL = getenv("RAPIDAPI_AI_TRANSLATE_KEY_URL", "")
+
+S3_ACCESS_KEY: str = get_str("S3_ACCESS_KEY")
+S3_SECRET_KEY: str = get_str("S3_SECRET_KEY")
+S3_BUCKET_NAME: str = get_str("S3_BUCKET_NAME")
+S3_REGION: str = get_str("S3_REGION", "ap-southeast-1")

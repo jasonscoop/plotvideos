@@ -38,7 +38,7 @@ def translate_meta_infos(batch_size: int = 10, host: str = ""):
     exception_count = 0
 
     while True:
-        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.subtitled, host)
+        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.vtt_translated, host)
         if not videos:
             break
 

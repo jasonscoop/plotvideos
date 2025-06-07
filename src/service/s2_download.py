@@ -33,6 +33,7 @@ def download_videos(batch_size: int = 10, host: str = ""):
                     "id": video.id,
                     "status": VideoStatus.downloaded,
                     "filename": video_filename,
+                    "title": info.get("title", video.title),
                     "tags": info.get("tags", []),
                     "categories": info.get("categories", []),
                     "duration": info.get("duration", 0),

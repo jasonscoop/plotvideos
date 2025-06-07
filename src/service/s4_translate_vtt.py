@@ -43,7 +43,7 @@ def process_subtitled_videos(batch_size: int = 10, host: str = ""):
     exception_count = 0
 
     while True:
-        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.meta_translated, host)
+        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.subtitled, host)
         if not videos:
             break
 

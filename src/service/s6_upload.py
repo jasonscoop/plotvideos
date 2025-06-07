@@ -42,7 +42,7 @@ def upload_videos(batch_size: int = 10, host: str = ""):
                     "bunny_video_id": guid,
                     "status": VideoStatus.uploaded
                 })
-                asyncio.run(upload_dir_to_s3, path.parent, path.prefix)
+                asyncio.run(upload_dir_to_s3(path.parent, path.prefix))
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded")
             except Exception as e:
                 reason = str(e)[:DB_ERROR_LOG_LENGTH]

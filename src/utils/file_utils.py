@@ -20,7 +20,7 @@ async def upload_to_s3(self, file_bytes: bytes, file_path: str):
 
 async def upload_dir_to_s3(local_dir: Path, s3_prefix=''):
     for file_path in local_dir.rglob('*'):
-        if file_path.is_file():
+        if file_path.is_file() and file_path.name != '.DS_Store':
             relative_path = file_path.relative_to(local_dir)
             s3_key = str(Path(s3_prefix) / relative_path).replace("\\", "/")  # ensure S3 key uses forward slashes
             s3_client.upload_file(str(file_path), S3_BUCKET_NAME, s3_key)

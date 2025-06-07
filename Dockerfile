@@ -8,16 +8,17 @@ RUN apt-get update  \
     ffmpeg \
     ca-certificates \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-
-WORKDIR /app
-ENV PYTHONPATH="${PYTHONPATH}:."
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+WORKDIR /workspace
+ENV PYTHONPATH="${PYTHONPATH}:."
+
 COPY pyproject.toml .
 COPY uv.lock .
 
 RUN uv pip install --system -r pyproject.toml
-COPY src src
+COPY src/ src/
 
-CMD ["python", "s1_fetch.py"]
+

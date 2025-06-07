@@ -5,7 +5,7 @@ import traceback
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
-from src.lib.config import BUNNY_API_KEY, BUNNY_LIBRARY_ID
+from src.lib.config import BUNNY_API_KEY, BUNNY_LIBRARY_ID, BUNNY_CDN_DOMAIN
 from src.lib.consts import DB_ERROR_LOG_LENGTH
 from src.lib.enums import VideoStatus, Language
 from src.lib.schemas import StorePath
@@ -43,6 +43,8 @@ def upload_videos(batch_size: int = 10, host: str = ""):
                 VideoCrud.update({
                     "id": video.id,
                     "bunny_video_id": guid,
+                    "bunny_library_id": BUNNY_LIBRARY_ID,
+                    "bunny_cdn_domain": BUNNY_CDN_DOMAIN,
                     "status": VideoStatus.uploaded
                 })
                 asyncio.run(upload_dir_to_s3(path.parent, path.prefix))

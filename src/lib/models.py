@@ -48,7 +48,10 @@ class Video(Base):
     subtitle_content = Column(Text, nullable=False, default="")
     subtitle_tokens = Column(Integer, nullable=False, default=0)
     subtitle_duration_ratio = Column(Float, nullable=False, default=0.0)
+
+    bunny_library_id = Column(Integer, nullable=False, default=0)
     bunny_video_id = Column(String(48), nullable=False, default="")
+    bunny_cdn_domain = Column(String(50), nullable=False, default="")
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)

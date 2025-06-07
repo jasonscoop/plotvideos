@@ -30,12 +30,15 @@ def upload_videos(batch_size: int = 10, host: str = ""):
 
             try:
                 guid = bunny_client.upload_video(video, path)
+                logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded video as {guid}")
+
                 for lang in Language:
                     vtt_file = path.translated_vtts / f"{lang.short_code}.vtt"
                     if not vtt_file.exists():
                         logger.warning(f"[{video.id} | {video.host} | {video.original_id}] vtt file not found, skipped")
                         continue
                     bunny_client.upload_subtitle(guid, vtt_file, lang)
+                    logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded '{lang.short_code}'")
 
                 VideoCrud.update({
                     "id": video.id,

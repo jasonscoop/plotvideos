@@ -18,7 +18,7 @@ async def upload_to_s3(self, file_bytes: bytes, file_path: str):
     self.s3_client.put_object(Bucket=S3_BUCKET_NAME, Key=file_path, Body=file_bytes)
 
 
-def upload_dir_to_s3(local_dir: Path, s3_prefix=''):
+async def upload_dir_to_s3(local_dir: Path, s3_prefix=''):
     for file_path in local_dir.rglob('*'):
         if file_path.is_file():
             relative_path = file_path.relative_to(local_dir)

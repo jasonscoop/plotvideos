@@ -99,7 +99,7 @@ def generate_subtitle(video: Video) -> (str, int):
     logger.info(
         f"[{video.id} | {video.host} | {video.original_id}] converted to wav, size {to_mb(path.wav.stat().st_size)} MB")
 
-    detected_codes = get_texts_lang_codes([video.title] + video.tags + video.categories)
+    detected_codes = get_texts_lang_codes([video.title] + [video.keyword] + video.tags + video.categories)
     final_lang_codes = mix_language_codes(detected_codes)
     logger.info(
         f"[{video.id} | {video.host} | {video.original_id}] detected: {detected_codes}, using: {final_lang_codes}")

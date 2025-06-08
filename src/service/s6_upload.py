@@ -1,5 +1,5 @@
+import argparse
 import asyncio
-import sys
 import traceback
 
 from loguru import logger
@@ -61,6 +61,10 @@ def upload_videos(batch_size: int = 10, host: str = ""):
 
 if __name__ == '__main__':
     init_logging("upload")
-    host = sys.argv[1] if len(sys.argv) > 1 else ""
-    upload_videos(10, host)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--batch_size", type=int, default=10)
+    parser.add_argument("--host", type=str, default="")
+    args = parser.parse_args()
+
+    upload_videos(args.batch_size, args.host)
     logger.info("All uploaded")

@@ -1,4 +1,4 @@
-import sys
+import argparse
 import traceback
 from collections import defaultdict
 
@@ -59,6 +59,10 @@ def translate_meta_infos(batch_size: int = 10, host: str = ""):
 
 if __name__ == "__main__":
     init_logging("meta_translate")
-    host = sys.argv[1] if len(sys.argv) > 1 else ""
-    translate_meta_infos(10, host)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--batch_size", type=int, default=10)
+    parser.add_argument("--host", type=str, default="")
+    args = parser.parse_args()
+
+    translate_meta_infos(args.batch_size, args.host)
     logger.info("All metas translated")

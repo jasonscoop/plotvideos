@@ -1,4 +1,4 @@
-import sys
+import argparse
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -63,6 +63,10 @@ def subtitle_videos(batch_size: int = 10, host: str = ""):
 
 if __name__ == '__main__':
     init_logging("subtitle")
-    host = sys.argv[1] if len(sys.argv) > 1 else ""
-    subtitle_videos(10, host)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--batch_size", type=int, default=10)
+    parser.add_argument("--host", type=str, default="")
+    args = parser.parse_args()
+
+    subtitle_videos(args.batch_size, args.host)
     logger.info("All subtitles generated")

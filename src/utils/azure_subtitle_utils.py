@@ -95,11 +95,12 @@ def generate_subtitle(video: Video) -> (str, int):
         raise Exception(f"[{video.id} | {video.host} | {video.original_id}] video file '{path}' does not exist")
 
     duration = media_to_wav(video_path, path.wav)
+    logger.info(f"[{video.id} | {video.host} | {video.original_id}] converted to wav")
 
     detected_codes = get_texts_lang_codes([video.title] + video.tags + video.categories)
     final_lang_codes = mix_language_codes(detected_codes)
     logger.info(
-        f"[{video.id} | {video.host} | {video.original_id}] detected: {detected_codes}, final: {final_lang_codes}")
+        f"[{video.id} | {video.host} | {video.original_id}] detected: {detected_codes}, using: {final_lang_codes}")
 
     azure_results = get_azure_results(path.wav, duration, final_lang_codes)
     path.azure_results.write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))

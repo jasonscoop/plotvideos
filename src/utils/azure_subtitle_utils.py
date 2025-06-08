@@ -79,7 +79,7 @@ def generate_subtitle(video: Video) -> str:
     path = StorePath(video.host, video.original_id)
     video_path = path.parent / video.filename
     if not video_path.exists():
-        raise Exception(f"Video {video.original_id}-{video_path} does not exist")
+        raise Exception(f"[{video.id} | {video.host} | {video.original_id}] video file '{path}' does not exist")
 
     media_to_wav(video_path, path.wav)
 

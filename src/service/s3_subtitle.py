@@ -37,7 +37,7 @@ def subtitle_videos(batch_size: int = 10, host: str = ""):
                     "id": video.id,
                     "subtitle_content": subtitle_content,
                     "subtitle_tokens": tokens,
-                    "subtitle_duration_ratio": round(tokens / video.duration, 1),
+                    "subtitle_duration_ratio": round(tokens / video.duration, 2),
                     "status": VideoStatus.subtitled
                 })
                 logger.info(

@@ -1,6 +1,6 @@
 import sys
 import traceback
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from loguru import logger
 
@@ -59,7 +59,7 @@ def subtitle_videos(batch_size: int = 10, host: str = ""):
 
         last_id = videos[-1].id
 
-        with ThreadPoolExecutor(max_workers=len(videos)) as executor:
+        with ProcessPoolExecutor(max_workers=len(videos)) as executor:
             futures = [executor.submit(subtitle_video, video) for video in videos]
             for future in as_completed(futures):
                 error = future.result()

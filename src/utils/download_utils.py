@@ -10,8 +10,8 @@ class SizeLimitExceeded(Exception):
     pass
 
 
-def to_mb(byte_nums: int) -> float:
-    return "{byte_nums / 1024 / 1024:.2f}"
+def to_mb(byte_size: int) -> float:
+    return round(int(byte_size) / 1024 / 1024, 1)
 
 
 @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
@@ -23,7 +23,7 @@ def download_remote_video(url: str, video_save_dir: Path) -> (str, dict):
         if d.get('total_bytes_estimate'):
             if d['total_bytes_estimate'] > MAX_ACCEPT_VIDEO_SIZE:
                 raise SizeLimitExceeded(
-                    f"Size [{d['total_bytes_estimate'] / 1024 / 1024:.2f} MB] exceed [{MAX_ACCEPT_VIDEO_SIZE}]")
+                    f"Size [{to_mb(d['total_bytes_estimate'])} MB] exceeded [{to_mb(MAX_ACCEPT_VIDEO_SIZE)} MB]")
 
     ydl_opts = {
         'format': 'bestvideo+bestaudio/best',

@@ -1,10 +1,11 @@
 import sys
 import traceback
+from concurrent.futures import ProcessPoolExecutor
 
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
-from src.lib.consts import DB_ERROR_LOG_LENGTH
+from src.lib.consts import DB_ERROR_LOG_LENGTH, WEBSITES
 from src.lib.models import VideoStatus
 from src.lib.schemas import StorePath
 from src.utils.download_utils import download_remote_video, SizeLimitExceeded
@@ -14,7 +15,6 @@ from src.utils.log_utils import init_logging
 def download_videos(batch_size: int = 10, host: str = ""):
     last_id = 0
     exception_count = 0
-    logger.info(f"[{host if host else 'All'}] download started")
 
     while True:
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.fetched, host)
@@ -56,8 +56,24 @@ def download_videos(batch_size: int = 10, host: str = ""):
                 traceback.print_exc()
 
 
+def download_websites(batch_size: int = 10, host: str = ""):
+    logger.info(f"[{host if host else 'All'}] download started")
+
+    if host:
+        download_videos(batch_size, host)
+        return
+
+    with ProcessPoolExecutor(max_workers=len(WEBSITES)) as executor:
+        futures = []
+        for h in WEBSITES.keys():
+            futures.append(executor.submit(download_videos, batch_size, h))
+
+        for future in futures:
+            future.result()
+
+
 if __name__ == "__main__":
     init_logging("download")
     host = sys.argv[1] if len(sys.argv) > 1 else ""
-    download_videos(10, host)
+    download_websites(10, host)
     logger.info("All downloaded")

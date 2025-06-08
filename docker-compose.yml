@@ -5,7 +5,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s1_fetch.py
+    command: python src/service/s1_fetch.py ${BATCH_SIZE:-10} ${MAX_PAGES:-3}
 
   s2_download:
     build: .
@@ -13,7 +13,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s2_download.py
+    command: python src/service/s2_download.py ${BATCH_SIZE:-10} ${HOST:-""}
 
   s3_subtitle:
     build: .
@@ -21,7 +21,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s3_subtitle.py
+    command: python src/service/s3_subtitle.py ${BATCH_SIZE:-10} ${HOST:-""}
 
   s4_translate_vtt:
     build: .
@@ -29,7 +29,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s4_translate_vtt.py
+    command: python src/service/s4_translate_vtt.py ${BATCH_SIZE:-10} ${HOST:-""}
 
   s5_translate_meta:
     build: .
@@ -37,7 +37,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s5_translate_meta.py
+    command: python src/service/s5_translate_meta.py ${BATCH_SIZE:-10} ${HOST:-""}
 
   s6_upload:
     build: .
@@ -45,4 +45,4 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s6_upload.py
+    command: python src/service/s6_upload.py ${BATCH_SIZE:-10} ${HOST:-""}

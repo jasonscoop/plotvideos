@@ -17,6 +17,8 @@ services:
 
   s3_subtitle:
     build: .
+    mem_limit: 2g                # Max RAM
+    memswap_limit: 10g            # RAM + swap total
     env_file:
       - .env
     volumes:

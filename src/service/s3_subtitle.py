@@ -35,7 +35,7 @@ def subtitle_video(video):
             "subtitle_content": subtitle_content,
             "subtitle_tokens": tokens,
             "duration": duration,
-            "subtitle_duration_ratio": round(tokens / video.duration, 2),
+            "subtitle_duration_ratio": round(tokens / duration, 2),
             "status": VideoStatus.subtitled,
             "failed_reason": "",
         })

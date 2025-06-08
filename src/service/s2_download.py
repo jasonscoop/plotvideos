@@ -7,14 +7,14 @@ from src.crud.video_crud import VideoCrud
 from src.lib.consts import DB_ERROR_LOG_LENGTH
 from src.lib.models import VideoStatus
 from src.lib.schemas import StorePath
-from src.utils.download_utils import download_remote_video
+from src.utils.download_utils import download_remote_video, SizeLimitExceeded
 from src.utils.log_utils import init_logging
 
 
 def download_videos(batch_size: int = 10, host: str = ""):
     last_id = 0
     exception_count = 0
-    logger.info(f"[{host}] download started")
+    logger.info(f"[{host if host else 'All'}] download started")
 
     while True:
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.fetched, host)
@@ -43,6 +43,10 @@ def download_videos(batch_size: int = 10, host: str = ""):
                     "aspect_ratio": info.get("aspect_ratio", 0.0),
                 })
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}]  Downloaded")
+            except SizeLimitExceeded as e:
+                reason = str(e)[:DB_ERROR_LOG_LENGTH]
+                VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_size, reason)
+                logger.warning(str(e))
             except Exception as e:
                 reason = str(e)[:DB_ERROR_LOG_LENGTH]
                 VideoCrud.update_status(video.id, VideoStatus.failed_downloaded, reason)

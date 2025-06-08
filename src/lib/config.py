@@ -3,7 +3,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from src.utils.env_utils import get_str
+from src.utils.env_utils import get_str, get_int
 
 load_dotenv()
 
@@ -20,6 +20,7 @@ POSTGRES_URL = getenv("POSTGRES_URL")
 
 RAPIDAPI_URL = getenv("RAPIDAPI_URL", "https://quality-porn.p.rapidapi.com/search")
 RAPIDAPI_KEY = getenv("RAPIDAPI_KEY")
+RAPIDAPI_FETCH_PAGE = get_int("RAPIDAPI_FETCH_PAGE", 2)
 
 RAPIDAPI_AI_TRANSLATE_KEY_URL = getenv("RAPIDAPI_AI_TRANSLATE_KEY_URL", "")
 

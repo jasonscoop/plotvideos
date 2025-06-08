@@ -7,7 +7,7 @@ from loguru import logger
 
 from src.crud.keyword_crud import KeywordCrud
 from src.crud.video_crud import VideoCrud
-from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL
+from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL, RAPIDAPI_FETCH_PAGE
 from src.lib.consts import WEBSITES
 from src.lib.enums import VideoStatus
 from src.lib.models import Video, Keyword
@@ -84,5 +84,5 @@ def fetch_and_save_videos(max_page=1, batch_size=3):
 
 if __name__ == "__main__":
     init_logging("fetch")
-    fetch_and_save_videos(2)
+    fetch_and_save_videos(RAPIDAPI_FETCH_PAGE)
     logger.info("All fetched")

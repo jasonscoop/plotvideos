@@ -2,12 +2,6 @@ from enum import StrEnum, Enum
 from typing import List, Optional
 
 
-class TermType(StrEnum):
-    """name is for code, value is for wp endpoint calling"""
-    categories = "category"
-    tags = "post_tag"
-
-
 class SubtitleType(StrEnum):
     vtt = "vtt"
     srt = "srt"

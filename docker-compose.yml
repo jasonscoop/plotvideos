@@ -9,20 +9,40 @@ services:
 
   s2_download:
     build: .
+    env_file:
+      - .env
+    volumes:
+      - ./works:/workspace/works
     command: python src/service/s2_download.py
 
   s3_subtitle:
     build: .
+    env_file:
+      - .env
+    volumes:
+      - ./works:/workspace/works
     command: python src/service/s3_subtitle.py
 
   s4_translate_vtt:
     build: .
+    env_file:
+      - .env
+    volumes:
+      - ./works:/workspace/works
     command: python src/service/s4_translate_vtt.py
 
   s5_translate_meta:
     build: .
+    env_file:
+      - .env
+    volumes:
+      - ./works:/workspace/works
     command: python src/service/s5_translate_meta.py
 
   s6_upload:
     build: .
+    env_file:
+      - .env
+    volumes:
+      - ./works:/workspace/works
     command: python src/service/s6_upload.py

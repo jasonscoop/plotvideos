@@ -12,7 +12,7 @@ from src.lib.config import AZURE_SPEECH_REGION, AZURE_SPEECH_KEY
 from src.lib.enums import Language
 
 
-def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000):
+def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000) -> int:
     audio = AudioSegment.from_file(video_path)
 
     # Optimize for speech recognition:
@@ -31,6 +31,8 @@ def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000):
             "-acodec", "pcm_s16le"  # 16-bit PCM
         ]
     )
+
+    return round(len(audio) / 1000)
 
 
 def get_language_candidates(short_codes: List[str]) -> List[str]:

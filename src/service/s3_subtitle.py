@@ -9,13 +9,14 @@ from src.lib.config import MAX_ACCEPT_VIDEO_SIZE
 from src.lib.consts import DB_ERROR_LOG_LENGTH
 from src.lib.models import VideoStatus
 from src.utils.azure_subtitle_utils import generate_subtitle
+from src.utils.download_utils import to_mb
 from src.utils.log_utils import init_logging
 from src.utils.string_utils import get_tokens
 
 
 def subtitle_video(video):
     if video.file_size > MAX_ACCEPT_VIDEO_SIZE:
-        reason = f"[{video.id} | {video.host} | {video.original_id}] size exceeded: {MAX_ACCEPT_VIDEO_SIZE}"
+        reason = f"[{video.id} | {video.host} | {video.original_id}] size exceeded: {to_mb(MAX_ACCEPT_VIDEO_SIZE)}"
         VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_size, reason)
         logger.info(reason)
         return None

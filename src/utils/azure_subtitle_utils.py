@@ -75,6 +75,19 @@ def get_texts_lang_codes(texts: List[str]) -> List[str]:
     return list(langs)
 
 
+def mix_language_codes(short_codes: List[str]) -> List[str]:
+    valid_languages = []
+    for s in short_codes:
+        language = Language.from_short_code(s)
+        if language:
+            valid_languages.append(language)
+
+    langs = OrderedSet(valid_languages)
+    langs.update(Language.top4())
+
+    return [l.long_code for l in langs[:4]]
+
+
 def generate_subtitle(video: Video) -> (str, int):
     path = StorePath(video.host, video.original_id)
     video_path = path.parent / video.filename
@@ -83,10 +96,12 @@ def generate_subtitle(video: Video) -> (str, int):
 
     duration = media_to_wav(video_path, path.wav)
 
-    codes = get_texts_lang_codes([video.title] + video.tags + video.categories)
-    logger.info(f"[{video.id} | {video.host} | {video.original_id}] detected as {codes}")
+    detected_codes = get_texts_lang_codes([video.title] + video.tags + video.categories)
+    final_lang_codes = mix_language_codes(detected_codes)
+    logger.info(
+        f"[{video.id} | {video.host} | {video.original_id}] detected: {detected_codes}, final: {final_lang_codes}")
 
-    azure_results = get_azure_results(path.wav, duration, codes)
+    azure_results = get_azure_results(path.wav, duration, final_lang_codes)
     path.azure_results.write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))
 
     vtt_content, subtitle_content = azure_stt_results_to_subtitle(azure_results, SubtitleType.vtt)

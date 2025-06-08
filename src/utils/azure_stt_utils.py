@@ -6,10 +6,8 @@ from typing import List
 import azure.cognitiveservices.speech as speechsdk
 from loguru import logger
 from pydub import AudioSegment
-from sqlalchemy.cyextension.collections import OrderedSet
 
 from src.lib.config import AZURE_SPEECH_REGION, AZURE_SPEECH_KEY
-from src.lib.enums import Language
 
 
 def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000) -> int:
@@ -35,29 +33,15 @@ def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000) -> 
     return round(len(audio) / 1000)
 
 
-def get_language_candidates(short_codes: List[str]) -> List[str]:
-    valid_languages = []
-    for s in short_codes:
-        language = Language.from_short_code(s)
-        if language:
-            valid_languages.append(language)
-
-    langs = OrderedSet(valid_languages)
-    langs.update(Language.top4())
-
-    return [l.long_code for l in langs[:4]]
-
-
-def get_azure_results(audio_path: Path, duration: float, lang_short_codes: List[str]):
+def get_azure_results(audio_path: Path, duration: float, final_lang_codes: List[str]):
     assert Path(audio_path).exists(), f"Audio file [{audio_path}] not found"
 
     # Configure speech recognition
     speech_config = speechsdk.SpeechConfig(subscription=AZURE_SPEECH_KEY, region=AZURE_SPEECH_REGION)
     # speech_config.speech_recognition_language = "en-US"
 
-    languages = get_language_candidates(lang_short_codes)
     auto_detect_source_language_config = speechsdk.languageconfig.AutoDetectSourceLanguageConfig(
-        languages=languages,
+        languages=final_lang_codes,
     )
 
     # Enable detailed output with word-level timestamps

@@ -1,4 +1,4 @@
-import argparse
+import sys
 import traceback
 from concurrent.futures import ProcessPoolExecutor
 
@@ -74,10 +74,9 @@ def download_websites(batch_size: int = 10, host: str = ""):
 
 if __name__ == "__main__":
     init_logging("download")
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--batch_size", type=int, default=10)
-    parser.add_argument("--host", type=str, default="")
-    args = parser.parse_args()
 
-    download_websites(args.batch_size, args.host)
+    batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 10
+    host = sys.argv[2] if len(sys.argv) > 2 else ""
+
+    download_websites(batch_size, host)
     logger.info("All downloaded")

@@ -1,4 +1,4 @@
-import argparse
+import sys
 import traceback
 from typing import List
 from urllib.parse import urlparse
@@ -85,10 +85,7 @@ def fetch_and_save_videos(max_pages, batch_size):
 
 if __name__ == "__main__":
     init_logging("fetch")
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--batch_size", type=int, default=10)
-    parser.add_argument("--max_pages", type=int, default=2)
-    args = parser.parse_args()
-
-    fetch_and_save_videos(max_pages=args.max_pages, batch_size=args.batch_size)
+    batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 10
+    max_pages = int(sys.argv[2]) if len(sys.argv) > 2 else 3
+    fetch_and_save_videos(max_pages=max_pages, batch_size=batch_size)
     logger.info("All fetched")

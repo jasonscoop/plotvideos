@@ -86,7 +86,7 @@ def generate_subtitle(video: Video) -> (str, int):
     codes = get_texts_lang_codes([video.title] + video.tags + video.categories)
     logger.info(f"[{video.id} | {video.host} | {video.original_id}] detected as {codes}")
 
-    azure_results = get_azure_results(path.wav, video.duration, codes)
+    azure_results = get_azure_results(path.wav, duration, codes)
     path.azure_results.write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))
 
     vtt_content, subtitle_content = azure_stt_results_to_subtitle(azure_results, SubtitleType.vtt)

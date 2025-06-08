@@ -18,7 +18,13 @@ def subtitle_video(video):
     if video.file_size > MAX_ACCEPT_VIDEO_SIZE:
         reason = f"[{video.id} | {video.host} | {video.original_id}] size exceeded: {to_mb(MAX_ACCEPT_VIDEO_SIZE)}"
         VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_size, reason)
-        logger.info(reason)
+        logger.error(reason)
+        return None
+
+    elif video.duration == 0:
+        reason = f"[{video.id} | {video.host} | {video.original_id}] duration is 0."
+        VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_zero_duration, reason)
+        logger.error(reason)
         return None
 
     try:

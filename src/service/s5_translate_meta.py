@@ -29,7 +29,8 @@ def translate_video(video: Video):
         "title_translations": title_translations,
         "tag_translations": tag_translations,
         "category_translations": category_translations,
-        "status": VideoStatus.meta_translated
+        "status": VideoStatus.meta_translated,
+        "failed_reason": "",
     })
 
 

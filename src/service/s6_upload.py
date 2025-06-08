@@ -46,7 +46,8 @@ def upload_videos(batch_size: int = 10, host: str = ""):
                     "bunny_video_id": guid,
                     "bunny_library_id": BUNNY_LIBRARY_ID,
                     "bunny_cdn_domain": BUNNY_CDN_DOMAIN,
-                    "status": VideoStatus.uploaded
+                    "status": VideoStatus.uploaded,
+                    "failed_reason": "",
                 })
                 asyncio.run(upload_dir_to_s3(path.parent, path.prefix))
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded")

@@ -36,7 +36,8 @@ def subtitle_video(video):
             "subtitle_tokens": tokens,
             "duration": duration,
             "subtitle_duration_ratio": round(tokens / video.duration, 2),
-            "status": VideoStatus.subtitled
+            "status": VideoStatus.subtitled,
+            "failed_reason": "",
         })
         logger.info(f"[{video.id} | {video.host} | {video.original_id}] subtitle generated")
         return None

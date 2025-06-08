@@ -23,7 +23,7 @@ def subtitle_video(video):
 
     try:
         subtitle_content, duration = generate_subtitle(video)
-        if video.duration == 0:
+        if duration == 0:
             reason = f"[{video.id} | {video.host} | {video.original_id}] duration is 0."
             VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_zero_duration, reason)
             logger.error(reason)

@@ -21,6 +21,8 @@ POSTGRES_URL = getenv("POSTGRES_URL")
 RAPIDAPI_URL = getenv("RAPIDAPI_URL", "https://quality-porn.p.rapidapi.com/search")
 RAPIDAPI_KEY = getenv("RAPIDAPI_KEY")
 
+RAPIDAPI_AI_TRANSLATE_KEY_URL = getenv("RAPIDAPI_AI_TRANSLATE_KEY_URL", "")
+
 YT_DLP_PROXY = getenv("YT_DLP_PROXY", None)
 
 MAX_ACCEPT_VIDEO_SIZE = int(getenv("MAX_ACCEPT_VIDEO_SIZE", 500 * 1024 * 1024))  # 500M maximum
@@ -37,18 +39,6 @@ LLM_API_VERSION = getenv("LLM_API_VERSION")
 BUNNY_API_KEY = getenv("BUNNY_API_KEY")
 BUNNY_LIBRARY_ID = getenv("BUNNY_LIBRARY_ID")
 BUNNY_CDN_DOMAIN = getenv("BUNNY_CDN_DOMAIN")
-
-# WordPress Configuration
-WP_BASE_URL = getenv("WP_BASE_URL", "https://wp.garymeng.com")
-WP_USERNAME = getenv("WP_USERNAME")
-WP_PASSWORD = getenv("WP_PASSWORD")
-WP_DEFAULT_USER_ID = int(getenv("WP_DEFAULT_USER_ID", 1))
-
-# Google Cloud Configuration
-GOOGLE_PROJECT_ID = getenv("GOOGLE_PROJECT_ID")
-GOOGLE_CREDENTIALS_JSON = getenv("GOOGLE_CREDENTIALS_JSON")
-
-RAPIDAPI_AI_TRANSLATE_KEY_URL = getenv("RAPIDAPI_AI_TRANSLATE_KEY_URL", "")
 
 S3_ACCESS_KEY: str = get_str("S3_ACCESS_KEY")
 S3_SECRET_KEY: str = get_str("S3_SECRET_KEY")

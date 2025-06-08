@@ -29,6 +29,7 @@ def upload_videos(batch_size: int = 10, host: str = ""):
             path = StorePath(video.host, video.original_id)
 
             try:
+                logger.info(f"[{video.id} | {video.host} | {video.original_id}] start uploading")
                 guid = bunny_client.upload_video(video, path)
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded video as {guid}")
 

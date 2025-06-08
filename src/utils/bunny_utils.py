@@ -27,6 +27,12 @@ class BunnyStreamClient:
         self.video_headers = {**self.headers, "Content-Type": "application/octet-stream"}
         self.vtt_headers = {**self.headers, "Content-Type": "text/vtt"}
 
+    @staticmethod
+    def stream_video_file(path: Path, chunk_size: int = 1024 * 1024):  # 1MB chunks
+        with open(path, "rb") as f:
+            while chunk := f.read(chunk_size):
+                yield chunk
+
     @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
     def upload_video(self, video: Video, path: StorePath) -> str:
         video_path = path.parent / video.filename
@@ -46,13 +52,10 @@ class BunnyStreamClient:
         video_data = create_response.json()
 
         upload_url = f"{self.base_url}/{self.library_id}/videos/{video_data['guid']}"
-        with open(video_path, "rb") as video_file:
-            upload_response = requests.put(
-                upload_url,
-                headers=self.video_headers,
-                data=video_file
-            )
-            upload_response.raise_for_status()
+        upload_response = requests.put(upload_url,
+                                       headers=self.video_headers,
+                                       data=self.stream_video_file(video_path))
+        upload_response.raise_for_status()
 
         return video_data["guid"]
 

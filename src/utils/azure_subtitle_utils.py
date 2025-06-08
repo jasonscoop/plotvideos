@@ -9,6 +9,7 @@ from src.lib.enums import Language, SubtitleType
 from src.lib.models import Video
 from src.lib.schemas import StorePath
 from src.utils.azure_stt_utils import media_to_wav, get_azure_results
+from src.utils.download_utils import to_mb
 from src.utils.string_utils import get_lang, split_by_stop_chars
 
 
@@ -95,7 +96,8 @@ def generate_subtitle(video: Video) -> (str, int):
         raise Exception(f"[{video.id} | {video.host} | {video.original_id}] video file '{path}' does not exist")
 
     duration = media_to_wav(video_path, path.wav)
-    logger.info(f"[{video.id} | {video.host} | {video.original_id}] converted to wav")
+    logger.info(
+        f"[{video.id} | {video.host} | {video.original_id}] converted to wav, size {to_mb(path.wav.stat().st_size)} MB")
 
     detected_codes = get_texts_lang_codes([video.title] + video.tags + video.categories)
     final_lang_codes = mix_language_codes(detected_codes)

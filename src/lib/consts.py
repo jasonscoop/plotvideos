@@ -11,7 +11,6 @@ from src.utils.id_utils import (
 )
 
 DB_ERROR_LOG_LENGTH = 1000
-WP_TERM_MAX_LENGTH = 180
 
 FASTTEXT_LANG_ALIAS = {
     # Chinese and Dialects
@@ -80,5 +79,3 @@ WEBSITES = {
         "bunny_collection_id": "05e03c5f-35c4-4db7-b8eb-ab60caabfc8a",
     }
 }
-
-VIDEO_EMBED_TEMPLATE = '<iframe src="https://iframe.mediadelivery.net/embed/{library_id}/{video_id}?autoplay=false&amp;loop=false&amp;muted=false&amp;preload=false&amp;responsive=true" loading="lazy" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen></iframe>'

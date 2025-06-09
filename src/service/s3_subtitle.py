@@ -3,6 +3,7 @@ import traceback
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from loguru import logger
+from memory_profiler import profile
 
 from src.crud.video_crud import VideoCrud
 from src.lib.config import MAX_ACCEPT_VIDEO_SIZE
@@ -48,6 +49,7 @@ def subtitle_video(video):
         return e
 
 
+@profile
 def subtitle_videos(batch_size: int = 10, host: str = ""):
     last_id = 0
     exception_count = 0

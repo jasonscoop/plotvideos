@@ -23,7 +23,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s3_subtitle.py ${BATCH_SIZE:-10} ${HOST:-""}
+    command: python -m memory_profiler src/service/s3_subtitle.py ${BATCH_SIZE:-10} ${HOST:-""}
 
   s4_translate_vtt:
     build: .

@@ -15,6 +15,7 @@ from src.utils.log_utils import init_logging
 from src.utils.string_utils import get_tokens
 
 
+@profile
 def subtitle_video(video):
     if video.file_size > MAX_ACCEPT_VIDEO_SIZE:
         reason = f"[{video.id} | {video.host} | {video.original_id}] size exceeded: {to_mb(MAX_ACCEPT_VIDEO_SIZE)}"
@@ -49,7 +50,6 @@ def subtitle_video(video):
         return e
 
 
-@profile
 def subtitle_videos(batch_size: int = 10, host: str = ""):
     last_id = 0
     exception_count = 0

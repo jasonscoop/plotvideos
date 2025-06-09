@@ -18,7 +18,7 @@ def get_video_duration(video_path: Path) -> int:
         str(video_path)
     ]
     result = subprocess.run(command, capture_output=True, text=True, check=True)
-    return int(float(result.stdout.strip()))
+    return round(float(result.stdout.strip()))
 
 
 def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000):

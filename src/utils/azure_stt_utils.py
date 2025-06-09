@@ -1,6 +1,6 @@
 import json
-import time
 from pathlib import Path
+from threading import Event
 from typing import List
 
 import azure.cognitiveservices.speech as speechsdk
@@ -80,7 +80,7 @@ def get_azure_results(audio_path: Path, duration: float, final_lang_codes: List[
     )
 
     results = []
-    done = False
+    done_event = Event()
 
     def handle_result(evt):
         if evt.result.reason == speechsdk.ResultReason.RecognizedSpeech:
@@ -89,16 +89,14 @@ def get_azure_results(audio_path: Path, duration: float, final_lang_codes: List[
                 logger.info(f"Recognized: {evt.result.text}")
 
     def handle_canceled(evt):
-        logger.error(f"Recognition canceled: {evt.reason}")
+        logger.error(f"Recognition canceled, reason: {evt.reason}")
         if evt.reason == speechsdk.CancellationReason.Error:
             logger.error(f"Error details: {evt.error_details}")
-        nonlocal done
-        done = True
+        done_event.set()
 
     def handle_session_stopped(evt):
-        logger.info("Session stopped")
-        nonlocal done
-        done = True
+        logger.info(f"Session stopped, reason: {evt.reason}")
+        done_event.set()
 
     speech_recognizer.recognized.connect(handle_result)
     speech_recognizer.session_stopped.connect(handle_session_stopped)
@@ -109,13 +107,7 @@ def get_azure_results(audio_path: Path, duration: float, final_lang_codes: List[
 
     # Wait for completion with timeout
     timeout = max(300, int(duration * 1.5))  # Either 5 minutes or 1.5x audio duration
-    recognition_start = time.time()
-
-    while not done and (time.time() - recognition_start) < timeout:
-        time.sleep(0.5)
+    done_event.wait(timeout)
 
     # Stop recognition
     speech_recognizer.stop_continuous_recognition()
-    time.sleep(2)  # Give it time to process final results
-
-    return results

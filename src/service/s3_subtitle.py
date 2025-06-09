@@ -1,6 +1,5 @@
 import sys
 import traceback
-from concurrent.futures import as_completed, ThreadPoolExecutor
 
 from loguru import logger
 from memory_profiler import profile
@@ -60,15 +59,17 @@ def subtitle_videos(batch_size: int = 10, host: str = ""):
             break
 
         last_id = videos[-1].id
+        for video in videos:
+            subtitle_video(video)
 
-        with ThreadPoolExecutor(max_workers=len(videos)) as executor:
-            futures = [executor.submit(subtitle_video, video) for video in videos]
-            for future in as_completed(futures):
-                error = future.result()
-                if error:
-                    exception_count += 1
-                    if exception_count >= 3:
-                        raise error
+        # with ThreadPoolExecutor(max_workers=len(videos)) as executor:
+        #     futures = [executor.submit(subtitle_video, video) for video in videos]
+        #     for future in as_completed(futures):
+        #         error = future.result()
+        #         if error:
+        #             exception_count += 1
+        #             if exception_count >= 3:
+        #                 raise error
 
 
 if __name__ == '__main__':

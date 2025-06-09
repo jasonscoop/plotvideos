@@ -56,7 +56,7 @@ def get_azure_results(audio_path: Path, duration: float, final_lang_codes: List[
     # - Default: Standard Azure behavior
     # - Semantic: AI-based phrase detection (no control properties)
     # speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationStrategy, "Semantic")
-    # speech_config.enable_dictation()
+    speech_config.enable_dictation()
 
     # - Time: Control via silence timeout and max time
     speech_config.set_property(speechsdk.PropertyId.Speech_SegmentationStrategy, "Default")
@@ -84,9 +84,8 @@ def get_azure_results(audio_path: Path, duration: float, final_lang_codes: List[
 
     def handle_result(evt):
         if evt.result.reason == speechsdk.ResultReason.RecognizedSpeech:
-            if evt.result.text.strip():  # Only process non-empty results
-                results.append(json.loads(evt.result.json))
-                logger.info(f"Recognized: {evt.result.text}")
+            results.append(json.loads(evt.result.json))
+            logger.info(f"Recognized: {evt.result.text}")
 
     def handle_canceled(evt):
         logger.error(f"Recognition canceled, reason: {evt.reason}")
@@ -98,6 +97,10 @@ def get_azure_results(audio_path: Path, duration: float, final_lang_codes: List[
         logger.info(f"Session stopped, reason: {evt.reason}")
         done_event.set()
 
+    def handle_session_started(evt):
+        logger.info("Recognize started.")
+
+    speech_recognizer.session_started.connect(handle_session_started)
     speech_recognizer.recognized.connect(handle_result)
     speech_recognizer.session_stopped.connect(handle_session_stopped)
     speech_recognizer.canceled.connect(handle_canceled)
@@ -107,7 +110,9 @@ def get_azure_results(audio_path: Path, duration: float, final_lang_codes: List[
 
     # Wait for completion with timeout
     timeout = max(300, int(duration * 1.5))  # Either 5 minutes or 1.5x audio duration
-    done_event.wait(timeout)
+    done = done_event.wait(timeout)
+    if not done:
+        speech_recognizer.stop_continuous_recognition()
+        raise RuntimeError(f"Subtitling timed out waiting for {duration} seconds.")
 
-    # Stop recognition
-    speech_recognizer.stop_continuous_recognition()
+    return results

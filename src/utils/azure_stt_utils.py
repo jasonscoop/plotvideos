@@ -1,36 +1,37 @@
 import json
+import subprocess
 from pathlib import Path
 from threading import Event
 from typing import List
 
 import azure.cognitiveservices.speech as speechsdk
 from loguru import logger
-from pydub import AudioSegment
 
 from src.lib.config import AZURE_SPEECH_REGION, AZURE_SPEECH_KEY
 
 
 def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000) -> int:
-    audio = AudioSegment.from_file(video_path)
+    command = [
+        "ffmpeg",
+        "-i", str(video_path),
+        "-ac", "1",  # mono
+        "-ar", str(target_sample_rate),  # sample rate
+        "-acodec", "pcm_s16le",  # 16-bit PCM
+        "-y",  # overwrite output
+        str(wav_path)
+    ]
 
-    # Optimize for speech recognition:
-    # 1. Convert to mono
-    # 2. Set sample rate to 16kHz
-    # 3. Normalize volume
-    audio = audio.set_channels(1).set_frame_rate(target_sample_rate).normalize()
+    subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
-    # Export with optimized parameters
-    audio.export(
-        wav_path,
-        format='wav',
-        parameters=[
-            "-ac", "1",  # mono
-            "-ar", str(target_sample_rate),  # sample rate
-            "-acodec", "pcm_s16le"  # 16-bit PCM
-        ]
-    )
-
-    return round(len(audio) / 1000)
+    # Get duration using ffprobe (in seconds)
+    duration_command = [
+        "ffprobe", "-v", "error",
+        "-show_entries", "format=duration",
+        "-of", "default=noprint_wrappers=1:nokey=1",
+        str(wav_path)
+    ]
+    result = subprocess.run(duration_command, capture_output=True, text=True, check=True)
+    return round(float(result.stdout.strip()))
 
 
 def get_azure_results(audio_path: Path, duration: float, final_lang_codes: List[str]):

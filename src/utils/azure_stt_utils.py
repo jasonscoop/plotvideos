@@ -10,7 +10,18 @@ from loguru import logger
 from src.lib.config import AZURE_SPEECH_REGION, AZURE_SPEECH_KEY
 
 
-def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000) -> int:
+def get_video_duration(video_path: Path) -> int:
+    command = [
+        "ffprobe", "-v", "error",
+        "-show_entries", "format=duration",
+        "-of", "default=noprint_wrappers=1:nokey=1",
+        str(video_path)
+    ]
+    result = subprocess.run(command, capture_output=True, text=True, check=True)
+    return int(result.stdout.strip())
+
+
+def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000):
     command = [
         "ffmpeg",
         "-i", str(video_path),
@@ -20,18 +31,7 @@ def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000) -> 
         "-y",  # overwrite output
         str(wav_path)
     ]
-
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-
-    # Get duration using ffprobe (in seconds)
-    duration_command = [
-        "ffprobe", "-v", "error",
-        "-show_entries", "format=duration",
-        "-of", "default=noprint_wrappers=1:nokey=1",
-        str(wav_path)
-    ]
-    result = subprocess.run(duration_command, capture_output=True, text=True, check=True)
-    return round(float(result.stdout.strip()))
 
 
 def get_azure_results(audio_path: Path, duration: float, final_lang_codes: List[str]):

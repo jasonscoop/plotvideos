@@ -11,6 +11,8 @@ from src.utils.id_utils import (
 )
 
 DB_ERROR_LOG_LENGTH = 1000
+AZURE_STT_MAX_AUDIO_SIZE = 250 * 1024 * 1024
+AZURE_STT_MAX_DURATION = 2 * 60 * 60
 
 FASTTEXT_LANG_ALIAS = {
     # Chinese and Dialects

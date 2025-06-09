@@ -5,8 +5,10 @@ from loguru import logger
 
 from src.crud.video_crud import VideoCrud
 from src.lib.config import MAX_ACCEPT_VIDEO_SIZE
-from src.lib.consts import DB_ERROR_LOG_LENGTH
+from src.lib.consts import DB_ERROR_LOG_LENGTH, AZURE_STT_MAX_DURATION, AZURE_STT_MAX_AUDIO_SIZE
 from src.lib.models import VideoStatus
+from src.lib.schemas import StorePath
+from src.utils.azure_stt_utils import get_video_duration, media_to_wav
 from src.utils.azure_subtitle_utils import generate_subtitle
 from src.utils.download_utils import to_mb
 from src.utils.log_utils import init_logging
@@ -20,8 +22,34 @@ def subtitle_video(video):
         logger.error(reason)
         return None
 
+    path = StorePath(video.host, video.original_id)
+    video_path = path.parent / video.filename
+    if not video_path.exists():
+        reason = f"[{video.id} | {video.host} | {video.original_id}] video file '{path}' does not exist"
+        VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_size, reason)
+        logger.error(reason)
+        return None
+
+    duration = get_video_duration(video_path)
+    if duration > AZURE_STT_MAX_DURATION:
+        reason = f"[{video.id} | {video.host} | {video.original_id}] duration is too long '{duration}'"
+        VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_size, reason)
+        logger.error(reason)
+        return None
+
+    media_to_wav(video_path, path.wav)
+    wav_size = path.wav.stat().st_size
+    if wav_size > AZURE_STT_MAX_AUDIO_SIZE:
+        reason = f"[{video.id} | {video.host} | {video.original_id}] wav too large '{wav_size}'"
+        VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_size, reason)
+        logger.error(reason)
+        return None
+
+    logger.info(
+        f"[{video.id} | {video.host} | {video.original_id}] converted to wav, {to_mb(path.wav.stat().st_size)} MB")
+
     try:
-        subtitle_content, duration = generate_subtitle(video)
+        subtitle_content = generate_subtitle(video, path)
         if duration == 0:
             reason = f"[{video.id} | {video.host} | {video.original_id}] duration is 0."
             VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_zero_duration, reason)

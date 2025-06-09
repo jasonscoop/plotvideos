@@ -9,8 +9,6 @@ from src.lib.enums import Language, SubtitleType
 from src.lib.models import Video
 from src.lib.schemas import StorePath
 from src.utils.azure_fast_transcription import transcribe_audio
-from src.utils.azure_stt_utils import media_to_wav
-from src.utils.download_utils import to_mb
 from src.utils.string_utils import get_lang, split_by_stop_chars, STOP_CHARS
 
 
@@ -151,17 +149,7 @@ def mix_language_codes(short_codes: List[str]) -> List[str]:
     return [l.long_code for l in langs[:4]]
 
 
-def generate_subtitle(video: Video) -> (str, int):
-    path = StorePath(video.host, video.original_id)
-    video_path = path.parent / video.filename
-    if not video_path.exists():
-        raise Exception(f"[{video.id} | {video.host} | {video.original_id}] video file '{path}' does not exist")
-
-    logger.info(f"[{video.id} | {video.host} | {video.original_id}] converting to wav...")
-    duration = media_to_wav(video_path, path.wav)
-    logger.info(
-        f"[{video.id} | {video.host} | {video.original_id}] converted to wav, size {to_mb(path.wav.stat().st_size)} MB")
-
+def generate_subtitle(video: Video, path: StorePath) -> (str, int):
     detected_codes = get_texts_lang_codes([video.title] + [video.keyword] + video.tags + video.categories)
     final_lang_codes = mix_language_codes(detected_codes)
     logger.info(
@@ -173,4 +161,4 @@ def generate_subtitle(video: Video) -> (str, int):
     vtt_content, subtitle_content = azure_fast_transcription_to_subtitle(azure_results, SubtitleType.vtt)
     path.vtt.write_text(vtt_content)
 
-    return subtitle_content.strip(), duration
+    return subtitle_content.strip()

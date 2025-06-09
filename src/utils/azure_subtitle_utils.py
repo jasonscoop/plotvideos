@@ -8,9 +8,10 @@ from sqlalchemy.cyextension.collections import OrderedSet
 from src.lib.enums import Language, SubtitleType
 from src.lib.models import Video
 from src.lib.schemas import StorePath
-from src.utils.azure_stt_utils import media_to_wav, get_azure_results
+from src.utils.azure_fast_transcription import transcribe_audio
+from src.utils.azure_stt_utils import media_to_wav
 from src.utils.download_utils import to_mb
-from src.utils.string_utils import get_lang, split_by_stop_chars
+from src.utils.string_utils import get_lang, split_by_stop_chars, STOP_CHARS
 
 
 def mktimestamp(time_unit: float) -> str:
@@ -28,6 +29,14 @@ def mktimestamp(time_unit: float) -> str:
     return f"{hour:02d}:{minute:02d}:{seconds:06.3f}"
 
 
+def ms2timestamp(ms: float) -> str:
+    hours = ms // 3600000
+    minutes = (ms % 3600000) // 60000
+    seconds = (ms % 60000) // 1000
+    milliseconds = ms % 1000
+    return f"{hours:02}:{minutes:02}:{seconds:02}.{milliseconds:03}"
+
+
 def srt_formatter(idx: int, start_time: float, end_time: float, sub_text: str) -> str:
     start_t = mktimestamp(start_time).replace(".", ",")
     end_t = mktimestamp(end_time).replace(".", ",")
@@ -35,8 +44,8 @@ def srt_formatter(idx: int, start_time: float, end_time: float, sub_text: str) -
 
 
 def vtt_formatter(idx: int, start_time: float, end_time: float, sub_text: str) -> str:
-    start_t = mktimestamp(start_time)
-    end_t = mktimestamp(end_time)
+    start_t = ms2timestamp(start_time)
+    end_t = ms2timestamp(end_time)
     return f"{start_t} --> {end_t}\n{sub_text}\n"
 
 
@@ -55,6 +64,59 @@ def azure_stt_results_to_subtitle(azure_results, type) -> (str, str):
 
     header = "WEBVTT\n\n" if type == SubtitleType.vtt else ""
     return header + "\n".join(final_items) + "\n", "\n\n".join(subtitle_contents)
+
+
+def azure_fast_transcription_to_subtitle(azure_results, type) -> (str, str):
+    formatter = vtt_formatter if type == SubtitleType.vtt else srt_formatter
+
+    i = 0
+    final_items = []
+    for phrase in azure_results["phrases"]:
+        current_words = []
+        reset = True
+        start_offset = 0
+        for word in phrase["words"]:
+            if reset:
+                start_offset = word["offsetMilliseconds"]
+
+            text = word["text"]
+            if text in STOP_CHARS:
+                i += 1
+                final_items.append(formatter(
+                    idx=i,
+                    start_time=start_offset,
+                    end_time=word["offsetMilliseconds"] + word["durationMilliseconds"],
+                    sub_text=' '.join(current_words).strip(),
+                ))
+                current_words = []
+                reset = True
+            elif len(text) > 1 and text[-1] in STOP_CHARS:
+                current_words.append(text[:-1])
+                i += 1
+                final_items.append(formatter(
+                    idx=i,
+                    start_time=start_offset,
+                    end_time=word["offsetMilliseconds"] + word["durationMilliseconds"],
+                    sub_text=' '.join(current_words).strip(),
+                ))
+                current_words = []
+                reset = True
+            else:
+                current_words.append(text)
+                reset = False
+
+        if len(current_words) > 0:
+            i += 1
+            word = phrase["words"][-1]
+            final_items.append(formatter(
+                idx=i,
+                start_time=start_offset,
+                end_time=word["offsetMilliseconds"] + word["durationMilliseconds"],
+                sub_text=' '.join(current_words).strip(),
+            ))
+
+    header = "WEBVTT\n\n" if type == SubtitleType.vtt else ""
+    return header + "\n".join(final_items) + "\n", azure_results["combinedPhrases"][0]["text"]
 
 
 def get_texts_lang_codes(texts: List[str]) -> List[str]:
@@ -104,7 +166,7 @@ def generate_subtitle(video: Video) -> (str, int):
     logger.info(
         f"[{video.id} | {video.host} | {video.original_id}] detected: {detected_codes}, using: {final_lang_codes}")
 
-    azure_results = get_azure_results(path.wav, duration, final_lang_codes)
+    azure_results = transcribe_audio(path.wav, final_lang_codes)
     path.azure_results.write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))
 
     vtt_content, subtitle_content = azure_stt_results_to_subtitle(azure_results, SubtitleType.vtt)

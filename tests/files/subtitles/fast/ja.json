@@ -1,0 +1,622 @@
+{
+  "durationMilliseconds": 1221248,
+  "combinedPhrases": [
+    {
+      "text": "嗯。 お兄ちゃんはなにしてるの? 何勝手に入ってきたんだよ。しかも裸じゃん。お兄ちゃんがなんか変なことしてるってお母さんに言ってやろう。いや、何言ってんだよ。絶対言うなよ。俺だって男なんだししょうがないじゃん。じゃあ内緒にしといただけから。"
+    }
+  ],
+  "phrases": [
+    {
+      "offsetMilliseconds": 14530,
+      "durationMilliseconds": 80,
+      "text": "嗯。",
+      "words": [
+        {
+          "text": "嗯",
+          "offsetMilliseconds": 14530,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "。",
+          "offsetMilliseconds": 14570,
+          "durationMilliseconds": 40
+        }
+      ],
+      "locale": "zh-CN",
+      "confidence": 0.56154555
+    },
+    {
+      "offsetMilliseconds": 56000,
+      "durationMilliseconds": 26180,
+      "text": "お兄ちゃんはなにしてるの?",
+      "words": [
+        {
+          "text": "お",
+          "offsetMilliseconds": 56000,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "兄",
+          "offsetMilliseconds": 56040,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ち",
+          "offsetMilliseconds": 64080,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ゃ",
+          "offsetMilliseconds": 64120,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ん",
+          "offsetMilliseconds": 68880,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "は",
+          "offsetMilliseconds": 68920,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "な",
+          "offsetMilliseconds": 73280,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "に",
+          "offsetMilliseconds": 73320,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "し",
+          "offsetMilliseconds": 80180,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "て",
+          "offsetMilliseconds": 80220,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "る",
+          "offsetMilliseconds": 82100,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "の?",
+          "offsetMilliseconds": 82140,
+          "durationMilliseconds": 40
+        }
+      ],
+      "locale": "ja-JP",
+      "confidence": 0.90303046
+    },
+    {
+      "offsetMilliseconds": 90400,
+      "durationMilliseconds": 25680,
+      "text": "何勝手に入ってきたんだよ。しかも裸じゃん。お兄ちゃんがなんか変なことしてるってお母さんに言ってやろう。いや、何言ってんだよ。絶対言うなよ。俺だって男なんだししょうがないじゃん。じゃあ内緒にしといただけから。",
+      "words": [
+        {
+          "text": "何",
+          "offsetMilliseconds": 90400,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "勝",
+          "offsetMilliseconds": 90440,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "手",
+          "offsetMilliseconds": 90560,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "に",
+          "offsetMilliseconds": 90600,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "入",
+          "offsetMilliseconds": 90640,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "っ",
+          "offsetMilliseconds": 90680,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "て",
+          "offsetMilliseconds": 90800,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "き",
+          "offsetMilliseconds": 90840,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "た",
+          "offsetMilliseconds": 90880,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ん",
+          "offsetMilliseconds": 90920,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "だ",
+          "offsetMilliseconds": 91040,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "よ",
+          "offsetMilliseconds": 91080,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "。",
+          "offsetMilliseconds": 91600,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "し",
+          "offsetMilliseconds": 91640,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "か",
+          "offsetMilliseconds": 91760,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "も",
+          "offsetMilliseconds": 91800,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "裸",
+          "offsetMilliseconds": 92320,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "じ",
+          "offsetMilliseconds": 92360,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ゃ",
+          "offsetMilliseconds": 92400,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ん",
+          "offsetMilliseconds": 92440,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "。",
+          "offsetMilliseconds": 92480,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "お",
+          "offsetMilliseconds": 92520,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "兄",
+          "offsetMilliseconds": 92720,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ち",
+          "offsetMilliseconds": 92760,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ゃ",
+          "offsetMilliseconds": 92800,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ん",
+          "offsetMilliseconds": 92840,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "が",
+          "offsetMilliseconds": 97440,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "な",
+          "offsetMilliseconds": 97480,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ん",
+          "offsetMilliseconds": 97520,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "か",
+          "offsetMilliseconds": 97560,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "変",
+          "offsetMilliseconds": 98400,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "な",
+          "offsetMilliseconds": 98440,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "こ",
+          "offsetMilliseconds": 98560,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "と",
+          "offsetMilliseconds": 98600,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "し",
+          "offsetMilliseconds": 99920,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "て",
+          "offsetMilliseconds": 99960,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "る",
+          "offsetMilliseconds": 100640,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "っ",
+          "offsetMilliseconds": 100680,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "て",
+          "offsetMilliseconds": 100960,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "お",
+          "offsetMilliseconds": 101000,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "母",
+          "offsetMilliseconds": 101360,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "さ",
+          "offsetMilliseconds": 101400,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ん",
+          "offsetMilliseconds": 101680,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "に",
+          "offsetMilliseconds": 101720,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "言",
+          "offsetMilliseconds": 101760,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "っ",
+          "offsetMilliseconds": 101800,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "て",
+          "offsetMilliseconds": 104240,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "や",
+          "offsetMilliseconds": 104280,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ろ",
+          "offsetMilliseconds": 104880,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "う",
+          "offsetMilliseconds": 104920,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "。",
+          "offsetMilliseconds": 105200,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "い",
+          "offsetMilliseconds": 105240,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "や",
+          "offsetMilliseconds": 105520,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "、",
+          "offsetMilliseconds": 105560,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "何",
+          "offsetMilliseconds": 105600,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "言",
+          "offsetMilliseconds": 105640,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "っ",
+          "offsetMilliseconds": 105680,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "て",
+          "offsetMilliseconds": 105720,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ん",
+          "offsetMilliseconds": 106160,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "だ",
+          "offsetMilliseconds": 106200,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "よ",
+          "offsetMilliseconds": 106400,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "。",
+          "offsetMilliseconds": 106440,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "絶",
+          "offsetMilliseconds": 106880,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "対",
+          "offsetMilliseconds": 106920,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "言",
+          "offsetMilliseconds": 108080,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "う",
+          "offsetMilliseconds": 108120,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "な",
+          "offsetMilliseconds": 108240,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "よ",
+          "offsetMilliseconds": 108280,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "。",
+          "offsetMilliseconds": 109200,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "俺",
+          "offsetMilliseconds": 109240,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "だ",
+          "offsetMilliseconds": 109280,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "っ",
+          "offsetMilliseconds": 109320,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "て",
+          "offsetMilliseconds": 109360,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "男",
+          "offsetMilliseconds": 109400,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "な",
+          "offsetMilliseconds": 109520,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ん",
+          "offsetMilliseconds": 109560,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "だ",
+          "offsetMilliseconds": 109680,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "し",
+          "offsetMilliseconds": 109720,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "し",
+          "offsetMilliseconds": 110160,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ょ",
+          "offsetMilliseconds": 110200,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "う",
+          "offsetMilliseconds": 110240,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "が",
+          "offsetMilliseconds": 110280,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "な",
+          "offsetMilliseconds": 110640,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "い",
+          "offsetMilliseconds": 110680,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "じ",
+          "offsetMilliseconds": 110720,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ゃ",
+          "offsetMilliseconds": 110760,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ん",
+          "offsetMilliseconds": 110800,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "。",
+          "offsetMilliseconds": 110840,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "じ",
+          "offsetMilliseconds": 110880,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ゃ",
+          "offsetMilliseconds": 110920,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "あ",
+          "offsetMilliseconds": 112320,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "内",
+          "offsetMilliseconds": 112360,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "緒",
+          "offsetMilliseconds": 112400,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "に",
+          "offsetMilliseconds": 112440,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "し",
+          "offsetMilliseconds": 113600,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "と",
+          "offsetMilliseconds": 114400,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "い",
+          "offsetMilliseconds": 114440,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "た",
+          "offsetMilliseconds": 114800,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "だ",
+          "offsetMilliseconds": 114840,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "け",
+          "offsetMilliseconds": 115120,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "か",
+          "offsetMilliseconds": 115160,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "ら",
+          "offsetMilliseconds": 116000,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "。",
+          "offsetMilliseconds": 116040,
+          "durationMilliseconds": 40
+        }
+      ],
+      "locale": "ja-JP",
+      "confidence": 0.90605897
+    }
+  ]
+}

@@ -1,0 +1,450 @@
+{
+  "durationMilliseconds": 39868,
+  "combinedPhrases": [
+    {
+      "text": "So don't worry, I'm a friend of your husband. Okay, if you're ready, let's head into the clinic. Okay. Please have a seat. I'm sorry, but your husband will have to wait outside. I need to focus on my patient. Thank you. OK, Sanvi, so how long have you not been feeling well? Around 10 years, 10 years, I see. And can you see these numbers on the blackboard here?"
+    }
+  ],
+  "phrases": [
+    {
+      "offsetMilliseconds": 40,
+      "durationMilliseconds": 2320,
+      "text": "So don't worry, I'm a friend of your husband.",
+      "words": [
+        {
+          "text": "So",
+          "offsetMilliseconds": 40,
+          "durationMilliseconds": 200
+        },
+        {
+          "text": "don't",
+          "offsetMilliseconds": 480,
+          "durationMilliseconds": 320
+        },
+        {
+          "text": "worry,",
+          "offsetMilliseconds": 800,
+          "durationMilliseconds": 160
+        },
+        {
+          "text": "I'm",
+          "offsetMilliseconds": 1280,
+          "durationMilliseconds": 160
+        },
+        {
+          "text": "a",
+          "offsetMilliseconds": 1440,
+          "durationMilliseconds": 80
+        },
+        {
+          "text": "friend",
+          "offsetMilliseconds": 1520,
+          "durationMilliseconds": 200
+        },
+        {
+          "text": "of",
+          "offsetMilliseconds": 1720,
+          "durationMilliseconds": 80
+        },
+        {
+          "text": "your",
+          "offsetMilliseconds": 1800,
+          "durationMilliseconds": 120
+        },
+        {
+          "text": "husband.",
+          "offsetMilliseconds": 1920,
+          "durationMilliseconds": 440
+        }
+      ],
+      "locale": "en-US",
+      "confidence": 0.9261281
+    },
+    {
+      "offsetMilliseconds": 3600,
+      "durationMilliseconds": 2280,
+      "text": "Okay, if you're ready, let's head into the clinic.",
+      "words": [
+        {
+          "text": "Okay,",
+          "offsetMilliseconds": 3600,
+          "durationMilliseconds": 360
+        },
+        {
+          "text": "if",
+          "offsetMilliseconds": 3960,
+          "durationMilliseconds": 120
+        },
+        {
+          "text": "you're",
+          "offsetMilliseconds": 4080,
+          "durationMilliseconds": 160
+        },
+        {
+          "text": "ready,",
+          "offsetMilliseconds": 4240,
+          "durationMilliseconds": 160
+        },
+        {
+          "text": "let's",
+          "offsetMilliseconds": 4640,
+          "durationMilliseconds": 320
+        },
+        {
+          "text": "head",
+          "offsetMilliseconds": 5040,
+          "durationMilliseconds": 200
+        },
+        {
+          "text": "into",
+          "offsetMilliseconds": 5240,
+          "durationMilliseconds": 200
+        },
+        {
+          "text": "the",
+          "offsetMilliseconds": 5440,
+          "durationMilliseconds": 80
+        },
+        {
+          "text": "clinic.",
+          "offsetMilliseconds": 5520,
+          "durationMilliseconds": 360
+        }
+      ],
+      "locale": "en-US",
+      "confidence": 0.9261281
+    },
+    {
+      "offsetMilliseconds": 6960,
+      "durationMilliseconds": 200,
+      "text": "Okay.",
+      "words": [
+        {
+          "text": "Okay.",
+          "offsetMilliseconds": 6960,
+          "durationMilliseconds": 200
+        }
+      ],
+      "locale": "en-US",
+      "confidence": 0.9261281
+    },
+    {
+      "offsetMilliseconds": 11680,
+      "durationMilliseconds": 8400,
+      "text": "Please have a seat.",
+      "words": [
+        {
+          "text": "Please",
+          "offsetMilliseconds": 11680,
+          "durationMilliseconds": 640
+        },
+        {
+          "text": "have",
+          "offsetMilliseconds": 19440,
+          "durationMilliseconds": 280
+        },
+        {
+          "text": "a",
+          "offsetMilliseconds": 19720,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "seat.",
+          "offsetMilliseconds": 19760,
+          "durationMilliseconds": 320
+        }
+      ],
+      "locale": "en-US",
+      "confidence": 0.9261281
+    },
+    {
+      "offsetMilliseconds": 20080,
+      "durationMilliseconds": 1840,
+      "text": "I'm sorry, but your husband will have to wait outside.",
+      "words": [
+        {
+          "text": "I'm",
+          "offsetMilliseconds": 20080,
+          "durationMilliseconds": 80
+        },
+        {
+          "text": "sorry,",
+          "offsetMilliseconds": 20160,
+          "durationMilliseconds": 200
+        },
+        {
+          "text": "but",
+          "offsetMilliseconds": 20400,
+          "durationMilliseconds": 120
+        },
+        {
+          "text": "your",
+          "offsetMilliseconds": 20520,
+          "durationMilliseconds": 120
+        },
+        {
+          "text": "husband",
+          "offsetMilliseconds": 20640,
+          "durationMilliseconds": 440
+        },
+        {
+          "text": "will",
+          "offsetMilliseconds": 21080,
+          "durationMilliseconds": 120
+        },
+        {
+          "text": "have",
+          "offsetMilliseconds": 21200,
+          "durationMilliseconds": 160
+        },
+        {
+          "text": "to",
+          "offsetMilliseconds": 21360,
+          "durationMilliseconds": 120
+        },
+        {
+          "text": "wait",
+          "offsetMilliseconds": 21480,
+          "durationMilliseconds": 200
+        },
+        {
+          "text": "outside.",
+          "offsetMilliseconds": 21680,
+          "durationMilliseconds": 240
+        }
+      ],
+      "locale": "en-US",
+      "confidence": 0.9261281
+    },
+    {
+      "offsetMilliseconds": 22240,
+      "durationMilliseconds": 1720,
+      "text": "I need to focus on my patient.",
+      "words": [
+        {
+          "text": "I",
+          "offsetMilliseconds": 22240,
+          "durationMilliseconds": 160
+        },
+        {
+          "text": "need",
+          "offsetMilliseconds": 22440,
+          "durationMilliseconds": 120
+        },
+        {
+          "text": "to",
+          "offsetMilliseconds": 22560,
+          "durationMilliseconds": 80
+        },
+        {
+          "text": "focus",
+          "offsetMilliseconds": 22720,
+          "durationMilliseconds": 480
+        },
+        {
+          "text": "on",
+          "offsetMilliseconds": 23200,
+          "durationMilliseconds": 80
+        },
+        {
+          "text": "my",
+          "offsetMilliseconds": 23520,
+          "durationMilliseconds": 80
+        },
+        {
+          "text": "patient.",
+          "offsetMilliseconds": 23680,
+          "durationMilliseconds": 280
+        }
+      ],
+      "locale": "en-US",
+      "confidence": 0.9261281
+    },
+    {
+      "offsetMilliseconds": 25760,
+      "durationMilliseconds": 1200,
+      "text": "Thank you.",
+      "words": [
+        {
+          "text": "Thank",
+          "offsetMilliseconds": 25760,
+          "durationMilliseconds": 240
+        },
+        {
+          "text": "you.",
+          "offsetMilliseconds": 26840,
+          "durationMilliseconds": 120
+        }
+      ],
+      "locale": "en-US",
+      "confidence": 0.9261281
+    },
+    {
+      "offsetMilliseconds": 28800,
+      "durationMilliseconds": 3960,
+      "text": "OK, Sanvi, so how long have you not been feeling well?",
+      "words": [
+        {
+          "text": "OK,",
+          "offsetMilliseconds": 28800,
+          "durationMilliseconds": 320
+        },
+        {
+          "text": "Sanvi,",
+          "offsetMilliseconds": 29120,
+          "durationMilliseconds": 360
+        },
+        {
+          "text": "so",
+          "offsetMilliseconds": 29480,
+          "durationMilliseconds": 440
+        },
+        {
+          "text": "how",
+          "offsetMilliseconds": 29920,
+          "durationMilliseconds": 200
+        },
+        {
+          "text": "long",
+          "offsetMilliseconds": 30160,
+          "durationMilliseconds": 240
+        },
+        {
+          "text": "have",
+          "offsetMilliseconds": 30400,
+          "durationMilliseconds": 160
+        },
+        {
+          "text": "you",
+          "offsetMilliseconds": 30560,
+          "durationMilliseconds": 80
+        },
+        {
+          "text": "not",
+          "offsetMilliseconds": 30640,
+          "durationMilliseconds": 240
+        },
+        {
+          "text": "been",
+          "offsetMilliseconds": 30880,
+          "durationMilliseconds": 560
+        },
+        {
+          "text": "feeling",
+          "offsetMilliseconds": 32320,
+          "durationMilliseconds": 200
+        },
+        {
+          "text": "well?",
+          "offsetMilliseconds": 32640,
+          "durationMilliseconds": 120
+        }
+      ],
+      "locale": "en-US",
+      "confidence": 0.9131606
+    },
+    {
+      "offsetMilliseconds": 33320,
+      "durationMilliseconds": 3400,
+      "text": "Around 10 years, 10 years, I see.",
+      "words": [
+        {
+          "text": "Around",
+          "offsetMilliseconds": 33320,
+          "durationMilliseconds": 200
+        },
+        {
+          "text": "10",
+          "offsetMilliseconds": 34000,
+          "durationMilliseconds": 240
+        },
+        {
+          "text": "years,",
+          "offsetMilliseconds": 34280,
+          "durationMilliseconds": 200
+        },
+        {
+          "text": "10",
+          "offsetMilliseconds": 35120,
+          "durationMilliseconds": 240
+        },
+        {
+          "text": "years,",
+          "offsetMilliseconds": 35600,
+          "durationMilliseconds": 320
+        },
+        {
+          "text": "I",
+          "offsetMilliseconds": 36480,
+          "durationMilliseconds": 40
+        },
+        {
+          "text": "see.",
+          "offsetMilliseconds": 36640,
+          "durationMilliseconds": 80
+        }
+      ],
+      "locale": "en-US",
+      "confidence": 0.9131606
+    },
+    {
+      "offsetMilliseconds": 36760,
+      "durationMilliseconds": 2800,
+      "text": "And can you see these numbers on the blackboard here?",
+      "words": [
+        {
+          "text": "And",
+          "offsetMilliseconds": 36760,
+          "durationMilliseconds": 200
+        },
+        {
+          "text": "can",
+          "offsetMilliseconds": 37120,
+          "durationMilliseconds": 240
+        },
+        {
+          "text": "you",
+          "offsetMilliseconds": 37360,
+          "durationMilliseconds": 80
+        },
+        {
+          "text": "see",
+          "offsetMilliseconds": 37440,
+          "durationMilliseconds": 160
+        },
+        {
+          "text": "these",
+          "offsetMilliseconds": 37600,
+          "durationMilliseconds": 160
+        },
+        {
+          "text": "numbers",
+          "offsetMilliseconds": 37760,
+          "durationMilliseconds": 720
+        },
+        {
+          "text": "on",
+          "offsetMilliseconds": 38480,
+          "durationMilliseconds": 160
+        },
+        {
+          "text": "the",
+          "offsetMilliseconds": 38640,
+          "durationMilliseconds": 80
+        },
+        {
+          "text": "blackboard",
+          "offsetMilliseconds": 38720,
+          "durationMilliseconds": 720
+        },
+        {
+          "text": "here?",
+          "offsetMilliseconds": 39440,
+          "durationMilliseconds": 120
+        }
+      ],
+      "locale": "en-US",
+      "confidence": 0.9131606
+    }
+  ]
+}

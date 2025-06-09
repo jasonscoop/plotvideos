@@ -14,7 +14,7 @@ from src.lib.consts import FASTTEXT_LANG_ALIAS
 fasttext_model = None
 enc = tiktoken.encoding_for_model("gpt-4")
 
-STOP_CHARS = (
+STOP_CHARS = set(
     ".!?,:;…‥"  # English & common
     "。！？，、；："  # Chinese/Japanese
     "।"  # Hindi

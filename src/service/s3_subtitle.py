@@ -1,8 +1,9 @@
 import sys
 import traceback
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import as_completed, ThreadPoolExecutor
 
 from loguru import logger
+from memory_profiler import profile
 
 from src.crud.video_crud import VideoCrud
 from src.lib.config import MAX_ACCEPT_VIDEO_SIZE
@@ -14,6 +15,7 @@ from src.utils.log_utils import init_logging
 from src.utils.string_utils import get_tokens
 
 
+@profile
 def subtitle_video(video):
     if video.file_size > MAX_ACCEPT_VIDEO_SIZE:
         reason = f"[{video.id} | {video.host} | {video.original_id}] size exceeded: {to_mb(MAX_ACCEPT_VIDEO_SIZE)}"
@@ -59,7 +61,7 @@ def subtitle_videos(batch_size: int = 10, host: str = ""):
 
         last_id = videos[-1].id
 
-        with ProcessPoolExecutor(max_workers=len(videos)) as executor:
+        with ThreadPoolExecutor(max_workers=len(videos)) as executor:
             futures = [executor.submit(subtitle_video, video) for video in videos]
             for future in as_completed(futures):
                 error = future.result()

@@ -3,7 +3,6 @@ import math
 from typing import List
 
 from loguru import logger
-from memory_profiler import profile
 from sqlalchemy.cyextension.collections import OrderedSet
 
 from src.lib.enums import Language, SubtitleType
@@ -90,7 +89,6 @@ def mix_language_codes(short_codes: List[str]) -> List[str]:
     return [l.long_code for l in langs[:4]]
 
 
-@profile
 def generate_subtitle(video: Video) -> (str, int):
     path = StorePath(video.host, video.original_id)
     video_path = path.parent / video.filename

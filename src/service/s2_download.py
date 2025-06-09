@@ -36,7 +36,7 @@ def download_videos(batch_size: int = 10, host: str = ""):
                     "title": info.get("title", video.title),
                     "tags": info.get("tags", []),
                     "categories": info.get("categories", []),
-                    "duration": info.get("duration", 0),
+                    "duration": int(info.get("duration", 0)),
                     "file_size": path.parent.joinpath(video_filename).stat().st_size,
                     "width": info.get("width", 0),
                     "height": info.get("height", 0),

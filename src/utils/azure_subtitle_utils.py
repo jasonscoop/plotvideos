@@ -157,6 +157,7 @@ def generate_subtitle(video: Video) -> (str, int):
     if not video_path.exists():
         raise Exception(f"[{video.id} | {video.host} | {video.original_id}] video file '{path}' does not exist")
 
+    logger.info(f"[{video.id} | {video.host} | {video.original_id}] converting to wav...")
     duration = media_to_wav(video_path, path.wav)
     logger.info(
         f"[{video.id} | {video.host} | {video.original_id}] converted to wav, size {to_mb(path.wav.stat().st_size)} MB")
@@ -169,7 +170,7 @@ def generate_subtitle(video: Video) -> (str, int):
     azure_results = transcribe_audio(path.wav, final_lang_codes)
     path.azure_results.write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))
 
-    vtt_content, subtitle_content = azure_stt_results_to_subtitle(azure_results, SubtitleType.vtt)
+    vtt_content, subtitle_content = azure_fast_transcription_to_subtitle(azure_results, SubtitleType.vtt)
     path.vtt.write_text(vtt_content)
 
     return subtitle_content.strip(), duration

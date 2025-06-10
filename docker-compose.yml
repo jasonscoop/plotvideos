@@ -15,7 +15,18 @@ services:
       - ./works:/workspace/works
     command: python src/service/s2_download.py ${BATCH_SIZE:-10} ${HOST:-""}
 
-  s3_subtitle:
+  s3_convert:
+    build: .
+    cpus: 2.5
+    mem_limit: 4g                # Max RAM
+    memswap_limit: 10g            # RAM + swap total
+    env_file:
+      - .env
+    volumes:
+      - ./works:/workspace/works
+    command: python src/service/s3_convert.py ${BATCH_SIZE:-10} ${HOST:-""}
+
+  s4_subtitle:
     build: .
     cpus: 2.5
     mem_limit: 4g                # Max RAM
@@ -26,7 +37,7 @@ services:
       - ./works:/workspace/works
     command: python src/service/s3_subtitle.py ${BATCH_SIZE:-10} ${HOST:-""}
 
-  s4_translate_vtt:
+  s5_translate_vtt:
     build: .
     env_file:
       - .env
@@ -34,7 +45,7 @@ services:
       - ./works:/workspace/works
     command: python src/service/s4_translate_vtt.py ${BATCH_SIZE:-10} ${HOST:-""}
 
-  s5_translate_meta:
+  s6_translate_meta:
     build: .
     env_file:
       - .env
@@ -42,7 +53,7 @@ services:
       - ./works:/workspace/works
     command: python src/service/s5_translate_meta.py ${BATCH_SIZE:-10} ${HOST:-""}
 
-  s6_upload:
+  s7_upload:
     build: .
     env_file:
       - .env

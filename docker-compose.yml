@@ -17,9 +17,9 @@ services:
 
   s3_convert:
     build: .
-    cpus: 2.5
-    mem_limit: 4g                # Max RAM
-    memswap_limit: 10g            # RAM + swap total
+    cpus: 2
+    mem_limit: 4g
+    memswap_limit: 10g
     env_file:
       - .env
     volumes:
@@ -32,7 +32,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s3_subtitle.py ${BATCH_SIZE:-10} ${HOST:-""}
+    command: python src/service/s4_subtitle.py ${BATCH_SIZE:-10} ${HOST:-""}
 
   s5_translate_vtt:
     build: .
@@ -40,7 +40,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s4_translate_vtt.py ${BATCH_SIZE:-10} ${HOST:-""}
+    command: python src/service/s5_translate_vtt.py ${BATCH_SIZE:-10} ${HOST:-""}
 
   s6_translate_meta:
     build: .
@@ -48,7 +48,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s5_translate_meta.py ${BATCH_SIZE:-10} ${HOST:-""}
+    command: python src/service/s6_translate_meta.py ${BATCH_SIZE:-10} ${HOST:-""}
 
   s7_upload:
     build: .
@@ -56,4 +56,12 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s6_upload.py ${BATCH_SIZE:-10} ${HOST:-""}
+    command: python src/service/s7_upload.py ${BATCH_SIZE:-10} ${HOST:-""}
+
+  s8_cleanup:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - ./works:/workspace/works
+    command: python src/service/s8_cleanup.py ${BATCH_SIZE:-10} ${HOST:-""}

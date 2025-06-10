@@ -43,8 +43,8 @@ def fetch_and_save_videos(max_pages, batch_size):
         for keyword in keywords:
             logger.info(f"[{keyword.name}] keyword fetching started")
 
-            for page in range(1, max_pages):
-                data = fetch_video_urls(keyword.name, page)
+            for page in range(0, max_pages):
+                data = fetch_video_urls(keyword.name, page + 1)
                 sites = data.get('data', [])
                 for site in sites:
                     if not site["links"]:

@@ -5,7 +5,8 @@ from concurrent.futures import ProcessPoolExecutor
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
-from src.lib.consts import DB_ERROR_LOG_LENGTH, WEBSITES
+from src.lib.consts import WEBSITES
+from src.lib.enums import ErrorAt
 from src.lib.models import VideoStatus
 from src.lib.schemas import StorePath
 from src.utils.download_utils import download_remote_video, SizeLimitExceeded
@@ -44,12 +45,10 @@ def download_videos(batch_size: int = 10, host: str = ""):
                 })
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}]  Downloaded")
             except SizeLimitExceeded as e:
-                reason = str(e)[:DB_ERROR_LOG_LENGTH]
-                VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_size, reason)
+                VideoCrud.update_status(video.id, VideoStatus.failed, ErrorAt.download.out(e))
                 logger.warning(str(e))
             except Exception as e:
-                reason = str(e)[:DB_ERROR_LOG_LENGTH]
-                VideoCrud.update_status(video.id, VideoStatus.failed_downloaded, reason)
+                VideoCrud.update_status(video.id, VideoStatus.failed, ErrorAt.download.out(e))
                 exception_count += 1
                 if exception_count >= 3:
                     raise e

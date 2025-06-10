@@ -1,4 +1,5 @@
 import asyncio
+import shutil
 import sys
 import traceback
 
@@ -6,12 +7,24 @@ from loguru import logger
 
 from src.crud.video_crud import VideoCrud
 from src.lib.config import BUNNY_API_KEY, BUNNY_LIBRARY_ID, BUNNY_CDN_DOMAIN
-from src.lib.consts import DB_ERROR_LOG_LENGTH
-from src.lib.enums import VideoStatus, Language
+from src.lib.enums import VideoStatus, Language, ErrorAt
 from src.lib.schemas import StorePath
 from src.utils.bunny_utils import BunnyStreamClient
 from src.utils.file_utils import upload_dir_to_s3
 from src.utils.log_utils import init_logging
+
+
+def clean_files():
+    last_id = 0
+    while True:
+        videos = VideoCrud.batch_get(last_id, batch_size, [VideoStatus.failed, VideoStatus.uploaded], host)
+        if not videos:
+            break
+
+        last_id = videos[-1].id
+        for video in videos:
+            path: StorePath = StorePath(video.host, video.original_id)
+            shutil.rmtree(str(path.parent), ignore_errors=True)
 
 
 def upload_videos(batch_size: int = 10, host: str = ""):
@@ -52,8 +65,7 @@ def upload_videos(batch_size: int = 10, host: str = ""):
                 asyncio.run(upload_dir_to_s3(path.parent, path.prefix))
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded")
             except Exception as e:
-                reason = str(e)[:DB_ERROR_LOG_LENGTH]
-                VideoCrud.update_status(video.id, VideoStatus.failed_uploaded, reason)
+                VideoCrud.update_status(video.id, VideoStatus.failed, ErrorAt.upload.out(e))
                 exception_count += 1
                 if exception_count >= 3:
                     raise e
@@ -66,3 +78,5 @@ if __name__ == '__main__':
     host = sys.argv[2] if len(sys.argv) > 2 else ""
     upload_videos(batch_size, host)
     logger.info("All uploaded")
+    clean_files()
+    logger.info("All files cleaned")

@@ -1,6 +1,8 @@
 from enum import StrEnum, Enum
 from typing import List, Optional
 
+from src.lib.consts import DB_ERROR_LOG_LENGTH
+
 
 class SubtitleType(StrEnum):
     vtt = "vtt"
@@ -11,23 +13,28 @@ class VideoStatus(StrEnum):
     fetched = "fetched"
     downloaded = "downloaded"
     subtitled = "subtitled"
+    converted = "converted"
     meta_translated = "meta_translated"
     vtt_translated = "vtt_translated"
     uploaded = "uploaded"
     published = "published"
 
-    failed_downloaded = "failed_downloaded"
-    failed_subtitled = "failed_subtitled"
-    failed_meta_translated = "failed_meta_translated"
-    failed_vtt_translated = "failed_vtt_translated"
-    failed_uploaded = "failed_uploaded"
-    failed_published = "failed_published"
+    failed = "failed"
 
-    skipped_due_to_size = "skipped_due_to_size"
-    skipped_due_to_low_speech = "skipped_due_to_low_speech"
-    skipped_due_to_short_speech = "skipped_due_to_short_speech"
-    skipped_due_to_empty_subtitle = "skipped_due_to_empty_subtitle"
-    skipped_due_to_zero_duration = "skipped_due_to_zero_duration"
+
+class ErrorAt(StrEnum):
+    fetch = "fetch"
+    download = "download"
+    subtitle = "subtitle"
+    convert = "convert"
+    meta_translate = "meta_translate"
+    vtt_translate = "vtt_translate"
+    upload = "upload"
+    publish = "publish"
+
+    def out(self, e: Exception | str = None) -> str:
+        n = DB_ERROR_LOG_LENGTH - len(self.value) - 3
+        return f"[{self.value}] " + str(e)[:n]
 
 
 class Language(Enum):

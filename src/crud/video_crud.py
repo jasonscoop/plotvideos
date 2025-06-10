@@ -9,11 +9,17 @@ from src.lib.models import Video
 
 class VideoCrud:
     @classmethod
-    def batch_get(cls, last_id: int, batch_size: int, status: VideoStatus, host: str = "") -> List[Video]:
+    def batch_get(cls, last_id: int, batch_size: int, status: VideoStatus | List[VideoStatus], host: str = "") -> List[
+        Video]:
         with get_db() as session:
-            query = session.query(Video) \
-                .options(undefer("*")) \
-                .filter(Video.status == status, Video.id > last_id)
+            query = session.query(Video).options(undefer("*"))
+
+            if isinstance(status, list):
+                query = query.filter(Video.status.in_(status), Video.id > last_id)
+            elif isinstance(status, VideoStatus):
+                query = query.filter(Video.status == status, Video.id > last_id)
+            else:
+                raise TypeError("Unsupported status type")
 
             if host:
                 query = query.filter(Video.host == host)
@@ -56,3 +62,5 @@ class VideoCrud:
                 video.status = status
                 video.failed_reason = reason
                 session.commit()
+
+            return reason

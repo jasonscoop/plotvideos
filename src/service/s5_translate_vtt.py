@@ -7,8 +7,7 @@ from loguru import logger
 
 from src.crud.video_crud import VideoCrud
 from src.lib.config import SUBTITLE_TOKEN_RATIO_THRESHOLD
-from src.lib.consts import DB_ERROR_LOG_LENGTH
-from src.lib.enums import VideoStatus, Language
+from src.lib.enums import VideoStatus, Language, ErrorAt
 from src.lib.schemas import StorePath
 from src.utils.llm_utils import llm_translate_vtt
 from src.utils.log_utils import init_logging
@@ -52,13 +51,15 @@ def process_subtitled_videos(batch_size: int = 10, host: str = ""):
 
         for video in videos:
             if len(video.subtitle_content.strip()) == 0:
-                VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_empty_subtitle, reason="No subtitle")
-                logger.warning(f"[{video.id} | {video.host} | {video.original_id}] no subtitle, skipping")
+                reason = VideoCrud.update_status(video.id, VideoStatus.failed,
+                                                 ErrorAt.subtitle.out("Subtitle content is empty"))
+                logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
                 continue
 
             if video.subtitle_duration_ratio < SUBTITLE_TOKEN_RATIO_THRESHOLD:
-                VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_low_speech, reason="Low speech")
-                logger.warning(f"[{video.id} | {video.host} | {video.original_id}] low speech, skipping")
+                reason = VideoCrud.update_status(video.id, VideoStatus.failed,
+                                                 reason=ErrorAt.subtitle.out("Subtitle content is too short"))
+                logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
                 continue
 
             logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translation started")
@@ -79,8 +80,8 @@ def process_subtitled_videos(batch_size: int = 10, host: str = ""):
                 VideoCrud.update_status(video.id, VideoStatus.vtt_translated)
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] all vtt translated")
             except Exception as e:
-                reason = str(e)[:DB_ERROR_LOG_LENGTH]
-                VideoCrud.update_status(video.id, VideoStatus.failed_vtt_translated, reason)
+                reason = VideoCrud.update_status(video.id, VideoStatus.failed, ErrorAt.vtt_translate.out(e))
+                logger.error(f"[{video.id} | {video.original_id}] {reason}")
                 exception_count += 1
                 if exception_count >= 3:
                     raise e

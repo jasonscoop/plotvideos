@@ -1,5 +1,6 @@
 import asyncio
 import sys
+import time
 import traceback
 from concurrent.futures import ProcessPoolExecutor
 
@@ -21,10 +22,10 @@ def download_videos(batch_size: int = 10, host: str = ""):
     while True:
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.fetched, host)
         if not videos:
-            break
+            time.sleep(1 * 60 * 60)
+            continue
 
         last_id = videos[-1].id
-
         for video in videos:
             logger.info(f"[{video.id} | {video.host} | {video.original_id}] download started")
 

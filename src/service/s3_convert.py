@@ -1,5 +1,6 @@
 import asyncio
 import sys
+import time
 import traceback
 
 from loguru import logger
@@ -67,7 +68,8 @@ def convert_videos(batch_size: int = 10, host: str = ""):
     while True:
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.downloaded, host)
         if not videos:
-            break
+            time.sleep(10 * 60)
+            continue
 
         last_id = videos[-1].id
         for video in videos:

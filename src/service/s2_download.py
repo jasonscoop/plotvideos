@@ -6,7 +6,6 @@ from loguru import logger
 
 from src.crud.video_crud import VideoCrud
 from src.lib.consts import WEBSITES
-from src.lib.enums import ErrorAt
 from src.lib.models import VideoStatus
 from src.lib.schemas import StorePath
 from src.utils.download_utils import download_remote_video, SizeLimitExceeded
@@ -45,10 +44,10 @@ def download_videos(batch_size: int = 10, host: str = ""):
                 })
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}]  Downloaded")
             except SizeLimitExceeded as e:
-                VideoCrud.update_status(video.id, VideoStatus.failed, ErrorAt.download.out(e))
+                VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.downloaded.out(e))
                 logger.warning(str(e))
             except Exception as e:
-                VideoCrud.update_status(video.id, VideoStatus.failed, ErrorAt.download.out(e))
+                VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.downloaded.out(e))
                 exception_count += 1
                 if exception_count >= 3:
                     raise e

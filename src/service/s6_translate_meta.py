@@ -5,7 +5,7 @@ from collections import defaultdict
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
-from src.lib.enums import VideoStatus, Language, ErrorAt
+from src.lib.enums import VideoStatus, Language, VideoStatus
 from src.lib.models import Video
 from src.utils.log_utils import init_logging
 from src.utils.translate_utils import translate_texts
@@ -47,7 +47,7 @@ def translate_meta_infos(batch_size: int = 10, host: str = ""):
                 translate_video(video)
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] translated")
             except Exception as e:
-                VideoCrud.update_status(video.id, VideoStatus.failed, ErrorAt.meta_translate.out(e))
+                VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.meta_translated.out(e))
                 exception_count += 1
                 if exception_count >= 3:
                     raise e

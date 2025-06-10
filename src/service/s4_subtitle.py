@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
-from src.lib.enums import ErrorAt
+from src.lib.enums import VideoStatus
 from src.lib.models import VideoStatus
 from src.lib.schemas import StorePath
 from src.utils.azure_subtitle_utils import generate_subtitle
@@ -29,7 +29,7 @@ def subtitle_video(video):
         logger.info(f"[{video.id} | {video.host} | {video.original_id}] subtitle generated")
         return None
     except Exception as e:
-        reason = VideoCrud.update_status(video.id, VideoStatus.failed, ErrorAt.subtitle.out(e))
+        reason = VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.subtitled.out(e))
         logger.info(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
         traceback.print_exc()
         return e

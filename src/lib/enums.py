@@ -21,17 +21,6 @@ class VideoStatus(StrEnum):
 
     failed = "failed"
 
-
-class ErrorAt(StrEnum):
-    fetch = "fetch"
-    download = "download"
-    subtitle = "subtitle"
-    convert = "convert"
-    meta_translate = "meta_translate"
-    vtt_translate = "vtt_translate"
-    upload = "upload"
-    publish = "publish"
-
     def out(self, e: Exception | str = None) -> str:
         n = DB_ERROR_LOG_LENGTH - len(self.value) - 3
         return f"[{self.value}] " + str(e)[:n]

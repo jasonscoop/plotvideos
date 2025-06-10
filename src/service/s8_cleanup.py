@@ -20,6 +20,7 @@ def clean_files(batch_size, host):
         for video in videos:
             path: StorePath = StorePath(video.host, video.original_id)
             shutil.rmtree(str(path.parent), ignore_errors=True)
+            logger.info(f"[{video.id} | {video.host} | {video.original_id}] remove all files")
 
 
 if __name__ == '__main__':

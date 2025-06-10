@@ -8,7 +8,6 @@ from tenacity import stop_after_attempt, retry, wait_fixed
 from src.lib.consts import WEBSITES
 from src.lib.enums import Language
 from src.lib.models import Video
-from src.lib.schemas import StorePath
 
 
 class BunnyStreamClient:
@@ -34,8 +33,8 @@ class BunnyStreamClient:
                 yield chunk
 
     @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
-    def upload_video(self, video: Video, path: StorePath) -> str:
-        video_path = path.parent / video.filename
+    def upload_video(self, video: Video) -> str:
+        video_path = video.path.video
         if not video_path.exists():
             raise FileNotFoundError(f"[{video.id}] Video file not found: {video_path}")
 

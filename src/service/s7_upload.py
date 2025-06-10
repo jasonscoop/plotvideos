@@ -7,7 +7,6 @@ from loguru import logger
 from src.crud.video_crud import VideoCrud
 from src.lib.config import BUNNY_API_KEY, BUNNY_LIBRARY_ID, BUNNY_CDN_DOMAIN
 from src.lib.enums import Language, VideoStatus
-from src.lib.schemas import StorePath
 from src.utils.bunny_utils import BunnyStreamClient
 from src.utils.file_utils import upload_dir_to_s3
 from src.utils.log_utils import init_logging
@@ -25,15 +24,13 @@ def upload_videos(batch_size: int = 10, host: str = ""):
 
         last_id = videos[-1].id
         for video in videos:
-            path = StorePath(video.host, video.original_id)
-
             try:
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] start uploading")
-                guid = bunny_client.upload_video(video, path)
+                guid = bunny_client.upload_video(video)
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded video as {guid}")
 
                 for lang in Language:
-                    vtt_file = path.translated_vtts / f"{lang.short_code}.vtt"
+                    vtt_file = video.path.translated_vtts / f"{lang.short_code}.vtt"
                     if not vtt_file.exists():
                         logger.warning(f"[{video.id} | {video.host} | {video.original_id}] vtt file not found, skipped")
                         continue
@@ -48,7 +45,7 @@ def upload_videos(batch_size: int = 10, host: str = ""):
                     "status": VideoStatus.uploaded,
                     "failed_reason": "",
                 })
-                asyncio.run(upload_dir_to_s3(path.parent, path.prefix))
+                asyncio.run(upload_dir_to_s3(video.path.parent, video.path.prefix))
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded")
             except Exception as e:
                 VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.uploaded.out(e))

@@ -7,8 +7,7 @@ from loguru import logger
 
 from src.crud.video_crud import VideoCrud
 from src.lib.config import SUBTITLE_TOKEN_RATIO_THRESHOLD
-from src.lib.enums import VideoStatus, Language, VideoStatus
-from src.lib.schemas import StorePath
+from src.lib.enums import Language, VideoStatus
 from src.utils.llm_utils import llm_translate_vtt
 from src.utils.log_utils import init_logging
 from src.utils.translate_utils import translate_texts
@@ -26,14 +25,14 @@ def google_translate_vtt(vtt_content, lang) -> str:
     return vtt.content
 
 
-def translate_and_save(lang, vtt_content, path, video):
+def translate_and_save(lang, vtt_content, video):
     translated_vtt = llm_translate_vtt(vtt_content, lang)
     if not is_valid_vtt(translated_vtt):
         logger.warning(
             f"[{video.id} | {video.host} | {video.original_id}] Translated with llm failed, using google translator '{lang.short_code}'")
         translated_vtt = google_translate_vtt(vtt_content, lang)
 
-    translated_file = path.translated_vtts / f"{lang.short_code}.vtt"
+    translated_file = video.path.translated_vtts / f"{lang.short_code}.vtt"
     translated_file.write_text(translated_vtt)
     logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translated '{lang.short_code}'")
 
@@ -63,15 +62,14 @@ def process_subtitled_videos(batch_size: int = 10, host: str = ""):
                 continue
 
             logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translation started")
-            path = StorePath(video.host, video.original_id)
 
             try:
-                vtt_content = path.vtt.read_text()
-                path.translated_vtts.mkdir(exist_ok=True)
+                vtt_content = video.path.vtt.read_text()
+                video.path.translated_vtts.mkdir(exist_ok=True)
 
                 with ThreadPoolExecutor(max_workers=len(Language)) as executor:
                     futures = [
-                        executor.submit(translate_and_save, lang, vtt_content, path, video)
+                        executor.submit(translate_and_save, lang, vtt_content, video)
                         for lang in Language
                     ]
                     for future in futures:

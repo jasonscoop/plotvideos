@@ -6,9 +6,7 @@ from loguru import logger
 from src.crud.video_crud import VideoCrud
 from src.lib.config import MAX_ACCEPT_VIDEO_SIZE, MIN_ACCEPT_DURATION
 from src.lib.consts import AZURE_STT_MAX_DURATION, AZURE_STT_MAX_AUDIO_SIZE
-from src.lib.enums import VideoStatus
 from src.lib.models import VideoStatus
-from src.lib.schemas import StorePath
 from src.utils.azure_stt_utils import get_video_duration, media_to_wav
 from src.utils.download_utils import to_mb
 from src.utils.log_utils import init_logging
@@ -21,8 +19,7 @@ def convert_video(video):
         logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
         return
 
-    path = StorePath(video.host, video.original_id)
-    video_path = path.parent / video.filename
+    video_path = video.path.video
     if not video_path.exists():
         reason = VideoCrud.update_status(video.id, VideoStatus.failed,
                                          VideoStatus.converted.out(f"Video file {video_path} not found."))
@@ -45,8 +42,8 @@ def convert_video(video):
         logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
         return
 
-    media_to_wav(video_path, path.audio)
-    audio_size = path.audio.stat().st_size
+    media_to_wav(video_path, video.path.audio)
+    audio_size = video.path.audio.stat().st_size
     if audio_size > AZURE_STT_MAX_AUDIO_SIZE:
         reason = VideoCrud.update_status(video.id, VideoStatus.failed,
                                          VideoStatus.converted.out(f"Audio large then {to_mb(AZURE_STT_MAX_DURATION)}"))

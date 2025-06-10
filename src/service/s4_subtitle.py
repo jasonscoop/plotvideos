@@ -5,9 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
-from src.lib.enums import VideoStatus
 from src.lib.models import VideoStatus
-from src.lib.schemas import StorePath
 from src.utils.azure_subtitle_utils import generate_subtitle
 from src.utils.log_utils import init_logging
 from src.utils.string_utils import get_tokens
@@ -15,8 +13,7 @@ from src.utils.string_utils import get_tokens
 
 def subtitle_video(video):
     try:
-        path = StorePath(video.host, video.original_id)
-        subtitle_content = generate_subtitle(video, path)
+        subtitle_content = generate_subtitle(video)
         tokens = get_tokens(subtitle_content)
         VideoCrud.update({
             "id": video.id,

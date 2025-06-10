@@ -4,6 +4,7 @@ from sqlalchemy.sql import func
 
 from src.lib.connection import engine
 from src.lib.enums import VideoStatus
+from src.lib.schemas import StorePath
 
 Base = declarative_base()
 
@@ -55,6 +56,10 @@ class Video(Base):
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    @property
+    def path(self) -> StorePath:
+        return StorePath(self.host, self.original_id, self.filename)
 
 
 if __name__ == "__main__":

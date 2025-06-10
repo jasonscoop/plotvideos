@@ -7,7 +7,6 @@ from loguru import logger
 from src.crud.video_crud import VideoCrud
 from src.lib.consts import WEBSITES
 from src.lib.models import VideoStatus
-from src.lib.schemas import StorePath
 from src.utils.download_utils import download_remote_video, SizeLimitExceeded
 from src.utils.log_utils import init_logging
 
@@ -25,10 +24,9 @@ def download_videos(batch_size: int = 10, host: str = ""):
 
         for video in videos:
             logger.info(f"[{video.id} | {video.host} | {video.original_id}] download started")
-            path = StorePath(video.host, video.original_id)
 
             try:
-                video_filename, info = download_remote_video(video.url, path.parent)
+                video_filename, info = download_remote_video(video.url, video.path.parent)
                 VideoCrud.update({
                     "id": video.id,
                     "status": VideoStatus.downloaded,
@@ -37,7 +35,7 @@ def download_videos(batch_size: int = 10, host: str = ""):
                     "tags": info.get("tags", []),
                     "categories": info.get("categories", []),
                     "duration": int(info.get("duration", 0)),
-                    "file_size": path.parent.joinpath(video_filename).stat().st_size,
+                    "file_size": video.path.parent.joinpath(video_filename).stat().st_size,
                     "width": info.get("width", 0),
                     "height": info.get("height", 0),
                     "aspect_ratio": info.get("aspect_ratio", 0.0),

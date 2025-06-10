@@ -1,5 +1,4 @@
 import asyncio
-import shutil
 import sys
 import traceback
 
@@ -12,19 +11,6 @@ from src.lib.schemas import StorePath
 from src.utils.bunny_utils import BunnyStreamClient
 from src.utils.file_utils import upload_dir_to_s3
 from src.utils.log_utils import init_logging
-
-
-def clean_files():
-    last_id = 0
-    while True:
-        videos = VideoCrud.batch_get(last_id, batch_size, [VideoStatus.failed, VideoStatus.uploaded], host)
-        if not videos:
-            break
-
-        last_id = videos[-1].id
-        for video in videos:
-            path: StorePath = StorePath(video.host, video.original_id)
-            shutil.rmtree(str(path.parent), ignore_errors=True)
 
 
 def upload_videos(batch_size: int = 10, host: str = ""):
@@ -78,5 +64,3 @@ if __name__ == '__main__':
     host = sys.argv[2] if len(sys.argv) > 2 else ""
     upload_videos(batch_size, host)
     logger.info("All uploaded")
-    clean_files()
-    logger.info("All files cleaned")

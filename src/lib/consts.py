@@ -29,6 +29,21 @@ FASTTEXT_LANG_ALIAS = {
     "xmf": "zh",  # 🛑 Mistaken as Chinese – normalize
 }
 
+NO_SPACE_LOCALES = {
+    "zh-CN",  # Chinese (Simplified) - Mainland China
+    "zh-TW",  # Chinese (Traditional) - Taiwan
+    "zh-HK",  # Chinese (Traditional) - Hong Kong
+    "ja-JP",  # Japanese
+    "ko-KR",  # Korean (semi-space-using, context-dependent)
+    "th-TH",  # Thai
+    "lo-LA",  # Lao
+    "km-KH",  # Khmer (Cambodian)
+    "my-MM",  # Burmese (Myanmar)
+    "dz-BT",  # Dzongkha (Bhutan)
+    "bo-CN",  # Tibetan
+    "mn-MN"  # Mongolian (Traditional script - no spaces)
+}
+
 WEBSITES = {
     "www.pornhub.com": {
         "short_name": "ph",

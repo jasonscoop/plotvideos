@@ -5,6 +5,7 @@ from typing import List
 from loguru import logger
 from sqlalchemy.cyextension.collections import OrderedSet
 
+from src.lib.consts import NO_SPACE_LOCALES
 from src.lib.enums import Language, SubtitleType
 from src.lib.models import Video
 from src.lib.schemas import StorePath
@@ -64,6 +65,12 @@ def azure_stt_results_to_subtitle(azure_results, type) -> (str, str):
     return header + "\n".join(final_items) + "\n", "\n\n".join(subtitle_contents)
 
 
+def join_words(words: List[str], locale: str) -> str:
+    if locale in NO_SPACE_LOCALES:
+        return "".join(words)
+    return " ".join(words)
+
+
 def azure_fast_transcription_to_subtitle(azure_results, type) -> (str, str):
     formatter = vtt_formatter if type == SubtitleType.vtt else srt_formatter
 
@@ -84,7 +91,7 @@ def azure_fast_transcription_to_subtitle(azure_results, type) -> (str, str):
                     idx=i,
                     start_time=start_offset,
                     end_time=word["offsetMilliseconds"] + word["durationMilliseconds"],
-                    sub_text=' '.join(current_words).strip(),
+                    sub_text=join_words(current_words, phrase["locale"]),
                 ))
                 current_words = []
                 reset = True
@@ -95,7 +102,7 @@ def azure_fast_transcription_to_subtitle(azure_results, type) -> (str, str):
                     idx=i,
                     start_time=start_offset,
                     end_time=word["offsetMilliseconds"] + word["durationMilliseconds"],
-                    sub_text=' '.join(current_words).strip(),
+                    sub_text=join_words(current_words, phrase["locale"]),
                 ))
                 current_words = []
                 reset = True
@@ -110,7 +117,7 @@ def azure_fast_transcription_to_subtitle(azure_results, type) -> (str, str):
                 idx=i,
                 start_time=start_offset,
                 end_time=word["offsetMilliseconds"] + word["durationMilliseconds"],
-                sub_text=' '.join(current_words).strip(),
+                sub_text=join_words(current_words, phrase["locale"]),
             ))
 
     header = "WEBVTT\n\n" if type == SubtitleType.vtt else ""

@@ -162,7 +162,7 @@ def generate_subtitle(video: Video, path: StorePath) -> (str, int):
     logger.info(
         f"[{video.id} | {video.host} | {video.original_id}] detected: {detected_codes}, using: {final_lang_codes}")
 
-    azure_results = transcribe_audio(path.wav, final_lang_codes)
+    azure_results = transcribe_audio(path.audio, final_lang_codes)
     path.azure_results.write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))
 
     vtt_content, subtitle_content = azure_fast_transcription_to_subtitle(azure_results, SubtitleType.vtt)

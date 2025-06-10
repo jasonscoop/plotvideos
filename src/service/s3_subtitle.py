@@ -38,8 +38,8 @@ def subtitle_video(video):
         logger.error(reason)
         return None
 
-    media_to_wav(video_path, path.wav)
-    wav_size = path.wav.stat().st_size
+    media_to_wav(video_path, path.audio)
+    wav_size = path.audio.stat().st_size
     if wav_size > AZURE_STT_MAX_AUDIO_SIZE:
         reason = f"[{video.id} | {video.host} | {video.original_id}] wav too large '{wav_size}'"
         VideoCrud.update_status(video.id, VideoStatus.skipped_due_to_size, reason)
@@ -47,7 +47,7 @@ def subtitle_video(video):
         return None
 
     logger.info(
-        f"[{video.id} | {video.host} | {video.original_id}] converted to wav, {to_mb(path.wav.stat().st_size)} MB")
+        f"[{video.id} | {video.host} | {video.original_id}] converted to wav, {to_mb(path.audio.stat().st_size)} MB")
 
     try:
         subtitle_content = generate_subtitle(video, path)

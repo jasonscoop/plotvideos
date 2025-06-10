@@ -12,4 +12,4 @@ class StorePath:
         self.vtt: Path = self.parent / "subtitle.vtt"
         self.translated_vtts: Path = self.parent / "subtitles"
         self.azure_results: Path = self.parent / "azure-results.json"
-        self.wav: Path = self.parent / "audio.wav"
+        self.audio: Path = self.parent / "audio.mp3"

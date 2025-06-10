@@ -34,6 +34,20 @@ def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000):
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
 
+def media_to_mp3(video_path: Path, mp3_path: Path, bitrate="192k"):
+    command = [
+        "ffmpeg",
+        "-i", str(video_path),
+        "-vn",  # disable video
+        "-ac", "2",  # stereo
+        "-ab", bitrate,  # audio bitrate
+        "-ar", "44100",  # sample rate (optional, common for MP3)
+        "-y",  # overwrite output
+        str(mp3_path)
+    ]
+    subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+
+
 def get_azure_results(audio_path: Path, duration: float, final_lang_codes: List[str]):
     assert Path(audio_path).exists(), f"Audio file [{audio_path}] not found"
 

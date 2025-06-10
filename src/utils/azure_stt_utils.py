@@ -6,6 +6,7 @@ from typing import List
 
 import azure.cognitiveservices.speech as speechsdk
 from loguru import logger
+from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.config import AZURE_SPEECH_REGION, AZURE_SPEECH_KEY
 
@@ -21,6 +22,7 @@ def get_video_duration(video_path: Path) -> int:
     return round(float(result.stdout.strip()))
 
 
+@retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
 def media_to_wav(video_path: Path, wav_path: Path, target_sample_rate=16000):
     command = [
         "ffmpeg",

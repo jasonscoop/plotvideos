@@ -1,3 +1,4 @@
+import asyncio
 import sys
 import traceback
 from concurrent.futures import ProcessPoolExecutor
@@ -5,9 +6,11 @@ from concurrent.futures import ProcessPoolExecutor
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
+from src.lib.config import MAX_ACCEPT_VIDEO_SIZE
 from src.lib.consts import WEBSITES
 from src.lib.models import VideoStatus
-from src.utils.download_utils import download_remote_video, SizeLimitExceeded
+from src.utils.download_utils import download_remote_video, SizeLimitExceeded, to_mb
+from src.utils.file_utils import rm_video
 from src.utils.log_utils import init_logging
 
 
@@ -27,6 +30,7 @@ def download_videos(batch_size: int = 10, host: str = ""):
 
             try:
                 video_filename, info = download_remote_video(video.url, video.path.parent)
+                filesize = video.path.parent.joinpath(video_filename).stat().st_size
                 VideoCrud.update({
                     "id": video.id,
                     "status": VideoStatus.downloaded,
@@ -35,17 +39,26 @@ def download_videos(batch_size: int = 10, host: str = ""):
                     "tags": info.get("tags", []),
                     "categories": info.get("categories", []),
                     "duration": int(info.get("duration", 0)),
-                    "file_size": video.path.parent.joinpath(video_filename).stat().st_size,
+                    "file_size": filesize,
                     "width": info.get("width", 0),
                     "height": info.get("height", 0),
                     "aspect_ratio": info.get("aspect_ratio", 0.0),
                 })
-                logger.info(f"[{video.id} | {video.host} | {video.original_id}]  Downloaded")
+
+                if video.file_size > MAX_ACCEPT_VIDEO_SIZE:
+                    reason = VideoCrud.update_status(video.id, VideoStatus.failed,
+                                                     VideoStatus.converted.log(
+                                                         f"Video large than {to_mb(MAX_ACCEPT_VIDEO_SIZE)}MB."))
+                    logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
+                else:
+                    logger.info(f"[{video.id} | {video.host} | {video.original_id}]  Downloaded")
             except SizeLimitExceeded as e:
-                VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.downloaded.out(e))
+                VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.downloaded.log(e))
+                asyncio.run(rm_video(video))
                 logger.warning(str(e))
             except Exception as e:
-                VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.downloaded.out(e))
+                VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.downloaded.log(e))
+                asyncio.run(rm_video(video))
                 exception_count += 1
                 if exception_count >= 3:
                     raise e

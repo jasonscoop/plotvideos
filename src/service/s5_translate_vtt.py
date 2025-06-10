@@ -1,3 +1,4 @@
+import asyncio
 import sys
 import traceback
 from concurrent.futures import ThreadPoolExecutor
@@ -8,6 +9,7 @@ from loguru import logger
 from src.crud.video_crud import VideoCrud
 from src.lib.config import SUBTITLE_TOKEN_RATIO_THRESHOLD
 from src.lib.enums import Language, VideoStatus
+from src.utils.file_utils import rm_video
 from src.utils.llm_utils import llm_translate_vtt
 from src.utils.log_utils import init_logging
 from src.utils.translate_utils import translate_texts
@@ -51,14 +53,16 @@ def process_subtitled_videos(batch_size: int = 10, host: str = ""):
         for video in videos:
             if len(video.subtitle_content.strip()) == 0:
                 reason = VideoCrud.update_status(video.id, VideoStatus.failed,
-                                                 VideoStatus.subtitled.out("Subtitle content is empty"))
+                                                 VideoStatus.subtitled.log("Subtitle content is empty"))
                 logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
+                asyncio.run(rm_video(video))
                 continue
 
             if video.subtitle_duration_ratio < SUBTITLE_TOKEN_RATIO_THRESHOLD:
                 reason = VideoCrud.update_status(video.id, VideoStatus.failed,
-                                                 reason=VideoStatus.subtitled.out("Subtitle content is too short"))
+                                                 reason=VideoStatus.subtitled.log("Subtitle content is too short"))
                 logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
+                asyncio.run(rm_video(video))
                 continue
 
             logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translation started")
@@ -78,12 +82,13 @@ def process_subtitled_videos(batch_size: int = 10, host: str = ""):
                 VideoCrud.update_status(video.id, VideoStatus.vtt_translated)
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] all vtt translated")
             except Exception as e:
-                reason = VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.vtt_translated.out(e))
+                reason = VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.vtt_translated.log(e))
                 logger.error(f"[{video.id} | {video.original_id}] {reason}")
                 exception_count += 1
                 if exception_count >= 3:
                     raise e
                 traceback.print_exc()
+                asyncio.run(rm_video(video))
 
 
 if __name__ == '__main__':

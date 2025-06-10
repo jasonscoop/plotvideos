@@ -8,7 +8,7 @@ from src.crud.video_crud import VideoCrud
 from src.lib.config import BUNNY_API_KEY, BUNNY_LIBRARY_ID, BUNNY_CDN_DOMAIN
 from src.lib.enums import Language, VideoStatus
 from src.utils.bunny_utils import BunnyStreamClient
-from src.utils.file_utils import upload_dir_to_s3
+from src.utils.file_utils import upload_dir_to_s3, rm_video
 from src.utils.log_utils import init_logging
 
 
@@ -48,11 +48,12 @@ def upload_videos(batch_size: int = 10, host: str = ""):
                 asyncio.run(upload_dir_to_s3(video.path.parent, video.path.prefix))
                 logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded")
             except Exception as e:
-                VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.uploaded.out(e))
+                VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.uploaded.log(e))
                 exception_count += 1
                 if exception_count >= 3:
                     raise e
                 traceback.print_exc()
+                asyncio.run(rm_video(video))
 
 
 if __name__ == '__main__':

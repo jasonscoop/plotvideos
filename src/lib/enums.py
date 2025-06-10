@@ -21,7 +21,7 @@ class VideoStatus(StrEnum):
 
     failed = "failed"
 
-    def out(self, e: Exception | str = None) -> str:
+    def log(self, e: Exception | str = None) -> str:
         n = DB_ERROR_LOG_LENGTH - len(self.value) - 3
         return f"[{self.value}] " + str(e)[:n]
 

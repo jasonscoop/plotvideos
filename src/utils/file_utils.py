@@ -1,10 +1,12 @@
 import json
+import shutil
 from pathlib import Path
 from typing import Union
 
 import boto3
 
 from src.lib.config import S3_BUCKET_NAME, S3_SECRET_KEY, S3_REGION, S3_ACCESS_KEY
+from src.lib.models import Video
 
 s3_client = boto3.client(
     "s3",
@@ -30,3 +32,7 @@ def save_json(path: Union[str, Path], json_data: dict):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(json_data, indent=2, ensure_ascii=False))
+
+
+async def rm_video(video: Video):
+    shutil.rmtree(str(video.path.parent), ignore_errors=True)

@@ -48,6 +48,7 @@ def translate_meta_infos(batch_size: int = 10, host: str = ""):
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.vtt_translated, host)
         if not videos:
             time.sleep(5 * 60)
+            logger.info("Sleeping for 5 minutes")
             continue
 
         last_id = videos[-1].id

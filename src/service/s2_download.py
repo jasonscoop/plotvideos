@@ -23,6 +23,7 @@ def download_videos(batch_size: int = 10, host: str = ""):
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.fetched, host)
         if not videos:
             time.sleep(1 * 60 * 60)
+            logger.info("Sleeping for 1 hour")
             continue
 
         last_id = videos[-1].id

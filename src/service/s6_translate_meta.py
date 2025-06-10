@@ -4,6 +4,7 @@ import traceback
 from collections import defaultdict
 
 from loguru import logger
+from sqlalchemy.cyextension.collections import OrderedSet
 
 from src.crud.video_crud import VideoCrud
 from src.lib.enums import Language, VideoStatus
@@ -17,12 +18,12 @@ def translate_video(video: Video):
     title_translations = defaultdict()
     tag_translations = defaultdict()
     category_translations = defaultdict()
-    
-    if len(video.categories) == 0:
-        video.categories.append(video.keyword)
+
+    categories = OrderedSet(video.categories)
+    categories.add(video.keyword)
 
     for lang in Language:
-        translated = translate_texts([video.title] + video.tags + video.categories, lang)
+        translated = translate_texts([video.title] + video.tags + list(categories), lang)
 
         title_translations[lang.short_code] = translated[0]
         tag_translations[lang.short_code] = translated[1:len(video.tags) + 1]

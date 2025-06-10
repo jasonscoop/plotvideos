@@ -17,6 +17,9 @@ def translate_video(video: Video):
     title_translations = defaultdict()
     tag_translations = defaultdict()
     category_translations = defaultdict()
+    
+    if len(video.categories) == 0:
+        video.categories.append(video.keyword)
 
     for lang in Language:
         translated = translate_texts([video.title] + video.tags + video.categories, lang)

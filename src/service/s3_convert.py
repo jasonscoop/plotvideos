@@ -57,6 +57,7 @@ def convert_video(video):
         "id": video.id,
         "duration": duration,
         "status": VideoStatus.converted,
+        "failed_reason": "",
     })
     logger.info(f"[{video.id} | {video.host} | {video.original_id}] converted to audio")
 
@@ -90,4 +91,4 @@ if __name__ == '__main__':
     host = sys.argv[2] if len(sys.argv) > 2 else ""
 
     convert_videos(batch_size, host)
-    logger.info("All subtitles generated")
+    logger.info("All video converted.")

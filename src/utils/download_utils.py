@@ -11,7 +11,7 @@ class SizeLimitExceeded(Exception):
 
 
 def to_mb(byte_size: int) -> float:
-    return round(int(byte_size) / 1024 / 1024, 1)
+    return round(int(byte_size) / 1024 / 1024)
 
 
 @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)

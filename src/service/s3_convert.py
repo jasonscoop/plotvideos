@@ -15,7 +15,8 @@ from src.utils.log_utils import init_logging
 def convert_video(video):
     if video.file_size > MAX_ACCEPT_VIDEO_SIZE:
         reason = VideoCrud.update_status(video.id, VideoStatus.failed,
-                                         VideoStatus.converted.out(f"Video large than {to_mb(MAX_ACCEPT_VIDEO_SIZE)}."))
+                                         VideoStatus.converted.out(
+                                             f"Video large than {to_mb(MAX_ACCEPT_VIDEO_SIZE)}MB."))
         logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
         return
 
@@ -32,13 +33,14 @@ def convert_video(video):
 
     if duration > AZURE_STT_MAX_DURATION:
         reason = VideoCrud.update_status(video.id, VideoStatus.failed,
-                                         VideoStatus.converted.out(f"Duration is longer than {AZURE_STT_MAX_DURATION}"))
+                                         VideoStatus.converted.out(
+                                             f"Duration is longer than {AZURE_STT_MAX_DURATION}s"))
         logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
         return
 
     if duration < MIN_ACCEPT_DURATION:
         reason = VideoCrud.update_status(video.id, VideoStatus.failed,
-                                         VideoStatus.converted.out(f"Duration is shorter than {MIN_ACCEPT_DURATION}"))
+                                         VideoStatus.converted.out(f"Duration is shorter than {MIN_ACCEPT_DURATION}s"))
         logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
         return
 
@@ -46,7 +48,8 @@ def convert_video(video):
     audio_size = video.path.audio.stat().st_size
     if audio_size > AZURE_STT_MAX_AUDIO_SIZE:
         reason = VideoCrud.update_status(video.id, VideoStatus.failed,
-                                         VideoStatus.converted.out(f"Audio large then {to_mb(AZURE_STT_MAX_DURATION)}"))
+                                         VideoStatus.converted.out(
+                                             f"Audio large than {to_mb(AZURE_STT_MAX_DURATION)}MB"))
         logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
         return
 

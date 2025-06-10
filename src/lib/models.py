@@ -31,7 +31,7 @@ class Video(Base):
     filename = Column(String(100), nullable=False, default="")
     keyword = Column(String(50), nullable=False)
 
-    status = Column(Enum(VideoStatus, native_enum=False), default=VideoStatus.fetched, nullable=False)
+    status = Column(Enum(VideoStatus), default=VideoStatus.fetched, nullable=False)
     failed_reason = Column(String(1000), nullable=False, default="")
 
     tags = Column(JSON, nullable=False, default=[])

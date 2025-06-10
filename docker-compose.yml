@@ -28,9 +28,6 @@ services:
 
   s4_subtitle:
     build: .
-    cpus: 2.5
-    mem_limit: 4g                # Max RAM
-    memswap_limit: 10g            # RAM + swap total
     env_file:
       - .env
     volumes:

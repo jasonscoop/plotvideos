@@ -1,6 +1,7 @@
 services:
   s1_fetch:
     build: .
+    container_name: s1_fetch
     env_file:
       - .env
     volumes:
@@ -9,6 +10,7 @@ services:
 
   s2_download:
     build: .
+    container_name: s2_download
     env_file:
       - .env
     volumes:
@@ -17,6 +19,7 @@ services:
 
   s3_convert:
     build: .
+    container_name: s3_convert
     cpus: 2
     mem_limit: 4g
     memswap_limit: 10g
@@ -28,6 +31,7 @@ services:
 
   s4_subtitle:
     build: .
+    container_name: s4_subtitle
     env_file:
       - .env
     volumes:
@@ -36,6 +40,7 @@ services:
 
   s5_translate_vtt:
     build: .
+    container_name: s5_translate_vtt
     env_file:
       - .env
     volumes:
@@ -44,6 +49,7 @@ services:
 
   s6_translate_meta:
     build: .
+    container_name: s6_translate_meta
     env_file:
       - .env
     volumes:
@@ -52,6 +58,7 @@ services:
 
   s7_upload:
     build: .
+    container_name: s7_upload
     env_file:
       - .env
     volumes:
@@ -60,6 +67,7 @@ services:
 
   s8_cleanup:
     build: .
+    container_name: s8_cleanup
     env_file:
       - .env
     volumes:

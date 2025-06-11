@@ -3,7 +3,7 @@ import re
 
 import requests
 from loguru import logger
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, Timeout
 from tenacity import stop_after_attempt, retry, wait_random, wait_fixed
 
 from src.lib.config import LLM_BASE_URL, LLM_MODEL, LLM_API_VERSION, LLM_API_KEY
@@ -35,10 +35,10 @@ Input:
         "temperature": 0.5
     }
 
-    response = requests.post(url, headers=headers, json=data)
+    response = requests.post(url, headers=headers, json=data, timeout=30)
     try:
         response.raise_for_status()
-    except HTTPError as e:
+    except (HTTPError, Timeout) as e:
         # due to the prompt triggering Azure OpenAI's content management policy.
         if e.response.status_code == 400 and e.response.reason == "Bad Request":
             return ""

@@ -2,8 +2,9 @@ import json
 import re
 
 import requests
+from loguru import logger
 from requests.exceptions import HTTPError
-from tenacity import stop_after_attempt, retry, wait_fixed
+from tenacity import stop_after_attempt, retry, wait_random, wait_fixed
 
 from src.lib.config import LLM_BASE_URL, LLM_MODEL, LLM_API_VERSION, LLM_API_KEY
 from src.lib.enums import Language
@@ -12,7 +13,7 @@ url = f"{LLM_BASE_URL}/openai/deployments/{LLM_MODEL}/chat/completions?api-versi
 headers = {"Content-Type": "application/json", "api-key": LLM_API_KEY}
 
 
-@retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
+@retry(wait=wait_random(3, 7), stop=stop_after_attempt(3), reraise=True)
 def llm_translate_vtt(vtt_content: str, language: Language) -> str:
     data = {
         "messages": [
@@ -38,9 +39,14 @@ Input:
     try:
         response.raise_for_status()
     except HTTPError as e:
-        # due to the prompt triggering Azure OpenAI's content management policy. 
+        # due to the prompt triggering Azure OpenAI's content management policy.
         if e.response.status_code == 400 and e.response.reason == "Bad Request":
             return ""
+
+    response_message = response.json()["choices"][0]["message"]
+    if 'content' not in response_message:
+        logger.error(f"LLM translation failed, {str(response_message)}")
+        return ""
 
     return response.json()["choices"][0]["message"]["content"]
 

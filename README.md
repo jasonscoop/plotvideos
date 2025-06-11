@@ -24,10 +24,14 @@ Automated pipeline to:
 
 # Errors
 
-## Could not insert term into the database.
+## Add public access
 
 ```sql
-SELECT MAX(term_id) + 1 AS next_auto_increment
-FROM wp_terms;
-ALTER TABLE wp_terms AUTO_INCREMENT = 4819;
+CREATE POLICY "Allow public access"
+    ON "public"."videos"
+    FOR SELECT
+    TO anon
+    USING (
+        (status = 'published'::videostatus)
+        );
 ```

@@ -68,8 +68,8 @@ def convert_videos(batch_size: int = 10, host: str = ""):
     while True:
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.downloaded, host)
         if not videos:
+            logger.info("All converted, sleeping for 10 minutes")
             time.sleep(10 * 60)
-            logger.info("Sleeping for 10 minutes")
             continue
 
         last_id = videos[-1].id

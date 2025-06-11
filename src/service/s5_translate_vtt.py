@@ -47,8 +47,8 @@ def process_subtitled_videos(batch_size: int = 10, host: str = ""):
     while True:
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.subtitled, host)
         if not videos:
+            logger.info("All vtt translated, sleeping for 5 minutes")
             time.sleep(5 * 60)
-            logger.info("Sleeping for 5 minutes")
             continue
 
         last_id = videos[-1].id

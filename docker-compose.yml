@@ -15,7 +15,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s2_download.py ${BATCH_SIZE:-10} ${HOST:-""}
+    command: python src/service/s2_download.py ${BATCH_SIZE:-2} ${HOST:-""}
 
   s3_convert:
     build: .

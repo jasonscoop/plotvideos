@@ -74,7 +74,7 @@ def download_websites(batch_size: int = 10, host: str = ""):
         download_videos(batch_size, host)
         return
 
-    with ProcessPoolExecutor(max_workers=len(WEBSITES)) as executor:
+    with ProcessPoolExecutor(max_workers=batch_size) as executor:
         futures = []
         for h in WEBSITES.keys():
             futures.append(executor.submit(download_videos, batch_size, h))
@@ -86,7 +86,7 @@ def download_websites(batch_size: int = 10, host: str = ""):
 if __name__ == "__main__":
     init_logging("download")
 
-    batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 10
+    batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 2
     host = sys.argv[2] if len(sys.argv) > 2 else ""
 
     download_websites(batch_size, host)

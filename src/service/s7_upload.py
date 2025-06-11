@@ -1,20 +1,53 @@
 import asyncio
 import sys
 import time
-import traceback
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
 from src.lib.config import BUNNY_API_KEY, BUNNY_LIBRARY_ID, BUNNY_CDN_DOMAIN
 from src.lib.enums import Language, VideoStatus
+from src.lib.models import Video
 from src.utils.bunny_utils import BunnyStreamClient
 from src.utils.file_utils import upload_dir_to_s3, rm_video
 from src.utils.log_utils import init_logging
 
+bunny_client = BunnyStreamClient(BUNNY_API_KEY, BUNNY_LIBRARY_ID)
+
+
+def upload_video(video: Video):
+    try:
+        logger.info(f"[{video.id} | {video.host} | {video.original_id}] start uploading")
+        guid = bunny_client.upload_video(video)
+        logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded video as {guid}")
+
+        for lang in Language:
+            vtt_file = video.path.translated_vtts / f"{lang.short_code}.vtt"
+            if not vtt_file.exists():
+                logger.warning(f"[{video.id} | {video.host} | {video.original_id}] vtt file not found, skipped")
+                continue
+            bunny_client.upload_subtitle(guid, vtt_file, lang)
+            logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded '{lang.short_code}'")
+
+        VideoCrud.update({
+            "id": video.id,
+            "bunny_video_id": guid,
+            "bunny_library_id": BUNNY_LIBRARY_ID,
+            "bunny_cdn_domain": BUNNY_CDN_DOMAIN,
+            "status": VideoStatus.uploaded,
+            "failed_reason": "",
+        })
+        asyncio.run(upload_dir_to_s3(video.path.parent, video.path.prefix))
+        logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded")
+    except Exception as e:
+        VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.uploaded.log(e))
+        raise e
+    finally:
+        asyncio.run(rm_video(video))
+
 
 def upload_videos(batch_size: int = 10, host: str = ""):
-    bunny_client = BunnyStreamClient(BUNNY_API_KEY, BUNNY_LIBRARY_ID)
     last_id = 0
     exception_count = 0
 
@@ -26,37 +59,16 @@ def upload_videos(batch_size: int = 10, host: str = ""):
             continue
 
         last_id = videos[-1].id
-        for video in videos:
-            try:
-                logger.info(f"[{video.id} | {video.host} | {video.original_id}] start uploading")
-                guid = bunny_client.upload_video(video)
-                logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded video as {guid}")
 
-                for lang in Language:
-                    vtt_file = video.path.translated_vtts / f"{lang.short_code}.vtt"
-                    if not vtt_file.exists():
-                        logger.warning(f"[{video.id} | {video.host} | {video.original_id}] vtt file not found, skipped")
-                        continue
-                    bunny_client.upload_subtitle(guid, vtt_file, lang)
-                    logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded '{lang.short_code}'")
+        with ThreadPoolExecutor(max_workers=len(videos)) as executor:
+            futures = [executor.submit(upload_video, video) for video in videos]
 
-                VideoCrud.update({
-                    "id": video.id,
-                    "bunny_video_id": guid,
-                    "bunny_library_id": BUNNY_LIBRARY_ID,
-                    "bunny_cdn_domain": BUNNY_CDN_DOMAIN,
-                    "status": VideoStatus.uploaded,
-                    "failed_reason": "",
-                })
-                asyncio.run(upload_dir_to_s3(video.path.parent, video.path.prefix))
-                logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded")
-            except Exception as e:
-                VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.uploaded.log(e))
+        for future in as_completed(futures):
+            error = future.result()
+            if error:
                 exception_count += 1
                 if exception_count >= 3:
-                    raise e
-                traceback.print_exc()
-                asyncio.run(rm_video(video))
+                    raise error
 
 
 if __name__ == '__main__':

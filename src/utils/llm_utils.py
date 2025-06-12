@@ -35,7 +35,7 @@ Input:
         "temperature": 0.5
     }
 
-    response = requests.post(url, headers=headers, json=data, timeout=30)
+    response = requests.post(url, headers=headers, json=data, timeout=60)
     try:
         response.raise_for_status()
     except (HTTPError, Timeout) as e:

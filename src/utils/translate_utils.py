@@ -23,6 +23,6 @@ def translate_texts(texts: List[str], lang: Language) -> List[str]:
         "Content-Type": "application/json"
     }
 
-    response = requests.post(url, json=payload, headers=headers)
+    response = requests.post(url, json=payload, headers=headers, timeout=60)
     response.raise_for_status()
     return response.json()["data"][0]

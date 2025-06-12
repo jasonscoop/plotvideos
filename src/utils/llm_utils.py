@@ -36,22 +36,23 @@ Input:
         "temperature": 0.5
     }
 
-    response = requests.post(url, headers=headers, json=data, timeout=60)
     try:
+        response = requests.post(url, headers=headers, json=data, timeout=60)
         response.raise_for_status()
+        response_message = response.json()["choices"][0]["message"]
+        if 'content' not in response_message:
+            logger.error(f"LLM translation failed, {str(response_message)}")
+            return ""
+
+        return response.json()["choices"][0]["message"]["content"]
     except HTTPError as e:
         # due to the prompt triggering Azure OpenAI's content management policy.
         if e.response.status_code == 400 and e.response.reason == "Bad Request":
             return ""
+        else:
+            raise
     except (Timeout, ReadTimeoutError, ReadTimeout) as e:
         return ""
-
-    response_message = response.json()["choices"][0]["message"]
-    if 'content' not in response_message:
-        logger.error(f"LLM translation failed, {str(response_message)}")
-        return ""
-
-    return response.json()["choices"][0]["message"]["content"]
 
 
 @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)

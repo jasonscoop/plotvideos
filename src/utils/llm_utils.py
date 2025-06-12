@@ -3,7 +3,7 @@ import re
 
 import requests
 from loguru import logger
-from requests.exceptions import HTTPError, Timeout
+from requests.exceptions import HTTPError, Timeout, ReadTimeout
 from tenacity import stop_after_attempt, retry, wait_random, wait_fixed
 from urllib3.exceptions import ReadTimeoutError
 
@@ -43,7 +43,7 @@ Input:
         # due to the prompt triggering Azure OpenAI's content management policy.
         if e.response.status_code == 400 and e.response.reason == "Bad Request":
             return ""
-    except (Timeout, ReadTimeoutError) as e:
+    except (Timeout, ReadTimeoutError, ReadTimeout) as e:
         return ""
 
     response_message = response.json()["choices"][0]["message"]

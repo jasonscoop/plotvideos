@@ -4,14 +4,8 @@ import webvtt
 def is_valid_vtt(vtt_content: str) -> bool:
     try:
         vtt = webvtt.from_string(vtt_content)
-    except Exception as e:
-        print(f"Failed to parse VTT file: {e}")
-        return False
-
-    prev_start_ms = -1
-
-    for i, caption in enumerate(vtt):
-        try:
+        prev_start_ms = -1
+        for i, caption in enumerate(vtt.captions):
             start_ms = time_to_ms(caption.start)
             end_ms = time_to_ms(caption.end)
 
@@ -19,12 +13,11 @@ def is_valid_vtt(vtt_content: str) -> bool:
                 return False
             if start_ms <= prev_start_ms:
                 return False
-
             prev_start_ms = start_ms
-        except Exception as e:
-            return False
 
-    return True
+        return True
+    except Exception as e:
+        return False
 
 
 def time_to_ms(ts):

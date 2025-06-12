@@ -5,6 +5,7 @@ import requests
 from loguru import logger
 from requests.exceptions import HTTPError, Timeout
 from tenacity import stop_after_attempt, retry, wait_random, wait_fixed
+from urllib3.exceptions import ReadTimeoutError
 
 from src.lib.config import LLM_BASE_URL, LLM_MODEL, LLM_API_VERSION, LLM_API_KEY
 from src.lib.enums import Language
@@ -38,10 +39,12 @@ Input:
     response = requests.post(url, headers=headers, json=data, timeout=60)
     try:
         response.raise_for_status()
-    except (HTTPError, Timeout) as e:
+    except HTTPError as e:
         # due to the prompt triggering Azure OpenAI's content management policy.
         if e.response.status_code == 400 and e.response.reason == "Bad Request":
             return ""
+    except (Timeout, ReadTimeoutError) as e:
+        return ""
 
     response_message = response.json()["choices"][0]["message"]
     if 'content' not in response_message:

@@ -83,5 +83,5 @@ if __name__ == "__main__":
     host = sys.argv[2] if len(sys.argv) > 2 else ""
 
     logger.info(f"[{host if host else 'All'}] download started")
-    download_websites(batch_size, host)
+    download_videos(batch_size, host)
     logger.info("All downloaded")

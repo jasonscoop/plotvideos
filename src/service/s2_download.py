@@ -2,14 +2,13 @@ import asyncio
 import sys
 import time
 import traceback
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from loguru import logger
 from yt_dlp.utils import DownloadError, RegexNotFoundError
 
 from src.crud.video_crud import VideoCrud
 from src.lib.config import MAX_ACCEPT_VIDEO_SIZE
-from src.lib.consts import WEBSITES
 from src.lib.models import VideoStatus, Video
 from src.utils.download_utils import download_remote_video, SizeLimitExceeded, to_mb
 from src.utils.file_utils import rm_video
@@ -53,6 +52,10 @@ def download_video(video: Video):
 
 
 def download_videos(batch_size: int = 10, host: str = ""):
+    if host:
+        download_videos(batch_size, host)
+        return
+
     last_id = 0
     exception_count = 0
     while True:
@@ -73,27 +76,12 @@ def download_videos(batch_size: int = 10, host: str = ""):
                         raise error
 
 
-def download_websites(batch_size: int = 3, host: str = ""):
-    logger.info(f"[{host if host else 'All'}] download started")
-
-    if host:
-        download_videos(batch_size, host)
-        return
-
-    with ProcessPoolExecutor(max_workers=batch_size) as executor:
-        futures = []
-        for h in WEBSITES.keys():
-            futures.append(executor.submit(download_videos, batch_size, h))
-
-        for future in futures:
-            future.result()
-
-
 if __name__ == "__main__":
     init_logging("download")
 
     batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 3
     host = sys.argv[2] if len(sys.argv) > 2 else ""
 
+    logger.info(f"[{host if host else 'All'}] download started")
     download_websites(batch_size, host)
     logger.info("All downloaded")

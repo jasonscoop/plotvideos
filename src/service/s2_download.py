@@ -34,7 +34,7 @@ def download_video(video: Video):
         })
         if video.file_size > MAX_ACCEPT_VIDEO_SIZE:
             reason = VideoCrud.update_status(video.id, VideoStatus.failed,
-                                             VideoStatus.converted.log(
+                                             VideoStatus.downloaded.log(
                                                  f"Video large than {to_mb(MAX_ACCEPT_VIDEO_SIZE)}MB."))
             logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
         else:

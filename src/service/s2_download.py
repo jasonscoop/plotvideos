@@ -15,7 +15,7 @@ from src.utils.file_utils import rm_video
 from src.utils.log_utils import init_logging
 
 
-async def download_video(video: Video):
+def download_video(video: Video):
     try:
         video_filename, info = download_remote_video(video.url, video.path.parent)
         filesize = video.path.parent.joinpath(video_filename).stat().st_size

@@ -5,6 +5,7 @@ import traceback
 from concurrent.futures import ProcessPoolExecutor
 
 from loguru import logger
+from yt_dlp.utils import DownloadError, RegexNotFoundError
 
 from src.crud.video_crud import VideoCrud
 from src.lib.config import MAX_ACCEPT_VIDEO_SIZE
@@ -54,7 +55,7 @@ def download_videos(batch_size: int = 10, host: str = ""):
                     logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
                 else:
                     logger.info(f"[{video.id} | {video.host} | {video.original_id}]  Downloaded")
-            except SizeLimitExceeded as e:
+            except (SizeLimitExceeded, DownloadError, RegexNotFoundError) as e:
                 VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.downloaded.log(e))
                 asyncio.run(rm_video(video))
                 logger.warning(str(e))

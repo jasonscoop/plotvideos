@@ -15,7 +15,7 @@ from src.utils.file_utils import rm_video
 from src.utils.log_utils import init_logging
 
 
-def download_video(video: Video):
+async def download_video(video: Video):
     try:
         video_filename, info = download_remote_video(video.url, video.path.parent)
         filesize = video.path.parent.joinpath(video_filename).stat().st_size
@@ -69,11 +69,13 @@ def download_videos(batch_size: int = 10, host: str = ""):
         with ThreadPoolExecutor(max_workers=batch_size) as executor:
             futures = [executor.submit(download_video, video) for video in videos]
             for future in as_completed(futures):
-                error = future.result()
-                if error:
+                try:
+                    future.result()  # This will raise any exceptions that occurred
+                except Exception as e:
                     exception_count += 1
+                    logger.error(f"Error in download: {str(e)}")
                     if exception_count >= 3:
-                        raise error
+                        raise e
 
 
 if __name__ == "__main__":

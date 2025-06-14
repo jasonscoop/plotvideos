@@ -62,13 +62,14 @@ def upload_videos(batch_size: int = 10, host: str = ""):
 
         with ThreadPoolExecutor(max_workers=len(videos)) as executor:
             futures = [executor.submit(upload_video, video) for video in videos]
-
-        for future in as_completed(futures):
-            error = future.result()
-            if error:
-                exception_count += 1
-                if exception_count >= 3:
-                    raise error
+            for future in as_completed(futures):
+                try:
+                    future.result()  # This will raise any exceptions that occurred
+                except Exception as e:
+                    exception_count += 1
+                    logger.error(f"Error in upload: {str(e)}")
+                    if exception_count >= 3:
+                        raise e
 
 
 if __name__ == '__main__':

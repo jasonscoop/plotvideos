@@ -11,7 +11,6 @@ from src.crud.video_crud import VideoCrud
 from src.lib.config import MAX_ACCEPT_VIDEO_SIZE
 from src.lib.consts import WEBSITES
 from src.lib.models import VideoStatus, Video
-from src.service.s3_convert import convert_video
 from src.utils.download_utils import download_remote_video, SizeLimitExceeded, to_mb
 from src.utils.file_utils import rm_video
 from src.utils.log_utils import init_logging
@@ -65,7 +64,7 @@ def download_videos(batch_size: int = 10, host: str = ""):
 
         last_id = videos[-1].id
         with ThreadPoolExecutor(max_workers=batch_size) as executor:
-            futures = [executor.submit(convert_video, video) for video in videos]
+            futures = [executor.submit(download_video, video) for video in videos]
             for future in as_completed(futures):
                 error = future.result()
                 if error:

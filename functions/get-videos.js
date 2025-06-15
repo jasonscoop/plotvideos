@@ -75,18 +75,18 @@ Deno.serve(async (req) => {
       // Get translations for all terms in a single query
       const { data: translations, error: translationError } = await supabase
         .from('terms')
-        .select('*')
-        .in('term', Array.from(allTerms));
+        .select('id, text, lang, translation')
+        .in('text', Array.from(allTerms));
 
       if (translationError) throw translationError;
 
       // Create a map for faster lookups
       const translationMap = new Map();
       translations.forEach(t => {
-        if (!translationMap.has(t.term)) {
-          translationMap.set(t.term, []);
+        if (!translationMap.has(t.text)) {
+          translationMap.set(t.text, []);
         }
-        translationMap.get(t.term).push(t);
+        translationMap.get(t.text).push(t);
       });
 
       // Process videos to add translations

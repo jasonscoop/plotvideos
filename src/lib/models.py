@@ -63,14 +63,14 @@ class Video(Base):
 class Term(Base):
     __tablename__ = 'terms'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    term = Column(String(255), nullable=False)
+    text = Column(String(255), nullable=False)
     lang = Column(String(2), nullable=False)
     translation = Column(Text, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
     __table_args__ = (
-        UniqueConstraint('term', 'lang', name='uix_term_lang'),
+        UniqueConstraint('text', 'lang', name='uix_text_lang'),
     )
 
 

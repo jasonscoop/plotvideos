@@ -40,7 +40,7 @@ def translate_video(video: Video):
 
             # First translation is always the title
             title_translations.append({
-                "term": video.title,
+                "text": video.title,
                 "lang": lang.short_code,
                 "translation": new_translations[0]
             })

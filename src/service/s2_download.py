@@ -23,7 +23,7 @@ def download_video(video: Video):
             "filename": video_filename,
             "title": info.get("title", video.title),
             "tags": info.get("tags", []),
-            "categories": info.get("categories", []) + [video.keyword],
+            "categories": info.get("categories", []),
             "duration": int(info.get("duration", 0)),
             "file_size": filesize,
             "width": info.get("width", 0),

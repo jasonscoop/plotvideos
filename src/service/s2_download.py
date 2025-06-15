@@ -1,5 +1,4 @@
 import asyncio
-import sys
 import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -12,7 +11,6 @@ from src.lib.config import MAX_ACCEPT_VIDEO_SIZE
 from src.lib.models import VideoStatus, Video
 from src.utils.download_utils import download_remote_video, SizeLimitExceeded, to_mb
 from src.utils.file_utils import rm_video
-from src.utils.log_utils import init_logging
 
 
 def download_video(video: Video):
@@ -76,14 +74,3 @@ def download_videos(batch_size: int = 10, host: str = ""):
                     logger.error(f"Error in download: {str(e)}")
                     if exception_count >= 3:
                         raise e
-
-
-if __name__ == "__main__":
-    init_logging("download")
-
-    batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 3
-    host = sys.argv[2] if len(sys.argv) > 2 else ""
-
-    logger.info(f"[{host if host else 'All'}] download started")
-    download_videos(batch_size, host)
-    logger.info("All downloaded")

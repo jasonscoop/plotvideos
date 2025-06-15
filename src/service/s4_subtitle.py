@@ -1,5 +1,4 @@
 import asyncio
-import sys
 import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -10,7 +9,6 @@ from src.crud.video_crud import VideoCrud
 from src.lib.models import VideoStatus
 from src.utils.azure_subtitle_utils import generate_subtitle
 from src.utils.file_utils import rm_video
-from src.utils.log_utils import init_logging
 from src.utils.string_utils import get_tokens
 
 
@@ -56,13 +54,3 @@ def subtitle_videos(batch_size: int = 10, host: str = ""):
                     exception_count += 1
                     if exception_count >= 3:
                         raise error
-
-
-if __name__ == '__main__':
-    init_logging("subtitle")
-
-    batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 10
-    host = sys.argv[2] if len(sys.argv) > 2 else ""
-
-    subtitle_videos(batch_size, host)
-    logger.info("All subtitles generated")

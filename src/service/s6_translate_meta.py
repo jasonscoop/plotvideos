@@ -1,5 +1,4 @@
 import asyncio
-import sys
 import time
 import traceback
 from collections import defaultdict
@@ -11,7 +10,6 @@ from src.crud.video_crud import VideoCrud
 from src.lib.enums import Language, VideoStatus
 from src.lib.models import Video
 from src.utils.file_utils import rm_video
-from src.utils.log_utils import init_logging
 from src.utils.translate_utils import translate_texts
 
 
@@ -63,13 +61,3 @@ def translate_meta_infos(batch_size: int = 10, host: str = ""):
                     raise e
                 traceback.print_exc()
                 asyncio.run(rm_video(video))
-
-
-if __name__ == "__main__":
-    init_logging("meta_translate")
-
-    batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 10
-    host = sys.argv[2] if len(sys.argv) > 2 else ""
-
-    translate_meta_infos(batch_size, host)
-    logger.info("All metas translated")

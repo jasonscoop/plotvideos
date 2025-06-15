@@ -1,5 +1,4 @@
 import asyncio
-import sys
 import time
 import traceback
 
@@ -12,7 +11,6 @@ from src.lib.models import VideoStatus
 from src.utils.azure_stt_utils import get_video_duration, media_to_wav
 from src.utils.download_utils import to_mb
 from src.utils.file_utils import rm_video
-from src.utils.log_utils import init_logging
 
 
 def convert_video(video):
@@ -83,13 +81,3 @@ def convert_videos(batch_size: int = 10, host: str = ""):
                     raise
                 traceback.print_exc()
                 asyncio.run(rm_video(video))
-
-
-if __name__ == '__main__':
-    init_logging("convert")
-
-    batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 10
-    host = sys.argv[2] if len(sys.argv) > 2 else ""
-
-    convert_videos(batch_size, host)
-    logger.info("All video converted.")

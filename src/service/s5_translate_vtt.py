@@ -1,5 +1,4 @@
 import asyncio
-import sys
 import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor
@@ -12,7 +11,6 @@ from src.lib.config import SUBTITLE_TOKEN_RATIO_THRESHOLD
 from src.lib.enums import Language, VideoStatus
 from src.utils.file_utils import rm_video
 from src.utils.llm_utils import llm_translate_vtt
-from src.utils.log_utils import init_logging
 from src.utils.translate_utils import translate_texts
 from src.utils.vtt_utils import is_valid_vtt
 
@@ -92,13 +90,3 @@ def process_subtitled_videos(batch_size: int = 10, host: str = ""):
                     raise e
                 traceback.print_exc()
                 asyncio.run(rm_video(video))
-
-
-if __name__ == '__main__':
-    init_logging("translate_vtt")
-
-    batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 10
-    host = sys.argv[2] if len(sys.argv) > 2 else ""
-
-    process_subtitled_videos(batch_size, host)
-    logger.info("All vtts translated")

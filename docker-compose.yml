@@ -6,7 +6,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s1_fetch.py ${BATCH_SIZE:-10} ${MAX_PAGES:-3}
+    command: python src/main.py --runner=s1_fetch
 
   s2_download:
     build: .
@@ -15,19 +15,16 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s2_download.py ${BATCH_SIZE:-3} ${HOST:-""}
+    command: python src/main.py --runner=s2_download
 
   s3_convert:
     build: .
     container_name: s3_convert
-    cpus: 2
-    mem_limit: 4g
-    memswap_limit: 10g
     env_file:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s3_convert.py ${BATCH_SIZE:-10} ${HOST:-""}
+    command: python src/main.py --runner=s3_convert
 
   s4_subtitle:
     build: .
@@ -36,7 +33,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s4_subtitle.py ${BATCH_SIZE:-10} ${HOST:-""}
+    command: python src/main.py --runner=s4_subtitle
 
   s5_translate_vtt:
     build: .
@@ -45,7 +42,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s5_translate_vtt.py ${BATCH_SIZE:-10} ${HOST:-""}
+    command: python src/main.py --runner=s5_translate_vtt
 
   s6_translate_meta:
     build: .
@@ -54,7 +51,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s6_translate_meta.py ${BATCH_SIZE:-10} ${HOST:-""}
+    command: python src/main.py --runner=s6_translate_meta
 
   s7_upload:
     build: .
@@ -63,7 +60,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s7_upload.py ${BATCH_SIZE:-10} ${HOST:-""}
+    command: python src/main.py --runner=s7_upload
 
   s8_cleanup:
     build: .
@@ -72,4 +69,4 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/service/s8_cleanup.py ${BATCH_SIZE:-10} ${HOST:-""}
+    command: python src/main.py --runner=s8_cleanup

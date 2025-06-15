@@ -1,12 +1,10 @@
 import asyncio
-import sys
 
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
 from src.lib.enums import VideoStatus
 from src.utils.file_utils import rm_video
-from src.utils.log_utils import init_logging
 
 
 def clean_files(batch_size, host):
@@ -20,11 +18,3 @@ def clean_files(batch_size, host):
         for video in videos:
             asyncio.run(rm_video(video))
             logger.info(f"[{video.id} | {video.host} | {video.original_id}] remove all files")
-
-
-if __name__ == '__main__':
-    init_logging("cleanup")
-    batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 10
-    host = sys.argv[2] if len(sys.argv) > 2 else ""
-    clean_files(batch_size, host)
-    logger.info("All failed cleaned")

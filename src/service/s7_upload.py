@@ -1,5 +1,4 @@
 import asyncio
-import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -11,7 +10,6 @@ from src.lib.enums import Language, VideoStatus
 from src.lib.models import Video
 from src.utils.bunny_utils import BunnyStreamClient
 from src.utils.file_utils import upload_dir_to_s3, rm_video
-from src.utils.log_utils import init_logging
 
 bunny_client = BunnyStreamClient(BUNNY_API_KEY, BUNNY_LIBRARY_ID)
 
@@ -70,11 +68,3 @@ def upload_videos(batch_size: int = 10, host: str = ""):
                     logger.error(f"Error in upload: {str(e)}")
                     if exception_count >= 3:
                         raise e
-
-
-if __name__ == '__main__':
-    init_logging("upload")
-    batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 10
-    host = sys.argv[2] if len(sys.argv) > 2 else ""
-    upload_videos(batch_size, host)
-    logger.info("All uploaded")

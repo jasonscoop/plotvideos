@@ -1,4 +1,3 @@
-import sys
 import time
 import traceback
 from typing import List
@@ -13,7 +12,6 @@ from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL
 from src.lib.consts import WEBSITES
 from src.lib.enums import VideoStatus
 from src.lib.models import Video, Keyword
-from src.utils.log_utils import init_logging
 
 
 def fetch_video_urls(query: str, page: int):
@@ -84,11 +82,3 @@ def fetch_and_save_videos(max_pages, batch_size):
                         if exception_count >= 3:
                             raise e
                         traceback.print_exc()
-
-
-if __name__ == "__main__":
-    init_logging("fetch")
-    batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 10
-    max_pages = int(sys.argv[2]) if len(sys.argv) > 2 else 3
-    fetch_and_save_videos(max_pages=max_pages, batch_size=batch_size)
-    logger.info("All fetched")

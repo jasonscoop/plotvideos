@@ -48,12 +48,12 @@ const processVideoUrls = (video) => {
 const collectTerms = (videos) => {
   const allTerms = new Set();
   videos.forEach(video => {
-    if (video.tags) video.tags.forEach(tag => allTerms.add(tag));
+    if (video.tags) video.tags.forEach(tag => allTerms.add(tag.toLowerCase()));
     if (video.keyword) {
       if (!video.categories) video.categories = [];
-      video.categories.push(video.keyword);
+      video.categories.push(video.keyword.toLowerCase());
     }
-    if (video.categories) video.categories.forEach(cat => allTerms.add(cat));
+    if (video.categories) video.categories.forEach(cat => allTerms.add(cat.toLowerCase()));
   });
   return allTerms;
 };
@@ -61,10 +61,11 @@ const collectTerms = (videos) => {
 const createTranslationMap = (translations) => {
   const translationMap = new Map();
   translations.forEach(t => {
-    if (!translationMap.has(t.text)) {
-      translationMap.set(t.text, []);
+    const lowerText = t.text.toLowerCase();
+    if (!translationMap.has(lowerText)) {
+      translationMap.set(lowerText, []);
     }
-    translationMap.get(t.text).push(t);
+    translationMap.get(lowerText).push(t);
   });
   return translationMap;
 };
@@ -75,7 +76,7 @@ const processTranslations = (video, translationMap) => {
 
   if (video.tags) {
     video.tags.forEach(tag => {
-      const tagTrans = translationMap.get(tag) || [];
+      const tagTrans = translationMap.get(tag.toLowerCase()) || [];
       tagTrans.forEach(t => {
         if (!tagTranslations[t.lang]) {
           tagTranslations[t.lang] = [];
@@ -87,7 +88,7 @@ const processTranslations = (video, translationMap) => {
 
   if (video.categories) {
     video.categories.forEach(cat => {
-      const catTrans = translationMap.get(cat) || [];
+      const catTrans = translationMap.get(cat.toLowerCase()) || [];
       catTrans.forEach(t => {
         if (!categoryTranslations[t.lang]) {
           categoryTranslations[t.lang] = [];

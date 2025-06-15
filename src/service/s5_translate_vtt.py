@@ -5,20 +5,26 @@ from concurrent.futures import ThreadPoolExecutor
 
 import webvtt
 from loguru import logger
+from requests import HTTPError
 
 from src.crud.video_crud import VideoCrud
 from src.lib.config import SUBTITLE_TOKEN_RATIO_THRESHOLD
 from src.lib.enums import Language, VideoStatus
 from src.utils.file_utils import rm_video
 from src.utils.llm_utils import llm_translate_vtt
-from src.utils.translate_utils import translate_texts
+from src.utils.translate_utils import translate_texts2, translate_texts1
 from src.utils.vtt_utils import is_valid_vtt
 
 
-def google_translate_vtt(vtt_content, lang) -> str:
+def google_translate_vtt(vtt_content, lang, video) -> str:
     vtt = webvtt.from_string(vtt_content)
     texts = [c.text for c in vtt]
-    translated_texts = translate_texts(texts, lang)
+    try:
+        translated_texts = translate_texts1(texts, lang)
+        logger.error(f"[{video.id} | {video.host} | {video.original_id}] translated with translator1")
+    except HTTPError as e:
+        translated_texts = translate_texts2(texts, lang)
+        logger.error(f"[{video.id} | {video.host} | {video.original_id}] translated with translator2 (fallback)")
 
     for i, t in enumerate(translated_texts):
         vtt.captions[i].text = t
@@ -31,7 +37,7 @@ def translate_and_save(lang, vtt_content, video):
     if not is_valid_vtt(translated_vtt):
         logger.warning(
             f"[{video.id} | {video.host} | {video.original_id}] Translated with llm failed, using google translator '{lang.short_code}'")
-        translated_vtt = google_translate_vtt(vtt_content, lang)
+        translated_vtt = google_translate_vtt(vtt_content, lang, video)
 
     translated_file = video.path.translated_vtts / f"{lang.short_code}.vtt"
     translated_file.write_text(translated_vtt)

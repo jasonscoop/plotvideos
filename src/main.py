@@ -1,10 +1,11 @@
 import argparse
+
 from loguru import logger
 
 from src.service.s1_fetch import fetch_and_save_videos
 from src.service.s2_download import download_videos
 from src.service.s3_convert import convert_videos
-from src.service.s4_subtitle import generate_subtitle
+from src.service.s4_subtitle import subtitle_videos
 from src.service.s5_translate_vtt import process_subtitled_videos
 from src.service.s6_translate_meta import translate_meta_infos
 from src.service.s7_upload import upload_videos
@@ -16,7 +17,7 @@ RUNNERS = {
     "s1_fetch": (fetch_and_save_videos, {"max_pages": True, "batch_size": True, "host": False}),
     "s2_download": (download_videos, {"batch_size": True, "host": True}),
     "s3_convert": (convert_videos, {"batch_size": True, "host": True}),
-    "s4_subtitle": (generate_subtitle, {"batch_size": True, "host": True}),
+    "s4_subtitle": (subtitle_videos, {"batch_size": True, "host": True}),
     "s5_translate_vtt": (process_subtitled_videos, {"batch_size": True, "host": True}),
     "s6_translate_meta": (translate_meta_infos, {"batch_size": True, "host": True}),
     "s7_upload": (upload_videos, {"batch_size": True, "host": True}),
@@ -40,7 +41,7 @@ if __name__ == '__main__':
 
     runner_func, required_args = RUNNERS[args.runner]
     kwargs = {}
-    
+
     if required_args.get("batch_size"):
         kwargs["batch_size"] = args.batch_size
     if required_args.get("host"):

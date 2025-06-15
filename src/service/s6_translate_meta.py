@@ -4,13 +4,15 @@ import traceback
 from collections import defaultdict
 
 from loguru import logger
+from requests.exceptions import HTTPError
 from sqlalchemy.cyextension.collections import OrderedSet
 
+from src.crud.term_crud import TermCrud
 from src.crud.video_crud import VideoCrud
 from src.lib.enums import Language, VideoStatus
 from src.lib.models import Video
 from src.utils.file_utils import rm_video
-from src.utils.translate_utils import translate_texts
+from src.utils.translate_utils import translate_texts2, translate_texts1
 
 
 def translate_video(video: Video):
@@ -22,11 +24,35 @@ def translate_video(video: Video):
     categories.add(video.keyword)
 
     for lang in Language:
-        translated = translate_texts([video.title] + video.tags + list(categories), lang)
+        # Handle tags and categories with terms database
+        all_terms = video.tags + list(categories)
+        existing_translations = TermCrud.batch_get_translations(all_terms, lang.short_code)
 
-        title_translations[lang.short_code] = translated[0]
-        tag_translations[lang.short_code] = translated[1:len(video.tags) + 1]
-        category_translations[lang.short_code] = translated[len(video.tags) + 1:]
+        # Find terms that need translation
+        terms_to_translate = [term for term in all_terms if term not in existing_translations]
+
+        # Combine title and new terms for a single translation request
+        texts_to_translate = [video.title] + terms_to_translate
+        if texts_to_translate:
+            try:
+                new_translations = translate_texts1(texts_to_translate, lang)
+                logger.error(f"[{video.id} | {video.host} | {video.original_id}] translated with translator1")
+            except HTTPError as e:
+                new_translations = translate_texts2(texts_to_translate, lang)
+                logger.error(
+                    f"[{video.id} | {video.host} | {video.original_id}] translated with translator1 (fallback)")
+
+            # First translation is always the title
+            title_translations[lang.short_code] = new_translations[0]
+
+            # Save new term translations to terms database
+            for term, translation in zip(terms_to_translate, new_translations[1:]):
+                TermCrud.create(term, lang.short_code, translation)
+                existing_translations[term] = translation
+
+        # Split translations back into tags and categories
+        tag_translations[lang.short_code] = [existing_translations[tag] for tag in video.tags]
+        category_translations[lang.short_code] = [existing_translations[cat] for cat in categories]
 
     VideoCrud.update({
         "id": video.id,

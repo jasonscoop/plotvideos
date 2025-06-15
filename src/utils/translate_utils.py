@@ -1,20 +1,10 @@
 from typing import List
 
 import requests
-from loguru import logger
-from requests.exceptions import HTTPError
 from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.config import RAPIDAPI_AI_TRANSLATE_KEY_URL, RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL
 from src.lib.enums import Language
-
-
-def translate_texts(texts: List[str], lang: Language) -> List[str]:
-    try:
-        return translate_texts1(texts, lang)
-    except HTTPError as e:
-        logger.error("Can't translate texts with translator1: ".format(e))
-        return translate_texts2(texts, lang)
 
 
 @retry(wait=wait_fixed(2), stop=stop_after_attempt(3), reraise=True)

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Enum, Boolean, DateTime, JSON, Text, Float
+from sqlalchemy import Column, Integer, String, Enum, Boolean, DateTime, JSON, Text, Float, UniqueConstraint
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql import func
 
@@ -60,6 +60,20 @@ class Video(Base):
     @property
     def path(self) -> StorePath:
         return StorePath(self.host, self.original_id, self.filename)
+
+
+class Terms(Base):
+    __tablename__ = 'terms'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    term = Column(String(255), nullable=False)
+    lang = Column(String(2), nullable=False)
+    translation = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('term', 'lang', name='uix_term_lang'),
+    )
 
 
 if __name__ == "__main__":

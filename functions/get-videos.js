@@ -1,34 +1,123 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
+// Helper functions
+const createErrorResponse = (message, status = 400) => {
+  return new Response(JSON.stringify({ message }), {
+    headers: { 'Content-Type': 'application/json' },
+    status
+  });
+};
+
+const createSuccessResponse = (data) => {
+  return new Response(JSON.stringify(data), {
+    headers: { 'Content-Type': 'application/json' },
+    status: 200
+  });
+};
+
+const getIframeUrl = (libraryId, videoId) => {
+  const params = {
+    autoplay: 'false',
+    loop: 'false', 
+    muted: 'false',
+    preload: 'true',
+    responsive: 'true',
+    captions: 'true'
+  };
+  const queryString = new URLSearchParams(params).toString();
+  return `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?${queryString}`;
+};
+
+const getThumbnailUrl = (cdnDomain, videoId) => {
+  return `https://${cdnDomain}/${videoId}/thumbnail.jpg`;
+};
+
+const processVideoUrls = (video) => {
+  const { bunny_library_id, bunny_video_id, bunny_cdn_domain, ...videoWithoutSensitive } = video;
+  
+  return {
+    ...videoWithoutSensitive,
+    tag_translations: {},
+    category_translations: {},
+    iframe_url: getIframeUrl(bunny_library_id, bunny_video_id),
+    thumbnail_url: getThumbnailUrl(bunny_cdn_domain, bunny_video_id)
+  };
+};
+
+const collectTerms = (videos) => {
+  const allTerms = new Set();
+  videos.forEach(video => {
+    if (video.tags) video.tags.forEach(tag => allTerms.add(tag));
+    if (video.keyword) {
+      if (!video.categories) video.categories = [];
+      video.categories.push(video.keyword);
+    }
+    if (video.categories) video.categories.forEach(cat => allTerms.add(cat));
+  });
+  return allTerms;
+};
+
+const createTranslationMap = (translations) => {
+  const translationMap = new Map();
+  translations.forEach(t => {
+    if (!translationMap.has(t.text)) {
+      translationMap.set(t.text, []);
+    }
+    translationMap.get(t.text).push(t);
+  });
+  return translationMap;
+};
+
+const processTranslations = (video, translationMap) => {
+  const tagTranslations = {};
+  const categoryTranslations = {};
+
+  if (video.tags) {
+    video.tags.forEach(tag => {
+      const tagTrans = translationMap.get(tag) || [];
+      tagTrans.forEach(t => {
+        if (!tagTranslations[t.lang]) {
+          tagTranslations[t.lang] = [];
+        }
+        tagTranslations[t.lang].push(t.translation);
+      });
+    });
+  }
+
+  if (video.categories) {
+    video.categories.forEach(cat => {
+      const catTrans = translationMap.get(cat) || [];
+      catTrans.forEach(t => {
+        if (!categoryTranslations[t.lang]) {
+          categoryTranslations[t.lang] = [];
+        }
+        categoryTranslations[t.lang].push(t.translation);
+      });
+    });
+  }
+
+  return { tagTranslations, categoryTranslations };
+};
+
 Deno.serve(async (req) => {
   try {
     const url = new URL(req.url);
-    // 🗝 Get API key from query or headers
     const apiKey = url.searchParams.get('x-api-key') || req.headers.get('x-api-key');
     if (!apiKey) {
-      return new Response(JSON.stringify({
-        message: 'Missing API key'
-      }), {
-        status: 401
-      });
+      return createErrorResponse('Missing API key', 401);
     }
 
-    // 🔢 Parse pagination parameters
     const perPage = 5;
     const lastId = Number(url.searchParams.get('last_id') ?? 0);
     const host = url.searchParams.get('host');
     if (!host) {
-      return new Response(JSON.stringify({
-        message: 'Missing host'
-      }), {
-        status: 400
-      });
+      return createErrorResponse('Missing host', 400);
     }
 
     const supabase = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '');
 
-    // ✅ Validate API key
+    // Validate API key
     const { data: apiKeyRow, error: apiKeyError } = await supabase
       .from('api_keys')
       .select('*')
@@ -38,25 +127,17 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (apiKeyError || !apiKeyRow) {
-      return new Response(JSON.stringify({
-        message: 'Invalid or expired API key'
-      }), {
-        status: 403
-      });
+      return createErrorResponse('Invalid or expired API key', 403);
     }
 
     if (!apiKeyRow.hosts.includes(host)) {
-      return new Response(JSON.stringify({
-        message: 'Host not allowed'
-      }), {
-        status: 403
-      });
+      return createErrorResponse('Host not allowed', 403);
     }
 
-    // 📺 Query videos
+    // Get videos
     const { data: videos, error: videoError } = await supabase
       .from('videos')
-      .select('*')
+      .select("id, host, original_id, title, url, filename, keyword, title_translations, file_size, duration, author_name, author_url, width, height, aspect_ratio, tags, categories, bunny_library_id, bunny_video_id, bunny_cdn_domain")
       .gt('id', lastId)
       .eq('status', 'published')
       .order('id', { ascending: true })
@@ -64,89 +145,37 @@ Deno.serve(async (req) => {
 
     if (videoError) throw videoError;
 
-    // Get all unique tags and categories from videos
-    const allTerms = new Set();
-    videos.forEach(video => {
-      video.tags.forEach(tag => allTerms.add(tag));
-      video.categories.forEach(cat => allTerms.add(cat));
-    });
+    // Process videos with URLs
+    const processedVideos = videos.map(processVideoUrls);
 
-    if (allTerms.size > 0) {
-      // Get translations for all terms in a single query
-      const { data: translations, error: translationError } = await supabase
-        .from('terms')
-        .select('id, text, lang, translation')
-        .in('text', Array.from(allTerms));
-
-      if (translationError) throw translationError;
-
-      // Create a map for faster lookups
-      const translationMap = new Map();
-      translations.forEach(t => {
-        if (!translationMap.has(t.text)) {
-          translationMap.set(t.text, []);
-        }
-        translationMap.get(t.text).push(t);
-      });
-
-      // Process videos to add translations
-      const processedVideos = videos.map(video => {
-        // Initialize translation dictionaries
-        const tagTranslations = {};
-        const categoryTranslations = {};
-
-        // Process tag translations
-        video.tags.forEach(tag => {
-          const tagTrans = translationMap.get(tag) || [];
-          tagTrans.forEach(t => {
-            if (!tagTranslations[t.lang]) {
-              tagTranslations[t.lang] = [];
-            }
-            tagTranslations[t.lang].push(t.translation);
-          });
-        });
-
-        // Process category translations
-        video.categories.forEach(cat => {
-          const catTrans = translationMap.get(cat) || [];
-          catTrans.forEach(t => {
-            if (!categoryTranslations[t.lang]) {
-              categoryTranslations[t.lang] = [];
-            }
-            categoryTranslations[t.lang].push(t.translation);
-          });
-        });
-
-        return {
-          ...video,
-          tag_translations: tagTranslations,
-          category_translations: categoryTranslations
-        };
-      });
-
-      return new Response(JSON.stringify(processedVideos), {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        status: 200
-      });
+    // Get all terms for translation
+    const allTerms = collectTerms(videos);
+    if (allTerms.size === 0) {
+      return createSuccessResponse(processedVideos);
     }
 
-    // If no terms found, return videos without translations
-    return new Response(JSON.stringify(videos), {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      status: 200
+    // Get translations
+    const { data: translations, error: translationError } = await supabase
+      .from('terms')
+      .select('id, text, lang, translation')
+      .in('text', Array.from(allTerms));
+
+    if (translationError) throw translationError;
+
+    // Process translations
+    const translationMap = createTranslationMap(translations);
+    const videosWithTranslations = processedVideos.map((video, index) => {
+      const { tagTranslations, categoryTranslations } = processTranslations(videos[index], translationMap);
+      return {
+        ...video,
+        tag_translations: tagTranslations,
+        category_translations: categoryTranslations
+      };
     });
+
+    return createSuccessResponse(videosWithTranslations);
   } catch (err) {
-    return new Response(JSON.stringify({
-      message: err?.message ?? err
-    }), {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      status: 500
-    });
+    console.error('Error:', err);
+    return createErrorResponse(err?.message ?? 'Internal server error', 500);
   }
 });

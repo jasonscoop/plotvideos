@@ -1,29 +1,29 @@
-from typing import List, Optional
+from collections import defaultdict
+from typing import List, Dict
 
 from sqlalchemy import select
 
 from src.lib.connection import get_db
-from src.lib.models import Terms
+from src.lib.models import Term
 
 
 class TermCrud:
     @staticmethod
-    def get_translation(term: str, lang: str) -> Optional[str]:
+    def get_translations(terms: List[str]) -> Dict[str, Dict[str, str]]:
         with get_db() as session:
-            stmt = select(Terms).where(Terms.term == term, Terms.lang == lang)
-            result = session.execute(stmt).scalar_one_or_none()
-            return result.translation if result else None
-
-    @staticmethod
-    def batch_get_translations(terms: List[str], lang: str) -> dict[str, str]:
-        with get_db() as session:
-            stmt = select(Terms).where(Terms.term.in_(terms), Terms.lang == lang)
+            stmt = select(Term).where(Term.term.in_(terms))
             results = session.execute(stmt).scalars().all()
-            return {term.term: term.translation for term in results}
+
+            # Group translations by language using defaultdict
+            translations_by_lang = defaultdict(dict)
+            for term in results:
+                translations_by_lang[term.lang][term.term] = term.translation
+
+            return dict(translations_by_lang)
 
     @staticmethod
     def create(term: str, lang: str, translation: str):
         with get_db() as session:
-            term_obj = Terms(term=term, lang=lang, translation=translation)
+            term_obj = Term(term=term, lang=lang, translation=translation)
             session.add(term_obj)
             session.commit()

@@ -43,8 +43,6 @@ class Video(Base):
     duration = Column(Integer, nullable=False, default=0)
 
     title_translations = Column(JSON, nullable=False, default={})
-    tag_translations = Column(JSON, nullable=False, default={})
-    category_translations = Column(JSON, nullable=False, default={})
 
     subtitle_content = Column(Text, nullable=False, default="")
     subtitle_tokens = Column(Integer, nullable=False, default=0)

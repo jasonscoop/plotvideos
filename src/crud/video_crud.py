@@ -9,8 +9,11 @@ from src.lib.models import Video
 
 class VideoCrud:
     @classmethod
-    def batch_get(cls, last_id: int, batch_size: int, status: VideoStatus | List[VideoStatus], host: str = "") -> List[
-        Video]:
+    def batch_get(cls,
+                  last_id: int,
+                  batch_size: int,
+                  status: VideoStatus | List[VideoStatus] | None = None,
+                  host: str = "") -> List[Video]:
         with get_db() as session:
             query = session.query(Video).options(undefer("*"))
 
@@ -19,7 +22,7 @@ class VideoCrud:
             elif isinstance(status, VideoStatus):
                 query = query.filter(Video.status == status, Video.id > last_id)
             else:
-                raise TypeError("Unsupported status type")
+                query = query.filter(Video.id > last_id)
 
             if host:
                 query = query.filter(Video.host == host)

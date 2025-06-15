@@ -91,19 +91,30 @@ Deno.serve(async (req) => {
 
       // Process videos to add translations
       const processedVideos = videos.map(video => {
-        const tagTranslations = [];
-        const categoryTranslations = [];
+        // Initialize translation dictionaries
+        const tagTranslations = {};
+        const categoryTranslations = {};
 
-        // Get translations for tags
+        // Process tag translations
         video.tags.forEach(tag => {
           const tagTrans = translationMap.get(tag) || [];
-          tagTranslations.push(...tagTrans);
+          tagTrans.forEach(t => {
+            if (!tagTranslations[t.lang]) {
+              tagTranslations[t.lang] = [];
+            }
+            tagTranslations[t.lang].push(t.translation);
+          });
         });
 
-        // Get translations for categories
+        // Process category translations
         video.categories.forEach(cat => {
           const catTrans = translationMap.get(cat) || [];
-          categoryTranslations.push(...catTrans);
+          catTrans.forEach(t => {
+            if (!categoryTranslations[t.lang]) {
+              categoryTranslations[t.lang] = [];
+            }
+            categoryTranslations[t.lang].push(t.translation);
+          });
         });
 
         return {

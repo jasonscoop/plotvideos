@@ -24,6 +24,9 @@ class TermCrud:
     @staticmethod
     def create(text: str, lang: str, translation: str):
         with get_db() as session:
+            old = session.query(Term).filter(Term.text == text, Term.lang == lang).first()
+            if old:
+                return
             term_obj = Term(text=text, lang=lang, translation=translation)
             session.add(term_obj)
             session.commit()

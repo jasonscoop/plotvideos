@@ -62,11 +62,11 @@ services:
       - ./works:/workspace/works
     command: python src/main.py --runner=s7_upload
 
-  s8_cleanup:
-    build: .
-    container_name: s8_cleanup
-    env_file:
-      - .env
-    volumes:
-      - ./works:/workspace/works
-    command: python src/main.py --runner=s8_cleanup
+#  s8_cleanup:
+#    build: .
+#    container_name: s8_cleanup
+#    env_file:
+#      - .env
+#    volumes:
+#      - ./works:/workspace/works
+#    command: python src/main.py --runner=s8_cleanup

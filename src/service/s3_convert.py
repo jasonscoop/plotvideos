@@ -68,6 +68,7 @@ def convert_videos(batch_size: int = 10, host: str = ""):
         if not videos:
             logger.info("All converted, sleeping for 10 minutes")
             time.sleep(10 * 60)
+            last_id = 0
             continue
 
         last_id = videos[-1].id

@@ -61,6 +61,7 @@ def download_videos(batch_size: int = 10, host: str = ""):
         if not videos:
             logger.info("All downloaded, sleeping for 1 hour")
             time.sleep(1 * 60 * 60)
+            last_id = 0
             continue
 
         last_id = videos[-1].id

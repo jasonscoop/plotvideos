@@ -1,32 +1,34 @@
 import asyncio
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import List
 
 from loguru import logger
 
+from src.crud.language_crud import LanguageCrud
 from src.crud.video_crud import VideoCrud
 from src.lib.config import BUNNY_API_KEY, BUNNY_LIBRARY_ID, BUNNY_CDN_DOMAIN
-from src.lib.enums import Language, VideoStatus
-from src.lib.models import Video
+from src.lib.enums import VideoStatus
+from src.lib.models import Video, Language
 from src.utils.bunny_utils import BunnyStreamClient
 from src.utils.file_utils import upload_dir_to_s3, rm_video
 
 bunny_client = BunnyStreamClient(BUNNY_API_KEY, BUNNY_LIBRARY_ID)
 
 
-def upload_video(video: Video):
+def upload_video(video: Video, languages: List[Language]):
     try:
         logger.info(f"[{video.id} | {video.host} | {video.original_id}] start uploading")
         guid = bunny_client.upload_video(video)
         logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded video as {guid}")
 
-        for lang in Language:
-            vtt_file = video.path.translated_vtts / f"{lang.short_code}.vtt"
+        for lang in languages:
+            vtt_file = video.path.translated_vtts / f"{lang.code}.vtt"
             if not vtt_file.exists():
                 logger.warning(f"[{video.id} | {video.host} | {video.original_id}] vtt file not found, skipped")
                 continue
             bunny_client.upload_subtitle(guid, vtt_file, lang)
-            logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded '{lang.short_code}'")
+            logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded '{lang.code}'")
 
         VideoCrud.update({
             "id": video.id,
@@ -48,6 +50,7 @@ def upload_video(video: Video):
 def upload_videos(batch_size: int = 10, host: str = ""):
     last_id = 0
     exception_count = 0
+    languages = LanguageCrud.get_all()
 
     while True:
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.meta_translated, host)
@@ -55,12 +58,13 @@ def upload_videos(batch_size: int = 10, host: str = ""):
             logger.info("All uploaded, sleeping for 5 minutes")
             time.sleep(5 * 60)
             last_id = 0
+            languages = LanguageCrud.get_all()
             continue
 
         last_id = videos[-1].id
 
         with ThreadPoolExecutor(max_workers=len(videos)) as executor:
-            futures = [executor.submit(upload_video, video) for video in videos]
+            futures = [executor.submit(upload_video, video, languages) for video in videos]
             for future in as_completed(futures):
                 try:
                     future.result()  # This will raise any exceptions that occurred

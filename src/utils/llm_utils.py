@@ -8,7 +8,7 @@ from tenacity import stop_after_attempt, retry, wait_random, wait_fixed
 from urllib3.exceptions import ReadTimeoutError
 
 from src.lib.config import LLM_BASE_URL, LLM_MODEL, LLM_API_VERSION, LLM_API_KEY
-from src.lib.enums import Language
+from src.lib.models import Language
 
 url = f"{LLM_BASE_URL}/openai/deployments/{LLM_MODEL}/chat/completions?api-version={LLM_API_VERSION}"
 headers = {"Content-Type": "application/json", "api-key": LLM_API_KEY}
@@ -19,7 +19,7 @@ def llm_translate_vtt(vtt_content: str, language: Language) -> str:
     data = {
         "messages": [
             {"role": "system", "content": "You are a subtitle translator."},
-            {"role": "user", "content": f"""Translate the following VTT subtitle content into {language.long_code}, while strictly preserving the original WebVTT format. 
+            {"role": "user", "content": f"""Translate the following VTT subtitle content into {language.locale}, while strictly preserving the original WebVTT format. 
 
 Instructions:
 - Do NOT change the timestamps.
@@ -60,7 +60,7 @@ def translate_video_content(content: dict, language: Language) -> dict:
     data = {
         "messages": [
             {"role": "system", "content": "You are a video content translator."},
-            {"role": "user", "content": f"""Translate the following video content into {language.long_code}. 
+            {"role": "user", "content": f"""Translate the following video content into {language.locale}. 
 
 Input Content:
 Title: {content['title']}

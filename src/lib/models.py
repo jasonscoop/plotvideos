@@ -75,5 +75,18 @@ class Term(Base):
     )
 
 
+class Language(Base):
+    __tablename__ = 'languages'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    code = Column(String(2), nullable=False, unique=True)
+    locale = Column(String(5), nullable=False, unique=True)
+    native_name = Column(String(50), nullable=False)
+    aliases = Column(JSON, nullable=False, default=[])
+    enabled = Column(Boolean, nullable=False, default=True)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)

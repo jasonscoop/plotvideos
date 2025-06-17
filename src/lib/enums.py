@@ -1,5 +1,4 @@
-from enum import StrEnum, Enum
-from typing import List, Optional
+from enum import StrEnum
 
 from src.lib.consts import DB_ERROR_LOG_LENGTH
 
@@ -24,58 +23,3 @@ class VideoStatus(StrEnum):
     def log(self, e: Exception | str = None) -> str:
         n = DB_ERROR_LOG_LENGTH - len(self.value) - 3
         return f"[{self.value}] " + str(e)[:n]
-
-
-class Language(Enum):
-    ENGLISH = ("en", "en-US", "English", ["英文"])
-    CHINESE = ("zh", "zh-CN", "简体中文", ["Chinese", "Simplified Chinese", "中文", "简中", "中字", "国语", "汉语"])
-    HINDI = ("hi", "hi-IN", "हिन्दी", ["Hindi", "Hin"])
-    SPANISH = ("es", "es-ES", "Español", ["Spanish", "ESP", "Castellano"])
-    ARABIC = ("ar", "ar-SA", "العربية", ["Arabic", "Arabi"])
-    FRENCH = ("fr", "fr-FR", "Français", ["French"])
-    BENGALI = ("bn", "bn-BD", "বাংলা", ["Bengali", "Bangla"])
-    PORTUGUESE = ("pt", "pt-PT", "Português", ["Portuguese", "Português Europeu", "Português Brasileiro"])
-    RUSSIAN = ("ru", "ru-RU", "Русский", ["Russian"])
-    URDU = ("ur", "ur-PK", "اردو", ["Urdu"])
-    INDONESIAN = ("id", "id-ID", "Bahasa Indonesia", ["Indonesian", "Bahasa"])
-    GERMAN = ("de", "de-DE", "Deutsch", ["German"])
-    JAPANESE = ("ja", "ja-JP", "日本語", ["Japanese", "日文"])
-    SWAHILI = ("sw", "sw-KE", "Kiswahili", ["Swahili"])
-
-    @property
-    def short_code(self) -> str:
-        # iso639_code
-        return self.value[0]
-
-    @property
-    def long_code(self) -> str:
-        # bcp47_code
-        return self.value[1]
-
-    @property
-    def native_name(self) -> str:
-        return self.value[2]
-
-    @property
-    def aliases(self) -> List[str]:
-        return self.value[3]
-
-    @classmethod
-    def from_short_code(cls, short_code: str) -> Optional["Language"]:
-        for lang in cls:
-            if lang.short_code == short_code.lower():
-                return lang
-
-        return None
-
-    @classmethod
-    def from_long_code(cls, long_code: str) -> Optional["Language"]:
-        for lang in cls:
-            if lang.long_code.lower() == long_code.lower():
-                return lang
-
-        return None
-
-    @classmethod
-    def top4(cls) -> List["Language"]:
-        return [cls.ENGLISH, cls.CHINESE, cls.HINDI, cls.SPANISH]

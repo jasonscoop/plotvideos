@@ -4,7 +4,7 @@ import requests
 from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.config import RAPIDAPI_AI_TRANSLATE_KEY_URL, RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL
-from src.lib.enums import Language
+from src.lib.models import Language
 
 
 @retry(wait=wait_fixed(2), stop=stop_after_attempt(3), reraise=True)
@@ -15,7 +15,7 @@ def translate_texts1(texts: List[str], lang: Language) -> List[str]:
 
     payload = {
         "texts": texts,
-        "tl": lang.short_code,
+        "tl": lang.code,
         "sl": "auto"
     }
     headers = {
@@ -35,7 +35,7 @@ def translate_texts2(texts: List[str], lang: Language) -> List[str]:
     url = "https://google-translate113.p.rapidapi.com/api/v1/translator/json"
     payload = {
         "from": "auto",
-        "to": lang.short_code,
+        "to": lang.code,
         "json": texts
     }
     headers = {

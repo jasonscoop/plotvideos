@@ -6,8 +6,7 @@ import requests
 from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.consts import WEBSITES
-from src.lib.enums import Language
-from src.lib.models import Video
+from src.lib.models import Video, Language
 
 
 class BunnyStreamClient:
@@ -65,10 +64,10 @@ class BunnyStreamClient:
             vtt_path: Path,
             lang: Language,
     ) -> Dict:
-        url = f"{self.base_url}/{self.library_id}/videos/{video_guid}/captions/{lang.short_code}"
+        url = f"{self.base_url}/{self.library_id}/videos/{video_guid}/captions/{lang.code}"
         with open(vtt_path, "rb") as f:
             payload = {
-                "srclang": lang.short_code,
+                "srclang": lang.code,
                 "label": lang.native_name,
                 "captionsFile": base64.b64encode(f.read()).decode("utf-8")
             }

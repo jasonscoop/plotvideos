@@ -6,8 +6,8 @@ from loguru import logger
 from sqlalchemy.cyextension.collections import OrderedSet
 
 from src.lib.consts import NO_SPACE_LOCALES
-from src.lib.enums import Language, SubtitleType
-from src.lib.models import Video
+from src.lib.enums import SubtitleType
+from src.lib.models import Video, Language
 from src.utils.azure_fast_transcription import transcribe_audio
 from src.utils.string_utils import get_lang, split_by_stop_chars, STOP_CHARS
 
@@ -123,18 +123,18 @@ def azure_fast_transcription_to_subtitle(azure_results, type) -> (str, str):
     return header + "\n".join(final_items) + "\n", azure_results["combinedPhrases"][0]["text"]
 
 
-def get_texts_lang_codes(texts: List[str]) -> List[str]:
+def get_texts_lang_codes(texts: List[str], languages: List[Language]) -> List[str]:
     langs = OrderedSet()
     texts = [t.lower() for t in texts]
 
     for text in texts:
-        for l in Language:
+        for l in languages:
             if l.native_name.lower() in text:
-                langs.add(l.short_code)
+                langs.add(l.code)
 
             for alias in l.aliases:
                 if alias.lower() in text:
-                    langs.add(l.short_code)
+                    langs.add(l.code)
 
     for text in texts:
         langs.update(get_lang(text))
@@ -142,22 +142,26 @@ def get_texts_lang_codes(texts: List[str]) -> List[str]:
     return list(langs)
 
 
-def mix_language_codes(short_codes: List[str]) -> List[str]:
+def get_language_by_code(code: str, languages: List[Language]) -> Language | None:
+    return next((lang for lang in languages if lang.code == code), None)
+
+
+def mix_language_codes(short_codes: List[str], languages: List[Language]) -> List[str]:
     valid_languages = []
     for s in short_codes:
-        language = Language.from_short_code(s)
+        language = get_language_by_code(s, languages)
         if language:
             valid_languages.append(language)
 
     langs = OrderedSet(valid_languages)
-    langs.update(Language.top4())
+    langs.update(languages[:4])
 
-    return [l.long_code for l in langs[:4]]
+    return [l.locale for l in langs[:4]]
 
 
-def generate_subtitle(video: Video) -> (str, int):
-    detected_codes = get_texts_lang_codes([video.title] + [video.keyword] + video.tags + video.categories)
-    final_lang_codes = mix_language_codes(detected_codes)
+def generate_subtitle(video: Video, languages: List[Language]) -> (str, int):
+    detected_codes = get_texts_lang_codes([video.title] + [video.keyword] + video.tags + video.categories, languages)
+    final_lang_codes = mix_language_codes(detected_codes, languages)
     logger.info(
         f"[{video.id} | {video.host} | {video.original_id}] detected: {detected_codes}, using: {final_lang_codes}")
 

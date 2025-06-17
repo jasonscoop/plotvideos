@@ -8,8 +8,9 @@ from loguru import logger
 from requests import HTTPError
 
 from src.crud.video_crud import VideoCrud
+from src.crud.language_crud import LanguageCrud
 from src.lib.config import SUBTITLE_TOKEN_RATIO_THRESHOLD
-from src.lib.enums import Language, VideoStatus
+from src.lib.enums import VideoStatus
 from src.utils.file_utils import rm_video
 from src.utils.llm_utils import llm_translate_vtt
 from src.utils.translate_utils import translate_texts2, translate_texts1
@@ -36,17 +37,18 @@ def translate_and_save(lang, vtt_content, video):
     translated_vtt = llm_translate_vtt(vtt_content, lang)
     if not is_valid_vtt(translated_vtt):
         logger.warning(
-            f"[{video.id} | {video.host} | {video.original_id}] Translated with llm failed, using google translator '{lang.short_code}'")
+            f"[{video.id} | {video.host} | {video.original_id}] Translated with llm failed, using google translator '{lang.code}'")
         translated_vtt = google_translate_vtt(vtt_content, lang, video)
 
-    translated_file = video.path.translated_vtts / f"{lang.short_code}.vtt"
+    translated_file = video.path.translated_vtts / f"{lang.code}.vtt"
     translated_file.write_text(translated_vtt)
-    logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translated '{lang.short_code}'")
+    logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translated '{lang.code}'")
 
 
 def process_subtitled_videos(batch_size: int = 10, host: str = ""):
     last_id = 0
     exception_count = 0
+    languages = LanguageCrud.get_all()
 
     while True:
         videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.subtitled, host)
@@ -54,6 +56,7 @@ def process_subtitled_videos(batch_size: int = 10, host: str = ""):
             logger.info("All vtt translated, sleeping for 5 minutes")
             time.sleep(5 * 60)
             last_id = 0
+            languages = LanguageCrud.get_all()
             continue
 
         last_id = videos[-1].id
@@ -79,10 +82,10 @@ def process_subtitled_videos(batch_size: int = 10, host: str = ""):
                 vtt_content = video.path.vtt.read_text()
                 video.path.translated_vtts.mkdir(exist_ok=True)
 
-                with ThreadPoolExecutor(max_workers=len(Language)) as executor:
+                with ThreadPoolExecutor(max_workers=len(languages)) as executor:
                     futures = [
                         executor.submit(translate_and_save, lang, vtt_content, video)
-                        for lang in Language
+                        for lang in languages
                     ]
                     for future in futures:
                         future.result()

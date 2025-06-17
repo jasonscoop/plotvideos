@@ -53,7 +53,8 @@ class Video(Base):
     bunny_cdn_domain = Column(String(50), nullable=False, default="")
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False,
+                        index=True)
 
     @property
     def path(self) -> StorePath:

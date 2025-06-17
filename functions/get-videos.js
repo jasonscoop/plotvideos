@@ -110,7 +110,12 @@ Deno.serve(async (req) => {
         }
 
         const perPage = 5;
-        const lastSyncedOffset = Number(url.searchParams.get('last_synced_offset') ?? 0);
+        const lastIdStr = url.searchParams.get('last_id');
+        if (!lastIdStr) {
+            return createErrorResponse('Missing last_id', 400);
+        }
+        const lastId = Number(lastIdStr);
+
         const host = url.searchParams.get('host');
         if (!host) {
             return createErrorResponse('Missing host', 400);
@@ -139,9 +144,9 @@ Deno.serve(async (req) => {
         const {data: videos, error: videoError} = await supabase
             .from('videos')
             .select("id, host, original_id, title, url, filename, keyword, title_translations, file_size, duration, author_name, author_url, width, height, aspect_ratio, tags, categories, bunny_library_id, bunny_video_id, bunny_cdn_domain")
-            .gt('updated_at', lastSyncedOffset)
+            .gt('id', lastId)
             .eq('status', 'published')
-            .order('updated_at', {ascending: true})
+            .order('id', {ascending: true})
             .limit(perPage);
 
         if (videoError) throw videoError;

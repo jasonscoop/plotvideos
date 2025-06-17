@@ -2,6 +2,7 @@ import argparse
 
 from loguru import logger
 
+from src.lib.config import FETCH_MAX_PAGES
 from src.service.s1_fetch import fetch_and_save_videos
 from src.service.s2_download import download_videos
 from src.service.s3_convert import convert_videos
@@ -29,7 +30,8 @@ if __name__ == '__main__':
     parser.add_argument("--runner", type=str, help="Pipeline stage to run (e.g., s1_fetch, s2_download)", required=True)
     parser.add_argument("--batch-size", type=int, help="Number of items to process in each batch", default=3)
     parser.add_argument("--host", type=str, help="Target host to process", default="")
-    parser.add_argument("--max-pages", type=int, help="Maximum number of pages to crawl (for s1_fetch)", default=2)
+    parser.add_argument("--max-pages", type=int, help="Maximum number of pages to crawl (for s1_fetch)",
+                        default=FETCH_MAX_PAGES)
 
     args = parser.parse_args()
     init_logging(args.runner)

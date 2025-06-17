@@ -47,3 +47,5 @@ S3_ACCESS_KEY: str = get_str("S3_ACCESS_KEY")
 S3_SECRET_KEY: str = get_str("S3_SECRET_KEY")
 S3_BUCKET_NAME: str = get_str("S3_BUCKET_NAME")
 S3_REGION: str = get_str("S3_REGION", "ap-southeast-1")
+
+FETCH_MAX_PAGES: int = get_int("FETCH_MAX_PAGES", 10)

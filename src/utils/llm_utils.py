@@ -1,5 +1,6 @@
 import json
 import re
+import time
 
 import requests
 from loguru import logger
@@ -48,6 +49,9 @@ Input:
     except HTTPError as e:
         # due to the prompt triggering Azure OpenAI's content management policy.
         if e.response.status_code == 400 and e.response.reason == "Bad Request":
+            return ""
+        elif e.response.status_code == 429 and e.response.reason == "Too Many Requests":
+            time.sleep(3)
             return ""
         else:
             raise

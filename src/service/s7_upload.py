@@ -47,7 +47,7 @@ def upload_video(video: Video, languages: List[Language]):
             "failed_reason": "",
         })
         upload_dir_to_s3(video.path.parent, video.path.prefix)
-        logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded all")
+        logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded video and vtts")
     except Exception as e:
         VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.uploaded.log(e))
         raise e

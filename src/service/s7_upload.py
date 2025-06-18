@@ -38,7 +38,7 @@ def upload_video(video: Video, languages: List[Language]):
             "status": VideoStatus.uploaded,
             "failed_reason": "",
         })
-        asyncio.run(upload_dir_to_s3(video.path.parent, video.path.prefix))
+        upload_dir_to_s3(video.path.parent, video.path.prefix)
         logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded all")
     except Exception as e:
         VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.uploaded.log(e))

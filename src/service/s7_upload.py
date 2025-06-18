@@ -32,7 +32,8 @@ def upload_video(video: Video, languages: List[Language]):
         for lang in languages:
             vtt_file = video.path.translated_vtts / f"{lang.code}.vtt"
             if not vtt_file.exists():
-                logger.warning(f"[{video.id} | {video.host} | {video.original_id}] vtt file not found, skipped")
+                logger.warning(
+                    f"[{video.id} | {video.host} | {video.original_id}] vtt file '{lang.code}' not found, skipped")
                 continue
             bunny_client.upload_subtitle(guid, vtt_file, lang)
             logger.info(f"[{video.id} | {video.host} | {video.original_id}] uploaded '{lang.code}'")

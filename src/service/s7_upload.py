@@ -17,6 +17,13 @@ bunny_client = BunnyStreamClient(BUNNY_API_KEY, BUNNY_LIBRARY_ID)
 
 
 def upload_video(video: Video, languages: List[Language]):
+    if not video.path.video.exists():
+        VideoCrud.update_status(video.id, VideoStatus.failed,
+                                VideoStatus.uploaded.log("Video '{video.path.video}' does not exist"))
+        asyncio.run(rm_video(video))
+        logger.error(f"[{video.id} | {video.host} | {video.original_id}]  Video '{video.path.video}' does not exist")
+        return
+
     try:
         logger.info(f"[{video.id} | {video.host} | {video.original_id}] start uploading")
         guid = bunny_client.upload_video(video)

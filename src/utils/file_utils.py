@@ -44,4 +44,4 @@ def rm_video(video: Video):
     if video.path.parent.exists() and is_path_match(video.path.parent.as_posix()):
         shutil.rmtree(str(video.path.parent), ignore_errors=False)
     else:
-        logger.warning(f"Video {video.path} does not exist")
+        logger.warning(f"File [{video.path.parent.as_posix()}] does not exist")

@@ -5,9 +5,8 @@ from sqlalchemy.cyextension.collections import OrderedSet
 
 from src.lib.consts import NO_SPACE_LOCALES
 from src.lib.enums import SubtitleType
-from src.lib.models import Video, Language
+from src.lib.models import Language
 from src.utils.string_utils import get_lang, split_by_stop_chars, STOP_CHARS
-from src.utils.whisper_utils import whisper_transcribe
 
 
 def mktimestamp(time_unit: float) -> str:
@@ -155,8 +154,3 @@ def mix_language_codes(short_codes: List[str], languages: List[Language]) -> Lis
     langs.update(languages[:4])
 
     return [l.locale for l in langs[:4]]
-
-
-def generate_subtitle(video: Video, languages: List[Language]) -> (str, int):
-    subtitle_content = whisper_transcribe(video.path)
-    return subtitle_content.strip()

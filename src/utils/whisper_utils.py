@@ -2,8 +2,9 @@ import dataclasses
 from pathlib import Path
 
 from faster_whisper import WhisperModel
+from loguru import logger
 
-from src.lib.config import MODELS_DIR
+from src.lib.config import MODELS_DIR, WHISPER_DEVICE
 from src.lib.schemas import StorePath
 from src.utils.file_utils import save_json
 from src.utils.string_utils import end_with_stop_char
@@ -17,13 +18,14 @@ def get_whisper_model() -> WhisperModel:
         download_root = MODELS_DIR.joinpath("whisper")
         _whisper_model = WhisperModel(
             "large-v3",
-            device="cpu",
-            compute_type="int8",
-            cpu_threads=4,
-            num_workers=4,
+            device=WHISPER_DEVICE,
+            # compute_type=WHISPER_COMPUTE_TYPE,
+            # cpu_threads=WHISPER_CPU_THREADS,
+            # num_workers=WHISPER_NUM_WORKERS,
             download_root=download_root.as_posix(),
             local_files_only=download_root.exists(),
         )
+    logger.info(f"Using whisper device {_whisper_model.model.device}")
     return _whisper_model
 
 
@@ -50,7 +52,7 @@ def whisper_transcribe(video_path: StorePath):
     sub = "WEBVTT\n\n" + "\n".join(items)
     video_path.vtt.write_text(sub)
 
-    return subtitle_content
+    return sub, subtitle_content
 
 
 def convert_to_subtitles(segments) -> (list, list, str):
@@ -123,3 +125,8 @@ def text_to_vtt(msg: str, start_time: float, end_time: float) -> str:
     end_time = time_convert_seconds_to_hmsm(end_time)
 
     return f"{start_time} --> {end_time}\n{capitalize_first_letter(msg.strip())}\n"
+
+
+if __name__ == '__main__':
+    model = get_whisper_model()
+    print(model.model.device)  # 应输出 "metal"

@@ -28,7 +28,7 @@ def get_whisper_model() -> WhisperModel:
 
 
 def whisper_transcribe(video_path: StorePath):
-    audio_path = Path(video_path.video)
+    audio_path = Path(video_path.audio)
     segments, _ = get_whisper_model().transcribe(
         audio_path.as_posix(),
         beam_size=5,
@@ -49,7 +49,7 @@ def whisper_transcribe(video_path: StorePath):
             idx += 1
     sub = "WEBVTT\n\n" + "\n".join(items)
     video_path.vtt.write_text(sub)
-    
+
     return subtitle_content
 
 

@@ -13,7 +13,7 @@ from src.utils.whisper_utils import whisper_transcribe
 
 def subtitle_video(video):
     try:
-        subtitle_content = whisper_transcribe(video.path)(video)
+        subtitle_content = whisper_transcribe(video.path)
         tokens = get_tokens(subtitle_content)
         VideoCrud.update({
             "id": video.id,

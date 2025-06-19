@@ -2,9 +2,9 @@ import dataclasses
 from pathlib import Path
 
 from faster_whisper import WhisperModel
-from faster_whisper.transcribe import TranscriptionInfo, Segment
 
 from src.lib.config import MODELS_DIR
+from src.lib.schemas import StorePath
 from src.utils.file_utils import save_json
 from src.utils.string_utils import end_with_stop_char
 
@@ -27,20 +27,18 @@ def get_whisper_model() -> WhisperModel:
     return _whisper_model
 
 
-def whisper_transcribe(audio_path: Path):
-    audio_path = Path(audio_path)
-    segments, info = get_whisper_model().transcribe(
+def whisper_transcribe(video_path: StorePath):
+    audio_path = Path(video_path.video)
+    segments, _ = get_whisper_model().transcribe(
         audio_path.as_posix(),
         beam_size=5,
         word_timestamps=True,
         vad_filter=True,
         vad_parameters=dict(min_silence_duration_ms=500),
     )
-    info: TranscriptionInfo = info
-    save_json(audio_path.with_suffix(".info2.json"), dataclasses.asdict(info))
 
-    subtitles, segment_list = convert_to_subtitles(segments)
-    save_json(audio_path.with_suffix(".segments2.json"), segment_list)
+    subtitles, segment_list, subtitle_content = convert_to_subtitles(segments)
+    save_json(video_path.segments, segment_list)
 
     idx = 1
     items = []
@@ -50,17 +48,20 @@ def whisper_transcribe(audio_path: Path):
             items.append(text_to_vtt(text, subtitle.get("start_time"), subtitle.get("end_time")))
             idx += 1
     sub = "WEBVTT\n\n" + "\n".join(items)
-    audio_path.with_suffix(".new2.vtt").write_text(sub)
+    video_path.vtt.write_text(sub)
+    
+    return subtitle_content
 
 
-def convert_to_subtitles(segments):
+def convert_to_subtitles(segments) -> (list, list, str):
     subtitles = []
     segment_list = []
+    subtitle_content = ""
     for segment in segments:
-        s: Segment = segment
-        segment_list.append(dataclasses.asdict(s))
+        segment_list.append(dataclasses.asdict(segment))
+        subtitle_content += segment.text
         words_idx = 0
-        words_len = len(s.words)
+        words_len = len(segment.words)
 
         seg_start = 0
         seg_end = 0
@@ -101,7 +102,7 @@ def convert_to_subtitles(segments):
         if seg_text.strip():
             subtitles.append({"msg": seg_text, "start_time": seg_start, "end_time": seg_end})
 
-    return subtitles, segment_list
+    return subtitles, segment_list, subtitle_content
 
 
 def time_convert_seconds_to_hmsm(seconds) -> str:

@@ -1,15 +1,13 @@
-import json
 import math
 from typing import List
 
-from loguru import logger
 from sqlalchemy.cyextension.collections import OrderedSet
 
 from src.lib.consts import NO_SPACE_LOCALES
 from src.lib.enums import SubtitleType
 from src.lib.models import Video, Language
-from src.utils.azure_fast_transcription import transcribe_audio
 from src.utils.string_utils import get_lang, split_by_stop_chars, STOP_CHARS
+from src.utils.whisper_utils import whisper_transcribe
 
 
 def mktimestamp(time_unit: float) -> str:
@@ -160,15 +158,5 @@ def mix_language_codes(short_codes: List[str], languages: List[Language]) -> Lis
 
 
 def generate_subtitle(video: Video, languages: List[Language]) -> (str, int):
-    detected_codes = get_texts_lang_codes([video.title] + [video.keyword] + video.tags + video.categories, languages)
-    final_lang_codes = mix_language_codes(detected_codes, languages)
-    logger.info(
-        f"[{video.id} | {video.host} | {video.original_id}] detected: {detected_codes}, using: {final_lang_codes}")
-
-    azure_results = transcribe_audio(video.path.audio, final_lang_codes)
-    video.path.azure_results.write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))
-
-    vtt_content, subtitle_content = azure_fast_transcription_to_subtitle(azure_results, SubtitleType.vtt)
-    video.path.vtt.write_text(vtt_content)
-
+    subtitle_content = whisper_transcribe(video.path)
     return subtitle_content.strip()

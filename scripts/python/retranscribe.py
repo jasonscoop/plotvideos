@@ -39,6 +39,7 @@ def download_wav_from_s3(video: Video):
     wav_path = video.path.audio
     s3_key = f"{video.path.prefix}/audio.wav"
     wav_path.parent.mkdir(parents=True, exist_ok=True)
+    logger.info(f"[{video.id}] '{s3_key}' Downloading from S3")
     s3_client.download_file(S3_BUCKET_NAME, s3_key, str(wav_path))
 
 

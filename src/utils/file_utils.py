@@ -1,9 +1,11 @@
 import json
+import re
 import shutil
 from pathlib import Path
 from typing import Union
 
 import boto3
+from loguru import logger
 
 from src.lib.config import S3_BUCKET_NAME, S3_SECRET_KEY, S3_REGION, S3_ACCESS_KEY
 from src.lib.models import Video
@@ -34,5 +36,12 @@ def save_json(path: Union[str, Path], json_data: dict):
     path.write_text(json.dumps(json_data, indent=2, ensure_ascii=False))
 
 
+def is_path_match(path: str) -> bool:
+    return re.match(r'.*/works/videos/\w{2}/[a-zA-Z]{2}/\w+$', path) is not None
+
+
 def rm_video(video: Video):
-    shutil.rmtree(str(video.path.parent), ignore_errors=False)
+    if video.path.parent.exists() and is_path_match(video.path.parent.as_posix()):
+        shutil.rmtree(str(video.path.parent), ignore_errors=False)
+    else:
+        logger.warning(f"Video {video.path} does not exist")

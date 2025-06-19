@@ -1,4 +1,3 @@
-import asyncio
 import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -39,11 +38,11 @@ def download_video(video: Video):
             logger.info(f"[{video.id} | {video.host} | {video.original_id}]  Downloaded")
     except (SizeLimitExceeded, DownloadError, RegexNotFoundError) as e:
         VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.downloaded.log(e))
-        asyncio.run(rm_video(video))
+        rm_video(video)
         logger.warning(str(e))
     except Exception as e:
         VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.downloaded.log(e))
-        asyncio.run(rm_video(video))
+        rm_video(video)
         traceback.print_exc()
         logger.warning(str(e))
         raise e

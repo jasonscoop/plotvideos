@@ -1,4 +1,3 @@
-import asyncio
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List
@@ -20,7 +19,7 @@ def upload_video(video: Video, languages: List[Language]):
     if not video.path.video.exists():
         VideoCrud.update_status(video.id, VideoStatus.failed,
                                 VideoStatus.uploaded.log("Video '{video.path.video}' does not exist"))
-        asyncio.run(rm_video(video))
+        rm_video(video)
         logger.error(f"[{video.id} | {video.host} | {video.original_id}]  Video '{video.path.video}' does not exist")
         return
 
@@ -52,7 +51,7 @@ def upload_video(video: Video, languages: List[Language]):
         VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.uploaded.log(e))
         raise e
     finally:
-        asyncio.run(rm_video(video))
+        rm_video(video)
 
 
 def upload_videos(batch_size: int = 10, host: str = ""):

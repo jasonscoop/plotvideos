@@ -1,4 +1,3 @@
-import asyncio
 import time
 import traceback
 from collections import defaultdict
@@ -70,7 +69,7 @@ def translate_meta_infos(batch_size: int = 10, host: str = ""):
             except Exception as e:
                 VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.meta_translated.log(e))
                 exception_count += 1
+                traceback.print_exc()
+                rm_video(video)
                 if exception_count >= 3:
                     raise e
-                traceback.print_exc()
-                asyncio.run(rm_video(video))

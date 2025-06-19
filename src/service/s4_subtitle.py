@@ -1,4 +1,3 @@
-import asyncio
 import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -31,7 +30,7 @@ def subtitle_video(video, languages):
         reason = VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.subtitled.log(e))
         logger.info(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
         traceback.print_exc()
-        asyncio.run(rm_video(video))
+        rm_video(video)
         return e
 
 

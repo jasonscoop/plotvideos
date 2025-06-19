@@ -1,4 +1,3 @@
-import asyncio
 import time
 import traceback
 
@@ -8,9 +7,9 @@ from src.crud.video_crud import VideoCrud
 from src.lib.config import MIN_ACCEPT_DURATION
 from src.lib.consts import AZURE_STT_MAX_DURATION, AZURE_STT_MAX_AUDIO_SIZE
 from src.lib.models import VideoStatus
-from src.utils.azure_stt_utils import get_video_duration, media_to_wav
 from src.utils.download_utils import to_mb
 from src.utils.file_utils import rm_video
+from src.utils.media_utils import get_video_duration, media_to_wav
 
 
 def convert_video(video):
@@ -30,14 +29,14 @@ def convert_video(video):
                                          VideoStatus.converted.log(
                                              f"Duration is longer than {AZURE_STT_MAX_DURATION}s"))
         logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
-        asyncio.run(rm_video(video))
+        rm_video(video)
         return
 
     if duration < MIN_ACCEPT_DURATION:
         reason = VideoCrud.update_status(video.id, VideoStatus.failed,
                                          VideoStatus.converted.log(f"Duration is shorter than {MIN_ACCEPT_DURATION}s"))
         logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
-        asyncio.run(rm_video(video))
+        rm_video(video)
         return
 
     media_to_wav(video_path, video.path.audio)
@@ -47,7 +46,7 @@ def convert_video(video):
                                          VideoStatus.converted.log(
                                              f"Audio large than {to_mb(AZURE_STT_MAX_DURATION)}MB"))
         logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
-        asyncio.run(rm_video(video))
+        rm_video(video)
         return
 
     VideoCrud.update({
@@ -78,7 +77,7 @@ def convert_videos(batch_size: int = 10, host: str = ""):
             except Exception as e:
                 VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.converted.log(str(e)))
                 exception_count += 1
+                traceback.print_exc()
+                rm_video(video)
                 if exception_count > 3:
                     raise
-                traceback.print_exc()
-                asyncio.run(rm_video(video))

@@ -1,4 +1,3 @@
-import asyncio
 import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor
@@ -7,8 +6,8 @@ import webvtt
 from loguru import logger
 from requests import HTTPError
 
-from src.crud.video_crud import VideoCrud
 from src.crud.language_crud import LanguageCrud
+from src.crud.video_crud import VideoCrud
 from src.lib.config import SUBTITLE_TOKEN_RATIO_THRESHOLD
 from src.lib.enums import VideoStatus
 from src.utils.file_utils import rm_video
@@ -66,14 +65,21 @@ def process_subtitled_videos(batch_size: int = 10, host: str = ""):
                 reason = VideoCrud.update_status(video.id, VideoStatus.failed,
                                                  VideoStatus.subtitled.log("Subtitle content is empty"))
                 logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
-                asyncio.run(rm_video(video))
+                rm_video(video)
                 continue
 
             if video.subtitle_duration_ratio < SUBTITLE_TOKEN_RATIO_THRESHOLD:
                 reason = VideoCrud.update_status(video.id, VideoStatus.failed,
                                                  reason=VideoStatus.subtitled.log("Subtitle content is too short"))
                 logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
-                asyncio.run(rm_video(video))
+                rm_video(video)
+                continue
+
+            if not video.path.vtt.exists():
+                reason = VideoCrud.update_status(video.id, VideoStatus.failed,
+                                                 reason=VideoStatus.subtitled.log("Subtitle file isn't exist"))
+                logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
+                rm_video(video)
                 continue
 
             logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translation started")
@@ -99,4 +105,4 @@ def process_subtitled_videos(batch_size: int = 10, host: str = ""):
                 if exception_count >= 3:
                     raise e
                 traceback.print_exc()
-                asyncio.run(rm_video(video))
+                rm_video(video)

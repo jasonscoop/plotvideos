@@ -34,5 +34,5 @@ def save_json(path: Union[str, Path], json_data: dict):
     path.write_text(json.dumps(json_data, indent=2, ensure_ascii=False))
 
 
-async def rm_video(video: Video):
-    shutil.rmtree(str(video.path.parent), ignore_errors=True)
+def rm_video(video: Video):
+    shutil.rmtree(str(video.path.parent), ignore_errors=False)

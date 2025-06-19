@@ -1,10 +1,11 @@
 import json
+from pathlib import Path
 
 import pytest
 
 from src.lib.enums import SubtitleType
-from src.lib.models import Video
-from src.utils.azure_subtitle_utils import azure_stt_results_to_subtitle, get_texts_lang_codes, generate_subtitle, \
+from src.utils.azure_fast_transcription import transcribe_audio
+from src.utils.azure_subtitle_utils import azure_stt_results_to_subtitle, get_texts_lang_codes, \
     azure_fast_transcription_to_subtitle
 from tests import SUBTITLES_DIR
 
@@ -33,13 +34,20 @@ def test_get_texts_lang_codes(texts, expected):
     assert set(get_texts_lang_codes(texts)) == set(expected)
 
 
-def test_generate_subtitle():
-    assert generate_subtitle(Video(id=1, title="The Japanese man", filename="xhDw3Y5.mp4",
-                                   tags=["Chinese"],
-                                   categories=["Peace"],
-                                   host="www.xhamster.com", original_id="xhDw3Y5",
-                                   duration=60,
-                                   keyword="The Japanese man"))
+@pytest.mark.parametrize("path", [
+    "/Users/garymeng/Downloads/youtube/cn.wav",
+    "/Users/garymeng/Downloads/youtube/python.wav"
+])
+def test_generate_subtitle(path):
+    audio_path = Path(path)
+    try:
+        azure_results = transcribe_audio(Path(path), ["en-US", "zh-CN"])
+    except Exception as ex:
+        pytest.fail(ex)
+    audio_path.with_suffix(".json").write_text(json.dumps(azure_results, indent=2, ensure_ascii=False))
+
+    vtt_content, subtitle_content = azure_fast_transcription_to_subtitle(azure_results, SubtitleType.vtt)
+    audio_path.with_suffix(".vtt").write_text(vtt_content)
 
 
 def test_azure_fast_transcription_to_subtitle():

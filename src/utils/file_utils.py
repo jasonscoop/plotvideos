@@ -30,7 +30,7 @@ def upload_dir_to_s3(local_dir: Path, s3_prefix=''):
             s3_client.upload_file(str(file_path), S3_BUCKET_NAME, s3_key)
 
 
-def save_json(path: Union[str, Path], json_data: dict):
+def save_json(path: Union[str, Path], json_data: dict | list):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(json_data, indent=2, ensure_ascii=False))

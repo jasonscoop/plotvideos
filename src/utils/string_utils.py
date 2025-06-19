@@ -24,6 +24,17 @@ STOP_CHARS = set(
     "⸮⁇⁈⁉"  # Rare multilingual
 )
 
+
+def end_with_stop_char(text: str) -> bool:
+    if not text:
+        return False
+
+    for c in STOP_CHARS:
+        if text.endswith(c):
+            return True
+    return False
+
+
 BASE62_ALPHABET = string.digits + string.ascii_letters
 
 

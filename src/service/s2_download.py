@@ -33,6 +33,7 @@ def download_video(video: Video):
             reason = VideoCrud.update_status(video.id, VideoStatus.failed,
                                              VideoStatus.downloaded.log(
                                                  f"Video large than {to_mb(MAX_ACCEPT_VIDEO_SIZE)}MB."))
+            rm_video(video)
             logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
         else:
             logger.info(f"[{video.id} | {video.host} | {video.original_id}]  Downloaded")
@@ -49,10 +50,6 @@ def download_video(video: Video):
 
 
 def download_videos(batch_size: int = 10, host: str = ""):
-    if host:
-        download_videos(batch_size, host)
-        return
-
     last_id = 0
     exception_count = 0
     while True:

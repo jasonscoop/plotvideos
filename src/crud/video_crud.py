@@ -54,12 +54,12 @@ class VideoCrud:
         if "id" not in data:
             raise KeyError("Video id is required")
 
-        with get_db() as session:
-            old = session.query(Video).get(data["id"])
-            for key, value in data.items():
-                if value is not None and hasattr(old, key):
-                    setattr(old, key, value)
+        updates = {k: v for k, v in data.items() if k != "id" and v is not None}
+        if not updates:
+            return
 
+        with get_db() as session:
+            session.query(Video).filter(Video.id == data["id"]).update(updates)
             session.commit()
 
     @classmethod

@@ -75,6 +75,7 @@ def main():
             logger.info("All transcription done!")
             break
 
+        last_id = videos[-1].id
         with ProcessPoolExecutor(max_workers=BATCH_SIZE) as executor:
             futures = {executor.submit(transcribe_video, v): v for v in videos}
             for future in as_completed(futures):
@@ -84,8 +85,6 @@ def main():
                     logger.error(f"Error transcribing video: {e}")
                     traceback.print_exc()
                     raise e
-
-        last_id = videos[-1].id
 
 
 if __name__ == "__main__":

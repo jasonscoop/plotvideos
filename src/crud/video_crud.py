@@ -16,7 +16,7 @@ class VideoCrud:
                   status: VideoStatus | List[VideoStatus] | None = None,
                   host: str = "", temp_status: int | None = None) -> List[Video]:
         with get_db() as session:
-            query = session.query(Video).options(undefer("*"))
+            query = session.query(Video).options(undefer("*")).with_for_update(skip_locked=True)
 
             if isinstance(status, list):
                 query = query.filter(Video.status.in_(status), Video.id > last_id)

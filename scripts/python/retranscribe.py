@@ -15,7 +15,7 @@ from src.utils.log_utils import init_logging
 from src.utils.string_utils import get_tokens
 from src.utils.whisper_utils import whisper_transcribe
 
-BATCH_SIZE = 15
+BATCH_SIZE = 10
 MAX_ID = 27555
 
 

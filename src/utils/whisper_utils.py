@@ -1,32 +1,23 @@
-import dataclasses
 from pathlib import Path
 
 from faster_whisper import WhisperModel
-from loguru import logger
 
-from src.lib.config import MODELS_DIR, WHISPER_DEVICE
+from src.lib.config import MODELS_DIR, WHISPER_DEVICE, WHISPER_NUM_WORKERS, WHISPER_CPU_THREADS, WHISPER_COMPUTE_TYPE
 from src.lib.schemas import StorePath
-from src.utils.file_utils import save_json
 from src.utils.string_utils import end_with_stop_char
-
-_whisper_model: WhisperModel = None
 
 
 def get_whisper_model() -> WhisperModel:
-    global _whisper_model
-    if _whisper_model is None:
-        download_root = MODELS_DIR.joinpath("whisper")
-        _whisper_model = WhisperModel(
-            "large-v3",
-            device=WHISPER_DEVICE,
-            # compute_type=WHISPER_COMPUTE_TYPE,
-            # cpu_threads=WHISPER_CPU_THREADS,
-            # num_workers=WHISPER_NUM_WORKERS,
-            download_root=download_root.as_posix(),
-            local_files_only=download_root.exists(),
-        )
-    logger.info(f"Using whisper device {_whisper_model.model.device}")
-    return _whisper_model
+    download_root = MODELS_DIR.joinpath("whisper")
+    return WhisperModel(
+        "large-v3",
+        device=WHISPER_DEVICE,
+        compute_type=WHISPER_COMPUTE_TYPE,
+        cpu_threads=WHISPER_CPU_THREADS,
+        num_workers=WHISPER_NUM_WORKERS,
+        download_root=download_root.as_posix(),
+        local_files_only=download_root.exists(),
+    )
 
 
 def whisper_transcribe(video_path: StorePath):
@@ -39,28 +30,21 @@ def whisper_transcribe(video_path: StorePath):
         vad_parameters=dict(min_silence_duration_ms=500),
     )
 
-    subtitles, segment_list, subtitle_content = convert_to_subtitles(segments)
-    save_json(video_path.segments, segment_list)
+    subtitles, sub_text = convert_to_subtitles(segments)
 
-    idx = 1
     items = []
     for subtitle in subtitles:
         text = subtitle.get("msg").strip()
         if text:
             items.append(text_to_vtt(text, subtitle.get("start_time"), subtitle.get("end_time")))
-            idx += 1
-    sub = "WEBVTT\n\n" + "\n".join(items)
-    video_path.vtt.write_text(sub)
-
-    return sub, subtitle_content
+    vtt_content = "WEBVTT\n\n" + "\n".join(items)
+    return vtt_content, sub_text
 
 
-def convert_to_subtitles(segments) -> (list, list, str):
+def convert_to_subtitles(segments) -> (list, str):
     subtitles = []
-    segment_list = []
     subtitle_content = ""
     for segment in segments:
-        segment_list.append(dataclasses.asdict(segment))
         subtitle_content += segment.text
         words_idx = 0
         words_len = len(segment.words)
@@ -104,7 +88,7 @@ def convert_to_subtitles(segments) -> (list, list, str):
         if seg_text.strip():
             subtitles.append({"msg": seg_text, "start_time": seg_start, "end_time": seg_end})
 
-    return subtitles, segment_list, subtitle_content
+    return subtitles, subtitle_content
 
 
 def time_convert_seconds_to_hmsm(seconds) -> str:

@@ -6,8 +6,15 @@ from src.utils.string_utils import end_with_stop_char
 
 
 def mlx_whisper_transcribe(video_path: StorePath):
-    full_result = get_mlx_whisper_transcribe(video_path)
-    subtitles = convert_to_subtitles(full_result["segments"])
+    from mlx_whisper import transcribe
+    audio_path = Path(video_path.audio)
+    result = transcribe(
+        audio_path.as_posix(),
+        path_or_hf_repo="mlx-community/whisper-large-v3-turbo",  # default saving at ~/.cache/huggingface/hub
+        word_timestamps=True,
+    )
+    save_json(video_path.segments, result)
+    subtitles = convert_to_subtitles(result["segments"])
 
     idx = 1
     items = []
@@ -19,19 +26,7 @@ def mlx_whisper_transcribe(video_path: StorePath):
     sub = "WEBVTT\n\n" + "\n".join(items)
     video_path.vtt.write_text(sub)
 
-    return sub, full_result["text"]
-
-
-def get_mlx_whisper_transcribe(video_path: StorePath):
-    import mlx_whisper
-    audio_path = Path(video_path.audio)
-    result = mlx_whisper.transcribe(
-        audio_path.as_posix(),
-        path_or_hf_repo="mlx-community/whisper-large-v3-turbo",  # default saving at ~/.cache/huggingface/hub
-        word_timestamps=True,
-    )
-    save_json(video_path.segments, result)
-    return result
+    return sub, result["text"]
 
 
 def convert_to_subtitles(segments) -> (list, list, str):

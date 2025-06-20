@@ -56,6 +56,8 @@ class Video(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False,
                         index=True)
 
+    temp_status = Column(Integer, nullable=False, default=0)
+
     @property
     def path(self) -> StorePath:
         return StorePath(self.host, self.original_id, self.filename)

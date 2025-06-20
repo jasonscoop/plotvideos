@@ -1,10 +1,10 @@
+import time
 import traceback
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
-from src.lib.config import WORKS_DIR
 from src.lib.enums import VideoStatus
 from src.lib.models import Video
 from src.utils.file_utils import s3_client, S3_BUCKET_NAME
@@ -12,59 +12,66 @@ from src.utils.log_utils import init_logging
 from src.utils.string_utils import get_tokens
 from src.utils.whisper_utils import whisper_transcribe
 
-LAST_ID_FILE = WORKS_DIR / "retranscribe_last_id.txt"
 BATCH_SIZE = 5
 MAX_ID = 27555
-
-
-def load_last_id():
-    if LAST_ID_FILE.exists():
-        return int(LAST_ID_FILE.read_text().strip())
-    return 0
-
-
-def save_last_id(last_id):
-    LAST_ID_FILE.write_text(str(last_id))
 
 
 def download_wav_from_s3(video: Video):
     wav_path = video.path.audio
     s3_key = f"{video.path.prefix}/audio.wav"
     wav_path.parent.mkdir(parents=True, exist_ok=True)
-    logger.info(f"[{video.id}] '{s3_key}' Downloading from S3")
     s3_client.download_file(S3_BUCKET_NAME, s3_key, str(wav_path))
 
 
+def upload_vtt_to_s3(video: Video):
+    s3_key = f"{video.path.prefix}/subtitle.vtt"
+    s3_client.upload_file(str(video.path.vtt), S3_BUCKET_NAME, s3_key)
+
+
 def transcribe_video(video: Video):
-    """Transcribe video audio and save subtitle content to database"""
+    t0 = time.time()
+    logger.info(f"[{video.id}] downloading...")
     download_wav_from_s3(video)
-    sub, vtt_text = whisper_transcribe(video.path)
-    logger.info(f"[{video.id}] subtitle generated.")
+    logger.info(f"[{video.id}] downloaded in {time.time() - t0:.1f}s")
 
-    tokens = get_tokens(vtt_text)
+    logger.info(f"[{video.id}] generating...")
+    vtt_content, sub_text = whisper_transcribe(video.path)
+    video.path.vtt.write_text(vtt_content)
+    logger.info(f"[{video.id}] generated in {time.time() - t0:.1f}s.")
+    t1 = time.time()
+
+    logger.info(f"[{video.id}] uploading...")
+    upload_vtt_to_s3(video)
+    logger.info(f"[{video.id}] uploaded in {time.time() - t1:.1f}s.")
+    t2 = time.time()
+
+    tokens = get_tokens(sub_text)
     subtitle_duration_ratio = round(tokens / video.duration, 2) if video.duration else 0
-
     VideoCrud.update({
         "id": video.id,
-        "subtitle_content": vtt_text,
+        "subtitle_content": sub_text,
         "subtitle_tokens": tokens,
         "subtitle_duration_ratio": subtitle_duration_ratio,
+        "temp_status": 1
     })
 
-    logger.info(f"[{video.id}] subtitle content saved to database.")
-    return video.id
+    # remove the wav file and vtt
+    video.path.audio.unlink(missing_ok=True)
+    video.path.vtt.unlink(missing_ok=True)
+
+    logger.info(f"[{video.id}] db updated in {time.time() - t2:.2f}s.")
 
 
 def main():
-    last_id = load_last_id()
+    last_id = 0
     while True:
-        videos = VideoCrud.batch_get(last_id, BATCH_SIZE, status=[VideoStatus.uploaded, VideoStatus.published])
+        videos = VideoCrud.batch_get(last_id, 5, status=[VideoStatus.uploaded, VideoStatus.published], temp_status=0)
         videos = [v for v in videos if v.id <= MAX_ID]
         if not videos:
             logger.info("All transcription done!")
             break
 
-        with ProcessPoolExecutor(max_workers=BATCH_SIZE) as executor:
+        with ProcessPoolExecutor(max_workers=5) as executor:
             futures = {executor.submit(transcribe_video, v): v for v in videos}
             for future in as_completed(futures):
                 try:
@@ -75,7 +82,6 @@ def main():
                     raise e
 
         last_id = videos[-1].id
-        save_last_id(last_id)
 
 
 if __name__ == "__main__":

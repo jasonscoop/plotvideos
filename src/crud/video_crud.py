@@ -13,7 +13,7 @@ class VideoCrud:
                   last_id: int,
                   batch_size: int,
                   status: VideoStatus | List[VideoStatus] | None = None,
-                  host: str = "") -> List[Video]:
+                  host: str = "", temp_status: int | None = None) -> List[Video]:
         with get_db() as session:
             query = session.query(Video).options(undefer("*"))
 
@@ -26,6 +26,9 @@ class VideoCrud:
 
             if host:
                 query = query.filter(Video.host == host)
+
+            if temp_status is not None:
+                query = query.filter(Video.temp_status == temp_status)
 
             return query.order_by(Video.id.asc()) \
                 .limit(batch_size) \

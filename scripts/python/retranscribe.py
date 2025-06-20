@@ -12,7 +12,7 @@ from src.utils.log_utils import init_logging
 from src.utils.string_utils import get_tokens
 from src.utils.whisper_utils import whisper_transcribe
 
-BATCH_SIZE = 5
+BATCH_SIZE = 20
 MAX_ID = 27555
 
 
@@ -65,13 +65,14 @@ def transcribe_video(video: Video):
 def main():
     last_id = 0
     while True:
-        videos = VideoCrud.batch_get(last_id, 5, status=[VideoStatus.uploaded, VideoStatus.published], temp_status=0)
+        videos = VideoCrud.batch_get(last_id, BATCH_SIZE, status=[VideoStatus.uploaded, VideoStatus.published],
+                                     temp_status=0)
         videos = [v for v in videos if v.id <= MAX_ID]
         if not videos:
             logger.info("All transcription done!")
             break
 
-        with ProcessPoolExecutor(max_workers=5) as executor:
+        with ProcessPoolExecutor(max_workers=BATCH_SIZE) as executor:
             futures = {executor.submit(transcribe_video, v): v for v in videos}
             for future in as_completed(futures):
                 try:

@@ -1,4 +1,3 @@
-import time
 import traceback
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
@@ -10,11 +9,11 @@ from src.lib.enums import VideoStatus
 from src.lib.models import Video
 from src.utils.file_utils import s3_client, S3_BUCKET_NAME
 from src.utils.log_utils import init_logging
-from src.utils.whisper_utils import whisper_transcribe
 from src.utils.string_utils import get_tokens
+from src.utils.whisper_utils import whisper_transcribe
 
 LAST_ID_FILE = WORKS_DIR / "retranscribe_last_id.txt"
-BATCH_SIZE = 4
+BATCH_SIZE = 5
 MAX_ID = 27555
 
 
@@ -77,7 +76,6 @@ def main():
 
         last_id = videos[-1].id
         save_last_id(last_id)
-        time.sleep(1)
 
 
 if __name__ == "__main__":

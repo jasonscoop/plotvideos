@@ -1,6 +1,9 @@
+import multiprocessing
 import time
 import traceback
 from concurrent.futures import ProcessPoolExecutor, as_completed
+
+multiprocessing.set_start_method("spawn", force=True)
 
 from loguru import logger
 

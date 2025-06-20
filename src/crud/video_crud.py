@@ -1,6 +1,7 @@
 from typing import List
 
 from sqlalchemy.orm import undefer
+from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.connection import get_db
 from src.lib.enums import VideoStatus
@@ -48,6 +49,7 @@ class VideoCrud:
         return added
 
     @staticmethod
+    @retry(wait=wait_fixed(2), stop=stop_after_attempt(3), reraise=True)
     def update(data: dict):
         if "id" not in data:
             raise KeyError("Video id is required")

@@ -10,7 +10,7 @@ from src.utils.string_utils import end_with_stop_char
 def get_whisper_model() -> WhisperModel:
     download_root = MODELS_DIR.joinpath("whisper")
     return WhisperModel(
-        "large-v3",
+        "large-v3-turbo",
         device=WHISPER_DEVICE,
         compute_type=WHISPER_COMPUTE_TYPE,
         cpu_threads=WHISPER_CPU_THREADS,

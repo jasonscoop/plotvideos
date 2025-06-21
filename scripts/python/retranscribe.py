@@ -22,14 +22,12 @@ MAX_ID = 27555
 
 def download_wav_from_s3(video: Video):
     wav_path = video.path.audio
-    s3_key = f"{video.path.prefix}/audio.wav"
     wav_path.parent.mkdir(parents=True, exist_ok=True)
-    s3_client.download_file(S3_BUCKET_NAME, s3_key, str(wav_path))
+    s3_client.download_file(S3_BUCKET_NAME, video.path.audio_s3_key, str(wav_path))
 
 
 def upload_vtt_to_s3(video: Video):
-    s3_key = f"{video.path.prefix}/subtitle.vtt"
-    s3_client.upload_file(str(video.path.vtt), S3_BUCKET_NAME, s3_key)
+    s3_client.upload_file(str(video.path.vtt), S3_BUCKET_NAME, video.path.vtt_s3_key)
 
 
 def transcribe_video(video: Video):

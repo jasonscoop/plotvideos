@@ -8,7 +8,7 @@ from loguru import logger
 
 from src.crud.keyword_crud import KeywordCrud
 from src.crud.video_crud import VideoCrud
-from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL
+from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL, S1_FETCH_MAX_PAGES
 from src.lib.consts import WEBSITES
 from src.lib.enums import VideoStatus
 from src.lib.models import Video, Keyword
@@ -29,12 +29,12 @@ def fetch_video_urls(query: str, page: int):
     return response.json()
 
 
-def fetch_and_save_videos(max_pages, batch_size):
+def fetch_and_save_videos():
     last_id = 0
     exception_count = 0
 
     while True:
-        keywords: List[Keyword] = KeywordCrud.batch_get(last_id=last_id, batch_size=batch_size)
+        keywords: List[Keyword] = KeywordCrud.batch_get(last_id=last_id)
         if not keywords:
             logger.info("All fetching, sleeping for 2 hours")
             time.sleep(1 * 60 * 60)
@@ -44,7 +44,7 @@ def fetch_and_save_videos(max_pages, batch_size):
         for keyword in keywords:
             logger.info(f"[{keyword.name}] keyword fetching started")
 
-            for page in range(0, max_pages):
+            for page in range(0, S1_FETCH_MAX_PAGES):
                 data = fetch_video_urls(keyword.name, page + 1)
                 sites = data.get('data', [])
                 for site in sites:

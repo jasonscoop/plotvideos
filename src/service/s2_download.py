@@ -6,7 +6,7 @@ from loguru import logger
 from yt_dlp.utils import DownloadError, RegexNotFoundError
 
 from src.crud.video_crud import VideoCrud
-from src.lib.config import MAX_ACCEPT_VIDEO_SIZE
+from src.lib.config import MAX_ACCEPT_VIDEO_SIZE, S2_DOWNLOAD_BATCH_SIZE
 from src.lib.models import VideoStatus, Video
 from src.utils.download_utils import download_remote_video, SizeLimitExceeded, to_mb
 from src.utils.file_utils import rm_video
@@ -49,11 +49,11 @@ def download_video(video: Video):
         raise e
 
 
-def download_videos(batch_size: int = 10, host: str = ""):
+def download_videos(host: str = ""):
     last_id = 0
     exception_count = 0
     while True:
-        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.fetched, host)
+        videos = VideoCrud.batch_get(last_id, S2_DOWNLOAD_BATCH_SIZE, VideoStatus.fetched, host)
         if not videos:
             logger.info("All downloaded, sleeping for 1 hour")
             time.sleep(1 * 60 * 60)
@@ -61,7 +61,7 @@ def download_videos(batch_size: int = 10, host: str = ""):
             continue
 
         last_id = videos[-1].id
-        with ThreadPoolExecutor(max_workers=batch_size) as executor:
+        with ThreadPoolExecutor(max_workers=len(videos)) as executor:
             futures = [executor.submit(download_video, video) for video in videos]
             for future in as_completed(futures):
                 try:

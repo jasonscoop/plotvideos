@@ -4,7 +4,7 @@ import traceback
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
-from src.lib.config import MIN_ACCEPT_DURATION
+from src.lib.config import MIN_ACCEPT_DURATION, S3_CONVERT_BATCH_SIZE
 from src.lib.consts import AZURE_STT_MAX_DURATION, AZURE_STT_MAX_AUDIO_SIZE
 from src.lib.models import VideoStatus
 from src.utils.download_utils import to_mb
@@ -58,12 +58,12 @@ def convert_video(video):
     logger.info(f"[{video.id} | {video.host} | {video.original_id}] converted to audio")
 
 
-def convert_videos(batch_size: int = 10, host: str = ""):
+def convert_videos(host: str = ""):
     last_id = 0
     exception_count = 0
 
     while True:
-        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.downloaded, host)
+        videos = VideoCrud.batch_get(last_id, S3_CONVERT_BATCH_SIZE, VideoStatus.downloaded, host)
         if not videos:
             logger.info("All converted, sleeping for 10 minutes")
             time.sleep(10 * 60)

@@ -8,7 +8,7 @@ from requests import HTTPError
 
 from src.crud.language_crud import LanguageCrud
 from src.crud.video_crud import VideoCrud
-from src.lib.config import SUBTITLE_TOKEN_RATIO_THRESHOLD
+from src.lib.config import SUBTITLE_TOKEN_RATIO_THRESHOLD, S5_TRANSLATE_VTT_BATCH_SIZE
 from src.lib.enums import VideoStatus
 from src.utils.file_utils import rm_video
 from src.utils.llm_utils import llm_translate_vtt
@@ -44,13 +44,13 @@ def translate_and_save(lang, vtt_content, video):
     logger.info(f"[{video.id} | {video.host} | {video.original_id}] vtt translated '{lang.code}'")
 
 
-def process_subtitled_videos(batch_size: int = 10, host: str = ""):
+def process_subtitled_videos(host: str = ""):
     last_id = 0
     exception_count = 0
     languages = LanguageCrud.get_all()
 
     while True:
-        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.subtitled, host)
+        videos = VideoCrud.batch_get(last_id, S5_TRANSLATE_VTT_BATCH_SIZE, VideoStatus.subtitled, host)
         if not videos:
             logger.info("All vtt translated, sleeping for 5 minutes")
             time.sleep(5 * 60)

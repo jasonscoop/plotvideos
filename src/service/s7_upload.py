@@ -6,7 +6,7 @@ from loguru import logger
 
 from src.crud.language_crud import LanguageCrud
 from src.crud.video_crud import VideoCrud
-from src.lib.config import BUNNY_API_KEY, BUNNY_LIBRARY_ID, BUNNY_CDN_DOMAIN
+from src.lib.config import BUNNY_API_KEY, BUNNY_LIBRARY_ID, BUNNY_CDN_DOMAIN, S7_UPLOAD_BATCH_SIZE
 from src.lib.enums import VideoStatus
 from src.lib.models import Video, Language
 from src.utils.bunny_utils import BunnyStreamClient
@@ -54,13 +54,13 @@ def upload_video(video: Video, languages: List[Language]):
         rm_video(video)
 
 
-def upload_videos(batch_size: int = 10, host: str = ""):
+def upload_videos(host: str = ""):
     last_id = 0
     exception_count = 0
     languages = LanguageCrud.get_all()
 
     while True:
-        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.meta_translated, host)
+        videos = VideoCrud.batch_get(last_id, S7_UPLOAD_BATCH_SIZE, VideoStatus.meta_translated, host)
         if not videos:
             logger.info("All uploaded, sleeping for 5 minutes")
             time.sleep(5 * 60)

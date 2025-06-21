@@ -8,6 +8,7 @@ from requests.exceptions import HTTPError
 from src.crud.language_crud import LanguageCrud
 from src.crud.term_crud import TermCrud
 from src.crud.video_crud import VideoCrud
+from src.lib.config import S6_TRANSLATE_META_BATCH_SIZE
 from src.lib.enums import VideoStatus
 from src.lib.models import Video
 from src.utils.file_utils import rm_video
@@ -47,13 +48,13 @@ def translate_video(video: Video, languages):
     })
 
 
-def translate_meta_infos(batch_size: int = 10, host: str = ""):
+def translate_meta_infos(host: str = ""):
     last_id = 0
     exception_count = 0
     languages = LanguageCrud.get_all()
 
     while True:
-        videos = VideoCrud.batch_get(last_id, batch_size, VideoStatus.vtt_translated, host)
+        videos = VideoCrud.batch_get(last_id, S6_TRANSLATE_META_BATCH_SIZE, VideoStatus.vtt_translated, host)
         if not videos:
             logger.info("All meta translated, sleeping for 5 minutes")
             time.sleep(5 * 60)

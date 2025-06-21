@@ -33,7 +33,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/main.py --runner=s4_subtitle
+    command: python src/main.py --runner=s4_subtitle --batch_size=1
 
   s5_translate_vtt:
     build: .

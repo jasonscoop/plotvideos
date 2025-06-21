@@ -3,7 +3,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from src.utils.env_utils import get_str, get_int
+from src.utils.env_utils import get_str, get_int, get_bool
 
 load_dotenv()
 
@@ -53,6 +53,7 @@ WHISPER_DEVICE = getenv("WHISPER_DEVICE", "cpu")
 WHISPER_COMPUTE_TYPE = getenv("WHISPER_COMPUTE_TYPE", "int8")
 WHISPER_CPU_THREADS = get_int("WHISPER_CPU_THREADS", 1)
 WHISPER_NUM_WORKERS = get_int("WHISPER_NUM_WORKERS", 2)
+WHISPER_LOCAL_FILES_ONLY = get_bool("WHISPER_LOCAL_FILES_ONLY", True)
 
 S1_FETCH_MAX_PAGES: int = get_int("S1_FETCH_MAX_PAGES", 10)
 S2_DOWNLOAD_BATCH_SIZE: int = get_int("S2_DOWNLOAD_BATCH_SIZE", 5)

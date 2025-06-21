@@ -3,7 +3,7 @@ from pathlib import Path
 from faster_whisper import WhisperModel
 
 from src.lib.config import MODELS_DIR, WHISPER_DEVICE, WHISPER_NUM_WORKERS, WHISPER_CPU_THREADS, WHISPER_COMPUTE_TYPE, \
-    WHISPER_MODEL
+    WHISPER_MODEL, WHISPER_LOCAL_FILES_ONLY
 from src.lib.schemas import StorePath
 from src.utils.string_utils import end_with_stop_char
 
@@ -18,7 +18,7 @@ def get_whisper_model() -> WhisperModel:
         cpu_threads=WHISPER_CPU_THREADS,
         num_workers=WHISPER_NUM_WORKERS,
         download_root=download_root.as_posix(),
-        local_files_only=False,
+        local_files_only=WHISPER_LOCAL_FILES_ONLY,
     )
 
 

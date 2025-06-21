@@ -29,7 +29,7 @@ def fetch_video_urls(query: str, page: int):
     return response.json()
 
 
-def fetch_and_save_videos():
+def fetch_and_save_videos(host: str = ""):
     last_id = 0
     exception_count = 0
 

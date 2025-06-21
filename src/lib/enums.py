@@ -11,10 +11,10 @@ class SubtitleType(StrEnum):
 class VideoStatus(StrEnum):
     fetched = "fetched"
     downloaded = "downloaded"
-    subtitled = "subtitled"
     converted = "converted"
-    meta_translated = "meta_translated"
+    subtitled = "subtitled"
     vtt_translated = "vtt_translated"
+    meta_translated = "meta_translated"
     uploaded = "uploaded"
     published = "published"
 

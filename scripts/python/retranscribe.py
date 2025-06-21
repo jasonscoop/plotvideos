@@ -37,13 +37,11 @@ def transcribe_video(video: Video):
     download_wav_from_s3(video)
     logger.info(f"[{video.id}] downloaded in {time.time() - t0:.1f}s")
 
-    logger.info(f"[{video.id}] generating...")
     vtt_content, sub_text = whisper_transcribe(video.path)
     video.path.vtt.write_text(vtt_content)
     logger.info(f"[{video.id}] generated in {time.time() - t0:.1f}s.")
     t1 = time.time()
 
-    logger.info(f"[{video.id}] uploading...")
     upload_vtt_to_s3(video)
     logger.info(f"[{video.id}] uploaded in {time.time() - t1:.1f}s.")
     t2 = time.time()

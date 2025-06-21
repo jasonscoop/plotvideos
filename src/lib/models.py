@@ -1,3 +1,4 @@
+from loguru import logger
 from sqlalchemy import Column, Integer, String, Enum, Boolean, DateTime, JSON, Text, Float, UniqueConstraint
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql import func
@@ -60,6 +61,8 @@ class Video(Base):
 
     @property
     def path(self) -> StorePath:
+        if not self.host or not self.original_id or not self.filename:
+            logger.error(f"One of the attributes is not set {self}")
         return StorePath(self.host, self.original_id, self.filename)
 
 

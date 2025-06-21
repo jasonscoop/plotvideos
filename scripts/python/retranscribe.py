@@ -6,6 +6,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 multiprocessing.set_start_method("spawn", force=True)
 
 from loguru import logger
+from botocore.exceptions import ClientError
 
 from src.crud.video_crud import VideoCrud
 from src.lib.enums import VideoStatus
@@ -34,7 +35,13 @@ def upload_vtt_to_s3(video: Video):
 def transcribe_video(video: Video):
     t0 = time.time()
     logger.info(f"[{video.id}] downloading...")
-    download_wav_from_s3(video)
+    try:
+        download_wav_from_s3(video)
+    except ClientError as e:
+        if e.response['Error']['Code'] == '404':
+            logger.error(f"Object not found. {str(e)}")
+            return
+
     logger.info(f"[{video.id}] downloaded in {time.time() - t0:.1f}s")
 
     vtt_content, sub_text = whisper_transcribe(video.path)

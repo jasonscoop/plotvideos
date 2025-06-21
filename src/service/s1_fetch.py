@@ -65,10 +65,15 @@ def fetch_and_save_videos(max_pages, batch_size):
                             if not title:
                                 continue
 
+                            original_id = id_extractor.get(link.get('url'))
+                            if not original_id:
+                                logger.error(f"Can not find a id for link {link.get('url')}")
+                                continue
+
                             videos.append(Video(
                                 title=link.get('title'),
                                 url=link.get('url'),
-                                original_id=id_extractor.get(link.get('url')),
+                                original_id=original_id,
                                 host=host,
                                 status=VideoStatus.fetched,
                                 keyword=keyword.name,

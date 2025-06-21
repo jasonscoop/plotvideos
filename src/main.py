@@ -2,7 +2,6 @@ import argparse
 
 from loguru import logger
 
-from src.lib.config import FETCH_MAX_PAGES
 from src.service.s1_fetch import fetch_and_save_videos
 from src.service.s2_download import download_videos
 from src.service.s3_convert import convert_videos

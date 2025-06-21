@@ -10,6 +10,7 @@ from src.utils.string_utils import end_with_stop_char
 
 def get_whisper_model() -> WhisperModel:
     download_root = MODELS_DIR.joinpath("whisper").joinpath(WHISPER_MODEL)
+    download_root.mkdir(parents=True, exist_ok=True)
     return WhisperModel(
         model_size_or_path=WHISPER_MODEL,
         device=WHISPER_DEVICE,

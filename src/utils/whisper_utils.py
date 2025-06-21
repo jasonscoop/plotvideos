@@ -18,7 +18,7 @@ def get_whisper_model() -> WhisperModel:
         cpu_threads=WHISPER_CPU_THREADS,
         num_workers=WHISPER_NUM_WORKERS,
         download_root=download_root.as_posix(),
-        local_files_only=download_root.exists(),
+        local_files_only=False,
     )
 
 

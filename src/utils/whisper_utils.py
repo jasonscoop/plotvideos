@@ -2,15 +2,16 @@ from pathlib import Path
 
 from faster_whisper import WhisperModel
 
-from src.lib.config import MODELS_DIR, WHISPER_DEVICE, WHISPER_NUM_WORKERS, WHISPER_CPU_THREADS, WHISPER_COMPUTE_TYPE
+from src.lib.config import MODELS_DIR, WHISPER_DEVICE, WHISPER_NUM_WORKERS, WHISPER_CPU_THREADS, WHISPER_COMPUTE_TYPE, \
+    WHISPER_MODEL
 from src.lib.schemas import StorePath
 from src.utils.string_utils import end_with_stop_char
 
 
 def get_whisper_model() -> WhisperModel:
-    download_root = MODELS_DIR.joinpath("whisper")
+    download_root = MODELS_DIR.joinpath("whisper").joinpath(WHISPER_MODEL)
     return WhisperModel(
-        "large-v3-turbo",
+        model_size_or_path=WHISPER_MODEL,
         device=WHISPER_DEVICE,
         compute_type=WHISPER_COMPUTE_TYPE,
         cpu_threads=WHISPER_CPU_THREADS,

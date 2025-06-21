@@ -50,6 +50,7 @@ S3_REGION: str = get_str("S3_REGION", "ap-southeast-1")
 
 FETCH_MAX_PAGES: int = get_int("FETCH_MAX_PAGES", 10)
 
+WHISPER_MODEL = getenv("WHISPER_MODEL", "large-v3-turbo")
 WHISPER_DEVICE = getenv("WHISPER_DEVICE", "cpu")
 WHISPER_COMPUTE_TYPE = getenv("WHISPER_COMPUTE_TYPE", "int8")
 WHISPER_CPU_THREADS = get_int("WHISPER_CPU_THREADS", 1)

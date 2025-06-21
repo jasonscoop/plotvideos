@@ -17,7 +17,7 @@ class PornhubIdExtractor(IdExtractor):
 
 class EpornerIdExtractor(IdExtractor):
     def get(self, url):
-        match = re.search(r'/video-([a-zA-Z0-9]+)/', url)
+        match = re.search(r'/(?:video-|hd-porn/)([a-zA-Z0-9]+)/', url)
         return match.group(1) if match else ""
 
 

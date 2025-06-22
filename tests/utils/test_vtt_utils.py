@@ -9,6 +9,7 @@ from tests import SUBTITLES_DIR
     ("small/es.vtt", False),
     ("small/zh.vtt", True),
     ("small/subtitle-format-invalid.vtt", False),
+    ("vtt2/en.vtt", True),
 ])
 def test_is_valid_vtt(original_file, expected):
     vtt = SUBTITLES_DIR.joinpath(original_file).read_text()

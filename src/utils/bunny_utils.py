@@ -7,6 +7,7 @@ from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.consts import WEBSITES
 from src.lib.models import Video, Language
+from src.utils.vtt_utils import is_valid_vtt
 
 
 class BunnyStreamClient:
@@ -72,6 +73,10 @@ class BunnyStreamClient:
         vtt_content = vtt_path.read_text()
         if not vtt_content or vtt_content.strip() == "WEBVTT":
             logger.error(f"[{video_guid}] vtt content is empty: {vtt_path}")
+            return
+
+        if not is_valid_vtt(vtt_content):
+            logger.error(f"[{video_guid}] Invalid vtt content: {vtt_path}")
             return
 
         url = f"{self.base_url}/{self.library_id}/videos/{video_guid}/captions/{lang.code}"

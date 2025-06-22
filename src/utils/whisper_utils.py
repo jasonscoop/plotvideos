@@ -3,7 +3,7 @@ from pathlib import Path
 from faster_whisper import WhisperModel
 
 from src.lib.config import MODELS_DIR, WHISPER_DEVICE, WHISPER_NUM_WORKERS, WHISPER_CPU_THREADS, WHISPER_COMPUTE_TYPE, \
-    WHISPER_MODEL, WHISPER_LOCAL_FILES_ONLY
+    WHISPER_MODEL, WHISPER_LOCAL_FILES_ONLY, WHISPER_BEAM_SIZE
 from src.lib.schemas import StorePath
 from src.utils.string_utils import end_with_stop_char
 
@@ -31,7 +31,7 @@ def whisper_transcribe(video_path: StorePath):
     audio_path = Path(video_path.audio)
     segments, _ = get_whisper_model().transcribe(
         audio_path.as_posix(),
-        beam_size=5,
+        beam_size=WHISPER_BEAM_SIZE,
         word_timestamps=True,
         vad_filter=True,
         vad_parameters=dict(min_silence_duration_ms=500),

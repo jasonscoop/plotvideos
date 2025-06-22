@@ -1,8 +1,8 @@
 import base64
 from pathlib import Path
-from typing import Dict
 
 import requests
+from loguru import logger
 from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.consts import WEBSITES
@@ -63,14 +63,26 @@ class BunnyStreamClient:
             video_guid: str,
             vtt_path: Path,
             lang: Language,
-    ) -> Dict:
+    ):
+        vtt_path = Path(vtt_path)
+        if not vtt_path.exists():
+            logger.error(f"[{video_guid}] Video file not found: {vtt_path}")
+            return
+
+        vtt_content = vtt_path.read_text()
+        if not vtt_content or vtt_content.strip() == "WEBVTT":
+            logger.error(f"[{video_guid}] vtt content is empty: {vtt_path}")
+            return
+
         url = f"{self.base_url}/{self.library_id}/videos/{video_guid}/captions/{lang.code}"
-        with open(vtt_path, "rb") as f:
-            payload = {
-                "srclang": lang.code,
-                "label": lang.native_name,
-                "captionsFile": base64.b64encode(f.read()).decode("utf-8")
-            }
-            response = requests.post(url, headers=self.headers, json=payload)
+        payload = {
+            "srclang": lang.code,
+            "label": lang.native_name,
+            "captionsFile": base64.b64encode(vtt_path.read_bytes()).decode("utf-8")
+        }
+        response = requests.post(url, headers=self.headers, json=payload)
+        try:
             response.raise_for_status()
-        return response.json()
+        except requests.exceptions.HTTPError as e:
+            if response.status_code == 400:
+                logger.error(f"[{video_guid}] [{lang.code}] error: {response.text}")

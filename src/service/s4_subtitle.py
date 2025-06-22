@@ -1,6 +1,5 @@
 import time
 import traceback
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from loguru import logger
 
@@ -48,11 +47,5 @@ def subtitle_videos(host: str = ""):
             continue
 
         last_id = videos[-1].id
-        with ThreadPoolExecutor(max_workers=len(videos)) as executor:
-            futures = [executor.submit(subtitle_video, video) for video in videos]
-            for future in as_completed(futures):
-                error = future.result()
-                if error:
-                    exception_count += 1
-                    if exception_count >= 3:
-                        raise error
+        for video in videos:
+            subtitle_video(video)

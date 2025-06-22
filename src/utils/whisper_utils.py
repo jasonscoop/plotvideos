@@ -7,19 +7,24 @@ from src.lib.config import MODELS_DIR, WHISPER_DEVICE, WHISPER_NUM_WORKERS, WHIS
 from src.lib.schemas import StorePath
 from src.utils.string_utils import end_with_stop_char
 
+_whisper_model: WhisperModel = None
+
 
 def get_whisper_model() -> WhisperModel:
-    download_root = MODELS_DIR.joinpath("whisper").joinpath(WHISPER_MODEL)
-    download_root.mkdir(parents=True, exist_ok=True)
-    return WhisperModel(
-        model_size_or_path=WHISPER_MODEL,
-        device=WHISPER_DEVICE,
-        compute_type=WHISPER_COMPUTE_TYPE,
-        cpu_threads=WHISPER_CPU_THREADS,
-        num_workers=WHISPER_NUM_WORKERS,
-        download_root=download_root.as_posix(),
-        local_files_only=WHISPER_LOCAL_FILES_ONLY,
-    )
+    global _whisper_model
+    if _whisper_model is None:
+        download_root = MODELS_DIR.joinpath("whisper").joinpath(WHISPER_MODEL)
+        download_root.mkdir(parents=True, exist_ok=True)
+        _whisper_model = WhisperModel(
+            model_size_or_path=WHISPER_MODEL,
+            device=WHISPER_DEVICE,
+            compute_type=WHISPER_COMPUTE_TYPE,
+            cpu_threads=WHISPER_CPU_THREADS,
+            num_workers=WHISPER_NUM_WORKERS,
+            download_root=download_root.as_posix(),
+            local_files_only=WHISPER_LOCAL_FILES_ONLY,
+        )
+    return _whisper_model
 
 
 def whisper_transcribe(video_path: StorePath):

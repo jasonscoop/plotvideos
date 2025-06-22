@@ -1,6 +1,7 @@
 import traceback
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
+from botocore.exceptions import ClientError
 from loguru import logger
 
 from src.crud.language_crud import LanguageCrud
@@ -25,7 +26,13 @@ def download_vtt_from_s3(video: Video):
 
 
 def translate_video(video: Video, languages: list[Language]):
-    download_vtt_from_s3(video)
+    try:
+        download_vtt_from_s3(video)
+    except ClientError as e:
+        if e.response['Error']['Code'] == '404':
+            logger.error(f"Object not found. {str(e)}")
+            return
+
     if not video.path.vtt.exists():
         logger.warning(f"[{video.id}] VTT file doesn't exist, skipping translation")
         return
@@ -59,7 +66,7 @@ def main():
         # Get videos that have VTT files but may not have translations
         videos = VideoCrud.batch_get(last_id, BATCH_SIZE, status=[VideoStatus.uploaded, VideoStatus.published],
                                      temp_status=1)
-        videos = [v for v in videos if v.id <= MAX_ID and v.path.vtt.exists()]
+        videos = [v for v in videos if v.id <= MAX_ID]
         if not videos:
             logger.info("All translation done!")
             break

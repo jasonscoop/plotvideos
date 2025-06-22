@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Union
 
 import boto3
-from loguru import logger
 
 from src.lib.config import S3_BUCKET_NAME, S3_SECRET_KEY, S3_REGION, S3_ACCESS_KEY
 from src.lib.models import Video
@@ -43,5 +42,3 @@ def is_path_match(path: str) -> bool:
 def rm_video(video: Video):
     if video.path.parent.exists() and is_path_match(video.path.parent.as_posix()):
         shutil.rmtree(str(video.path.parent), ignore_errors=False)
-    else:
-        logger.warning(f"File [{video.path.parent.as_posix()}] does not exist")

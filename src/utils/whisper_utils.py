@@ -40,10 +40,24 @@ def whisper_transcribe(video_path: StorePath):
     subtitles, sub_text = convert_to_subtitles(segments)
 
     items = []
+    last_end_time = 0.0
+    
     for subtitle in subtitles:
         text = subtitle.get("msg").strip()
         if text:
-            items.append(text_to_vtt(text, subtitle.get("start_time"), subtitle.get("end_time")))
+            start_time = subtitle.get("start_time")
+            end_time = subtitle.get("end_time")
+            
+            # Ensure this subtitle starts after the previous one ends
+            if start_time <= last_end_time:
+                start_time = last_end_time + 0.001
+                # Adjust end_time if it's now invalid
+                if end_time <= start_time:
+                    end_time = start_time + 0.001
+            
+            items.append(text_to_vtt(text, start_time, end_time))
+            last_end_time = end_time
+    
     vtt_content = "WEBVTT\n\n" + "\n".join(items)
     return vtt_content, sub_text
 
@@ -77,7 +91,8 @@ def convert_to_subtitles(segments) -> (list, str):
                     if not seg_text:
                         continue
 
-                    if seg_text.strip():
+                    # Ensure start_time is less than end_time
+                    if seg_start < seg_end and seg_text.strip():
                         subtitles.append({"msg": seg_text, "start_time": seg_start, "end_time": seg_end})
 
                     is_segmented = False
@@ -92,7 +107,8 @@ def convert_to_subtitles(segments) -> (list, str):
         if not seg_text:
             continue
 
-        if seg_text.strip():
+        # Ensure start_time is less than end_time
+        if seg_start < seg_end and seg_text.strip():
             subtitles.append({"msg": seg_text, "start_time": seg_start, "end_time": seg_end})
 
     return subtitles, subtitle_content
@@ -112,10 +128,10 @@ def capitalize_first_letter(text: str) -> str:
 
 
 def text_to_vtt(msg: str, start_time: float, end_time: float) -> str:
-    start_time = time_convert_seconds_to_hmsm(start_time)
-    end_time = time_convert_seconds_to_hmsm(end_time)
+    start_time_str = time_convert_seconds_to_hmsm(start_time)
+    end_time_str = time_convert_seconds_to_hmsm(end_time)
 
-    return f"{start_time} --> {end_time}\n{capitalize_first_letter(msg.strip())}\n"
+    return f"{start_time_str} --> {end_time_str}\n{capitalize_first_letter(msg.strip())}\n"
 
 
 if __name__ == '__main__':

@@ -78,4 +78,5 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
+      - ./scripts:/workspace/scripts
     command: python scripts/python/translate_vtt.py

@@ -1,13 +1,13 @@
 from typing import List
 
 import requests
-from tenacity import stop_after_attempt, retry, wait_fixed
+from tenacity import stop_after_attempt, retry, wait_random
 
 from src.lib.config import RAPIDAPI_AI_TRANSLATE_KEY_URL, RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL
 from src.lib.models import Language
 
 
-@retry(wait=wait_fixed(2), stop=stop_after_attempt(3), reraise=True)
+@retry(wait=wait_random(2, 5), stop=stop_after_attempt(3), reraise=True)
 def translate_texts1(texts: List[str], lang: Language) -> List[str]:
     assert RAPIDAPI_AI_TRANSLATE_KEY_URL, "Please set the RAPIDAPI_AI_TRANSLATE_KEY_URL environment variable"
 
@@ -28,7 +28,7 @@ def translate_texts1(texts: List[str], lang: Language) -> List[str]:
     return response.json()["data"][0]
 
 
-@retry(wait=wait_fixed(2), stop=stop_after_attempt(3), reraise=True)
+@retry(wait=wait_random(3, 7), stop=stop_after_attempt(3), reraise=True)
 def translate_texts2(texts: List[str], lang: Language) -> List[str]:
     assert RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL, "Please set the RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL environment variable"
 

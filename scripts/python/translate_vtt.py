@@ -17,6 +17,7 @@ from src.utils.log_utils import init_logging
 
 BATCH_SIZE = 10
 MAX_ID = 27555
+LAST_ID = 2210
 
 
 def download_vtt_from_s3(video: Video):
@@ -60,7 +61,7 @@ def translate_video(video: Video, languages: list[Language]):
 
 
 def main():
-    last_id = 0
+    last_id = LAST_ID
     languages = LanguageCrud.get_all()
     while True:
         # Get videos that have VTT files but may not have translations

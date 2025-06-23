@@ -69,7 +69,7 @@ def transcribe_video(video: Video):
 
 
 def main():
-    last_id = 0
+    last_id = 1912
     while True:
         videos = VideoCrud.batch_get(last_id, BATCH_SIZE, status=[VideoStatus.uploaded, VideoStatus.published],
                                      temp_status=0)

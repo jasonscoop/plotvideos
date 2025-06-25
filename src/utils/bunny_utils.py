@@ -7,7 +7,7 @@ from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.consts import WEBSITES
 from src.lib.models import Video, Language
-from src.utils.vtt_utils import is_valid_vtt
+from src.utils.vtt_utils import correct_vtt, is_valid_vtt
 
 
 class BunnyStreamClient:
@@ -76,14 +76,14 @@ class BunnyStreamClient:
             return
 
         if not is_valid_vtt(vtt_content):
-            logger.error(f"[{video_guid}] Invalid vtt content: {vtt_path}")
-            return
+            vtt_content = correct_vtt(vtt_content)
+            logger.warning(f"[{video_guid}] Corrected vtt content: {vtt_path}")
 
         url = f"{self.base_url}/{self.library_id}/videos/{video_guid}/captions/{lang.code}"
         payload = {
             "srclang": lang.code,
             "label": lang.native_name,
-            "captionsFile": base64.b64encode(vtt_path.read_bytes()).decode("utf-8")
+            "captionsFile": base64.b64encode(vtt_content.encode("utf-8")).decode("utf-8")
         }
         response = requests.post(url, headers=self.headers, json=payload)
         try:
@@ -91,3 +91,6 @@ class BunnyStreamClient:
         except requests.exceptions.HTTPError as e:
             if response.status_code == 400:
                 logger.error(f"[{video_guid}] [{lang.code}] error: {response.text}")
+
+        # save back to disk for uploading to s3
+        vtt_path.write_text(vtt_content)

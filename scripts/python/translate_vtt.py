@@ -17,7 +17,7 @@ from src.utils.log_utils import init_logging
 
 BATCH_SIZE = 10
 MAX_ID = 27555
-LAST_ID = 2210
+LAST_ID = 5744
 
 
 def download_vtt_from_s3(video: Video):

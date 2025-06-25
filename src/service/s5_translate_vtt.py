@@ -13,7 +13,6 @@ from src.lib.enums import VideoStatus
 from src.utils.file_utils import rm_video
 from src.utils.llm_utils import llm_translate_vtt
 from src.utils.translate_utils import translate_texts2, translate_texts1
-from src.utils.vtt_utils import is_valid_vtt
 
 
 def google_translate_vtt(vtt_content, lang, video) -> str:
@@ -34,7 +33,7 @@ def google_translate_vtt(vtt_content, lang, video) -> str:
 
 def translate_and_save(lang, vtt_content, video):
     translated_vtt = llm_translate_vtt(vtt_content, lang)
-    if not is_valid_vtt(translated_vtt):
+    if not translated_vtt:
         logger.warning(
             f"[{video.id} | {video.host} | {video.original_id}] Translated with llm failed, using google translator '{lang.code}'")
         translated_vtt = google_translate_vtt(vtt_content, lang, video)

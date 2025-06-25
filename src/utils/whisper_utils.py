@@ -40,24 +40,11 @@ def whisper_transcribe(video_path: StorePath):
     subtitles, sub_text = convert_to_subtitles(segments)
 
     items = []
-    last_end_time = 0.0
-    
     for subtitle in subtitles:
         text = subtitle.get("msg").strip()
         if text:
-            start_time = subtitle.get("start_time")
-            end_time = subtitle.get("end_time")
-            
-            # Ensure this subtitle starts after the previous one ends
-            if start_time <= last_end_time:
-                start_time = last_end_time + 0.001
-                # Adjust end_time if it's now invalid
-                if end_time <= start_time:
-                    end_time = start_time + 0.001
-            
-            items.append(text_to_vtt(text, start_time, end_time))
-            last_end_time = end_time
-    
+            items.append(text_to_vtt(text, subtitle.get("start_time"), subtitle.get("end_time")))
+
     vtt_content = "WEBVTT\n\n" + "\n".join(items)
     return vtt_content, sub_text
 

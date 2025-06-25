@@ -72,12 +72,12 @@ class BunnyStreamClient:
 
         vtt_content = vtt_path.read_text()
         if not vtt_content or vtt_content.strip() == "WEBVTT":
-            logger.error(f"[{video_guid}] vtt content is empty: {vtt_path}")
+            logger.error(f"[{video_guid}] vtt content is empty '{lang.code}']'")
             return
 
         if not is_valid_vtt(vtt_content):
             vtt_content = correct_vtt(vtt_content)
-            logger.warning(f"[{video_guid}] Corrected vtt content: {vtt_path}")
+            logger.warning(f"[{video_guid}] Corrected vtt content '{lang.code}'")
 
         url = f"{self.base_url}/{self.library_id}/videos/{video_guid}/captions/{lang.code}"
         payload = {

@@ -136,7 +136,8 @@ Deno.serve(async (req) => {
             return createErrorResponse('Invalid or expired API key', 403);
         }
 
-        if (!apiKeyRow.hosts.includes(host)) {
+        const normalizedHost = host.replace(/^www\./, '');
+        if (apiKeyRow.host !== normalizedHost) {
             return createErrorResponse('Host not allowed', 403);
         }
 

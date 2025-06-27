@@ -1,6 +1,3 @@
-import traceback
-from concurrent.futures import ProcessPoolExecutor, as_completed
-
 from botocore.exceptions import ClientError
 from loguru import logger
 
@@ -73,15 +70,8 @@ def main():
             break
 
         last_id = videos[-1].id
-        with ProcessPoolExecutor(max_workers=BATCH_SIZE) as executor:
-            futures = {executor.submit(translate_video, v, languages): v for v in videos}
-            for future in as_completed(futures):
-                try:
-                    future.result()
-                except Exception as e:
-                    logger.error(f"Error translating video: {e}")
-                    traceback.print_exc()
-                    raise e
+        for video in videos:
+            translate_video(video, languages)
 
 
 if __name__ == "__main__":

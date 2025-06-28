@@ -29,6 +29,9 @@ services:
   s4_subtitle:
     build: .
     container_name: s4_subtitle
+    cpus: "2"
+    mem_limit: 2g
+    memswap_limit: 10g
     env_file:
       - .env
     volumes:

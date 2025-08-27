@@ -76,6 +76,20 @@ wheels = [
 ]
 
 [[package]]
+name = "b2sdk"
+version = "2.10.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "annotated-types" },
+    { name = "logfury" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3b/ed/41cf8eb982f737b5f591a01446dd78db79269a24bc71142eb74fcf42c039/b2sdk-2.10.0.tar.gz", hash = "sha256:be41a07a49ed332129cf3d73262308774187b230862731e473485400a89f8dc3", size = 214259, upload-time = "2025-08-17T23:50:40.173Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/eb/06/ebe02bbb6ba8c7534fed07d184260bc028ca3689c48f9cdda41c0e915b0f/b2sdk-2.10.0-py3-none-any.whl", hash = "sha256:5bb587830a840b60ed148765b29870d251c6d02408712c5c3447725a1414d52d", size = 298854, upload-time = "2025-08-17T23:50:38.742Z" },
+]
+
+[[package]]
 name = "boto3"
 version = "1.38.32"
 source = { registry = "https://pypi.org/simple" }
@@ -401,6 +415,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/d2/1b/656f5a357de7135a3777bd735cc7c9b8f23b4d37465505bd0eaf4be9befe/llvmlite-0.44.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:46224058b13c96af1365290bdfebe9a6264ae62fb79b2b55693deed11657a8bf", size = 42361904, upload-time = "2025-01-20T11:14:22.949Z" },
     { url = "https://files.pythonhosted.org/packages/d8/e1/12c5f20cb9168fb3464a34310411d5ad86e4163c8ff2d14a2b57e5cc6bac/llvmlite-0.44.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:aa0097052c32bf721a4efc03bd109d335dfa57d9bffb3d4c24cc680711b8b4fc", size = 41184245, upload-time = "2025-01-20T11:14:31.731Z" },
     { url = "https://files.pythonhosted.org/packages/d0/81/e66fc86539293282fd9cb7c9417438e897f369e79ffb62e1ae5e5154d4dd/llvmlite-0.44.0-cp313-cp313-win_amd64.whl", hash = "sha256:2fb7c4f2fb86cbae6dca3db9ab203eeea0e22d73b99bc2341cdf9de93612e930", size = 30331193, upload-time = "2025-01-20T11:14:38.578Z" },
+]
+
+[[package]]
+name = "logfury"
+version = "1.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/90/f2/24389d99f861dd65753fc5a56e2672339ec1b078da5e2f4b174d0767b132/logfury-1.0.1.tar.gz", hash = "sha256:130a5daceab9ad534924252ddf70482aa2c96662b3a3825a7d30981d03b76a26", size = 12826, upload-time = "2021-10-23T23:23:03.847Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/04/c7/8a2cfdf39f4cbbb307603aeb03ca89a4765b96be310a0848b20eb4d17e76/logfury-1.0.1-py3-none-any.whl", hash = "sha256:b4f04be1701a1df644afc3384d6167d64c899f8036b7eefc3b6c570c6a9b290b", size = 7512, upload-time = "2021-10-23T23:23:02.21Z" },
 ]
 
 [[package]]
@@ -842,6 +865,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pymysql"
+version = "1.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b3/8f/ce59b5e5ed4ce8512f879ff1fa5ab699d211ae2495f1adaa5fbba2a1eada/pymysql-1.1.1.tar.gz", hash = "sha256:e127611aaf2b417403c60bf4dc570124aeb4a57f5f37b8e95ae399a42f904cd0", size = 47678, upload-time = "2024-05-21T11:03:43.722Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0c/94/e4181a1f6286f545507528c78016e00065ea913276888db2262507693ce5/PyMySQL-1.1.1-py3-none-any.whl", hash = "sha256:4de15da4c61dc132f4fb9ab763063e693d521a80fd0e87943b9a453dd4c19d6c", size = 44972, upload-time = "2024-05-21T11:03:41.216Z" },
+]
+
+[[package]]
 name = "pyreadline3"
 version = "3.5.4"
 source = { registry = "https://pypi.org/simple" }
@@ -1254,6 +1286,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "azure-cognitiveservices-speech" },
+    { name = "b2sdk" },
     { name = "boto3" },
     { name = "ctranslate2" },
     { name = "faster-whisper" },
@@ -1264,6 +1297,7 @@ dependencies = [
     { name = "numpy" },
     { name = "psycopg2-binary" },
     { name = "pydantic" },
+    { name = "pymysql" },
     { name = "python-dotenv" },
     { name = "requests" },
     { name = "sqlalchemy" },
@@ -1282,6 +1316,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "azure-cognitiveservices-speech", specifier = "==1.44.0" },
+    { name = "b2sdk", specifier = ">=1.32.0" },
     { name = "boto3", specifier = ">=1.38.32" },
     { name = "ctranslate2", specifier = ">=4.6.0" },
     { name = "faster-whisper", specifier = ">=1.1.1" },
@@ -1292,6 +1327,7 @@ requires-dist = [
     { name = "numpy", specifier = "==1.26.4" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
     { name = "pydantic", specifier = "==2.11.5" },
+    { name = "pymysql", specifier = ">=1.1.1" },
     { name = "python-dotenv", specifier = ">=1.1.0" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "sqlalchemy", specifier = ">=2.0.41" },

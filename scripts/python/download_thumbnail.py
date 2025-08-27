@@ -49,11 +49,11 @@ class B2Client:
         uploaded_file = self.bucket.upload_local_file(
             local_file=str(file_path), file_name=b2_key
         )
-        return f"https://f004.backblazeb2.com/file/{self.bucket.name}/{b2_key}"
+        return f"https://play.luckvideos.com/{b2_key}"
 
 
 def download_thumbnail(url: str, output_path: Path) -> bool:
-    """Download thumbnail using yt-dlp"""
+    """Download thumbnail using yt-dlp and convert to webp"""
     ydl_opts = {
         "writethumbnail": True,
         "outtmpl": str(output_path.with_suffix("")),
@@ -61,8 +61,12 @@ def download_thumbnail(url: str, output_path: Path) -> bool:
         "quiet": True,
         "no_warnings": True,
         "extract_flat": False,
-        "proxy": "socks5://127.0.0.1:9150",  # Tor proxy
+        "convert_thumbnails": "webp",  # Convert thumbnails to webp format
     }
+
+    # Add proxy if enabled
+    if PROXY_ENABLED:
+        ydl_opts["proxy"] = PROXY_URL
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -72,15 +76,14 @@ def download_thumbnail(url: str, output_path: Path) -> bool:
                 print(f"No info extracted for {url}")
                 return False
 
-            # Download the video info (this will also download thumbnail)
+            # Download only the thumbnail
             ydl.download([url])
 
-        # yt-dlp might save with different extensions, find the thumbnail file
-        for ext in [".webp", ".jpg", ".jpeg", ".png"]:
-            thumb_file = output_path.with_suffix(ext)
-            if thumb_file.exists():
-                print(f"Found thumbnail: {thumb_file}")
-                return True
+        # yt-dlp will save thumbnail as webp due to convert_thumbnails option
+        thumb_file = output_path.with_suffix(".webp")
+        if thumb_file.exists():
+            print(f"Found thumbnail: {thumb_file}")
+            return True
 
         # If no thumbnail found, try to get it from the info
         if "thumbnail" in info:
@@ -136,7 +139,6 @@ def process_videos():
 
     # Read CSV and filter videos
     videos_to_process = []
-    max_id = last_id
 
     with open(CSV_FILE, newline="", encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
@@ -148,21 +150,23 @@ def process_videos():
                 # Check if video meets criteria
                 if video_id > last_id and status != "fetched":
                     videos_to_process.append(row)
-                    max_id = max(max_id, video_id)
+
+                # order by video id
+                videos_to_process.sort(key=lambda x: int(x["id"]))
             except (ValueError, KeyError):
                 continue
 
     print(f"Found {len(videos_to_process)} videos to process")
 
+    max_id = last_id
     # Process each video
     for row in videos_to_process:
         video_id = int(row["id"])
         url = row.get("url", "")
         host = row.get("host", "")
-        filename = row.get("filename", "")
         original_id = row.get("original_id", "")
 
-        if not url or not host or not filename:
+        if not url or not host:
             print(f"⚠️ Skipping video {video_id}: missing required data")
             continue
 
@@ -192,8 +196,9 @@ def process_videos():
         else:
             print(f"❌ Failed to download thumbnail for video {video_id}")
 
-    # Update last processed ID
-    write_last_id(max_id)
+        max_id = video_id
+        write_last_id(max_id)
+
     print(f"✅ Updated last_id to: {max_id}")
 
 

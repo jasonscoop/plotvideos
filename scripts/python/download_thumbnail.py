@@ -1,0 +1,205 @@
+import csv
+import json
+import os
+import tempfile
+from pathlib import Path
+
+import yt_dlp
+import requests
+from b2sdk.v2 import B2Api, InMemoryAccountInfo
+from dotenv import load_dotenv
+
+from src.lib.config import WORKS_DIR
+
+load_dotenv()
+
+# B2 settings - Load from environment variables
+PROXY_ENABLED = os.getenv("PROXY_ENABLED", "false").lower() == "true"
+PROXY_URL = os.getenv("PROXY_URL", "socks5://127.0.0.1:9150")
+B2_APPLICATION_KEY_ID = os.getenv("B2_APPLICATION_KEY_ID")
+B2_APPLICATION_KEY = os.getenv("B2_APPLICATION_KEY")
+B2_BUCKET_NAME = os.getenv("B2_BUCKET_NAME")
+
+CSV_FILE = WORKS_DIR / "videos_rows.csv"
+LAST_ID_FILE = WORKS_DIR / "last_thumbnail_id.txt"
+
+WEBSITES = {
+    "www.pornhub.com": "ph",
+    "www.xhamster.com": "xh",
+    "www.xvideos.com": "xv",
+    "www.eporner.com": "ep",
+    "www.youjizz.com": "yj",
+    "www.redtube.com": "rt",
+    "www.youporn.com": "yp",
+    "www.pornhd.com": "pd",
+    "spankbang.com": "sb",
+    "www.youtube.com": "yt",
+}
+
+
+class B2Client:
+    def __init__(self, key_id: str, application_key: str, bucket_name: str):
+        self.info = InMemoryAccountInfo()
+        self.api = B2Api(self.info)
+        self.api.authorize_account("production", key_id, application_key)
+        self.bucket = self.api.get_bucket_by_name(bucket_name)
+
+    def upload_file(self, file_path: Path, b2_key: str) -> str:
+        """Upload a file to B2 and return the public URL"""
+        uploaded_file = self.bucket.upload_local_file(
+            local_file=str(file_path), file_name=b2_key
+        )
+        return f"https://f004.backblazeb2.com/file/{self.bucket.name}/{b2_key}"
+
+
+def download_thumbnail(url: str, output_path: Path) -> bool:
+    """Download thumbnail using yt-dlp"""
+    ydl_opts = {
+        "writethumbnail": True,
+        "outtmpl": str(output_path.with_suffix("")),
+        "skip_download": True,  # Skip downloading video/audio
+        "quiet": True,
+        "no_warnings": True,
+        "extract_flat": False,
+        "proxy": "socks5://127.0.0.1:9150",  # Tor proxy
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            # Extract info first to check if thumbnail is available
+            info = ydl.extract_info(url, download=False)
+            if not info:
+                print(f"No info extracted for {url}")
+                return False
+
+            # Download the video info (this will also download thumbnail)
+            ydl.download([url])
+
+        # yt-dlp might save with different extensions, find the thumbnail file
+        for ext in [".webp", ".jpg", ".jpeg", ".png"]:
+            thumb_file = output_path.with_suffix(ext)
+            if thumb_file.exists():
+                print(f"Found thumbnail: {thumb_file}")
+                return True
+
+        # If no thumbnail found, try to get it from the info
+        if "thumbnail" in info:
+            try:
+                response = requests.get(info["thumbnail"], timeout=10)
+                if response.status_code == 200:
+                    output_path.with_suffix(".webp").write_bytes(response.content)
+                    print(f"Downloaded thumbnail from info: {info['thumbnail']}")
+                    return True
+            except Exception as e:
+                print(f"Failed to download thumbnail from info: {e}")
+
+        return False
+    except Exception as e:
+        print(f"Error downloading thumbnail for {url}: {e}")
+        return False
+
+
+def read_last_id() -> int:
+    """Read the last processed ID from file"""
+    try:
+        with open(LAST_ID_FILE, "r") as f:
+            return int(f.read().strip())
+    except FileNotFoundError:
+        return 0
+
+
+def write_last_id(last_id: int):
+    """Write the last processed ID to file"""
+    # Ensure the directory exists
+    Path(LAST_ID_FILE).parent.mkdir(parents=True, exist_ok=True)
+    with open(LAST_ID_FILE, "w") as f:
+        f.write(str(last_id))
+
+
+def process_videos():
+    """Process videos from CSV that meet the criteria"""
+    # Validate B2 settings
+    if not all([B2_APPLICATION_KEY_ID, B2_APPLICATION_KEY, B2_BUCKET_NAME]):
+        print("❌ B2 settings not configured!")
+        print("Please set the following environment variables:")
+        print("  - B2_APPLICATION_KEY_ID")
+        print("  - B2_APPLICATION_KEY")
+        print("  - B2_BUCKET_NAME")
+        return
+
+    # Initialize B2 client
+    b2_client = B2Client(B2_APPLICATION_KEY_ID, B2_APPLICATION_KEY, B2_BUCKET_NAME)
+
+    # Read last processed ID
+    last_id = read_last_id()
+    print(f"Starting from ID: {last_id}")
+
+    # Read CSV and filter videos
+    videos_to_process = []
+    max_id = last_id
+
+    with open(CSV_FILE, newline="", encoding="utf-8") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            try:
+                video_id = int(row.get("id", 0))
+                status = row.get("status", "")
+
+                # Check if video meets criteria
+                if video_id > last_id and status != "fetched":
+                    videos_to_process.append(row)
+                    max_id = max(max_id, video_id)
+            except (ValueError, KeyError):
+                continue
+
+    print(f"Found {len(videos_to_process)} videos to process")
+
+    # Process each video
+    for row in videos_to_process:
+        video_id = int(row["id"])
+        url = row.get("url", "")
+        host = row.get("host", "")
+        filename = row.get("filename", "")
+        original_id = row.get("original_id", "")
+
+        if not url or not host or not filename:
+            print(f"⚠️ Skipping video {video_id}: missing required data")
+            continue
+
+        short_name = WEBSITES.get(host)
+        if not short_name:
+            print(f"⚠️ Skipping video {video_id}: unknown host {host}")
+            continue
+
+        print(f"📥 Processing video {video_id}: {url}")
+
+        # Download thumbnail
+        with tempfile.NamedTemporaryFile(suffix=".webp", delete=False) as tmp_file:
+            tmp_path = Path(tmp_file.name)
+
+        if download_thumbnail(url, tmp_path):
+            b2_key = f"{short_name}/{original_id[:2]}/{original_id}/thumbnail.webp"
+
+            print(f"📤 Uploading thumbnail to B2: {b2_key}")
+            try:
+                thumbnail_url = b2_client.upload_file(tmp_path, b2_key)
+                print(f"✅ Thumbnail uploaded: {thumbnail_url}")
+            except Exception as e:
+                print(f"❌ Failed to upload thumbnail: {e}")
+            finally:
+                # Clean up temp file
+                tmp_path.unlink(missing_ok=True)
+        else:
+            print(f"❌ Failed to download thumbnail for video {video_id}")
+
+    # Update last processed ID
+    write_last_id(max_id)
+    print(f"✅ Updated last_id to: {max_id}")
+
+
+def main():
+    process_videos()
+
+
+if __name__ == "__main__":
+    main()

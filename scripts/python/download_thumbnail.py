@@ -3,7 +3,7 @@ import json
 import os
 import tempfile
 from pathlib import Path
-
+from loguru import logger
 import yt_dlp
 import requests
 from b2sdk.v2 import B2Api, InMemoryAccountInfo
@@ -53,7 +53,7 @@ class B2Client:
         return f"https://play.luckvideos.com/{b2_key}"
 
 
-@retry(wait=wait_fixed(2), stop=stop_after_attempt(3), reraise=False)
+@retry(wait=wait_fixed(2), stop=stop_after_attempt(3), reraise=True)
 def download_thumbnail(url: str, output_path: Path) -> bool:
     """Download thumbnail using yt-dlp and convert to webp"""
     ydl_opts = {
@@ -74,16 +74,10 @@ def download_thumbnail(url: str, output_path: Path) -> bool:
         # Extract info first to check if thumbnail is available
         info = ydl.extract_info(url, download=False)
         if not info:
-            print(f"No info extracted for {url}")
-            return False
-
-        # Download only the thumbnail
-        ydl.download([url])
-
-    if output_path.exists() and output_path.stat().st_size > 0:
-        return True
-
-    return False
+            logger.error(f"No info extracted for {url}")
+        else:
+            # Download only the thumbnail
+            ydl.download([url])
 
 
 def read_last_id() -> int:
@@ -107,11 +101,11 @@ def process_videos():
     """Process videos from CSV that meet the criteria"""
     # Validate B2 settings
     if not all([B2_APPLICATION_KEY_ID, B2_APPLICATION_KEY, B2_BUCKET_NAME]):
-        print("❌ B2 settings not configured!")
-        print("Please set the following environment variables:")
-        print("  - B2_APPLICATION_KEY_ID")
-        print("  - B2_APPLICATION_KEY")
-        print("  - B2_BUCKET_NAME")
+        logger.info("❌ B2 settings not configured!")
+        logger.info("Please set the following environment variables:")
+        logger.info("  - B2_APPLICATION_KEY_ID")
+        logger.info("  - B2_APPLICATION_KEY")
+        logger.info("  - B2_BUCKET_NAME")
         return
 
     # Initialize B2 client
@@ -119,7 +113,7 @@ def process_videos():
 
     # Read last processed ID
     last_id = read_last_id()
-    print(f"Starting from ID: {last_id}")
+    logger.info(f"Starting from ID: {last_id}")
 
     # Read CSV and filter videos
     videos_to_process = []
@@ -140,7 +134,7 @@ def process_videos():
             except (ValueError, KeyError):
                 continue
 
-    print(f"Found {len(videos_to_process)} videos to process")
+    logger.info(f"Found {len(videos_to_process)} videos to process")
 
     max_id = last_id
     # Process each video
@@ -151,39 +145,44 @@ def process_videos():
         original_id = row.get("original_id", "")
 
         if not url or not host:
-            print(f"⚠️ Skipping video {video_id}: missing required data")
+            logger.info(f"⚠️ Skipping video {video_id}: missing required data")
             continue
 
         short_name = WEBSITES.get(host)
         if not short_name:
-            print(f"⚠️ Skipping video {video_id}: unknown host {host}")
+            logger.info(f"⚠️ Skipping video {video_id}: unknown host {host}")
             continue
 
-        print(f"📥 Processing video {video_id}: {url}")
+        logger.info(f"📥 Processing video {video_id}: {url}")
 
         # Download thumbnail
         with tempfile.NamedTemporaryFile(suffix=".webp", delete=False) as tmp_file:
             tmp_path = Path(tmp_file.name)
 
-        if download_thumbnail(url, tmp_path):
-            b2_key = f"{short_name}/{original_id[:2]}/{original_id}/thumbnail.webp"
+        try:
+            download_thumbnail(url, tmp_path)
+        except Exception as e:
+            logger.error(f"❌ Failed to download thumbnail for video {video_id}: {e}")
 
-            print(f"📤 Uploading thumbnail to B2: {b2_key}")
-            try:
-                thumbnail_url = b2_client.upload_file(tmp_path, b2_key)
-                print(f"✅ Thumbnail uploaded: {thumbnail_url}")
-            except Exception as e:
-                print(f"❌ Failed to upload thumbnail: {e}")
-            finally:
-                # Clean up temp file
-                tmp_path.unlink(missing_ok=True)
-        else:
-            print(f"❌ Failed to download thumbnail for video {video_id}")
+        if not tmp_path.exists() or tmp_path.stat().st_size == 0:
+            logger.error(f"❌ Failed to download thumbnail for video {video_id}")
+            continue
+
+        b2_key = f"{short_name}/{original_id[:2]}/{original_id}/thumbnail.webp"
+        logger.info(f"📤 Uploading thumbnail to B2: {b2_key}")
+        try:
+            thumbnail_url = b2_client.upload_file(tmp_path, b2_key)
+            logger.info(f"✅ Thumbnail uploaded: {thumbnail_url}")
+        except Exception as e:
+            logger.info(f"❌ Failed to upload thumbnail: {e}")
+        finally:
+            # Clean up temp file
+            tmp_path.unlink(missing_ok=True)
 
         max_id = video_id
         write_last_id(max_id)
 
-    print(f"✅ Updated last_id to: {max_id}")
+    logger.info(f"✅ Updated last_id to: {max_id}")
 
 
 def main():

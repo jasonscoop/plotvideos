@@ -3,7 +3,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from src.utils.env_utils import get_str, get_int, get_bool
+from src.utils.env_utils import get_str, get_int, get_bool, get_float
 
 load_dotenv()
 
@@ -23,13 +23,17 @@ RAPIDAPI_KEY = getenv("RAPIDAPI_KEY")
 RAPIDAPI_FETCH_PAGE = get_int("RAPIDAPI_FETCH_PAGE", 2)
 
 RAPIDAPI_AI_TRANSLATE_KEY_URL = getenv("RAPIDAPI_AI_TRANSLATE_KEY_URL", "")
-RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL = getenv("RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL", "")
+RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL = getenv(
+    "RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL", ""
+)
 
 YT_DLP_PROXY = getenv("YT_DLP_PROXY", None)
 
-MAX_ACCEPT_VIDEO_SIZE = int(getenv("MAX_ACCEPT_VIDEO_SIZE", 1 * 1024 * 1024 * 1024))  # 1GB maximum
-MIN_ACCEPT_DURATION = int(getenv("MIN_ACCEPT_DURATION", 3 * 60))  # 3 mins
-SUBTITLE_TOKEN_RATIO_THRESHOLD = float(getenv("SUBTITLE_TOKEN_RATIO_THRESHOLD", 0.2))
+MAX_ACCEPT_VIDEO_SIZE = get_int(
+    "MAX_ACCEPT_VIDEO_SIZE", 1 * 1024 * 1024 * 1024
+)  # 1GB maximum
+MIN_ACCEPT_DURATION = get_int("MIN_ACCEPT_DURATION", 3 * 60)  # 3 mins
+SUBTITLE_TOKEN_RATIO_THRESHOLD = get_float("SUBTITLE_TOKEN_RATIO_THRESHOLD", 0.2)
 
 AZURE_SPEECH_KEY = getenv("AZURE_SPEECH_KEY")
 AZURE_SPEECH_REGION = getenv("AZURE_SPEECH_REGION")

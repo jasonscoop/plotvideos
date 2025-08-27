@@ -82,8 +82,13 @@ def download_thumbnail(url: str, output_path: Path) -> bool:
         # yt-dlp will save thumbnail as webp due to convert_thumbnails option
         thumb_file = output_path.with_suffix(".webp")
         if thumb_file.exists():
-            print(f"Found thumbnail: {thumb_file}")
-            return True
+            # Check if file size is greater than 0
+            if thumb_file.stat().st_size > 0:
+                print(f"Found thumbnail: {thumb_file}")
+                return True
+            else:
+                print(f"Thumbnail file is empty (0 bytes): {thumb_file}")
+                return False
 
         # If no thumbnail found, try to get it from the info
         if "thumbnail" in info:
@@ -148,7 +153,7 @@ def process_videos():
                 status = row.get("status", "")
 
                 # Check if video meets criteria
-                if video_id > last_id and status != "fetched":
+                if video_id > last_id and status != "fetched" and status != "failed":
                     videos_to_process.append(row)
 
                 # order by video id

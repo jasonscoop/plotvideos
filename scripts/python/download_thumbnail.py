@@ -53,11 +53,11 @@ class B2Client:
         return f"https://play.luckvideos.com/{b2_key}"
 
 
-@retry(wait=wait_fixed(2), stop=stop_after_attempt(3), reraise=True)
+@retry(wait=wait_fixed(2), stop=stop_after_attempt(3), reraise=False)
 def download_thumbnail(url: str, output_path: Path) -> bool:
     """Download thumbnail using yt-dlp and convert to webp"""
     ydl_opts = {
-        "writethumbnail": True,
+        "writethumbnail": "best",
         "outtmpl": str(output_path.with_suffix("")),
         "skip_download": True,  # Skip downloading video/audio
         "quiet": True,
@@ -70,43 +70,20 @@ def download_thumbnail(url: str, output_path: Path) -> bool:
     if PROXY_ENABLED:
         ydl_opts["proxy"] = PROXY_URL
 
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # Extract info first to check if thumbnail is available
-            info = ydl.extract_info(url, download=False)
-            if not info:
-                print(f"No info extracted for {url}")
-                return False
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        # Extract info first to check if thumbnail is available
+        info = ydl.extract_info(url, download=False)
+        if not info:
+            print(f"No info extracted for {url}")
+            return False
 
-            # Download only the thumbnail
-            ydl.download([url])
+        # Download only the thumbnail
+        ydl.download([url])
 
-        # yt-dlp will save thumbnail as webp due to convert_thumbnails option
-        thumb_file = output_path.with_suffix(".webp")
-        if thumb_file.exists():
-            # Check if file size is greater than 0
-            if thumb_file.stat().st_size > 0:
-                print(f"Found thumbnail: {thumb_file}")
-                return True
-            else:
-                print(f"Thumbnail file is empty (0 bytes): {thumb_file}")
-                return False
+    if output_path.exists() and output_path.stat().st_size > 0:
+        return True
 
-        # If no thumbnail found, try to get it from the info
-        if "thumbnail" in info:
-            try:
-                response = requests.get(info["thumbnail"], timeout=10)
-                if response.status_code == 200:
-                    output_path.with_suffix(".webp").write_bytes(response.content)
-                    print(f"Downloaded thumbnail from info: {info['thumbnail']}")
-                    return True
-            except Exception as e:
-                print(f"Failed to download thumbnail from info: {e}")
-
-        return False
-    except Exception as e:
-        print(f"Error downloading thumbnail for {url}: {e}")
-        return False
+    return False
 
 
 def read_last_id() -> int:

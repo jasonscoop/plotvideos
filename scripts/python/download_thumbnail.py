@@ -8,6 +8,7 @@ import yt_dlp
 import requests
 from b2sdk.v2 import B2Api, InMemoryAccountInfo
 from dotenv import load_dotenv
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 from src.lib.config import WORKS_DIR
 
@@ -52,6 +53,7 @@ class B2Client:
         return f"https://play.luckvideos.com/{b2_key}"
 
 
+@retry(wait=wait_fixed(2), stop=stop_after_attempt(3), reraise=True)
 def download_thumbnail(url: str, output_path: Path) -> bool:
     """Download thumbnail using yt-dlp and convert to webp"""
     ydl_opts = {

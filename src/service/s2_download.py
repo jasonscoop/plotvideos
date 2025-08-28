@@ -7,15 +7,25 @@ from yt_dlp.utils import DownloadError, RegexNotFoundError
 
 from src.crud.video_crud import VideoCrud
 from src.lib.config import MAX_ACCEPT_VIDEO_SIZE, S2_DOWNLOAD_BATCH_SIZE
+from src.lib.enums import ThumbnailStatus
 from src.lib.models import VideoStatus, Video
-from src.utils.download_utils import download_remote_video, SizeLimitExceeded, to_mb
+from src.utils.download_utils import (
+    download_remote_video,
+    SizeLimitExceeded,
+    to_mb,
+    download_image,
+)
 from src.utils.file_utils import rm_video
 
 
 def download_video(video: Video):
     try:
         info = download_remote_video(video.url, video.path)
+        thumbnail_status = ThumbnailStatus.downloaded
+        if not download_image(video.thumbnail_url, video.thumbnail_path):
+            thumbnail_status = ThumbnailStatus.failed
         video_size = video.path.video.stat().st_size
+
         VideoCrud.update(
             {
                 "id": video.id,
@@ -29,6 +39,7 @@ def download_video(video: Video):
                 "width": info.get("width", 0),
                 "height": info.get("height", 0),
                 "aspect_ratio": info.get("aspect_ratio", 0.0),
+                "thumbnail_status": thumbnail_status.value,
             }
         )
         if video_size > MAX_ACCEPT_VIDEO_SIZE:

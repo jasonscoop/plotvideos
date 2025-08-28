@@ -46,12 +46,13 @@ class B2Client:
 def download_thumbnail(url: str, output_path: Path) -> bool:
     """Download thumbnail using yt-dlp and convert to webp"""
     ydl_opts = {
-        "writethumbnail": "best",
+        "writethumbnail": True,
         "outtmpl": str(output_path.with_suffix("")),
         "skip_download": True,  # Skip downloading video/audio
         "quiet": True,
         "no_warnings": True,
         "extract_flat": False,
+        "prefer_ffmpeg": True,
         "convert_thumbnails": "webp",  # Convert thumbnails to webp format
     }
 

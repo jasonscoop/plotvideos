@@ -47,13 +47,14 @@ def download_thumbnail(url: str, output_path: Path) -> bool:
     """Download thumbnail using yt-dlp and convert to webp"""
     ydl_opts = {
         "writethumbnail": True,
-        "outtmpl": str(output_path.with_suffix("")),
+        "outtmpl": str(output_path),
         "skip_download": True,  # Skip downloading video/audio
         "quiet": True,
         "no_warnings": True,
         "extract_flat": False,
         "prefer_ffmpeg": True,
         "convert_thumbnails": "webp",  # Convert thumbnails to webp format
+        "overwrites": True,
     }
 
     # Add proxy if enabled
@@ -61,13 +62,7 @@ def download_thumbnail(url: str, output_path: Path) -> bool:
         ydl_opts["proxy"] = PROXY_URL
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        # Extract info first to check if thumbnail is available
-        info = ydl.extract_info(url, download=False)
-        if not info:
-            logger.error(f"No info extracted for {url}")
-        else:
-            # Download only the thumbnail
-            ydl.download([url])
+        ydl.download([url])
 
 
 def read_last_id() -> int:

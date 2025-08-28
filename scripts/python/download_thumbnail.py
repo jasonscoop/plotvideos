@@ -137,10 +137,11 @@ def process_videos():
             logger.info(f"⚠️ Skipping video {video_id}: missing required data")
             continue
 
-        short_name, _ = WEBSITES.get(host)
-        if not short_name:
+        website_info = WEBSITES.get(host)
+        if website_info is None:
             logger.info(f"⚠️ Skipping video {video_id}: unknown host {host}")
             continue
+        short_name, _ = website_info
 
         logger.info(f"📥 Processing video {video_id}: {url}")
 

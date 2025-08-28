@@ -85,10 +85,11 @@ def load_csv_mapping():
             library_id = row["bunny_library_id"]
             video_id = row["bunny_video_id"]
 
-            short_name, _ = WEBSITES.get(host)
-            if not short_name:
+            website_info = WEBSITES.get(host)
+            if website_info is None:
                 logger.error(f"⚠️ Unknown host {host}")
                 continue
+            short_name, _ = website_info
 
             try:
                 title_translations = json.loads(row["title_translations"])

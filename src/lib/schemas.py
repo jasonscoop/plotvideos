@@ -7,6 +7,7 @@ from src.lib.consts import WEBSITES
 class StorePath:
     def __init__(self, host: str, original_id: str):
         self.prefix: str = f"{WEBSITES[host][0]}/{original_id[0:2]}/{original_id}"
+        self.parent: Path = VIDEOS_DIR / self.prefix
 
         self.video_s3_key = self.prefix + "/video.mp4"
         self.vtt_s3_key = self.prefix + "/subtitle.vtt"
@@ -18,4 +19,4 @@ class StorePath:
         self.translated_vtts: Path = VIDEOS_DIR / self.translated_s3_key
         self.audio: Path = VIDEOS_DIR / self.audio_s3_key
 
-        self.segments: Path = VIDEOS_DIR / self.prefix / "segments.json"
+        self.segments: Path = self.parent / "segments.json"

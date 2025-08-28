@@ -1,6 +1,7 @@
 from typing import List
 
 from sqlalchemy.orm import undefer
+from sqlalchemy import text
 from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.connection import get_db
@@ -42,20 +43,32 @@ class VideoCrud:
 
     @classmethod
     def batch_add_or_update(cls, videos: List[Video]) -> tuple[int, int]:
-        added = 0
-        updated = 0
-        with get_db() as session:
-            for video in videos:
-                old = session.query(Video).filter(Video.url == video.url).first()
-                if old is None:
-                    session.add(video)
-                    added += 1
-                elif old.thumbnail_url != video.thumbnail_url:
-                    old.thumbnail_url = video.thumbnail_url
-                    updated += 1
-            session.commit()
+        if len(videos) == 0:
+            return 0, 0
 
-        return added, updated
+        with get_db() as session:
+            urls = [video.url for video in videos]
+
+            existing_videos = session.query(Video).filter(Video.url.in_(urls)).all()
+            existing_urls = {video.url: video for video in existing_videos}
+
+            to_insert = []
+            to_update = []
+
+            for video in videos:
+                if video.url in existing_urls:
+                    existing_video = existing_urls[video.url]
+                    if existing_video.thumbnail_url != video.thumbnail_url:
+                        existing_video.thumbnail_url = video.thumbnail_url
+                        to_update.append(existing_video)
+                else:
+                    to_insert.append(video)
+
+            if to_insert:
+                session.bulk_save_objects(to_insert)
+
+            session.commit()
+            return len(to_insert), len(to_update)
 
     @staticmethod
     @retry(wait=wait_fixed(2), stop=stop_after_attempt(3), reraise=True)

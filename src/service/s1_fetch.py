@@ -83,7 +83,7 @@ def fetch_and_save_videos(host: str = ""):
                             )
                         added, updated = VideoCrud.batch_add_or_update(videos)
                         logger.info(
-                            f"[{name}] fetched, added [{added}], updated [{updated}]"
+                            f"[{name}] fetched [{len(videos)}], added [{added}], updated [{updated}]"
                         )
                     except Exception as e:
                         exception_count += 1

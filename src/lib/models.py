@@ -92,7 +92,7 @@ class Video(Base):
     def path(self) -> StorePath:
         if not self.host or not self.original_id:
             logger.error(f"[{self.id}] host or original_id is not set")
-        return StorePath(self.host, self.original_id, self.filename)
+        return StorePath(self.host, self.original_id)
 
 
 class Term(Base):

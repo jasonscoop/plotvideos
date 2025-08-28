@@ -14,35 +14,49 @@ from src.utils.file_utils import rm_video
 
 def download_video(video: Video):
     try:
-        video_filename, info = download_remote_video(video.url, video.path.parent)
-        filesize = video.path.parent.joinpath(video_filename).stat().st_size
-        VideoCrud.update({
-            "id": video.id,
-            "status": VideoStatus.downloaded,
-            "filename": video_filename,
-            "title": info.get("title", video.title),
-            "tags": info.get("tags", []),
-            "categories": info.get("categories", []),
-            "duration": int(info.get("duration", 0)),
-            "file_size": filesize,
-            "width": info.get("width", 0),
-            "height": info.get("height", 0),
-            "aspect_ratio": info.get("aspect_ratio", 0.0),
-        })
-        if video.file_size > MAX_ACCEPT_VIDEO_SIZE:
-            reason = VideoCrud.update_status(video.id, VideoStatus.failed,
-                                             VideoStatus.downloaded.log(
-                                                 f"Video large than {to_mb(MAX_ACCEPT_VIDEO_SIZE)}MB."))
+        info = download_remote_video(video.url, video.path)
+        video_size = video.path.video.stat().st_size
+        VideoCrud.update(
+            {
+                "id": video.id,
+                "status": VideoStatus.downloaded,
+                "filename": video.path.video.name,
+                "title": info.get("title", video.title),
+                "tags": info.get("tags", []),
+                "categories": info.get("categories", []),
+                "duration": int(info.get("duration", 0)),
+                "file_size": video_size,
+                "width": info.get("width", 0),
+                "height": info.get("height", 0),
+                "aspect_ratio": info.get("aspect_ratio", 0.0),
+            }
+        )
+        if video_size > MAX_ACCEPT_VIDEO_SIZE:
+            reason = VideoCrud.update_status(
+                video.id,
+                VideoStatus.failed,
+                VideoStatus.downloaded.log(
+                    f"Video large than {to_mb(MAX_ACCEPT_VIDEO_SIZE)}MB."
+                ),
+            )
             rm_video(video)
-            logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
+            logger.warning(
+                f"[{video.id} | {video.host} | {video.original_id}] {reason}"
+            )
         else:
-            logger.info(f"[{video.id} | {video.host} | {video.original_id}]  Downloaded")
+            logger.info(
+                f"[{video.id} | {video.host} | {video.original_id}]  Downloaded"
+            )
     except (SizeLimitExceeded, DownloadError, RegexNotFoundError) as e:
-        VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.downloaded.log(e))
+        VideoCrud.update_status(
+            video.id, VideoStatus.failed, VideoStatus.downloaded.log(e)
+        )
         rm_video(video)
         logger.warning(str(e))
     except Exception as e:
-        VideoCrud.update_status(video.id, VideoStatus.failed, VideoStatus.downloaded.log(e))
+        VideoCrud.update_status(
+            video.id, VideoStatus.failed, VideoStatus.downloaded.log(e)
+        )
         rm_video(video)
         traceback.print_exc()
         logger.warning(str(e))
@@ -53,7 +67,9 @@ def download_videos(host: str = ""):
     last_id = 0
     exception_count = 0
     while True:
-        videos = VideoCrud.batch_get(last_id, S2_DOWNLOAD_BATCH_SIZE, VideoStatus.fetched, host)
+        videos = VideoCrud.batch_get(
+            last_id, S2_DOWNLOAD_BATCH_SIZE, VideoStatus.fetched, host
+        )
         if not videos:
             logger.info("All downloaded, sleeping for 1 hour")
             time.sleep(1 * 60 * 60)

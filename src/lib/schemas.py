@@ -5,20 +5,19 @@ from src.lib.consts import WEBSITES
 
 
 class StorePath:
-    def __init__(self, host: str, original_id: str, filename: str):
-        prefix = f"{WEBSITES[host]['short_name']}/{original_id[0:2]}/{original_id}"
-        self.prefix: str = prefix
+    def __init__(self, host: str, original_id: str):
+        self.prefix: str = (
+            f"{WEBSITES[host]['short_name']}/{original_id[0:2]}/{original_id}"
+        )
 
-        self.parent: Path = VIDEOS_DIR / prefix
-        self.video: Path = self.parent / filename
+        self.video_s3_key = self.prefix + "/video.mp4"
+        self.vtt_s3_key = self.prefix + "/subtitle.vtt"
+        self.translated_s3_key = self.prefix + "/subtitles/"
+        self.audio_s3_key = self.prefix + "/audio.wav"
 
-        self.vtt: Path = self.parent / "subtitle.vtt"
-        self.vtt_s3_key = f"{self.prefix}/subtitle.vtt"
+        self.video: Path = VIDEOS_DIR / self.video_s3_key
+        self.vtt: Path = VIDEOS_DIR / self.vtt_s3_key
+        self.translated_vtts: Path = VIDEOS_DIR / self.translated_s3_key
+        self.audio: Path = VIDEOS_DIR / self.audio_s3_key
 
-        self.translated_vtts: Path = self.parent / "subtitles"
-        self.translated_s3_key: str = f"{prefix}/subtitles"
-
-        self.segments: Path = self.parent / "segments.json"
-
-        self.audio: Path = self.parent / "audio.wav"
-        self.audio_s3_key = f"{self.prefix}/audio.wav"
+        self.segments: Path = VIDEOS_DIR / self.prefix / "segments.json"

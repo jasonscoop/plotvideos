@@ -19,6 +19,7 @@ COPY pyproject.toml .
 COPY uv.lock .
 
 RUN uv pip install --system -r pyproject.toml
+RUN uv pip install --system --upgrade yt-dlp
 COPY src/ src/
 
 

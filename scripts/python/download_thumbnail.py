@@ -141,7 +141,6 @@ def process_videos():
         if website_info is None:
             logger.info(f"⚠️ Skipping video {video_id}: unknown host {host}")
             continue
-        short_name, _ = website_info
 
         logger.info(f"📥 Processing video {video_id}: {url}")
 
@@ -158,7 +157,7 @@ def process_videos():
             logger.error(f"❌ Failed to download thumbnail for video {video_id}")
             continue
 
-        b2_key = f"{short_name}/{original_id[:2]}/{original_id}/thumbnail.webp"
+        b2_key = f"{website_info[0]}/{original_id[:2]}/{original_id}/thumbnail.webp"
         logger.info(f"📤 Uploading thumbnail to B2: {b2_key}")
         try:
             thumbnail_url = b2_client.upload_file(tmp_path, b2_key)

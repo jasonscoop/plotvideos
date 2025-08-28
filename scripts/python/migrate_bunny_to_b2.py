@@ -89,7 +89,6 @@ def load_csv_mapping():
             if website_info is None:
                 logger.error(f"⚠️ Unknown host {host}")
                 continue
-            short_name, _ = website_info
 
             try:
                 title_translations = json.loads(row["title_translations"])
@@ -118,7 +117,7 @@ def load_csv_mapping():
                 available_langs = []
 
             mapping[(library_id, video_id)] = (
-                short_name,
+                website_info[0],
                 filename,
                 available_langs,
             )

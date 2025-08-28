@@ -157,7 +157,7 @@ def main():
             logger.error(f"⚠️ No CSV mapping for {library_id} {video_id}")
             continue
 
-        short_name, filename, available_langs, _ = mapping[key]
+        short_name, filename, available_langs = mapping[key]
 
         # Build HTML and default thumbnail URL without any download/upload
         video_html, thumb_url = generate_video_html(

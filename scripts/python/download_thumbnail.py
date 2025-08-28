@@ -134,15 +134,15 @@ def process_videos():
         original_id = row.get("original_id", "")
 
         if not url or not host:
-            logger.info(f"⚠️ Skipping video {video_id}: missing required data")
+            logger.info(f"⚠️ 【{video_id}】missing url or host")
             continue
 
         website_info = WEBSITES.get(host)
         if website_info is None:
-            logger.info(f"⚠️ Skipping video {video_id}: unknown host {host}")
+            logger.info(f"⚠️ 【{video_id}】unknown host {host}")
             continue
 
-        logger.info(f"📥 Processing video {video_id}: {url}")
+        logger.info(f"📥 【{video_id}】Processing {url}")
 
         # Download thumbnail
         with tempfile.NamedTemporaryFile(suffix=".webp", delete=False) as tmp_file:
@@ -151,28 +151,27 @@ def process_videos():
         try:
             download_thumbnail(url, tmp_path)
         except Exception as e:
-            logger.error(f"❌ Failed to download thumbnail for video {video_id}: {e}")
+            logger.error(f"❌ 【{video_id}】Failed to download thumbnail: {e}")
+            continue
 
         if not tmp_path.exists() or tmp_path.stat().st_size == 0:
-            logger.error(f"❌ Failed to download thumbnail for video {video_id}")
+            logger.error(
+                f"❌ 【{video_id}】Failed to download thumbnail, file size is 0"
+            )
             continue
 
         b2_key = f"{website_info[0]}/{original_id[:2]}/{original_id}/thumbnail.webp"
-        logger.info(f"📤 Uploading thumbnail to B2: {b2_key}")
         try:
             thumbnail_url = b2_client.upload_file(tmp_path, b2_key)
-            logger.info(f"✅ Thumbnail uploaded: {thumbnail_url}")
+            logger.info(f"✅ 【{video_id}】Thumbnail uploaded: {thumbnail_url}")
         except Exception as e:
-            logger.info(f"❌ Failed to upload thumbnail: {e}")
+            logger.info(f"❌ 【{video_id}】Failed to upload thumbnail: {e}")
         finally:
-            # Clean up temp file
             tmp_path.unlink(missing_ok=True)
 
         max_id = video_id
         write_last_id(max_id)
         time.sleep(1)
-
-    logger.info(f"✅ Updated last_id to: {max_id}")
 
 
 def main():

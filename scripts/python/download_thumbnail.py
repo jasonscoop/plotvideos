@@ -1,6 +1,7 @@
 import csv
 import json
 import os
+import time
 import tempfile
 from pathlib import Path
 from loguru import logger
@@ -11,6 +12,7 @@ from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 from src.lib.config import WORKS_DIR
+from src.lib.consts import WEBSITES
 
 load_dotenv()
 
@@ -23,19 +25,6 @@ B2_BUCKET_NAME = os.getenv("B2_BUCKET_NAME")
 
 CSV_FILE = WORKS_DIR / "videos_rows.csv"
 LAST_ID_FILE = WORKS_DIR / "last_thumbnail_id.txt"
-
-WEBSITES = {
-    "www.pornhub.com": "ph",
-    "www.xhamster.com": "xh",
-    "www.xvideos.com": "xv",
-    "www.eporner.com": "ep",
-    "www.youjizz.com": "yj",
-    "www.redtube.com": "rt",
-    "www.youporn.com": "yp",
-    "www.pornhd.com": "pd",
-    "spankbang.com": "sb",
-    "www.youtube.com": "yt",
-}
 
 
 class B2Client:
@@ -148,7 +137,7 @@ def process_videos():
             logger.info(f"⚠️ Skipping video {video_id}: missing required data")
             continue
 
-        short_name = WEBSITES.get(host)
+        short_name, _ = WEBSITES.get(host)
         if not short_name:
             logger.info(f"⚠️ Skipping video {video_id}: unknown host {host}")
             continue
@@ -181,6 +170,7 @@ def process_videos():
 
         max_id = video_id
         write_last_id(max_id)
+        time.sleep(1)
 
     logger.info(f"✅ Updated last_id to: {max_id}")
 

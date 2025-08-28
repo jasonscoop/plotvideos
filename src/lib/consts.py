@@ -7,7 +7,7 @@ from src.utils.id_utils import (
     RedTubeIdExtractor,
     YouPornIdExtractor,
     SpankBangIdExtractor,
-    YoutubeIdExtractor
+    YoutubeIdExtractor,
 )
 
 DB_ERROR_LOG_LENGTH = 1000
@@ -41,58 +41,18 @@ NO_SPACE_LOCALES = {
     "my-MM",  # Burmese (Myanmar)
     "dz-BT",  # Dzongkha (Bhutan)
     "bo-CN",  # Tibetan
-    "mn-MN"  # Mongolian (Traditional script - no spaces)
+    "mn-MN",  # Mongolian (Traditional script - no spaces)
 }
 
 WEBSITES = {
-    "www.pornhub.com": {
-        "short_name": "ph",
-        "id_extractor": PornhubIdExtractor,
-        "bunny_collection_id": "e3edc1ee-ecab-4451-bff2-fdeafb779415",
-    },
-    "www.xhamster.com": {
-        "short_name": "xh",
-        "id_extractor": XhamsterIdExtractor,
-        "bunny_collection_id": "af16977f-15cf-4e1c-8b85-b6bf6dfc59e2",
-    },
-    "www.xvideos.com": {
-        "short_name": "xv",
-        "id_extractor": XvideosIdExtractor,
-        "bunny_collection_id": "a9d247b3-b562-44ed-8c6f-aa05d4532811",
-    },
-    "www.eporner.com": {
-        "short_name": "ep",
-        "id_extractor": EpornerIdExtractor,
-        "bunny_collection_id": "0ed26c1b-56ad-4057-b89e-3cc013b773ed",
-    },
-    "www.youjizz.com": {
-        "short_name": "yj",
-        "id_extractor": YouJizzIdExtractor,
-        "bunny_collection_id": "49ed13c7-1491-4f55-9728-e78ad45814a4",
-    },
-    "www.redtube.com": {
-        "short_name": "rt",
-        "id_extractor": RedTubeIdExtractor,
-        "bunny_collection_id": "e5682a25-bd3a-4111-8e60-8ad077ff6fe9",
-    },
-    "www.youporn.com": {
-        "short_name": "yp",
-        "id_extractor": YouPornIdExtractor,
-        "bunny_collection_id": "dcf8cba2-896e-41f1-b6aa-ef281b27b47d",
-    },
-    "www.pornhd.com": {
-        "short_name": "pd",
-        "id_extractor": PornhubIdExtractor,
-        "bunny_collection_id": "2df6932e-6079-47a8-b469-57eeda34a0cd",
-    },
-    "spankbang.com": {
-        "short_name": "sb",
-        "id_extractor": SpankBangIdExtractor,
-        "bunny_collection_id": "97e2e3e6-0103-4179-898b-94b0bb7ed1b5",
-    },
-    "www.youtube.com": {
-        "short_name": "yt",
-        "id_extractor": YoutubeIdExtractor,
-        "bunny_collection_id": "05e03c5f-35c4-4db7-b8eb-ab60caabfc8a",
-    }
+    "www.pornhub.com": ("ph", PornhubIdExtractor),
+    "www.xhamster.com": ("xh", XhamsterIdExtractor),
+    "www.xvideos.com": ("xv", XvideosIdExtractor),
+    "www.eporner.com": ("ep", EpornerIdExtractor),
+    "www.youjizz.com": ("yj", YouJizzIdExtractor),
+    "www.redtube.com": ("rt", RedTubeIdExtractor),
+    "www.youporn.com": ("yp", YouPornIdExtractor),
+    "www.pornhd.com": ("pd", PornhubIdExtractor),
+    "spankbang.com": ("sb", SpankBangIdExtractor),
+    "www.youtube.com": ("yt", YoutubeIdExtractor),
 }

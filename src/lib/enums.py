@@ -1,4 +1,4 @@
-from enum import StrEnum
+from enum import StrEnum, IntEnum
 
 from src.lib.consts import DB_ERROR_LOG_LENGTH
 
@@ -23,3 +23,9 @@ class VideoStatus(StrEnum):
     def log(self, e: Exception | str = None) -> str:
         n = DB_ERROR_LOG_LENGTH - len(self.value) - 3
         return f"[{self.value}] " + str(e)[:n]
+
+
+class ThumbnailStatus(IntEnum):
+    pending = 0
+    downloaded = 1
+    failed = 4

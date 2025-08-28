@@ -1,15 +1,13 @@
 import csv
 import json
-import os
 import re
-import tempfile
 from pathlib import Path
 
 import pymysql
-import yt_dlp
-import requests
-from b2sdk.v2 import B2Api, InMemoryAccountInfo
-from dotenv import load_dotenv
+from loguru import logger
+
+from src.lib.config import WORKS_DIR
+from src.lib.consts import WEBSITES
 
 # MySQL connection settings
 DB_HOST = "localhost"
@@ -18,27 +16,8 @@ DB_PASSWORD = "12345678"
 DB_NAME = "wordpress2"
 TABLE_PREFIX = "wp_"  # Change if your WordPress table prefix is different
 
-load_dotenv()
+CSV_FILE = WORKS_DIR / "videos_rows.csv"
 
-# B2 settings - Load from environment variables
-B2_APPLICATION_KEY_ID = os.getenv("B2_APPLICATION_KEY_ID")
-B2_APPLICATION_KEY = os.getenv("B2_APPLICATION_KEY")
-B2_BUCKET_NAME = os.getenv("B2_BUCKET_NAME")
-
-CSV_FILE = "/Users/garymeng/Downloads/videos_rows.csv"
-
-WEBSITES = {
-    "www.pornhub.com": "ph",
-    "www.xhamster.com": "xh",
-    "www.xvideos.com": "xv",
-    "www.eporner.com": "ep",
-    "www.youjizz.com": "yj",
-    "www.redtube.com": "rt",
-    "www.youporn.com": "yp",
-    "www.pornhd.com": "pd",
-    "spankbang.com": "sb",
-    "www.youtube.com": "yt",
-}
 
 LANGUAGE_NAMES = {
     "zh": "中文",
@@ -59,69 +38,7 @@ LANGUAGE_NAMES = {
 }
 
 
-class B2Client:
-    def __init__(self, key_id: str, application_key: str, bucket_name: str):
-        self.info = InMemoryAccountInfo()
-        self.api = B2Api(self.info)
-        self.api.authorize_account("production", key_id, application_key)
-        self.bucket = self.api.get_bucket_by_name(bucket_name)
-
-    def upload_file(self, file_path: Path, b2_key: str) -> str:
-        """Upload a file to B2 and return the public URL"""
-        uploaded_file = self.bucket.upload_local_file(
-            local_file=str(file_path), file_name=b2_key
-        )
-        return f"https://f004.backblazeb2.com/file/{self.bucket.name}/{b2_key}"
-
-
-def download_thumbnail(url: str, output_path: Path) -> bool:
-    """Download thumbnail using yt-dlp"""
-    ydl_opts = {
-        "writethumbnail": True,
-        "outtmpl": str(output_path.with_suffix("")),
-        "skip_download": True,  # Skip downloading video/audio
-        "quiet": True,
-        "no_warnings": True,
-        "extract_flat": False,
-        "proxy": "socks5://127.0.0.1:9150",  # Tor proxy
-    }
-
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # Extract info first to check if thumbnail is available
-            info = ydl.extract_info(url, download=False)
-            if not info:
-                print(f"No info extracted for {url}")
-                return False
-
-            # Download the video info (this will also download thumbnail)
-            ydl.download([url])
-
-        # yt-dlp might save with different extensions, find the thumbnail file
-        for ext in [".webp", ".jpg", ".jpeg", ".png"]:
-            thumb_file = output_path.with_suffix(ext)
-            if thumb_file.exists():
-                print(f"Found thumbnail: {thumb_file}")
-                return True
-
-        # If no thumbnail found, try to get it from the info
-        if "thumbnail" in info:
-            try:
-                response = requests.get(info["thumbnail"], timeout=10)
-                if response.status_code == 200:
-                    output_path.with_suffix(".webp").write_bytes(response.content)
-                    print(f"Downloaded thumbnail from info: {info['thumbnail']}")
-                    return True
-            except Exception as e:
-                print(f"Failed to download thumbnail from info: {e}")
-
-        return False
-    except Exception as e:
-        print(f"Error downloading thumbnail for {url}: {e}")
-        return False
-
-
-def generate_video_html(short_name, filename, available_langs, thumbnail_url=None):
+def generate_video_html(short_name, filename, available_langs):
     """
     Generate HTML video tag with only available subtitle tracks, English first.
     """
@@ -144,8 +61,8 @@ def generate_video_html(short_name, filename, available_langs, thumbnail_url=Non
             f'<track kind="subtitles" src="{track_url}" srclang="{lang}" label="{native_name}"{default_attr}>'
         )
 
-    # Use provided thumbnail URL or fallback to default
-    thumb_url = thumbnail_url or f"https://play.luckvideos.com/thumbnail.jpg"
+    # Always use default thumbnail URL (no download/upload)
+    thumb_url = f"https://play.luckvideos.com/{path_prefix}/thumbnail.jpg"
 
     return (
         f"""
@@ -159,9 +76,6 @@ def generate_video_html(short_name, filename, available_langs, thumbnail_url=Non
 
 
 def load_csv_mapping():
-    """
-    Load CSV into dict mapping (library_id, video_id) -> (short_name, filename, available_langs, url)
-    """
     mapping = {}
     with open(CSV_FILE, newline="", encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
@@ -170,10 +84,10 @@ def load_csv_mapping():
             filename = row["filename"]
             library_id = row["bunny_library_id"]
             video_id = row["bunny_video_id"]
-            url = row["url"]
 
-            short_name = WEBSITES.get(host)
+            short_name, _ = WEBSITES.get(host)
             if not short_name:
+                logger.error(f"⚠️ Unknown host {host}")
                 continue
 
             try:
@@ -206,25 +120,11 @@ def load_csv_mapping():
                 short_name,
                 filename,
                 available_langs,
-                url,
             )
     return mapping
 
 
 def main():
-    # Validate B2 settings
-    if not all([B2_APPLICATION_KEY_ID, B2_APPLICATION_KEY, B2_BUCKET_NAME]):
-        print("❌ B2 settings not configured!")
-        print("Please set the following environment variables:")
-        print("  - B2_APPLICATION_KEY_ID")
-        print("  - B2_APPLICATION_KEY")
-        print("  - B2_BUCKET_NAME")
-        print("\nOr run: python scripts/python/setup_b2_config.py")
-        return
-
-    # Initialize B2 client
-    b2_client = B2Client(B2_APPLICATION_KEY_ID, B2_APPLICATION_KEY, B2_BUCKET_NAME)
-
     mapping = load_csv_mapping()
 
     conn = pymysql.connect(
@@ -254,41 +154,14 @@ def main():
         library_id, video_id = m.groups()
         key = (library_id, video_id)
         if key not in mapping:
-            print(f"⚠️ No CSV mapping for {library_id} {video_id}")
+            logger.error(f"⚠️ No CSV mapping for {library_id} {video_id}")
             continue
 
-        short_name, filename, available_langs, url = mapping[key]
-        if not available_langs:
-            print(f"⚠️ No languages in title_translations for {library_id} {video_id}")
-            continue
+        short_name, filename, available_langs, _ = mapping[key]
 
-        # Download and upload thumbnail
-        thumbnail_url = None
-        if url:
-            print(f"📥 Downloading thumbnail for {url}")
-            with tempfile.NamedTemporaryFile(suffix=".webp", delete=False) as tmp_file:
-                tmp_path = Path(tmp_file.name)
-
-            if download_thumbnail(url, tmp_path):
-                # Generate B2 key for thumbnail
-                name = Path(filename).stem
-                b2_key = f"thumbnails/{short_name}/{name[:2]}/{name}/thumbnail.webp"
-
-                print(f"📤 Uploading thumbnail to B2: {b2_key}")
-                try:
-                    thumbnail_url = b2_client.upload_file(tmp_path, b2_key)
-                    print(f"✅ Thumbnail uploaded: {thumbnail_url}")
-                except Exception as e:
-                    print(f"❌ Failed to upload thumbnail: {e}")
-                    thumbnail_url = None
-                finally:
-                    # Clean up temp file
-                    tmp_path.unlink(missing_ok=True)
-            else:
-                print(f"❌ Failed to download thumbnail for {url}")
-
+        # Build HTML and default thumbnail URL without any download/upload
         video_html, thumb_url = generate_video_html(
-            short_name, filename, available_langs, thumbnail_url
+            short_name, filename, available_langs
         )
 
         # Update post content

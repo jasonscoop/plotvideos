@@ -21,7 +21,7 @@ bunny_client = BunnyStreamClient(BUNNY_API_KEY, BUNNY_LIBRARY_ID)
 
 
 def upload_video(video: Video, languages: List[Language]):
-    if not video.path.video.exists():
+    if not video.store_path.video.exists():
         VideoCrud.update_status(
             video.id,
             VideoStatus.failed,
@@ -29,7 +29,7 @@ def upload_video(video: Video, languages: List[Language]):
         )
         rm_video(video)
         logger.error(
-            f"[{video.id} | {video.host} | {video.original_id}]  Video '{video.path.video}' does not exist"
+            f"[{video.id} | {video.host} | {video.original_id}]  Video '{video.store_path.video}' does not exist"
         )
         return
 
@@ -43,7 +43,7 @@ def upload_video(video: Video, languages: List[Language]):
         )
 
         for lang in languages:
-            vtt_file = video.path.translated_vtts / f"{lang.code}.vtt"
+            vtt_file = video.store_path.translated_vtts / f"{lang.code}.vtt"
             if not vtt_file.exists():
                 logger.warning(
                     f"[{video.id} | {video.host} | {video.original_id}] vtt file '{lang.code}' not found, skipped"
@@ -65,7 +65,7 @@ def upload_video(video: Video, languages: List[Language]):
             }
         )
         # TODO: upload to b2
-        upload_dir_to_s3(video.path.parent, video.path.prefix)
+        upload_dir_to_s3(video.store_path.parent, video.store_path.prefix)
         logger.info(
             f"[{video.id} | {video.host} | {video.original_id}] uploaded video and vtts"
         )

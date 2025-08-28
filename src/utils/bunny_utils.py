@@ -14,7 +14,7 @@ class BunnyStreamClient:
     def __init__(self, api_key: str, library_id: str):
         """
         Initialize the Bunny Stream client.
-        
+
         Args:
             api_key (str): Your Bunny.net API key
             library_id (str): Your Bunny Stream library ID
@@ -23,7 +23,10 @@ class BunnyStreamClient:
         self.library_id = library_id
         self.base_url = "https://video.bunnycdn.com/library"
         self.headers = {"AccessKey": api_key, "accept": "application/json"}
-        self.video_headers = {**self.headers, "Content-Type": "application/octet-stream"}
+        self.video_headers = {
+            **self.headers,
+            "Content-Type": "application/octet-stream",
+        }
         self.vtt_headers = {**self.headers, "Content-Type": "text/vtt"}
 
     @staticmethod
@@ -34,7 +37,7 @@ class BunnyStreamClient:
 
     @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
     def upload_video(self, video: Video) -> str:
-        video_path = video.path.video
+        video_path = video.store_path.video
         if not video_path.exists():
             raise FileNotFoundError(f"[{video.id}] Video file not found: {video_path}")
 
@@ -44,26 +47,28 @@ class BunnyStreamClient:
             headers=self.headers,
             json={
                 "title": video.title or video_path.stem,
-                "collectionId": WEBSITES[video.host]["bunny_collection_id"]
-            }
+                "collectionId": WEBSITES[video.host]["bunny_collection_id"],
+            },
         )
         create_response.raise_for_status()
         video_data = create_response.json()
 
         upload_url = f"{self.base_url}/{self.library_id}/videos/{video_data['guid']}"
-        upload_response = requests.put(upload_url,
-                                       headers=self.video_headers,
-                                       data=self.stream_video_file(video_path))
+        upload_response = requests.put(
+            upload_url,
+            headers=self.video_headers,
+            data=self.stream_video_file(video_path),
+        )
         upload_response.raise_for_status()
 
         return video_data["guid"]
 
     @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
     def upload_subtitle(
-            self,
-            video_guid: str,
-            vtt_path: Path,
-            lang: Language,
+        self,
+        video_guid: str,
+        vtt_path: Path,
+        lang: Language,
     ):
         vtt_path = Path(vtt_path)
         if not vtt_path.exists():
@@ -83,7 +88,9 @@ class BunnyStreamClient:
         payload = {
             "srclang": lang.code,
             "label": lang.native_name,
-            "captionsFile": base64.b64encode(vtt_content.encode("utf-8")).decode("utf-8")
+            "captionsFile": base64.b64encode(vtt_content.encode("utf-8")).decode(
+                "utf-8"
+            ),
         }
         response = requests.post(url, headers=self.headers, json=payload)
         try:

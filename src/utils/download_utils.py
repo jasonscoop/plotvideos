@@ -1,10 +1,12 @@
 from pathlib import Path
 import random
 import time
+import subprocess
 from typing import Optional
 from loguru import logger
 import yt_dlp
 import requests
+import ffmpeg
 from tenacity import stop_after_attempt, retry, wait_fixed, wait_exponential
 
 from src.lib.config import YT_DLP_PROXY, MAX_ACCEPT_VIDEO_SIZE
@@ -53,6 +55,10 @@ def download_remote_video(url: str, video_path: Path) -> dict:
     reraise=True,
 )
 def download_image(url: str, image_path: Path) -> bool:
+    if not url:
+        logger.warning(f"No thumbnail URL provided: {image_path}")
+        return False
+
     image_path.parent.mkdir(exist_ok=True, parents=True)
 
     headers = {
@@ -71,6 +77,9 @@ def download_image(url: str, image_path: Path) -> bool:
     }
 
     time.sleep(random.uniform(0.5, 2.0))
+
+    if url.startswith("//"):
+        url = f"https:{url}"
 
     try:
         session = requests.Session()
@@ -106,11 +115,14 @@ def download_image(url: str, image_path: Path) -> bool:
                 logger.error(f"Image file too large: {file_size / 1024 / 1024:.2f}MB")
                 return False
 
-        # Download the image in chunks
+        # Create temporary path for downloading
+        temp_image_path = image_path.with_suffix(".temp")
+
+        # Download the image in chunks to temporary file
         total_size = 0
         chunk_size = 8192  # 8KB chunks
 
-        with open(image_path, "wb") as f:
+        with open(temp_image_path, "wb") as f:
             for chunk in response.iter_content(chunk_size=chunk_size):
                 if chunk:  # Filter out keep-alive chunks
                     f.write(chunk)
@@ -119,14 +131,47 @@ def download_image(url: str, image_path: Path) -> bool:
                     # Check size during download
                     if total_size > 50 * 1024 * 1024:  # 50MB limit
                         f.close()
-                        image_path.unlink()  # Delete partial file
+                        temp_image_path.unlink()  # Delete partial file
                         logger.error("Image file too large during download")
                         return False
 
         # Verify the file was downloaded successfully
-        if not image_path.exists() or image_path.stat().st_size == 0:
+        if not temp_image_path.exists() or temp_image_path.stat().st_size == 0:
             logger.error("Failed to download image or file is empty")
+            if temp_image_path.exists():
+                temp_image_path.unlink()
             return False
+
+        # Check if the downloaded image is already WebP
+        try:
+            # Use ffprobe to check the format
+            probe = ffmpeg.probe(str(temp_image_path))
+            format_name = probe["format"]["format_name"]
+
+            if "webp" in format_name.lower():
+                # Already WebP, just move to final location
+                temp_image_path.rename(image_path)
+                logger.info(f"Image is already WebP format: {image_path}")
+            else:
+                # Convert to WebP using ffmpeg
+                stream = ffmpeg.input(str(temp_image_path))
+                stream = ffmpeg.output(
+                    stream, str(image_path), vcodec="libwebp", quality=90
+                )
+                ffmpeg.run(stream, quiet=True, overwrite_output=True)
+
+                # Remove temporary file
+                temp_image_path.unlink()
+
+                logger.info(
+                    f"Successfully converted image from {format_name} to WebP: {image_path}"
+                )
+
+        except Exception as e:
+            # If format checking or conversion fails, just move the original file
+            temp_image_path.rename(image_path)
+            logger.error(f"Failed to process image format, keeping original: {e}")
+            return True
 
         return True
 

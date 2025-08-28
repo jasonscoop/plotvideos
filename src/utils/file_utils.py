@@ -19,5 +19,7 @@ def is_path_match(path: str) -> bool:
 
 
 def rm_video(video: Video):
-    if video.path.parent.exists() and is_path_match(video.path.parent.as_posix()):
-        shutil.rmtree(str(video.path.parent), ignore_errors=False)
+    if video.store_path.parent.exists() and is_path_match(
+        video.store_path.parent.as_posix()
+    ):
+        shutil.rmtree(str(video.store_path.parent), ignore_errors=False)

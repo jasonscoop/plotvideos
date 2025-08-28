@@ -21,13 +21,17 @@ MAX_ID = 27555
 
 
 def download_wav_from_s3(video: Video):
-    wav_path = video.path.audio
+    wav_path = video.store_path.audio
     wav_path.parent.mkdir(parents=True, exist_ok=True)
-    s3_client.download_file(S3_BUCKET_NAME, video.path.audio_s3_key, str(wav_path))
+    s3_client.download_file(
+        S3_BUCKET_NAME, video.store_path.audio_s3_key, str(wav_path)
+    )
 
 
 def upload_vtt_to_s3(video: Video):
-    s3_client.upload_file(str(video.path.vtt), S3_BUCKET_NAME, video.path.vtt_s3_key)
+    s3_client.upload_file(
+        str(video.store_path.vtt), S3_BUCKET_NAME, video.store_path.vtt_s3_key
+    )
 
 
 def transcribe_video(video: Video):
@@ -36,14 +40,14 @@ def transcribe_video(video: Video):
     try:
         download_wav_from_s3(video)
     except ClientError as e:
-        if e.response['Error']['Code'] == '404':
+        if e.response["Error"]["Code"] == "404":
             logger.error(f"Object not found. {str(e)}")
             return
 
     logger.info(f"[{video.id}] downloaded in {time.time() - t0:.1f}s")
 
-    vtt_content, sub_text = whisper_transcribe(video.path)
-    video.path.vtt.write_text(vtt_content)
+    vtt_content, sub_text = whisper_transcribe(video.store_path)
+    video.store_path.vtt.write_text(vtt_content)
     logger.info(f"[{video.id}] generated in {time.time() - t0:.1f}s.")
     t1 = time.time()
 
@@ -53,17 +57,19 @@ def transcribe_video(video: Video):
 
     tokens = get_tokens(sub_text)
     subtitle_duration_ratio = round(tokens / video.duration, 2) if video.duration else 0
-    VideoCrud.update({
-        "id": video.id,
-        "subtitle_content": sub_text,
-        "subtitle_tokens": tokens,
-        "subtitle_duration_ratio": subtitle_duration_ratio,
-        "temp_status": 1
-    })
+    VideoCrud.update(
+        {
+            "id": video.id,
+            "subtitle_content": sub_text,
+            "subtitle_tokens": tokens,
+            "subtitle_duration_ratio": subtitle_duration_ratio,
+            "temp_status": 1,
+        }
+    )
 
     # remove the wav file and vtt
-    video.path.audio.unlink(missing_ok=True)
-    video.path.vtt.unlink(missing_ok=True)
+    video.store_path.audio.unlink(missing_ok=True)
+    video.store_path.vtt.unlink(missing_ok=True)
 
     logger.info(f"[{video.id}] db updated in {time.time() - t2:.2f}s.")
 
@@ -71,8 +77,12 @@ def transcribe_video(video: Video):
 def main():
     last_id = 1912
     while True:
-        videos = VideoCrud.batch_get(last_id, BATCH_SIZE, status=[VideoStatus.uploaded, VideoStatus.published],
-                                     temp_status=0)
+        videos = VideoCrud.batch_get(
+            last_id,
+            BATCH_SIZE,
+            status=[VideoStatus.uploaded, VideoStatus.published],
+            temp_status=0,
+        )
         videos = [v for v in videos if v.id <= MAX_ID]
         if not videos:
             logger.info("All transcription done!")

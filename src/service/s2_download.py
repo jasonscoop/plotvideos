@@ -20,17 +20,17 @@ from src.utils.file_utils import rm_video
 
 def download_video(video: Video):
     try:
-        info = download_remote_video(video.url, video.path)
+        info = download_remote_video(video.url, video.store_path.video)
         thumbnail_status = ThumbnailStatus.downloaded
-        if not download_image(video.thumbnail_url, video.thumbnail_path):
+        if not download_image(video.thumbnail_url, video.store_path.thumbnail):
             thumbnail_status = ThumbnailStatus.failed
-        video_size = video.path.video.stat().st_size
+        video_size = video.store_path.video.stat().st_size
 
         VideoCrud.update(
             {
                 "id": video.id,
                 "status": VideoStatus.downloaded,
-                "filename": video.path.video.name,
+                "filename": video.store_path.video.name,
                 "title": info.get("title", video.title),
                 "tags": info.get("tags", []),
                 "categories": info.get("categories", []),

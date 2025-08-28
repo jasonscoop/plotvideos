@@ -13,10 +13,12 @@ class StorePath:
         self.vtt_s3_key = self.prefix + "/subtitle.vtt"
         self.translated_s3_key = self.prefix + "/subtitles/"
         self.audio_s3_key = self.prefix + "/audio.wav"
+        self.thumbnail_s3_key = self.prefix + "/thumbnail.webp"
 
         self.video: Path = VIDEOS_DIR / self.video_s3_key
         self.vtt: Path = VIDEOS_DIR / self.vtt_s3_key
         self.translated_vtts: Path = VIDEOS_DIR / self.translated_s3_key
         self.audio: Path = VIDEOS_DIR / self.audio_s3_key
+        self.thumbnail: Path = VIDEOS_DIR / self.thumbnail_s3_key
 
         self.segments: Path = self.parent / "segments.json"

@@ -89,7 +89,7 @@ class Video(Base):
     temp_status = Column(Integer, nullable=False, default=0)
 
     @property
-    def path(self) -> StorePath:
+    def store_path(self) -> StorePath:
         if not self.host or not self.original_id:
             logger.error(f"[{self.id}] host or original_id is not set")
         return StorePath(self.host, self.original_id)

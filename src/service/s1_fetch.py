@@ -15,14 +15,10 @@ from src.lib.models import Video, Keyword
 
 
 def fetch_video_urls(query: str, page: int):
-    querystring = {
-        "query": query,
-        "page": str(page),
-        "timeout": "5000"
-    }
+    querystring = {"query": query, "page": str(page), "timeout": "5000"}
     headers = {
         "x-rapidapi-key": RAPIDAPI_KEY,
-        "x-rapidapi-host": urlparse(RAPIDAPI_URL).netloc
+        "x-rapidapi-host": urlparse(RAPIDAPI_URL).netloc,
     }
     response = requests.get(RAPIDAPI_URL, headers=headers, params=querystring)
     response.raise_for_status()
@@ -46,7 +42,7 @@ def fetch_and_save_videos(host: str = ""):
 
             for page in range(0, S1_FETCH_MAX_PAGES):
                 data = fetch_video_urls(keyword.name, page + 1)
-                sites = data.get('data', [])
+                sites = data.get("data", [])
                 for site in sites:
                     if not site["links"]:
                         continue
@@ -54,34 +50,41 @@ def fetch_and_save_videos(host: str = ""):
                     videos = []
                     host = site["site"]["host"]
                     name = site["site"]["name"]
-                    id_extractor = WEBSITES.get(host)["id_extractor"]()
+                    id_extractor = WEBSITES.get(host)[1]()
                     if not id_extractor:
                         logger.error("Can not find a extractor for host %s", host)
                         continue
 
                     try:
                         for link in site["links"]:
-                            title = link.get('title')
+                            title = link.get("title")
                             if not title:
                                 continue
 
-                            original_id = id_extractor.get(link.get('url'))
+                            original_id = id_extractor.get(link.get("url"))
                             if not original_id:
-                                logger.error(f"Can not find a id for link {link.get('url')}")
+                                logger.error(
+                                    f"Can not find a id for link {link.get('url')}"
+                                )
                                 continue
 
-                            videos.append(Video(
-                                title=link.get('title'),
-                                url=link.get('url'),
-                                original_id=original_id,
-                                host=host,
-                                status=VideoStatus.fetched,
-                                keyword=keyword.name,
-                                author_name=link.get('channel', "").get("name", ""),
-                                author_url=link.get('channel', "").get("url", ""),
-                            ))
-                        added = VideoCrud.batch_add(videos)
-                        logger.info(f"[{name}] fetched, added [{added}/{len(videos)}]")
+                            videos.append(
+                                Video(
+                                    title=link.get("title"),
+                                    url=link.get("url"),
+                                    thumbnail_url=link.get("image"),
+                                    original_id=original_id,
+                                    host=host,
+                                    status=VideoStatus.fetched,
+                                    keyword=keyword.name,
+                                    author_name=link.get("channel", "").get("name", ""),
+                                    author_url=link.get("channel", "").get("url", ""),
+                                )
+                            )
+                        added, updated = VideoCrud.batch_add_or_update(videos)
+                        logger.info(
+                            f"[{name}] fetched, added [{added}], updated [{updated}]"
+                        )
                     except Exception as e:
                         exception_count += 1
                         if exception_count >= 3:

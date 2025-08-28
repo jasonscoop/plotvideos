@@ -47,11 +47,6 @@ BUNNY_API_KEY = getenv("BUNNY_API_KEY")
 BUNNY_LIBRARY_ID = getenv("BUNNY_LIBRARY_ID")
 BUNNY_CDN_DOMAIN = getenv("BUNNY_CDN_DOMAIN")
 
-S3_ACCESS_KEY: str = get_str("S3_ACCESS_KEY")
-S3_SECRET_KEY: str = get_str("S3_SECRET_KEY")
-S3_BUCKET_NAME: str = get_str("S3_BUCKET_NAME")
-S3_REGION: str = get_str("S3_REGION", "ap-southeast-1")
-
 WHISPER_MODEL = getenv("WHISPER_MODEL", "large-v3-turbo")
 WHISPER_DEVICE = getenv("WHISPER_DEVICE", "cpu")
 WHISPER_COMPUTE_TYPE = getenv("WHISPER_COMPUTE_TYPE", "int8")

@@ -10,13 +10,20 @@ from src.lib.models import Video
 
 class VideoCrud:
     @classmethod
-    def batch_get(cls,
-                  last_id: int,
-                  batch_size: int,
-                  status: VideoStatus | List[VideoStatus] | None = None,
-                  host: str = "", temp_status: int | None = None) -> List[Video]:
+    def batch_get(
+        cls,
+        last_id: int,
+        batch_size: int,
+        status: VideoStatus | List[VideoStatus] | None = None,
+        host: str = "",
+        temp_status: int | None = None,
+    ) -> List[Video]:
         with get_db() as session:
-            query = session.query(Video).options(undefer("*")).with_for_update(skip_locked=True)
+            query = (
+                session.query(Video)
+                .options(undefer("*"))
+                .with_for_update(skip_locked=True)
+            )
 
             if isinstance(status, list):
                 query = query.filter(Video.status.in_(status), Video.id > last_id)
@@ -31,22 +38,24 @@ class VideoCrud:
             if temp_status is not None:
                 query = query.filter(Video.temp_status == temp_status)
 
-            return query.order_by(Video.id.asc()) \
-                .limit(batch_size) \
-                .all()
+            return query.order_by(Video.id.asc()).limit(batch_size).all()
 
     @classmethod
-    def batch_add(cls, videos: List[Video]) -> int:
+    def batch_add_or_update(cls, videos: List[Video]) -> tuple[int, int]:
         added = 0
+        updated = 0
         with get_db() as session:
             for video in videos:
                 old = session.query(Video).filter(Video.url == video.url).first()
                 if old is None:
                     session.add(video)
                     added += 1
+                elif old.thumbnail_url != video.thumbnail_url:
+                    old.thumbnail_url = video.thumbnail_url
+                    updated += 1
             session.commit()
 
-        return added
+        return added, updated
 
     @staticmethod
     @retry(wait=wait_fixed(2), stop=stop_after_attempt(3), reraise=True)

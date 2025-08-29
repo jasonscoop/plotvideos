@@ -32,8 +32,9 @@ def fetch_and_save_videos(host: str = ""):
     while True:
         keywords: List[Keyword] = KeywordCrud.batch_get(last_id=last_id)
         if not keywords:
-            logger.info("All fetching, sleeping for 2 hours")
+            logger.info("All fetching, sleeping for 1 hour")
             time.sleep(1 * 60 * 60)
+            last_id = 0
             continue
 
         last_id = keywords[-1].id

@@ -25,9 +25,20 @@ def is_valid_vtt(vtt_content: str) -> bool:
         return False
 
 
+def get_vtt_text(vtt_content: str) -> str:
+    text = ""
+    try:
+        vtt = webvtt.from_string(vtt_content)
+        for caption in vtt.captions:
+            text += caption.text + "\n"
+        return text
+    except Exception as e:
+        return ""
+
+
 def time_to_ms(ts):
-    h, m, s_ms = ts.split(':')
-    s, ms = s_ms.split('.')
+    h, m, s_ms = ts.split(":")
+    s, ms = s_ms.split(".")
     return int(h) * 3600000 + int(m) * 60000 + int(s) * 1000 + int(ms)
 
 
@@ -39,7 +50,7 @@ def correct_vtt(vtt_content: str) -> str:
     if is_valid_vtt(vtt_content):
         return vtt_content
 
-    if vtt_content.strip() == '':
+    if vtt_content.strip() == "":
         return "WEBVTT\n"
 
     try:
@@ -69,9 +80,7 @@ def correct_vtt(vtt_content: str) -> str:
             return f"{h:02d}:{m:02d}:{s:02d}.{ms_rem:03d}"
 
         corrected_caption = webvtt.Caption(
-            ms_to_vtt(start_ms),
-            ms_to_vtt(end_ms),
-            caption.text
+            ms_to_vtt(start_ms), ms_to_vtt(end_ms), caption.text
         )
         corrected_captions.append(corrected_caption)
         last_end_ms = end_ms

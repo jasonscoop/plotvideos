@@ -7,17 +7,13 @@ from loguru import logger
 from src.crud.language_crud import LanguageCrud
 from src.crud.video_crud import VideoCrud
 from src.lib.config import (
-    BUNNY_API_KEY,
-    BUNNY_LIBRARY_ID,
-    BUNNY_CDN_DOMAIN,
     S7_UPLOAD_BATCH_SIZE,
+    B2_CDN_DOMAIN,
 )
 from src.lib.enums import VideoStatus
 from src.lib.models import Video, Language
-from src.utils.bunny_utils import BunnyStreamClient
+from src.utils.b2_utils import get_b2_client
 from src.utils.file_utils import rm_video
-
-bunny_client = BunnyStreamClient(BUNNY_API_KEY, BUNNY_LIBRARY_ID)
 
 
 def upload_video(video: Video, languages: List[Language]):
@@ -25,49 +21,43 @@ def upload_video(video: Video, languages: List[Language]):
         VideoCrud.update_status(
             video.id,
             VideoStatus.failed,
-            VideoStatus.uploaded.log("Video '{video.path.video}' does not exist"),
+            VideoStatus.uploaded.log(
+                f"Video '{video.store_path.video}' does not exist"
+            ),
         )
         rm_video(video)
         logger.error(
-            f"[{video.id} | {video.host} | {video.original_id}]  Video '{video.store_path.video}' does not exist"
+            f"[{video.id} | {video.host} | {video.original_id}] Video '{video.store_path.video}' does not exist"
         )
         return
 
     try:
         logger.info(
-            f"[{video.id} | {video.host} | {video.original_id}] start uploading"
+            f"[{video.id} | {video.host} | {video.original_id}] start uploading to B2"
         )
-        guid = bunny_client.upload_video(video)
+
+        # Get B2 client and upload video and subtitles
+        b2_client = get_b2_client()
+        upload_results = b2_client.upload_video_and_subtitles(video, languages)
+
         logger.info(
-            f"[{video.id} | {video.host} | {video.original_id}] uploaded video as {guid}"
+            f"[{video.id} | {video.host} | {video.original_id}] uploaded to B2: {upload_results['video_url']}"
         )
 
-        for lang in languages:
-            vtt_file = video.store_path.translated_vtts / f"{lang.code}.vtt"
-            if not vtt_file.exists():
-                logger.warning(
-                    f"[{video.id} | {video.host} | {video.original_id}] vtt file '{lang.code}' not found, skipped"
-                )
-                continue
-            bunny_client.upload_subtitle(guid, vtt_file, lang)
-            logger.info(
-                f"[{video.id} | {video.host} | {video.original_id}] uploaded '{lang.code}'"
-            )
-
+        # Update database with B2 URLs
         VideoCrud.update(
             {
                 "id": video.id,
-                "bunny_video_id": guid,
-                "bunny_library_id": BUNNY_LIBRARY_ID,
-                "bunny_cdn_domain": BUNNY_CDN_DOMAIN,
+                "video_url": upload_results["video_url"],
+                "thumbnail_url": upload_results.get("thumbnail_url"),
+                "b2_cdn_domain": B2_CDN_DOMAIN,
                 "status": VideoStatus.uploaded,
                 "failed_reason": "",
             }
         )
-        # TODO: upload to b2
-        upload_dir_to_s3(video.store_path.parent, video.store_path.prefix)
+
         logger.info(
-            f"[{video.id} | {video.host} | {video.original_id}] uploaded video and vtts"
+            f"[{video.id} | {video.host} | {video.original_id}] uploaded video and {len(upload_results['subtitle_urls'])} subtitle files to B2"
         )
     except Exception as e:
         VideoCrud.update_status(

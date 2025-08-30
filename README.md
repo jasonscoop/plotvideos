@@ -36,17 +36,17 @@ CREATE POLICY "Allow public access"
         );
 ```
 
+Run with docker
 
-
-1. fetch video urls
-2. Save basic information to db
-3. Background
-    1. Translate title and description to all supported languages
-    2. Download thumbnail and save to b2
-    3. Show to website
-4. User access the website
-    1. Download video file if not downloaded, else skip
-    2. Generaet subtitle with whisper, translate to all supported languages
-    3. Upload video and and subtitles to b2
-    4. Set video status
-
+```bash
+docker build . -t  wuse
+```bash
+docker exec -it \
+  -e MYSQL_DB_HOST=dockerpress-mysql-1 \
+  -e MYSQL_DB_USER=root \
+  -e MYSQL_DB_PASSWORD=12345678 \
+  -e MYSQL_DB_NAME=toovideos \
+  -e MYSQL_TABLE_PREFIX=wp_ \
+  wuse \
+  python scripts/python/migrate_bunny_to_b2.py
+``` 

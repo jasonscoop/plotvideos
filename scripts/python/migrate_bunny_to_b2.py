@@ -2,7 +2,7 @@ import csv
 import json
 import re
 from pathlib import Path
-
+import os
 import pymysql
 from loguru import logger
 
@@ -10,11 +10,11 @@ from src.lib.config import WORKS_DIR
 from src.lib.consts import WEBSITES
 
 # MySQL connection settings
-DB_HOST = "localhost"
-DB_USER = "root"
-DB_PASSWORD = "12345678"
-DB_NAME = "wordpress2"
-TABLE_PREFIX = "wp_"  # Change if your WordPress table prefix is different
+DB_HOST = os.getenv("MYSQL_DB_HOST", "localhost")
+DB_USER = os.getenv("MYSQL_DB_USER", "root")
+DB_PASSWORD = os.getenv("MYSQL_DB_PASSWORD", "12345678")
+DB_NAME = os.getenv("MYSQL_DB_NAME", "wordpress2")
+TABLE_PREFIX = os.getenv("MYSQL_TABLE_PREFIX", "wp_")
 
 CSV_FILE = WORKS_DIR / "videos_rows.csv"
 

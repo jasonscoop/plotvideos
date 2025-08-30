@@ -28,4 +28,5 @@ class VideoStatus(StrEnum):
 class ThumbnailStatus(IntEnum):
     pending = 0
     downloaded = 1
+    ytdlp_downloaded = 2
     failed = 4

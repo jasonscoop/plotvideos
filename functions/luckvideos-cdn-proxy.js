@@ -111,7 +111,24 @@ export default {
         headers,
         body: method === "GET" || method === "HEAD" ? undefined : request.body,
       });
-  
+
+      // ************* TASK 6.5: Handle thumbnail fallback *************
+      // If the request is for a thumbnail and we get 404, try the default thumbnail
+      if (response.status === 404 && canonicalUri.includes('/thumbnail.webp') && canonicalUri !== '/thumbnail.webp') {
+        // Create a new request for the default thumbnail by modifying the original URL
+        const defaultUrl = new URL(request.url);
+        defaultUrl.pathname = '/thumbnail.webp';
+        
+        // Recursively call this same function with the default thumbnail URL
+        const defaultRequest = new Request(defaultUrl.toString(), {
+          method: request.method,
+          headers: request.headers,
+          body: request.body
+        });
+        
+        return await this.fetch(defaultRequest, env);
+      }
+
       // ************* TASK 7: Setup response headers *************
       const responseHeaders = new Headers(response.headers);
       responseHeaders.set("Access-Control-Allow-Origin", corsOrigin);

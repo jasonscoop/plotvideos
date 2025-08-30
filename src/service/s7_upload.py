@@ -51,7 +51,7 @@ def upload_video(video: Video, languages: List[Language]):
                 "video_url": upload_results["video_url"],
                 "thumbnail_url": upload_results.get("thumbnail_url"),
                 "b2_cdn_domain": B2_CDN_DOMAIN,
-                "status": VideoStatus.uploaded,
+                "status": VideoStatus.published,
                 "failed_reason": "",
             }
         )

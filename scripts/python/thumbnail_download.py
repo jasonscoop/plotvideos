@@ -59,7 +59,7 @@ def download_and_update_thumbnails():
 
     logger.info("📥 Starting thumbnail download and status update...")
 
-    last_id = 0
+    last_id = 27555
     total_processed = 0
     total_uploaded = 0
 

@@ -62,7 +62,7 @@ def generate_video_html(short_name, filename, available_langs):
         )
 
     # Always use default thumbnail URL (no download/upload)
-    thumb_url = f"https://play.luckvideos.com/{path_prefix}/thumbnail.jpg"
+    thumb_url = f"https://play.luckvideos.com/{path_prefix}/thumbnail.webp"
 
     return (
         f"""

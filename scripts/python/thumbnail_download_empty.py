@@ -66,32 +66,13 @@ def download_thumbnail_with_ytdlp(
                 logger.info(f"Found thumbnail URL (fallback): {thumbnail_url}")
             else:
                 # Find the best quality thumbnail (highest resolution)
-                best_thumbnail = None
-                max_resolution = 0
-
-                for thumb in thumbnails:
-                    width = thumb.get("width", 0)
-                    height = thumb.get("height", 0)
-                    resolution = width * height
-
-                    if resolution > max_resolution:
-                        max_resolution = resolution
-                        best_thumbnail = thumb
-
-                if not best_thumbnail:
-                    logger.error(
-                        f"No valid thumbnail found in thumbnails list for {video_url}"
-                    )
-                    return False, ""
-
+                best_thumbnail = thumbnails[0]
                 thumbnail_url = best_thumbnail.get("url")
                 if not thumbnail_url:
                     logger.error(f"No URL in best thumbnail for {video_url}")
                     return False, ""
 
-                logger.info(
-                    f"Found best thumbnail URL: {thumbnail_url} ({best_thumbnail.get('width', 0)}x{best_thumbnail.get('height', 0)})"
-                )
+                logger.info(f"Found best thumbnail URL: {thumbnail_url}")
 
             # Download the thumbnail using the regular download_image function
             success = download_image(thumbnail_url, thumbnail_path)

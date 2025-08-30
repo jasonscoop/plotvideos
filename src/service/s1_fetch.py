@@ -12,6 +12,7 @@ from src.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL, S1_FETCH_MAX_PAGES
 from src.lib.consts import WEBSITES
 from src.lib.enums import VideoStatus
 from src.lib.models import Video, Keyword
+from src.lib.schemas import StorePath
 
 
 def fetch_video_urls(query: str, page: int):
@@ -69,19 +70,19 @@ def fetch_and_save_videos(host: str = ""):
                                 )
                                 continue
 
-                            videos.append(
-                                Video(
-                                    title=link.get("title"),
-                                    url=link.get("url"),
-                                    thumbnail_url=link.get("image"),
-                                    original_id=original_id,
-                                    host=host,
-                                    status=VideoStatus.fetched,
-                                    keyword=keyword.name,
-                                    author_name=link.get("channel", "").get("name", ""),
-                                    author_url=link.get("channel", "").get("url", ""),
-                                )
+                            new_video = Video(
+                                title=link.get("title"),
+                                url=link.get("url"),
+                                thumbnail_url=link.get("image"),
+                                original_id=original_id,
+                                host=host,
+                                status=VideoStatus.fetched,
+                                keyword=keyword.name,
+                                author_name=link.get("channel", "").get("name", ""),
+                                author_url=link.get("channel", "").get("url", ""),
+                                store_dir=StorePath.build_prefix(host, original_id),
                             )
+                            videos.append(new_video)
                         added, updated = VideoCrud.batch_add_or_update(videos)
                         logger.info(
                             f"[{name}] fetched [{len(videos)}], added [{added}], updated [{updated}]"

@@ -19,6 +19,7 @@ from src.lib.models import Video
 from src.crud.video_crud import VideoCrud
 from src.service.s1_fetch import fetch_video_urls
 from src.utils.download_utils import download_image
+from src.lib.schemas import StorePath
 
 load_dotenv()
 
@@ -46,7 +47,7 @@ def search_and_add_videos():
     """Search for videos using titles as keywords and add all found links to database"""
     logger.info("🔍 Starting video search and database population...")
 
-    last_id = 79
+    last_id = 13391
     total_processed = 0
     total_added = 0
     total_updated = 0
@@ -114,6 +115,7 @@ def search_and_add_videos():
                             keyword=video.keyword,  # Use search video's keyword
                             author_name=link.get("channel", {}).get("name", ""),
                             author_url=link.get("channel", {}).get("url", ""),
+                            store_dir=StorePath.build_prefix(host, original_id),
                         )
                         videos_to_update.append(new_video)
 
@@ -235,7 +237,7 @@ def download_and_update_thumbnails():
                 continue
 
             # Upload to B2 storage
-            b2_key = f"{website_info[0]}/{video.original_id[:2]}/{video.original_id}/thumbnail.webp"
+            b2_key = video.store_path.thumbnail_s3_key
             try:
                 b2_thumbnail_url = b2_client.upload_file(tmp_path, b2_key)
                 logger.info(

@@ -51,6 +51,7 @@ class Video(Base):
     thumbnail_status = Column(
         Integer, nullable=False, default=ThumbnailStatus.pending.value
     )
+    store_dir = Column(String(100), nullable=False, default="")
     filename = Column(String(100), nullable=False, default="")
     keyword = Column(String(50), nullable=False)
 

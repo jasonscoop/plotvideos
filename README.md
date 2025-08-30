@@ -39,14 +39,28 @@ CREATE POLICY "Allow public access"
 Run with docker
 
 ```bash
-docker build . -t  wuse
+docker build . -t wuse
+```
+
+## Migration: BunnyCDN to B2
+
+Migrate video embeds from BunnyCDN iframes to direct video tags with B2 URLs.
+
+
+Start the wuse container (if not already running):
 ```bash
-docker exec -it \
+# Build the image if needed
+docker build . -t wuse
+```
+
+Execute the migration script:
+
+```bash
+docker run -it \
   -e MYSQL_DB_HOST=dockerpress-mysql-1 \
   -e MYSQL_DB_USER=root \
   -e MYSQL_DB_PASSWORD=12345678 \
   -e MYSQL_DB_NAME=toovideos \
   -e MYSQL_TABLE_PREFIX=wp_ \
-  wuse \
-  python scripts/python/migrate_bunny_to_b2.py
-``` 
+  wuse python scripts/python/migrate_bunny_to_b2.py
+```

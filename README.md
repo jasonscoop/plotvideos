@@ -56,12 +56,18 @@ docker build . -t wuse
 Execute the migration script:
 
 ```bash
+docker run --rm --network container:dockerpress-mysql-1 \
+  -e MYSQL_PWD=12345678 \
+  mysql:8.0.36 \
+  mysqldump -h 127.0.0.1 -u root weekvideos > weekvideos.sql
+
 docker run -it \
+  --network dockerpress_dockerpress-network \
   -e MYSQL_DB_HOST=dockerpress-mysql-1 \
   -e MYSQL_DB_USER=root \
   -e MYSQL_DB_PASSWORD=12345678 \
   -e MYSQL_DB_NAME=toovideos \
   -e MYSQL_TABLE_PREFIX=wp_ \
-  -v ./works:/workspace/works
+  -v ./works:/workspace/works \
   wuse bash -c "pip install pymysql && python scripts/python/migrate_bunny_to_b2.py"
 ```

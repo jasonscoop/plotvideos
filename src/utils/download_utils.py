@@ -153,10 +153,15 @@ def download_image(url: str, image_path: Path) -> bool:
                 temp_image_path.rename(image_path)
                 logger.info(f"Image is already WebP format: {image_path}")
             else:
-                # Convert to WebP using ffmpeg
+                # Convert to WebP using ffmpeg with optimized settings
                 stream = ffmpeg.input(str(temp_image_path))
                 stream = ffmpeg.output(
-                    stream, str(image_path), vcodec="libwebp", quality=90
+                    stream,
+                    str(image_path),
+                    vcodec="libwebp",
+                    quality=90,  # Better balance between quality and size
+                    preset="default",  # Use default preset for good compression
+                    lossless=0,  # Enable lossy compression for smaller files
                 )
                 ffmpeg.run(stream, quiet=True, overwrite_output=True)
 

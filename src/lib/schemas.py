@@ -27,4 +27,10 @@ class StorePath:
 
     @classmethod
     def build_prefix(cls, host: str, original_id: str):
+        if host not in WEBSITES:
+            raise ValueError(f"❌ Can not find website from {host}")
+
+        if not original_id:
+            raise ValueError(f"❌ Original id is required")
+
         return f"{WEBSITES[host][0]}/{original_id[0:2]}/{original_id}"

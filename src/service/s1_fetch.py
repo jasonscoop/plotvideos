@@ -54,7 +54,7 @@ def fetch_and_save_videos(host: str = ""):
                     name = site["site"]["name"]
                     id_extractor = WEBSITES.get(host)[1]()
                     if not id_extractor:
-                        logger.error("Can not find a extractor for host %s", host)
+                        logger.error("❌ Can not find a extractor for host %s", host)
                         continue
 
                     try:
@@ -66,7 +66,7 @@ def fetch_and_save_videos(host: str = ""):
                             original_id = id_extractor.get(link.get("url"))
                             if not original_id:
                                 logger.error(
-                                    f"Can not find a id for link {link.get('url')}"
+                                    f"❌ Can not find a id from: {link.get('url')}"
                                 )
                                 continue
 

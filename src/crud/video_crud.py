@@ -65,7 +65,8 @@ class VideoCrud:
                     to_insert.append(video)
 
             if to_insert:
-                session.bulk_save_objects(to_insert)
+                for video in to_insert:
+                    session.add(video)
 
             session.commit()
             return len(to_insert), len(to_update)

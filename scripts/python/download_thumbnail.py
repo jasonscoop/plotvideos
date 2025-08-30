@@ -47,7 +47,7 @@ def search_and_add_videos():
     """Search for videos using titles as keywords and add all found links to database"""
     logger.info("🔍 Starting video search and database population...")
 
-    last_id = 13391
+    last_id = 14008
     total_processed = 0
     total_added = 0
     total_updated = 0
@@ -85,10 +85,12 @@ def search_and_add_videos():
                     host = site["site"]["host"]
                     website_info = WEBSITES.get(host)
                     if not website_info:
+                        logger.error(f"❌ Can not find website from {host}")
                         continue
 
                     id_extractor = website_info[1]()
                     if not id_extractor:
+                        logger.error(f"❌ Can not find a extractor for host {host}")
                         continue
 
                     for link in site["links"]:
@@ -102,6 +104,7 @@ def search_and_add_videos():
                         # Extract original_id for this link
                         original_id = id_extractor.get(url)
                         if not original_id:
+                            logger.error(f"❌ Can not find a id from: {url}")
                             continue
 
                         # Create video entry for all links

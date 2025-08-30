@@ -62,5 +62,6 @@ docker run -it \
   -e MYSQL_DB_PASSWORD=12345678 \
   -e MYSQL_DB_NAME=toovideos \
   -e MYSQL_TABLE_PREFIX=wp_ \
-  wuse python scripts/python/migrate_bunny_to_b2.py
+  -v ./works:/workspace/works
+  wuse bash -c "pip install pymysql && python scripts/python/migrate_bunny_to_b2.py"
 ```

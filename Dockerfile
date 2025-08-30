@@ -13,7 +13,7 @@ RUN apt-get update  \
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /workspace
-ENV PYTHONPATH="${PYTHONPATH}:."
+ENV PYTHONPATH=.
 
 COPY pyproject.toml .
 COPY uv.lock .

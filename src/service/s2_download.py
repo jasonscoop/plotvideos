@@ -3,7 +3,7 @@ import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from loguru import logger
-from yt_dlp.utils import DownloadError, RegexNotFoundError
+from yt_dlp.utils import DownloadError, RegexNotFoundError, ytdl_is_updateable
 
 from src.crud.video_crud import VideoCrud
 from src.lib.config import MAX_ACCEPT_VIDEO_SIZE, S2_DOWNLOAD_BATCH_SIZE
@@ -24,6 +24,15 @@ def download_video(video: Video):
         thumbnail_status = ThumbnailStatus.downloaded
         if not download_image(video.thumbnail_url, video.store_path.thumbnail):
             thumbnail_status = ThumbnailStatus.failed
+
+        if thumbnail_status == ThumbnailStatus.failed:
+            thumbnails = info.get("thumbnails", [])
+            if thumbnails and thumbnails[0].get("url"):
+                thumbnail_status = ThumbnailStatus.ytdlp_downloaded
+                ytdlp_thumbnail_url = thumbnails[0].get("url")
+                if not download_image(ytdlp_thumbnail_url, video.store_path.thumbnail):
+                    thumbnail_status = ThumbnailStatus.failed
+
         video_size = video.store_path.video.stat().st_size
 
         VideoCrud.update(
@@ -39,6 +48,11 @@ def download_video(video: Video):
                 "width": info.get("width", 0),
                 "height": info.get("height", 0),
                 "aspect_ratio": info.get("aspect_ratio", 0.0),
+                "thumbnail_url": (
+                    ytdlp_thumbnail_url
+                    if thumbnail_status == ThumbnailStatus.ytdlp_downloaded
+                    else video.thumbnail_url
+                ),
                 "thumbnail_status": thumbnail_status.value,
             }
         )

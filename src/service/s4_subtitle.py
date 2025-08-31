@@ -12,6 +12,8 @@ from src.utils.file_utils import rm_video
 from src.utils.string_utils import get_tokens
 from src.utils.vtt_utils import get_vtt_text
 
+from src.lib.models import Video
+
 
 def audio2text(audio_path: Path, language: str = "en") -> str:
     headers = {
@@ -30,9 +32,9 @@ def audio2text(audio_path: Path, language: str = "en") -> str:
     return response.text
 
 
-def subtitle_video(video):
+def subtitle_video(video: Video):
     try:
-        vtt_content = audio2text(video.store_path)
+        vtt_content = audio2text(video.store_path.audio)
         video.store_path.vtt.write_text(vtt_content)
 
         subtitle_content = get_vtt_text(vtt_content)

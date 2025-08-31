@@ -114,7 +114,7 @@ def download_and_update_thumbnails():
 
     logger.info("📥 Starting thumbnail download with yt-dlp and status update...")
 
-    last_id = 0
+    last_id = 11925
     total_processed = 0
     total_uploaded = 0
 

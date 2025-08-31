@@ -17,7 +17,7 @@ def search_and_add_videos():
     """Search for videos using titles as keywords and add all found links to database"""
     logger.info("🔍 Starting video search and database population...")
 
-    last_id = 22192
+    last_id = 51664
     total_processed = 0
     total_added = 0
     total_updated = 0

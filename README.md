@@ -80,6 +80,12 @@ docker run --rm --network container:dockerpress-mysql-1 \
 
 
 yt-dlp download image:
-```
+```bash
 yt-dlp -j --proxy "socks5://127.0.0.1:9150"  https://xhamster.com/videos/would-you-like-us-to-suck-you-off-grandpa-serina-gomez-and-mia-trejsi-for-oldhans-xhJOEen > info.json
+```
+
+Prevent MacOS sleep while run python:
+
+```bash
+caffeinate -i python3 my_script.py
 ```

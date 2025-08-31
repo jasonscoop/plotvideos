@@ -48,9 +48,6 @@ def upload_video(video: Video, languages: List[Language]):
         VideoCrud.update(
             {
                 "id": video.id,
-                "video_url": upload_results["video_url"],
-                "thumbnail_url": upload_results.get("thumbnail_url"),
-                "b2_cdn_domain": B2_CDN_DOMAIN,
                 "status": VideoStatus.published,
                 "failed_reason": "",
             }
@@ -65,7 +62,8 @@ def upload_video(video: Video, languages: List[Language]):
         )
         raise e
     finally:
-        rm_video(video)
+        pass
+    rm_video(video)
 
 
 def upload_videos(host: str = ""):

@@ -19,21 +19,25 @@ const createSuccessResponse = (data) => {
 };
 
 
-const buildVideoHtml = (storeDir, filename, availableLangs, languageMap) => {
-    const mp4Url = `${CDN_DOMAIN}/${storeDir}/${filename}`;
+const buildVideoHtml = async (video, availableLangs, languageMap) => {
+    const mp4Url = `${CDN_DOMAIN}/${video.store_dir}/${video.filename}`;
     
     const tracksHtml = [];
     for (const lang of availableLangs) {
-        const trackUrl = `${CDN_DOMAIN}/${storeDir}/subtitles/${lang}.vtt`;
+        const trackUrl = `${CDN_DOMAIN}/${video.store_dir}/subtitles/${lang}.vtt`;
         const nativeName = languageMap.get(lang) || lang;
+        const defaultAttr = lang === 'en' ? ' default' : '';
         tracksHtml.push(
-            `<track kind="subtitles" src="${trackUrl}" srclang="${lang}" label="${nativeName}">`
+            `<track kind="subtitles" src="${trackUrl}" srclang="${lang}" label="${nativeName}" ${defaultAttr}>`
         );
     }
-    
-    return `<video controls src="${mp4Url}" preload="metadata" crossorigin="anonymous">
+    const thumbnailUrl = `${CDN_DOMAIN}/${video.store_dir}/thumbnail.webp`;
+
+    const html = `<video controls src="${mp4Url}" preload="metadata" crossorigin="anonymous" poster="${thumbnailUrl}">
     ${tracksHtml.join('\n    ')}
     Your browser does not support the video tag.</video>`;
+
+    return [thumbnailUrl, html];
 };
 
 const processVideoUrls = async (video, termTranslationMap, languageMap) => {
@@ -103,17 +107,19 @@ const processVideoUrls = async (video, termTranslationMap, languageMap) => {
         metas.push(meta);
     }
 
+    const [thumbnailUrl, htmlContent] = await buildVideoHtml(video, availableLangs, languageMap);
+    
     return {
         id: video.id,
         title: video.title,
-        file_size: video.file_size,
+        fileSize: video.file_size,
         duration: video.duration,
         width: video.width,
         height: video.height,
-        aspect_ratio: video.aspect_ratio,
+        aspectRatio: video.aspect_ratio,
         metas: metas,
-        html_content: buildVideoHtml(store_dir, filename, availableLangs, languageMap),
-        thumbnail_url: `${CDN_DOMAIN}/${store_dir}/thumbnail.webp`
+        htmlContent: htmlContent,
+        thumbnailUrl: thumbnailUrl
     };
 };
 

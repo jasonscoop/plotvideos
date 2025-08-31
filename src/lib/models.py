@@ -10,6 +10,7 @@ from sqlalchemy import (
     Text,
     Float,
     UniqueConstraint,
+    Index,
 )
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql import func
@@ -88,6 +89,8 @@ class Video(Base):
     )
 
     temp_status = Column(Integer, nullable=False, default=0)
+
+    __table_args__ = (Index("idx_id_status", "id", "status"),)
 
     @property
     def store_path(self) -> StorePath:

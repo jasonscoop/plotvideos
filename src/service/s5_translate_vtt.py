@@ -43,7 +43,7 @@ def translate_and_save(lang, vtt_content, video):
         )
         translated_vtt = google_translate_vtt(vtt_content, lang, video)
 
-    translated_file = video.path.translated_vtts / f"{lang.code}.vtt"
+    translated_file = video.store_path.translated_vtts / f"{lang.code}.vtt"
     translated_file.write_text(translated_vtt)
     logger.info(
         f"[{video.id} | {video.host} | {video.original_id}] vtt translated '{lang.code}'"

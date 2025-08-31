@@ -11,7 +11,7 @@ from src.utils.media_utils import get_video_duration, media_to_wav
 
 
 def convert_video(video):
-    video_path = video.path.video
+    video_path = video.store_path.video
     if not video_path.exists():
         reason = VideoCrud.update_status(
             video.id,
@@ -37,7 +37,7 @@ def convert_video(video):
         rm_video(video)
         return
 
-    media_to_wav(video_path, video.path.audio)
+    media_to_wav(video_path, video.store_path.audio)
     VideoCrud.update(
         {
             "id": video.id,

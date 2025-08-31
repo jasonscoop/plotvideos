@@ -32,8 +32,8 @@ def audio2text(audio_path: Path, language: str = "en") -> str:
 
 def subtitle_video(video):
     try:
-        vtt_content = audio2text(video.path)
-        video.path.vtt.write_text(vtt_content)
+        vtt_content = audio2text(video.store_path)
+        video.store_path.vtt.write_text(vtt_content)
 
         subtitle_content = get_vtt_text(vtt_content)
         tokens = get_tokens(get_vtt_text(vtt_content))

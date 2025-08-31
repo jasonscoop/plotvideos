@@ -31,13 +31,13 @@ const buildVideoHtml = async (video, availableLangs, languageMap) => {
             `<track kind="subtitles" src="${trackUrl}" srclang="${lang}" label="${nativeName}" ${defaultAttr}>`
         );
     }
-    const thumbnailUrl = `${CDN_DOMAIN}/${video.store_dir}/thumbnail.webp`;
+    const thumbnail = `${CDN_DOMAIN}/${video.store_dir}/thumbnail.webp`;
 
-    const html = `<video controls src="${mp4Url}" preload="metadata" crossorigin="anonymous" poster="${thumbnailUrl}">
+    const html = `<video controls src="${mp4Url}" preload="metadata" crossorigin="anonymous" poster="${thumbnail}">
     ${tracksHtml.join('\n    ')}
     Your browser does not support the video tag.</video>`;
 
-    return [thumbnailUrl, html];
+    return [thumbnail, html];
 };
 
 const processVideoUrls = async (video, termTranslationMap, languageMap) => {
@@ -107,7 +107,7 @@ const processVideoUrls = async (video, termTranslationMap, languageMap) => {
         metas.push(meta);
     }
 
-    const [thumbnailUrl, htmlContent] = await buildVideoHtml(video, availableLangs, languageMap);
+    const [thumbnail, content] = await buildVideoHtml(video, availableLangs, languageMap);
     
     return {
         id: video.id,
@@ -118,8 +118,8 @@ const processVideoUrls = async (video, termTranslationMap, languageMap) => {
         height: video.height,
         aspectRatio: video.aspect_ratio,
         metas: metas,
-        htmlContent: htmlContent,
-        thumbnailUrl: thumbnailUrl
+        content: content,
+        thumbnail: thumbnail
     };
 };
 

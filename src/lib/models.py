@@ -48,6 +48,7 @@ class Video(Base):
     author_name = Column(String(100), nullable=False, default="")
     author_url = Column(String(500), nullable=False, default="")
     url = Column(String(512), nullable=False, unique=True)
+    url_crc32 = Column(Integer, nullable=False, default=0, index=True)
     thumbnail_url = Column(String(512), nullable=False, default="")
     thumbnail_status = Column(
         Integer, nullable=False, default=ThumbnailStatus.pending.value
@@ -85,7 +86,6 @@ class Video(Base):
         server_default=func.now(),
         onupdate=func.now(),
         nullable=False,
-        index=True,
     )
 
     temp_status = Column(Integer, nullable=False, default=0)
@@ -122,7 +122,7 @@ class Language(Base):
     __tablename__ = "languages"
     id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(String(2), nullable=False, unique=True)
-    locale = Column(String(5), nullable=False, unique=True)
+    locale = Column(String(5), nullable=False)
     native_name = Column(String(50), nullable=False)
     aliases = Column(JSON, nullable=False, default=[])
     enabled = Column(Boolean, nullable=False, default=True)

@@ -47,17 +47,35 @@ class VideoCrud:
             return 0, 0
 
         with get_db() as session:
-            urls = [video.url for video in videos]
+            # Get all videos with matching url_crc32 values
+            url_crc32s = [video.url_crc32 for video in videos]
+            potential_matches = (
+                session.query(Video).filter(Video.url_crc32.in_(url_crc32s)).all()
+            )
 
-            existing_videos = session.query(Video).filter(Video.url.in_(urls)).all()
-            existing_urls = {video.url: video for video in existing_videos}
+            # Create lookup by url_crc32 for potential matches
+            potential_by_crc32 = {}
+            for video in potential_matches:
+                if video.url_crc32 not in potential_by_crc32:
+                    potential_by_crc32[video.url_crc32] = []
+                potential_by_crc32[video.url_crc32].append(video)
 
             to_insert = []
             to_update = []
 
             for video in videos:
-                if video.url in existing_urls:
-                    existing_video = existing_urls[video.url]
+                existing_video = None
+
+                # Check if there are potential matches by url_crc32
+                if video.url_crc32 in potential_by_crc32:
+                    # Find exact match by comparing url
+                    for potential_match in potential_by_crc32[video.url_crc32]:
+                        if potential_match.url == video.url:
+                            existing_video = potential_match
+                            break
+
+                if existing_video:
+                    # Update thumbnail_url only
                     if existing_video.thumbnail_url != video.thumbnail_url:
                         existing_video.thumbnail_url = video.thumbnail_url
                         to_update.append(existing_video)

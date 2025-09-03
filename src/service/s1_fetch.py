@@ -1,4 +1,5 @@
 import time
+import hashlib
 import traceback
 from typing import List
 from urllib.parse import urlparse
@@ -73,6 +74,7 @@ def fetch_and_save_videos(host: str = ""):
                             new_video = Video(
                                 title=link.get("title"),
                                 url=link.get("url"),
+                                url_crc32=hashlib.crc32(link.get("url").encode()),
                                 thumbnail_url=link.get("image"),
                                 original_id=original_id,
                                 host=host,

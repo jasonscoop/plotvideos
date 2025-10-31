@@ -80,7 +80,7 @@ class Video(Base, BaseModel):
     duration = Column(Integer, nullable=False, default=0)
 
     word_count = Column(Integer, nullable=False, default=0)
-    subtitle_duration_ratio = Column(Float, nullable=False, default=0.0)
+    word_density = Column(Float, nullable=False, default=0.0)
 
     __table_args__ = (Index("idx_id_status", "id", "status"),)
 
@@ -91,8 +91,8 @@ class Video(Base, BaseModel):
         return StorePath(self.host, self.original_id)
 
 
-class VideoTitleTranslation(Base, BaseModel):
-    __tablename__ = "video_title_translations"
+class TitleTranslation(Base, BaseModel):
+    __tablename__ = "title_translations"
     video_id = Column(Integer, ForeignKey("videos.id", ondelete="CASCADE"), nullable=False, index=True)
     lang = Column(String(2), nullable=False)
     translated_title = Column(String(512), nullable=False)

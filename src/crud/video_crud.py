@@ -6,7 +6,7 @@ from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.connection import get_db
 from src.lib.enums import VideoStatus
-from src.lib.models import Video, VideoTitleTranslation
+from src.lib.models import Video, TitleTranslation
 
 
 class VideoCrud:
@@ -128,8 +128,8 @@ class VideoCrud:
         """
         with get_db() as session:
             translations = (
-                session.query(VideoTitleTranslation)
-                .filter(VideoTitleTranslation.video_id == video_id)
+                session.query(TitleTranslation)
+                .filter(TitleTranslation.video_id == video_id)
                 .all()
             )
             return {t.lang: t.translated_title for t in translations}

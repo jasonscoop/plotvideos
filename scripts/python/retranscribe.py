@@ -56,13 +56,13 @@ def transcribe_video(video: Video):
     t2 = time.time()
 
     tokens = get_tokens(sub_text)
-    subtitle_duration_ratio = round(tokens / video.duration, 2) if video.duration else 0
+    word_density = round(tokens / video.duration, 2) if video.duration else 0
     VideoCrud.update(
         {
             "id": video.id,
             "subtitle_content": sub_text,
             "subtitle_tokens": tokens,
-            "subtitle_duration_ratio": subtitle_duration_ratio,
+            "word_density": word_density,
             "temp_status": 1,
         }
     )

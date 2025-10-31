@@ -3,19 +3,19 @@ from typing import List, Dict
 from sqlalchemy import delete
 
 from src.lib.connection import get_db
-from src.lib.models import VideoTitleTranslation
+from src.lib.models import TitleTranslation
 
 
-class VideoTitleTranslationCrud:
+class TitleTranslationCrud:
     @classmethod
-    def create_or_update(cls, video_id: int, lang: str, translated_title: str) -> VideoTitleTranslation:
+    def create_or_update(cls, video_id: int, lang: str, translated_title: str) -> TitleTranslation:
         """Create or update a single translation for a video"""
         with get_db() as session:
             translation = (
-                session.query(VideoTitleTranslation)
+                session.query(TitleTranslation)
                 .filter(
-                    VideoTitleTranslation.video_id == video_id,
-                    VideoTitleTranslation.lang == lang,
+                    TitleTranslation.video_id == video_id,
+                    TitleTranslation.lang == lang,
                 )
                 .first()
             )
@@ -23,7 +23,7 @@ class VideoTitleTranslationCrud:
             if translation:
                 translation.translated_title = translated_title
             else:
-                translation = VideoTitleTranslation(
+                translation = TitleTranslation(
                     video_id=video_id, lang=lang, translated_title=translated_title
                 )
                 session.add(translation)
@@ -33,7 +33,7 @@ class VideoTitleTranslationCrud:
             return translation
 
     @classmethod
-    def batch_create_or_update(cls, video_id: int, translations: Dict[str, str]) -> List[VideoTitleTranslation]:
+    def batch_create_or_update(cls, video_id: int, translations: Dict[str, str]) -> List[TitleTranslation]:
         """Create or update multiple translations for a video
         
         Args:
@@ -42,13 +42,13 @@ class VideoTitleTranslationCrud:
                          e.g., {"en": "Hello", "es": "Hola", "ja": "こんにちは"}
         
         Returns:
-            List of created/updated VideoTitleTranslation objects
+            List of created/updated TitleTranslation objects
         """
         with get_db() as session:
             # Get existing translations for this video
             existing = (
-                session.query(VideoTitleTranslation)
-                .filter(VideoTitleTranslation.video_id == video_id)
+                session.query(TitleTranslation)
+                .filter(TitleTranslation.video_id == video_id)
                 .all()
             )
             
@@ -63,7 +63,7 @@ class VideoTitleTranslationCrud:
                     result.append(existing_by_lang[lang])
                 else:
                     # Create new
-                    translation = VideoTitleTranslation(
+                    translation = TitleTranslation(
                         video_id=video_id, lang=lang, translated_title=translated_title
                     )
                     session.add(translation)
@@ -76,12 +76,12 @@ class VideoTitleTranslationCrud:
             return result
 
     @classmethod
-    def get_by_video_id(cls, video_id: int) -> List[VideoTitleTranslation]:
+    def get_by_video_id(cls, video_id: int) -> List[TitleTranslation]:
         """Get all translations for a video"""
         with get_db() as session:
             return (
-                session.query(VideoTitleTranslation)
-                .filter(VideoTitleTranslation.video_id == video_id)
+                session.query(TitleTranslation)
+                .filter(TitleTranslation.video_id == video_id)
                 .all()
             )
 
@@ -95,21 +95,21 @@ class VideoTitleTranslationCrud:
         """
         with get_db() as session:
             translations = (
-                session.query(VideoTitleTranslation)
-                .filter(VideoTitleTranslation.video_id == video_id)
+                session.query(TitleTranslation)
+                .filter(TitleTranslation.video_id == video_id)
                 .all()
             )
             return {t.lang: t.translated_title for t in translations}
 
     @classmethod
-    def get_by_video_id_and_lang(cls, video_id: int, lang: str) -> VideoTitleTranslation | None:
+    def get_by_video_id_and_lang(cls, video_id: int, lang: str) -> TitleTranslation | None:
         """Get a specific translation for a video and language"""
         with get_db() as session:
             return (
-                session.query(VideoTitleTranslation)
+                session.query(TitleTranslation)
                 .filter(
-                    VideoTitleTranslation.video_id == video_id,
-                    VideoTitleTranslation.lang == lang,
+                    TitleTranslation.video_id == video_id,
+                    TitleTranslation.lang == lang,
                 )
                 .first()
             )
@@ -123,8 +123,8 @@ class VideoTitleTranslationCrud:
         """
         with get_db() as session:
             result = session.execute(
-                delete(VideoTitleTranslation).where(
-                    VideoTitleTranslation.video_id == video_id
+                delete(TitleTranslation).where(
+                    TitleTranslation.video_id == video_id
                 )
             )
             session.commit()
@@ -139,9 +139,9 @@ class VideoTitleTranslationCrud:
         """
         with get_db() as session:
             result = session.execute(
-                delete(VideoTitleTranslation).where(
-                    VideoTitleTranslation.video_id == video_id,
-                    VideoTitleTranslation.lang == lang,
+                delete(TitleTranslation).where(
+                    TitleTranslation.video_id == video_id,
+                    TitleTranslation.lang == lang,
                 )
             )
             session.commit()

@@ -81,7 +81,7 @@ def process_subtitled_videos(host: str = ""):
                 rm_video(video)
                 continue
 
-            if video.subtitle_duration_ratio < SUBTITLE_TOKEN_RATIO_THRESHOLD:
+            if video.word_density < SUBTITLE_TOKEN_RATIO_THRESHOLD:
                 reason = VideoCrud.update_status(
                     video.id,
                     VideoStatus.failed,

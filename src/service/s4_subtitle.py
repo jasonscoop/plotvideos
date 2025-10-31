@@ -21,7 +21,7 @@ def subtitle_video(video: Video):
             {
                 "id": video.id,
                 "word_count": word_count,
-                "subtitle_duration_ratio": round(word_count / video.duration, 2) if video.duration > 0 else 0,
+                "word_density": round(word_count / video.duration, 2) if video.duration > 0 else 0,
                 "status": VideoStatus.subtitled,
                 "failed_reason": "",
             }

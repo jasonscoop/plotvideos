@@ -8,6 +8,7 @@ from requests.exceptions import HTTPError
 from src.crud.language_crud import LanguageCrud
 from src.crud.term_crud import TermCrud
 from src.crud.video_crud import VideoCrud
+from src.crud.video_title_translation_crud import VideoTitleTranslationCrud
 from src.lib.config import S6_TRANSLATE_META_BATCH_SIZE
 from src.lib.enums import VideoStatus
 from src.lib.models import Video
@@ -16,7 +17,7 @@ from src.utils.translate_utils import translate_texts2, translate_texts1
 
 
 def translate_video(video: Video, languages):
-    title_translations = defaultdict(dict)
+    title_translations = {}
     all_terms = [video.keyword] + video.tags + video.categories
     all_translations = TermCrud.get_translations(all_terms)
 
@@ -45,10 +46,13 @@ def translate_video(video: Video, languages):
         for term, translation in zip(terms_to_translate, new_translations[1:]):
             TermCrud.create(term, lang.code, translation)
 
+    # Save title translations to the new table
+    VideoTitleTranslationCrud.batch_create_or_update(video.id, title_translations)
+    
+    # Update video status
     VideoCrud.update(
         {
             "id": video.id,
-            "title_translations": title_translations,
             "status": VideoStatus.meta_translated,
             "failed_reason": "",
         }

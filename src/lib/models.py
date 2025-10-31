@@ -11,9 +11,11 @@ from sqlalchemy import (
     Float,
     UniqueConstraint,
     Index,
+    ForeignKey,
 )
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, declared_attr
 from sqlalchemy.sql import func
+from sqlalchemy.dialects.postgresql import SERIAL
 
 from src.lib.connection import engine
 from src.lib.enums import VideoStatus, ThumbnailStatus
@@ -22,26 +24,35 @@ from src.lib.schemas import StorePath
 Base = declarative_base()
 
 
-class Keyword(Base):
+class BaseModel:
+    """Base model with common columns for all tables"""
+    
+    id = Column(SERIAL, primary_key=True)
+    
+    @declared_attr
+    def created_at(cls):
+        return Column(
+            DateTime(timezone=True), server_default=func.now(), nullable=False
+        )
+    
+    @declared_attr
+    def updated_at(cls):
+        return Column(
+            DateTime(timezone=True),
+            server_default=func.now(),
+            onupdate=func.now(),
+            nullable=False,
+        )
+
+
+class Keyword(Base, BaseModel):
     __tablename__ = "keywords"
-    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False, unique=True)
     enabled = Column(Boolean, nullable=False, default=True)
 
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
-    updated_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now(),
-        nullable=False,
-    )
 
-
-class Video(Base):
+class Video(Base, BaseModel):
     __tablename__ = "videos"
-    id = Column(Integer, primary_key=True, autoincrement=True)
     host = Column(String(50), nullable=False, index=True)
     title = Column(String(512), nullable=False)
     original_id = Column(String(80), nullable=False)
@@ -68,20 +79,8 @@ class Video(Base):
     aspect_ratio = Column(Float, nullable=False, default=0.0)
     duration = Column(Integer, nullable=False, default=0)
 
-    title_translations = Column(JSON, nullable=False, default={})
-
     word_count = Column(Integer, nullable=False, default=0)
     subtitle_duration_ratio = Column(Float, nullable=False, default=0.0)
-
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
-    updated_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now(),
-        nullable=False,
-    )
 
     __table_args__ = (Index("idx_id_status", "id", "status"),)
 
@@ -92,43 +91,31 @@ class Video(Base):
         return StorePath(self.host, self.original_id)
 
 
-class Term(Base):
+class VideoTitleTranslation(Base, BaseModel):
+    __tablename__ = "video_title_translations"
+    video_id = Column(Integer, ForeignKey("videos.id", ondelete="CASCADE"), nullable=False, index=True)
+    lang = Column(String(2), nullable=False)
+    translated_title = Column(String(512), nullable=False)
+    
+    __table_args__ = (UniqueConstraint("video_id", "lang", name="uix_video_id_lang"),)
+
+
+class Term(Base, BaseModel):
     __tablename__ = "terms"
-    id = Column(Integer, primary_key=True, autoincrement=True)
     text = Column(String(255), nullable=False)
     lang = Column(String(2), nullable=False)
     translation = Column(Text, nullable=False)
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
-    updated_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now(),
-        nullable=False,
-    )
 
     __table_args__ = (UniqueConstraint("text", "lang", name="uix_text_lang"),)
 
 
-class Language(Base):
+class Language(Base, BaseModel):
     __tablename__ = "languages"
-    id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(String(2), nullable=False, unique=True)
     locale = Column(String(5), nullable=False)
     native_name = Column(String(50), nullable=False)
     aliases = Column(JSON, nullable=False, default=[])
     enabled = Column(Boolean, nullable=False, default=True)
-
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
-    updated_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now(),
-        nullable=False,
-    )
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from sqlalchemy.orm import undefer
 from sqlalchemy import text
@@ -6,7 +6,7 @@ from tenacity import stop_after_attempt, retry, wait_fixed
 
 from src.lib.connection import get_db
 from src.lib.enums import VideoStatus
-from src.lib.models import Video
+from src.lib.models import Video, VideoTitleTranslation
 
 
 class VideoCrud:
@@ -113,3 +113,29 @@ class VideoCrud:
                 session.commit()
 
             return reason
+
+    @classmethod
+    def get_title_translations(cls, video_id: int) -> Dict[str, str]:
+        """
+        Get all title translations for a video as a dictionary.
+        
+        Args:
+            video_id: The ID of the video
+            
+        Returns:
+            Dictionary mapping language codes to translated titles
+            e.g., {"en": "Hello", "es": "Hola", "ja": "こんにちは"}
+        """
+        with get_db() as session:
+            translations = (
+                session.query(VideoTitleTranslation)
+                .filter(VideoTitleTranslation.video_id == video_id)
+                .all()
+            )
+            return {t.lang: t.translated_title for t in translations}
+
+    @classmethod
+    def get_by_id(cls, video_id: int) -> Video | None:
+        """Get a video by its ID"""
+        with get_db() as session:
+            return session.query(Video).filter(Video.id == video_id).first()

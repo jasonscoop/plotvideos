@@ -1,51 +1,27 @@
 import time
 import traceback
-from pathlib import Path
 
-import requests
 from loguru import logger
 
 from src.crud.video_crud import VideoCrud
-from src.lib.config import S4_SUBTITLE_BATCH_SIZE, AUDIO2VTT_ENDPOINT, AUDIO2VTT_API_KEY
+from src.lib.config import S4_SUBTITLE_BATCH_SIZE
 from src.lib.models import VideoStatus
 from src.utils.file_utils import rm_video
-from src.utils.string_utils import get_tokens
-from src.utils.vtt_utils import get_vtt_text
 
 from src.lib.models import Video
 
-
-def audio2text(audio_path: Path, language: str = "en") -> str:
-    headers = {
-        "accept": "application/json",
-        "X-API-Key": AUDIO2VTT_API_KEY,
-    }
-    files = {
-        "file": (audio_path.name, open(audio_path, "rb")),
-        "language": (None, language),
-    }
-    response = requests.post(
-        AUDIO2VTT_ENDPOINT,
-        headers=headers,
-        files=files,
-    )
-    return response.text
+from src.utils.whisper_utils import whisper_transcribe
 
 
 def subtitle_video(video: Video):
     try:
-        vtt_content = audio2text(video.store_path.audio)
+        vtt_content, word_count = whisper_transcribe(video.store_path.audio)
         video.store_path.vtt.write_text(vtt_content)
-
-        subtitle_content = get_vtt_text(vtt_content)
-        tokens = get_tokens(get_vtt_text(vtt_content))
-
         VideoCrud.update(
             {
                 "id": video.id,
-                "subtitle_content": subtitle_content,
-                "subtitle_tokens": tokens,
-                "subtitle_duration_ratio": round(tokens / video.duration, 2),
+                "word_count": word_count,
+                "subtitle_duration_ratio": round(word_count / video.duration, 2) if video.duration > 0 else 0,
                 "status": VideoStatus.subtitled,
                 "failed_reason": "",
             }

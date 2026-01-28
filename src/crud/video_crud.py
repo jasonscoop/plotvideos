@@ -1,4 +1,5 @@
 from typing import List, Dict
+from uuid import UUID
 
 from sqlalchemy.orm import undefer
 from sqlalchemy import text
@@ -13,7 +14,7 @@ class VideoCrud:
     @classmethod
     def batch_get(
         cls,
-        last_id: int,
+        last_id: UUID | None,
         batch_size: int,
         status: VideoStatus | List[VideoStatus] | None = None,
         host: str = "",
@@ -27,10 +28,11 @@ class VideoCrud:
             )
 
             if isinstance(status, list):
-                query = query.filter(Video.status.in_(status), Video.id > last_id)
+                query = query.filter(Video.status.in_(status))
             elif isinstance(status, VideoStatus):
-                query = query.filter(Video.status == status, Video.id > last_id)
-            else:
+                query = query.filter(Video.status == status)
+
+            if last_id is not None:
                 query = query.filter(Video.id > last_id)
 
             if host:
@@ -104,7 +106,7 @@ class VideoCrud:
             session.commit()
 
     @classmethod
-    def update_status(cls, video_id: int, status: VideoStatus, reason: str = ""):
+    def update_status(cls, video_id: UUID, status: VideoStatus, reason: str = ""):
         with get_db() as session:
             video = session.query(Video).filter(Video.id == video_id).first()
             if video:
@@ -115,17 +117,7 @@ class VideoCrud:
             return reason
 
     @classmethod
-    def get_title_translations(cls, video_id: int) -> Dict[str, str]:
-        """
-        Get all title translations for a video as a dictionary.
-        
-        Args:
-            video_id: The ID of the video
-            
-        Returns:
-            Dictionary mapping language codes to translated titles
-            e.g., {"en": "Hello", "es": "Hola", "ja": "こんにちは"}
-        """
+    def get_title_translations(cls, video_id: UUID) -> Dict[str, str]:
         with get_db() as session:
             translations = (
                 session.query(TitleTranslation)
@@ -135,7 +127,6 @@ class VideoCrud:
             return {t.lang: t.translated_title for t in translations}
 
     @classmethod
-    def get_by_id(cls, video_id: int) -> Video | None:
-        """Get a video by its ID"""
+    def get_by_id(cls, video_id: UUID) -> Video | None:
         with get_db() as session:
             return session.query(Video).filter(Video.id == video_id).first()

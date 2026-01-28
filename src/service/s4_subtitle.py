@@ -41,7 +41,7 @@ def subtitle_video(video: Video):
 
 
 def subtitle_videos(host: str = ""):
-    last_id = 0
+    last_id = None
 
     while True:
         videos = VideoCrud.batch_get(
@@ -50,7 +50,7 @@ def subtitle_videos(host: str = ""):
         if not videos:
             logger.info("All subtitled, sleeping for 5 minutes")
             time.sleep(5 * 60)
-            last_id = 0
+            last_id = None
             continue
 
         last_id = videos[-1].id

@@ -1,7 +1,10 @@
+from uuid import UUID
+
 from loguru import logger
 from sqlalchemy import (
     Column,
     Integer,
+    BigInteger,
     String,
     Enum,
     Boolean,
@@ -13,9 +16,10 @@ from sqlalchemy import (
     Index,
     ForeignKey,
 )
+from sqlalchemy.dialects.postgresql import UUID as PgUUID
 from sqlalchemy.orm import declarative_base, declared_attr
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import SERIAL
+from uuid_utils import uuid7
 
 from src.lib.connection import engine
 from src.lib.enums import VideoStatus, ThumbnailStatus
@@ -24,10 +28,12 @@ from src.lib.schemas import StorePath
 Base = declarative_base()
 
 
+def generate_uuid7() -> UUID:
+    return UUID(bytes=uuid7().bytes)
+
+
 class BaseModel:
-    """Base model with common columns for all tables"""
-    
-    id = Column(SERIAL, primary_key=True)
+    id = Column(PgUUID(as_uuid=True), primary_key=True, default=generate_uuid7)
     
     @declared_attr
     def created_at(cls):
@@ -59,7 +65,7 @@ class Video(Base, BaseModel):
     author_name = Column(String(100), nullable=False, default="")
     author_url = Column(String(500), nullable=False, default="")
     url = Column(String(512), nullable=False, unique=True)
-    url_crc32 = Column(Integer, nullable=False, default=0, index=True)
+    url_crc32 = Column(BigInteger, nullable=False, default=0, index=True)
     thumbnail_url = Column(String(512), nullable=False, default="")
     thumbnail_status = Column(
         Integer, nullable=False, default=ThumbnailStatus.pending.value
@@ -93,7 +99,7 @@ class Video(Base, BaseModel):
 
 class TitleTranslation(Base, BaseModel):
     __tablename__ = "title_translations"
-    video_id = Column(Integer, ForeignKey("videos.id", ondelete="CASCADE"), nullable=False, index=True)
+    video_id = Column(PgUUID(as_uuid=True), ForeignKey("videos.id", ondelete="CASCADE"), nullable=False, index=True)
     lang = Column(String(2), nullable=False)
     translated_title = Column(String(512), nullable=False)
     

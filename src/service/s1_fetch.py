@@ -1,6 +1,6 @@
 import time
-import hashlib
 import traceback
+import zlib
 from typing import List
 from urllib.parse import urlparse
 
@@ -28,7 +28,7 @@ def fetch_video_urls(query: str, page: int):
 
 
 def fetch_and_save_videos(host: str = ""):
-    last_id = 0
+    last_id = None
     exception_count = 0
 
     while True:
@@ -36,7 +36,7 @@ def fetch_and_save_videos(host: str = ""):
         if not keywords:
             logger.info("All fetching, sleeping for 1 hour")
             time.sleep(1 * 60 * 60)
-            last_id = 0
+            last_id = None
             continue
 
         last_id = keywords[-1].id
@@ -74,7 +74,7 @@ def fetch_and_save_videos(host: str = ""):
                             new_video = Video(
                                 title=link.get("title"),
                                 url=link.get("url"),
-                                url_crc32=hashlib.crc32(link.get("url").encode()),
+                                url_crc32=zlib.crc32(link.get("url").encode()),
                                 thumbnail_url=link.get("image"),
                                 original_id=original_id,
                                 host=host,

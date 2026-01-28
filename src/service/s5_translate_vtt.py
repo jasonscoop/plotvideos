@@ -51,7 +51,7 @@ def translate_and_save(lang, vtt_content, video):
 
 
 def process_subtitled_videos(host: str = ""):
-    last_id = 0
+    last_id = None
     exception_count = 0
     languages = LanguageCrud.get_all()
 
@@ -62,7 +62,7 @@ def process_subtitled_videos(host: str = ""):
         if not videos:
             logger.info("All vtt translated, sleeping for 5 minutes")
             time.sleep(5 * 60)
-            last_id = 0
+            last_id = None
             languages = LanguageCrud.get_all()
             continue
 

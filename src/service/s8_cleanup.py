@@ -6,7 +6,7 @@ from src.utils.file_utils import rm_video
 
 
 def clean_files(batch_size, host):
-    last_id = 0
+    last_id = None
     while True:
         videos = VideoCrud.batch_get(last_id, batch_size, [VideoStatus.failed, VideoStatus.uploaded], host)
         if not videos:

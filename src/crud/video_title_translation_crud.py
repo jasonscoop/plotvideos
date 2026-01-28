@@ -1,4 +1,5 @@
 from typing import List, Dict
+from uuid import UUID
 
 from sqlalchemy import delete
 
@@ -8,7 +9,7 @@ from src.lib.models import TitleTranslation
 
 class TitleTranslationCrud:
     @classmethod
-    def create_or_update(cls, video_id: int, lang: str, translated_title: str) -> TitleTranslation:
+    def create_or_update(cls, video_id: UUID, lang: str, translated_title: str) -> TitleTranslation:
         """Create or update a single translation for a video"""
         with get_db() as session:
             translation = (
@@ -33,7 +34,7 @@ class TitleTranslationCrud:
             return translation
 
     @classmethod
-    def batch_create_or_update(cls, video_id: int, translations: Dict[str, str]) -> List[TitleTranslation]:
+    def batch_create_or_update(cls, video_id: UUID, translations: Dict[str, str]) -> List[TitleTranslation]:
         """Create or update multiple translations for a video
         
         Args:
@@ -76,7 +77,7 @@ class TitleTranslationCrud:
             return result
 
     @classmethod
-    def get_by_video_id(cls, video_id: int) -> List[TitleTranslation]:
+    def get_by_video_id(cls, video_id: UUID) -> List[TitleTranslation]:
         """Get all translations for a video"""
         with get_db() as session:
             return (
@@ -86,7 +87,7 @@ class TitleTranslationCrud:
             )
 
     @classmethod
-    def get_by_video_id_as_dict(cls, video_id: int) -> Dict[str, str]:
+    def get_by_video_id_as_dict(cls, video_id: UUID) -> Dict[str, str]:
         """Get all translations for a video as a dictionary
         
         Returns:
@@ -102,7 +103,7 @@ class TitleTranslationCrud:
             return {t.lang: t.translated_title for t in translations}
 
     @classmethod
-    def get_by_video_id_and_lang(cls, video_id: int, lang: str) -> TitleTranslation | None:
+    def get_by_video_id_and_lang(cls, video_id: UUID, lang: str) -> TitleTranslation | None:
         """Get a specific translation for a video and language"""
         with get_db() as session:
             return (
@@ -115,7 +116,7 @@ class TitleTranslationCrud:
             )
 
     @classmethod
-    def delete_by_video_id(cls, video_id: int) -> int:
+    def delete_by_video_id(cls, video_id: UUID) -> int:
         """Delete all translations for a video
         
         Returns:
@@ -131,7 +132,7 @@ class TitleTranslationCrud:
             return result.rowcount
 
     @classmethod
-    def delete_by_video_id_and_lang(cls, video_id: int, lang: str) -> bool:
+    def delete_by_video_id_and_lang(cls, video_id: UUID, lang: str) -> bool:
         """Delete a specific translation for a video and language
         
         Returns:

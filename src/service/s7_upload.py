@@ -67,7 +67,7 @@ def upload_video(video: Video, languages: List[Language]):
 
 
 def upload_videos(host: str = ""):
-    last_id = 0
+    last_id = None
     exception_count = 0
     languages = LanguageCrud.get_all()
 
@@ -78,7 +78,7 @@ def upload_videos(host: str = ""):
         if not videos:
             logger.info("All uploaded, sleeping for 5 minutes")
             time.sleep(5 * 60)
-            last_id = 0
+            last_id = None
             languages = LanguageCrud.get_all()
             continue
 

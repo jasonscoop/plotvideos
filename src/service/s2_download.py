@@ -89,7 +89,7 @@ def download_video(video: Video):
 
 
 def download_videos(host: str = ""):
-    last_id = 0
+    last_id = None
     exception_count = 0
     while True:
         videos = VideoCrud.batch_get(
@@ -98,7 +98,7 @@ def download_videos(host: str = ""):
         if not videos:
             logger.info("All downloaded, sleeping for 1 hour")
             time.sleep(1 * 60 * 60)
-            last_id = 0
+            last_id = None
             continue
 
         last_id = videos[-1].id

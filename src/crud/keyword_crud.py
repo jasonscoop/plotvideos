@@ -1,4 +1,5 @@
 from typing import List
+from uuid import UUID
 
 from src.lib.connection import get_db
 from src.lib.models import Video, Keyword
@@ -6,13 +7,12 @@ from src.lib.models import Video, Keyword
 
 class KeywordCrud:
     @classmethod
-    def batch_get(cls, last_id: int, batch_size: int = 10) -> List[Keyword]:
+    def batch_get(cls, last_id: UUID | None, batch_size: int = 10) -> List[Keyword]:
         with get_db() as session:
-            return session.query(Keyword) \
-                .filter(Keyword.enabled == True, Keyword.id > last_id) \
-                .order_by(Keyword.id.asc()) \
-                .limit(batch_size) \
-                .all()
+            query = session.query(Keyword).filter(Keyword.enabled == True)
+            if last_id is not None:
+                query = query.filter(Keyword.id > last_id)
+            return query.order_by(Keyword.id.asc()).limit(batch_size).all()
 
     @classmethod
     def batch_add(cls, videos, keyword: Keyword) -> (int, int):

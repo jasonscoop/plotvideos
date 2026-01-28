@@ -50,7 +50,7 @@ def convert_video(video):
 
 
 def convert_videos(host: str = ""):
-    last_id = 0
+    last_id = None
     exception_count = 0
 
     while True:
@@ -60,7 +60,7 @@ def convert_videos(host: str = ""):
         if not videos:
             logger.info("All converted, sleeping for 10 minutes")
             time.sleep(10 * 60)
-            last_id = 0
+            last_id = None
             continue
 
         last_id = videos[-1].id

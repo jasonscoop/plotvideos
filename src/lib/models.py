@@ -73,7 +73,7 @@ class Video(Base, BaseModel):
     store_dir = Column(String(100), nullable=False, default="")
     filename = Column(String(100), nullable=False, default="")
     keyword_id = Column(PgUUID(as_uuid=True), ForeignKey("keywords.id"), nullable=False, index=True)
-    keyword = relationship("Keyword", lazy="joined")
+    keyword = relationship("Keyword", lazy="selectin")
 
     status = Column(Enum(VideoStatus), default=VideoStatus.fetched, nullable=False)
     failed_reason = Column(String(1000), nullable=False, default="")

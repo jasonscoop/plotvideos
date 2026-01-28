@@ -64,7 +64,6 @@ def download_video(video: Video):
                     f"Video large than {to_mb(MAX_ACCEPT_VIDEO_SIZE)}MB."
                 ),
             )
-            rm_video(video)
             logger.warning(
                 f"[{video.id} | {video.host} | {video.original_id}] {reason}"
             )
@@ -76,13 +75,11 @@ def download_video(video: Video):
         VideoCrud.update_status(
             video.id, VideoStatus.failed, VideoStatus.downloaded.log(e)
         )
-        rm_video(video)
         logger.warning(str(e))
     except Exception as e:
         VideoCrud.update_status(
             video.id, VideoStatus.failed, VideoStatus.downloaded.log(e)
         )
-        rm_video(video)
         traceback.print_exc()
         logger.warning(str(e))
         raise e

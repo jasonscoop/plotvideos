@@ -6,10 +6,7 @@ from loguru import logger
 
 from src.crud.language_crud import LanguageCrud
 from src.crud.video_crud import VideoCrud
-from src.lib.config import (
-    S7_UPLOAD_BATCH_SIZE,
-    B2_CDN_DOMAIN,
-)
+from src.lib.config import S7_UPLOAD_BATCH_SIZE
 from src.lib.enums import VideoStatus
 from src.lib.models import Video, Language
 from src.utils.b2_utils import get_b2_client
@@ -25,7 +22,6 @@ def upload_video(video: Video, languages: List[Language]):
                 f"Video '{video.store_path.video}' does not exist"
             ),
         )
-        rm_video(video)
         logger.error(
             f"[{video.id} | {video.host} | {video.original_id}] Video '{video.store_path.video}' does not exist"
         )
@@ -36,7 +32,6 @@ def upload_video(video: Video, languages: List[Language]):
             f"[{video.id} | {video.host} | {video.original_id}] start uploading to B2"
         )
 
-        # Get B2 client and upload video and subtitles
         b2_client = get_b2_client()
         upload_results = b2_client.upload_video_and_subtitles(video, languages)
 
@@ -44,7 +39,6 @@ def upload_video(video: Video, languages: List[Language]):
             f"[{video.id} | {video.host} | {video.original_id}] uploaded to B2: {upload_results['video_url']}"
         )
 
-        # Update database with B2 URLs
         VideoCrud.update(
             {
                 "id": video.id,
@@ -61,9 +55,26 @@ def upload_video(video: Video, languages: List[Language]):
             video.id, VideoStatus.failed, VideoStatus.uploaded.log(e)
         )
         raise e
-    finally:
-        pass
-    rm_video(video)
+
+
+def cleanup_files(host: str = ""):
+    last_id = None
+    total_cleaned = 0
+    while True:
+        videos = VideoCrud.batch_get(
+            last_id, S7_UPLOAD_BATCH_SIZE, [VideoStatus.failed, VideoStatus.published], host
+        )
+        if not videos:
+            break
+
+        last_id = videos[-1].id
+        for video in videos:
+            rm_video(video)
+            total_cleaned += 1
+            logger.info(f"[{video.id} | {video.host} | {video.original_id}] cleaned up files")
+
+    if total_cleaned > 0:
+        logger.info(f"Cleanup completed: {total_cleaned} videos cleaned")
 
 
 def upload_videos(host: str = ""):
@@ -76,6 +87,7 @@ def upload_videos(host: str = ""):
             last_id, S7_UPLOAD_BATCH_SIZE, VideoStatus.meta_translated, host
         )
         if not videos:
+            cleanup_files(host)
             logger.info("All uploaded, sleeping for 5 minutes")
             time.sleep(5 * 60)
             last_id = None
@@ -90,7 +102,7 @@ def upload_videos(host: str = ""):
             ]
             for future in as_completed(futures):
                 try:
-                    future.result()  # This will raise any exceptions that occurred
+                    future.result()
                 except Exception as e:
                     exception_count += 1
                     logger.error(f"Error in upload: {str(e)}")

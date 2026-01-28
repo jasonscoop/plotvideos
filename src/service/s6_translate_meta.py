@@ -88,6 +88,5 @@ def translate_meta_infos(host: str = ""):
                 )
                 exception_count += 1
                 traceback.print_exc()
-                rm_video(video)
                 if exception_count >= 3:
                     raise e

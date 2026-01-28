@@ -78,7 +78,6 @@ def process_subtitled_videos(host: str = ""):
                 logger.warning(
                     f"[{video.id} | {video.host} | {video.original_id}] {reason}"
                 )
-                rm_video(video)
                 continue
 
             if video.word_density < SUBTITLE_TOKEN_RATIO_THRESHOLD:
@@ -90,7 +89,6 @@ def process_subtitled_videos(host: str = ""):
                 logger.warning(
                     f"[{video.id} | {video.host} | {video.original_id}] {reason}"
                 )
-                rm_video(video)
                 continue
 
             if not video.store_path.vtt.exists():
@@ -102,7 +100,6 @@ def process_subtitled_videos(host: str = ""):
                 logger.warning(
                     f"[{video.id} | {video.host} | {video.original_id}] {reason}"
                 )
-                rm_video(video)
                 continue
 
             logger.info(
@@ -134,4 +131,3 @@ def process_subtitled_videos(host: str = ""):
                 if exception_count >= 3:
                     raise e
                 traceback.print_exc()
-                rm_video(video)

@@ -10,6 +10,7 @@ from src.lib.config import (
     WHISPER_MODEL,
     WHISPER_BEAM_SIZE,
     WHISPER_DEVICE_INDEX,
+    WHISPER_LOCAL_FILES_ONLY,
 )
 
 
@@ -38,7 +39,7 @@ def get_whisper_model() -> WhisperModel:
             cpu_threads=WHISPER_CPU_THREADS,
             num_workers=WHISPER_NUM_WORKERS,
             download_root=MODELS_DIR.joinpath(WHISPER_MODEL).as_posix(),
-            local_files_only=True,
+            local_files_only=WHISPER_LOCAL_FILES_ONLY,
         )
     return _whisper_model
 

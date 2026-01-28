@@ -34,7 +34,6 @@ def convert_video(video):
             ),
         )
         logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
-        rm_video(video)
         return
 
     media_to_wav(video_path, video.store_path.audio)
@@ -73,6 +72,5 @@ def convert_videos(host: str = ""):
                 )
                 exception_count += 1
                 traceback.print_exc()
-                rm_video(video)
                 if exception_count > 3:
                     raise

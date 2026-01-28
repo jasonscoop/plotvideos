@@ -36,7 +36,6 @@ def subtitle_video(video: Video):
         )
         logger.info(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
         traceback.print_exc()
-        rm_video(video)
         return e
 
 

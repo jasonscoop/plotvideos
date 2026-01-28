@@ -18,7 +18,7 @@ from src.utils.translate_utils import translate_texts2, translate_texts1
 
 def translate_video(video: Video, languages):
     title_translations = {}
-    all_terms = [video.keyword] + video.tags + video.categories
+    all_terms = [video.keyword.name] + video.tags + video.categories
     all_translations = TermCrud.get_translations(all_terms)
 
     for lang in languages:

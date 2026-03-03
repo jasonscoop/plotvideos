@@ -1,48 +1,29 @@
 import time
 import traceback
-from concurrent.futures import ThreadPoolExecutor
 
 import webvtt
 from loguru import logger
-from requests import HTTPError
 
 from src.crud.language_crud import LanguageCrud
 from src.crud.video_crud import VideoCrud
 from src.lib.config import SUBTITLE_TOKEN_RATIO_THRESHOLD, S5_TRANSLATE_VTT_BATCH_SIZE
 from src.lib.enums import VideoStatus
-from src.utils.file_utils import rm_video
-from src.utils.llm_utils import llm_translate_vtt
-from src.utils.translate_utils import translate_texts2, translate_texts1
+from src.utils.nllb_utils import nllb_translate_batch
 
 
-def google_translate_vtt(vtt_content, lang, video) -> str:
+def nllb_translate_vtt(vtt_content: str, lang, video) -> str:
     vtt = webvtt.from_string(vtt_content)
     texts = [c.text for c in vtt]
-    try:
-        translated_texts = translate_texts1(texts, lang)
-        logger.error(
-            f"[{video.id} | {video.host} | {video.original_id}] translated with translator1"
-        )
-    except HTTPError as e:
-        translated_texts = translate_texts2(texts, lang)
-        logger.error(
-            f"[{video.id} | {video.host} | {video.original_id}] translated with translator2 (fallback)"
-        )
-
+    translated_texts = nllb_translate_batch(texts, lang)
+    
     for i, t in enumerate(translated_texts):
         vtt.captions[i].text = t
-
+    
     return vtt.content
 
 
 def translate_and_save(lang, vtt_content, video):
-    translated_vtt = llm_translate_vtt(vtt_content, lang)
-    if not translated_vtt:
-        logger.warning(
-            f"[{video.id} | {video.host} | {video.original_id}] Translated with llm failed, using google translator '{lang.code}'"
-        )
-        translated_vtt = google_translate_vtt(vtt_content, lang, video)
-
+    translated_vtt = nllb_translate_vtt(vtt_content, lang, video)
     translated_file = video.store_path.translated_vtts / f"{lang.code}.vtt"
     translated_file.write_text(translated_vtt)
     logger.info(
@@ -110,13 +91,8 @@ def process_subtitled_videos(host: str = ""):
                 vtt_content = video.store_path.vtt.read_text()
                 video.store_path.translated_vtts.mkdir(exist_ok=True)
 
-                with ThreadPoolExecutor(max_workers=len(languages)) as executor:
-                    futures = [
-                        executor.submit(translate_and_save, lang, vtt_content, video)
-                        for lang in languages
-                    ]
-                    for future in futures:
-                        future.result()
+                for lang in languages:
+                    translate_and_save(lang, vtt_content, video)
 
                 VideoCrud.update_status(video.id, VideoStatus.vtt_translated)
                 logger.info(

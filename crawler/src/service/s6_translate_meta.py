@@ -1,9 +1,7 @@
 import time
 import traceback
-from collections import defaultdict
 
 from loguru import logger
-from requests.exceptions import HTTPError
 
 from src.crud.language_crud import LanguageCrud
 from src.crud.term_crud import TermCrud
@@ -12,8 +10,7 @@ from src.crud.video_title_translation_crud import TitleTranslationCrud
 from src.lib.config import S6_TRANSLATE_META_BATCH_SIZE
 from src.lib.enums import VideoStatus
 from src.lib.models import Video
-from src.utils.file_utils import rm_video
-from src.utils.translate_utils import translate_texts2, translate_texts1
+from src.utils.nllb_utils import nllb_translate
 
 
 def translate_video(video: Video, languages):
@@ -27,29 +24,18 @@ def translate_video(video: Video, languages):
             term for term in all_terms if term not in existing_translations
         ]
 
-        # Combine title and new terms for a single translation request
         texts_to_translate = [video.title] + terms_to_translate
-        new_translations = [video.title]
-        if texts_to_translate:
-            try:
-                new_translations = translate_texts1(texts_to_translate, lang)
-                logger.info(
-                    f"[{video.id} | {video.host} | {video.original_id}] translated with translator1"
-                )
-            except HTTPError as e:
-                new_translations = translate_texts2(texts_to_translate, lang)
-                logger.warning(
-                    f"[{video.id} | {video.host} | {video.original_id}] translated with translator2 (fallback)"
-                )
+        new_translations = nllb_translate(texts_to_translate, lang)
+        logger.info(
+            f"[{video.id} | {video.host} | {video.original_id}] translated with NLLB"
+        )
 
         title_translations[lang.code] = new_translations[0]
         for term, translation in zip(terms_to_translate, new_translations[1:]):
             TermCrud.create(term, lang.code, translation)
 
-    # Save title translations to the new table
     TitleTranslationCrud.batch_create_or_update(video.id, title_translations)
     
-    # Update video status
     VideoCrud.update(
         {
             "id": video.id,

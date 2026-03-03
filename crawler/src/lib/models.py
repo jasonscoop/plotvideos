@@ -97,6 +97,13 @@ class Video(Base, BaseModel):
             logger.error(f"[{self.id}] host or original_id is not set")
         return StorePath(self.host, self.original_id)
 
+    @property
+    def subtitle_content(self) -> str:
+        vtt_path = self.store_path.vtt
+        if vtt_path.exists():
+            return vtt_path.read_text()
+        return ""
+
 
 class TitleTranslation(Base, BaseModel):
     __tablename__ = "title_translations"

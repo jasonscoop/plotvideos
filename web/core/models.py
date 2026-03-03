@@ -105,6 +105,10 @@ class Video(Base, BaseModel):
     def translated_s3_key(self) -> str:
         return f"{self.store_dir}/subtitles/"
 
+    @property
+    def hls_master_s3_key(self) -> str:
+        return f"{self.store_dir}/hls/master.m3u8"
+
 
 class TitleTranslation(Base, BaseModel):
     __tablename__ = "title_translations"

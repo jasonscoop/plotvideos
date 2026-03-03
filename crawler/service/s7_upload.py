@@ -11,6 +11,7 @@ from crawler.lib.enums import VideoStatus
 from crawler.lib.models import Video, Language
 from crawler.utils.b2_utils import get_b2_client
 from crawler.utils.file_utils import rm_video
+from crawler.utils.media_utils import generate_hls
 
 
 def upload_video(video: Video, languages: List[Language]):
@@ -28,6 +29,14 @@ def upload_video(video: Video, languages: List[Language]):
         return
 
     try:
+        logger.info(
+            f"[{video.id} | {video.host} | {video.original_id}] generating HLS variants"
+        )
+        generate_hls(video.store_path.video, video.store_path.hls_dir)
+        logger.info(
+            f"[{video.id} | {video.host} | {video.original_id}] HLS variants generated"
+        )
+
         logger.info(
             f"[{video.id} | {video.host} | {video.original_id}] start uploading to B2"
         )

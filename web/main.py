@@ -38,6 +38,10 @@ def build_subtitle_url(video: Video, lang_code: str) -> str:
     return f"{B2_CDN_DOMAIN}/{video.translated_s3_key}{lang_code}.vtt"
 
 
+def build_hls_url(video: Video) -> str:
+    return f"{B2_CDN_DOMAIN}/{video.hls_master_s3_key}"
+
+
 @app.get("/", response_class=HTMLResponse)
 async def index(
     request: Request,
@@ -150,6 +154,7 @@ async def watch_video(
             "author_url": video.author_url,
             "thumbnail_url": build_thumbnail_url(video),
             "video_url": build_video_url(video),
+            "hls_url": build_hls_url(video),
         },
         "subtitle_tracks": subtitle_tracks,
         "preferred_lang": preferred_lang,

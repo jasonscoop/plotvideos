@@ -95,6 +95,16 @@ class B2Client:
             )
             logger.info(f"[{video.id}] Uploaded thumbnail to B2")
 
+        # Upload HLS directory (master.m3u8 + variant playlists + .ts segments)
+        if video.store_path.hls_dir.exists():
+            hls_urls = self.upload_directory(
+                video.store_path.hls_dir, video.store_path.hls_s3_prefix
+            )
+            results["hls_urls"] = hls_urls
+            logger.info(
+                f"[{video.id}] Uploaded {len(hls_urls)} HLS files to B2"
+            )
+
         return results
 
 

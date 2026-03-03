@@ -4,7 +4,7 @@ import traceback
 from loguru import logger
 
 from crawler.crud.video_crud import VideoCrud
-from crawler.lib.config import S4_SUBTITLE_BATCH_SIZE
+from crawler.lib.config import S4_SUBTITLE_BATCH_SIZE, SUBTITLE_TOKEN_RATIO_THRESHOLD
 from crawler.lib.models import VideoStatus
 from crawler.utils.file_utils import rm_video
 
@@ -16,12 +16,27 @@ from crawler.utils.whisper_utils import whisper_transcribe
 def subtitle_video(video: Video):
     try:
         vtt_content, word_count = whisper_transcribe(video.store_path.audio)
+        word_density = round(word_count / video.duration, 2) if video.duration > 0 else 0
+
+        if word_density < SUBTITLE_TOKEN_RATIO_THRESHOLD:
+            reason = VideoCrud.update_status(
+                video.id,
+                VideoStatus.failed,
+                VideoStatus.subtitled.log(
+                    f"Word density {word_density} below threshold {SUBTITLE_TOKEN_RATIO_THRESHOLD}"
+                ),
+            )
+            logger.warning(
+                f"[{video.id} | {video.host} | {video.original_id}] {reason}"
+            )
+            return None
+
         video.store_path.vtt.write_text(vtt_content)
         VideoCrud.update(
             {
                 "id": video.id,
                 "word_count": word_count,
-                "word_density": round(word_count / video.duration, 2) if video.duration > 0 else 0,
+                "word_density": word_density,
                 "status": VideoStatus.subtitled,
                 "failed_reason": "",
             }

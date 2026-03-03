@@ -25,6 +25,11 @@ class StorePath:
 
         self.segments: Path = self.parent / "segments.json"
 
+        self.hls_s3_prefix = self.prefix + "/hls"
+        self.hls_dir: Path = VIDEOS_DIR / self.hls_s3_prefix
+        self.hls_master_s3_key = self.hls_s3_prefix + "/master.m3u8"
+        self.hls_master: Path = VIDEOS_DIR / self.hls_master_s3_key
+
     @classmethod
     def build_prefix(cls, host: str, original_id: str):
         if host not in WEBSITES:

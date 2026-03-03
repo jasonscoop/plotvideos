@@ -7,6 +7,7 @@
     <section>
       <div class="w-full bg-black rounded-lg overflow-hidden mb-3">
         <video
+          id="video-player"
           class="w-full h-auto"
           controls
           preload="metadata"
@@ -92,5 +93,22 @@
       </div>
     </aside>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script>
+    (function () {
+      var video = document.getElementById('video-player');
+      var hlsUrl = "{{ video.hls_url }}";
+      if (!hlsUrl) return;
+
+      if (window.Hls && Hls.isSupported()) {
+        var hls = new Hls();
+        hls.loadSource(hlsUrl);
+        hls.attachMedia(video);
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = hlsUrl;
+      }
+    })();
+  </script>
 {% endblock %}
 

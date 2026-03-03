@@ -20,7 +20,8 @@ COPY uv.lock .
 
 RUN uv pip install --system -r pyproject.toml
 RUN uv pip install --system --upgrade yt-dlp
-COPY src/ src/
+COPY crawler/ crawler/
+COPY web/ web/
 COPY scripts/ scripts/
 
 

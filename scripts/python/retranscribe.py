@@ -8,13 +8,13 @@ multiprocessing.set_start_method("spawn", force=True)
 from loguru import logger
 from botocore.exceptions import ClientError
 
-from src.crud.video_crud import VideoCrud
-from src.lib.enums import VideoStatus
-from src.lib.models import Video
-from src.utils.file_utils import s3_client, S3_BUCKET_NAME
-from src.utils.log_utils import init_logging
-from src.utils.string_utils import get_tokens
-from src.utils.whisper_utils import whisper_transcribe
+from crawler.crud.video_crud import VideoCrud
+from crawler.lib.enums import VideoStatus
+from crawler.lib.models import Video
+from crawler.utils.file_utils import s3_client, S3_BUCKET_NAME
+from crawler.utils.log_utils import init_logging
+from crawler.utils.string_utils import get_tokens
+from crawler.utils.whisper_utils import whisper_transcribe
 
 BATCH_SIZE = 5
 MAX_ID = 27555

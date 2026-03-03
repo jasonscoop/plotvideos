@@ -1,5 +1,5 @@
-from src.lib.connection import get_db
-from src.lib.models import Language
+from crawler.lib.connection import get_db
+from crawler.lib.models import Language
 
 
 def populate_languages():

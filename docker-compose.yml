@@ -13,7 +13,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/main.py --runner=s1_fetch
+    command: python -m crawler.main --runner=s1_fetch
 
   s2_download:
     build: .
@@ -24,7 +24,7 @@ services:
       - tor
     volumes:
       - ./works:/workspace/works
-    command: python src/main.py --runner=s2_download
+    command: python -m crawler.main --runner=s2_download
 
   s3_convert:
     build: .
@@ -33,7 +33,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/main.py --runner=s3_convert
+    command: python -m crawler.main --runner=s3_convert
 
   s4_subtitle:
     build: .
@@ -45,7 +45,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/main.py --runner=s4_subtitle
+    command: python -m crawler.main --runner=s4_subtitle
 
   s5_translate_vtt:
     build: .
@@ -54,7 +54,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/main.py --runner=s5_translate_vtt
+    command: python -m crawler.main --runner=s5_translate_vtt
 
   s6_translate_meta:
     build: .
@@ -63,7 +63,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/main.py --runner=s6_translate_meta
+    command: python -m crawler.main --runner=s6_translate_meta
 
   s7_upload:
     build: .
@@ -72,7 +72,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    command: python src/main.py --runner=s7_upload
+    command: python -m crawler.main --runner=s7_upload
 
   #  s8_cleanup:
   #    build: .
@@ -81,7 +81,7 @@ services:
   #      - .env
   #    volumes:
   #      - ./works:/workspace/works
-  #    command: python src/main.py --runner=s8_cleanup
+  #    command: python -m crawler.main --runner=s8_cleanup
 
   retranslate:
     build: .
@@ -92,3 +92,16 @@ services:
       - ./works:/workspace/works
       - ./scripts:/workspace/scripts
     command: python scripts/python/translate_vtt.py
+
+  web:
+    build: .
+    container_name: web
+    env_file:
+      - .env
+    depends_on:
+      - s7_upload
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./works:/workspace/works
+    command: uvicorn web.main:app --host 0.0.0.0 --port 8000

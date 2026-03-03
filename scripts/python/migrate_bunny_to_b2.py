@@ -6,8 +6,8 @@ import os
 import pymysql
 from loguru import logger
 
-from src.lib.config import WORKS_DIR
-from src.lib.consts import WEBSITES
+from crawler.lib.config import WORKS_DIR
+from crawler.lib.consts import WEBSITES
 
 # MySQL connection settings
 DB_HOST = os.getenv("MYSQL_DB_HOST", "localhost")

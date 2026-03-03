@@ -7,19 +7,19 @@ from loguru import logger
 from b2sdk.v2 import B2Api, InMemoryAccountInfo
 from dotenv import load_dotenv
 
-from src.lib.config import (
+from crawler.lib.config import (
     WORKS_DIR,
     B2_APPLICATION_KEY_ID,
     B2_APPLICATION_KEY,
     B2_BUCKET_NAME,
 )
-from src.lib.consts import WEBSITES
-from src.lib.enums import VideoStatus, ThumbnailStatus
-from src.lib.models import Video
-from src.crud.video_crud import VideoCrud
-from src.service.s1_fetch import fetch_video_urls
-from src.utils.download_utils import download_image
-from src.lib.schemas import StorePath
+from crawler.lib.consts import WEBSITES
+from crawler.lib.enums import VideoStatus, ThumbnailStatus
+from crawler.lib.models import Video
+from crawler.crud.video_crud import VideoCrud
+from crawler.service.s1_fetch import fetch_video_urls
+from crawler.utils.download_utils import download_image
+from crawler.lib.schemas import StorePath
 
 load_dotenv()
 

@@ -2,12 +2,12 @@ import time
 from loguru import logger
 from dotenv import load_dotenv
 
-from src.lib.consts import WEBSITES
-from src.lib.enums import VideoStatus
-from src.lib.models import Video
-from src.crud.video_crud import VideoCrud
-from src.service.s1_fetch import fetch_video_urls
-from src.lib.schemas import StorePath
+from crawler.lib.consts import WEBSITES
+from crawler.lib.enums import VideoStatus
+from crawler.lib.models import Video
+from crawler.crud.video_crud import VideoCrud
+from crawler.service.s1_fetch import fetch_video_urls
+from crawler.lib.schemas import StorePath
 
 load_dotenv()
 BATCH_SIZE = 50

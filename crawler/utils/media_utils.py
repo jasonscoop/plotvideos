@@ -44,16 +44,16 @@ def media_to_mp3(video_path: Path, mp3_path: Path, bitrate="192k"):
 
 
 HLS_RENDITIONS = [
-    {"name": "480p",  "height": 480,  "video_bitrate": "800k",  "audio_bitrate": "96k",  "bandwidth": 800_000,  "resolution": "854x480"},
-    {"name": "720p",  "height": 720,  "video_bitrate": "2800k", "audio_bitrate": "128k", "bandwidth": 2_800_000, "resolution": "1280x720"},
-    {"name": "1080p", "height": 1080, "video_bitrate": "5000k", "audio_bitrate": "192k", "bandwidth": 5_000_000, "resolution": "1920x1080"},
+    {"idx": 0, "name": "480p",  "bitrate": "1500k", "size": "854x480",  "bandwidth": 1_500_000},
+    {"idx": 1, "name": "720p",  "bitrate": "3000k", "size": "1280x720", "bandwidth": 3_000_000},
+    {"idx": 2, "name": "1080p", "bitrate": "5000k", "size": "1920x1080","bandwidth": 5_000_000},
 ]
 
 
 def generate_hls(video_path: Path, output_dir: Path) -> Path:
     """
-    Transcode a video into multi-resolution HLS (H.264 / AAC) in a single
-    ffmpeg invocation using filter_complex (one decode, three encodes).
+    Transcode a video into multi-resolution HLS (H.264 / AAC, fMP4 segments)
+    using ffmpeg's built-in variant stream support and master playlist generation.
 
     Returns the path to the master playlist (master.m3u8).
     """
@@ -61,44 +61,56 @@ def generate_hls(video_path: Path, output_dir: Path) -> Path:
     for r in HLS_RENDITIONS:
         (output_dir / r["name"]).mkdir(parents=True, exist_ok=True)
 
-    n = len(HLS_RENDITIONS)
-
-    # Build filter_complex: split input once, scale each branch
-    filter_parts = [f"[0:v]split={n}" + "".join(f"[vin{i}]" for i in range(n))]
-    for i, r in enumerate(HLS_RENDITIONS):
-        filter_parts.append(f"[vin{i}]scale=-2:{r['height']}[v{i}]")
-    filter_complex = ";".join(filter_parts)
+    stream_map = " ".join(f"v:{r['idx']},a:{r['idx']}" for r in HLS_RENDITIONS)
 
     command = [
         "ffmpeg", "-y",
         "-i", str(video_path),
-        "-filter_complex", filter_complex,
     ]
 
-    for i, r in enumerate(HLS_RENDITIONS):
-        seg = output_dir / r["name"] / "segment_%03d.ts"
-        playlist = output_dir / r["name"] / "index.m3u8"
+    # Map video + audio once per rendition
+    for r in HLS_RENDITIONS:
+        command += ["-map", "0:v", "-map", "0:a"]
+
+    # Per-rendition video bitrate & resolution
+    for r in HLS_RENDITIONS:
         command += [
-            "-map", f"[v{i}]", "-map", "0:a",
-            "-c:v", "libx264", "-profile:v", "high", "-preset", "veryfast",
-            "-b:v", r["video_bitrate"],
-            "-c:a", "aac", "-ac", "2", "-b:a", r["audio_bitrate"],
-            "-f", "hls",
-            "-hls_time", "6",
-            "-hls_playlist_type", "vod",
-            "-hls_segment_filename", str(seg),
-            str(playlist),
+            f"-b:v:{r['idx']}", r["bitrate"],
+            f"-s:v:{r['idx']}", r["size"],
         ]
+
+    # Shared encode settings
+    command += [
+        "-c:v", "libx264", "-preset", "veryfast",
+        "-g", "48", "-keyint_min", "48", "-sc_threshold", "0",
+        "-c:a", "aac", "-ac", "2", "-b:a", "128k",
+        "-f", "hls",
+        "-hls_time", "6",
+        "-hls_playlist_type", "vod",
+        "-hls_segment_type", "fmp4",
+        "-master_pl_name", "master.m3u8",
+        "-var_stream_map", stream_map,
+        str(output_dir / "%v/prog_index.m3u8"),
+    ]
 
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
-    master_lines = ["#EXTM3U", "#EXT-X-VERSION:3"]
+    # ffmpeg names variant dirs 0, 1, 2 — rename to 480p, 720p, 1080p
     for r in HLS_RENDITIONS:
-        master_lines.append(
-            f"#EXT-X-STREAM-INF:BANDWIDTH={r['bandwidth']},RESOLUTION={r['resolution']}"
-        )
-        master_lines.append(f"{r['name']}/index.m3u8")
+        src = output_dir / str(r["idx"])
+        dst = output_dir / r["name"]
+        if src.exists() and src != dst:
+            if dst.exists():
+                import shutil
+                shutil.rmtree(dst)
+            src.rename(dst)
 
+    # Rewrite master playlist with friendly directory names
     master_path = output_dir / "master.m3u8"
-    master_path.write_text("\n".join(master_lines) + "\n")
+    if master_path.exists():
+        content = master_path.read_text()
+        for r in HLS_RENDITIONS:
+            content = content.replace(f"{r['idx']}/prog_index.m3u8", f"{r['name']}/prog_index.m3u8")
+        master_path.write_text(content)
+
     return master_path

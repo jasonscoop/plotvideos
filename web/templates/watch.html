@@ -10,21 +10,10 @@
           id="video-player"
           class="w-full h-auto"
           controls
+          crossorigin="anonymous"
           preload="metadata"
           poster="{{ video.thumbnail_url }}"
-        >
-          <source src="{{ video.video_url }}" type="video/mp4" />
-          {% for track in subtitle_tracks %}
-            <track
-              src="{{ track.url }}"
-              kind="subtitles"
-              srclang="{{ track.code }}"
-              label="{{ track.label }}"
-              {% if track.default %}default{% endif %}
-            />
-          {% endfor %}
-          Your browser does not support the video tag.
-        </video>
+        ></video>
       </div>
 
       <h1 class="text-lg font-semibold mb-1">{{ video.title }}</h1>
@@ -99,14 +88,49 @@
     (function () {
       var video = document.getElementById('video-player');
       var hlsUrl = "{{ video.hls_url }}";
-      if (!hlsUrl) return;
+      var mp4Url = "{{ video.video_url }}";
 
-      if (window.Hls && Hls.isSupported()) {
+      var subtitleTracks = [
+        {% for track in subtitle_tracks %}
+        { src: "{{ track.url }}", srclang: "{{ track.code }}", label: "{{ track.label }}", isDefault: {{ "true" if track.default else "false" }} },
+        {% endfor %}
+      ];
+
+      function addSubtitles() {
+        subtitleTracks.forEach(function (t) {
+          var track = document.createElement('track');
+          track.kind = 'subtitles';
+          track.src = t.src;
+          track.srclang = t.srclang;
+          track.label = t.label;
+          if (t.isDefault) track.default = true;
+          video.appendChild(track);
+        });
+        // Activate the default track so the CC button appears
+        for (var i = 0; i < video.textTracks.length; i++) {
+          if (subtitleTracks[i] && subtitleTracks[i].isDefault) {
+            video.textTracks[i].mode = 'showing';
+          }
+        }
+      }
+
+      if (hlsUrl && window.Hls && Hls.isSupported()) {
         var hls = new Hls();
         hls.loadSource(hlsUrl);
         hls.attachMedia(video);
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        hls.on(Hls.Events.MEDIA_ATTACHED, addSubtitles);
+        hls.on(Hls.Events.ERROR, function (event, data) {
+          if (data.fatal) {
+            video.src = mp4Url;
+            addSubtitles();
+          }
+        });
+      } else if (hlsUrl && video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = hlsUrl;
+        addSubtitles();
+      } else {
+        video.src = mp4Url;
+        addSubtitles();
       }
     })();
   </script>

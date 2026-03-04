@@ -19,9 +19,8 @@ def subtitle_video(video: Video):
         word_density = round(word_count / video.duration, 2) if video.duration > 0 else 0
 
         if word_density < SUBTITLE_TOKEN_RATIO_THRESHOLD:
-            reason = VideoCrud.update_status(
+            reason = VideoCrud.record_failure(
                 video.id,
-                VideoStatus.failed,
                 VideoStatus.subtitled.log(
                     f"Word density {word_density} below threshold {SUBTITLE_TOKEN_RATIO_THRESHOLD}"
                 ),
@@ -46,8 +45,8 @@ def subtitle_video(video: Video):
         )
         return None
     except Exception as e:
-        reason = VideoCrud.update_status(
-            video.id, VideoStatus.failed, VideoStatus.subtitled.log(e)
+        reason = VideoCrud.record_failure(
+            video.id, VideoStatus.subtitled.log(e)
         )
         logger.info(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
         traceback.print_exc()

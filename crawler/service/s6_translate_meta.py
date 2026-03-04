@@ -10,7 +10,7 @@ from crawler.crud.video_title_translation_crud import TitleTranslationCrud
 from crawler.lib.config import S6_TRANSLATE_META_BATCH_SIZE
 from crawler.lib.enums import VideoStatus
 from crawler.lib.models import Video
-from crawler.utils.nllb_utils import nllb_translate
+from crawler.utils.translate_utils import translate_list
 
 
 def translate_video(video: Video, languages):
@@ -25,10 +25,7 @@ def translate_video(video: Video, languages):
         ]
 
         texts_to_translate = [video.title] + terms_to_translate
-        new_translations = nllb_translate(texts_to_translate, lang)
-        logger.info(
-            f"[{video.id} | {video.host} | {video.original_id}] translated with NLLB"
-        )
+        new_translations = translate_list(texts_to_translate, lang)
 
         title_translations[lang.code] = new_translations[0]
         for term, translation in zip(terms_to_translate, new_translations[1:]):
@@ -69,8 +66,8 @@ def translate_meta_infos(host: str = ""):
                     f"[{video.id} | {video.host} | {video.original_id}] translated"
                 )
             except Exception as e:
-                VideoCrud.update_status(
-                    video.id, VideoStatus.failed, VideoStatus.meta_translated.log(e)
+                VideoCrud.record_failure(
+                    video.id, VideoStatus.meta_translated.log(e)
                 )
                 exception_count += 1
                 traceback.print_exc()

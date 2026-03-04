@@ -57,9 +57,8 @@ def download_video(video: Video):
             }
         )
         if video_size > MAX_ACCEPT_VIDEO_SIZE:
-            reason = VideoCrud.update_status(
+            reason = VideoCrud.record_failure(
                 video.id,
-                VideoStatus.failed,
                 VideoStatus.downloaded.log(
                     f"Video large than {to_mb(MAX_ACCEPT_VIDEO_SIZE)}MB."
                 ),
@@ -72,14 +71,10 @@ def download_video(video: Video):
                 f"[{video.id} | {video.host} | {video.original_id}]  Downloaded"
             )
     except (SizeLimitExceeded, DownloadError, RegexNotFoundError) as e:
-        VideoCrud.update_status(
-            video.id, VideoStatus.failed, VideoStatus.downloaded.log(e)
-        )
+        VideoCrud.record_failure(video.id, VideoStatus.downloaded.log(e))
         logger.warning(str(e))
     except Exception as e:
-        VideoCrud.update_status(
-            video.id, VideoStatus.failed, VideoStatus.downloaded.log(e)
-        )
+        VideoCrud.record_failure(video.id, VideoStatus.downloaded.log(e))
         traceback.print_exc()
         logger.warning(str(e))
         raise e

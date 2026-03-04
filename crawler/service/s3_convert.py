@@ -13,9 +13,8 @@ from crawler.utils.media_utils import get_video_duration, media_to_wav
 def convert_video(video):
     video_path = video.store_path.video
     if not video_path.exists():
-        reason = VideoCrud.update_status(
+        reason = VideoCrud.record_failure(
             video.id,
-            VideoStatus.failed,
             VideoStatus.converted.log(f"Video file {video_path} not found."),
         )
         logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
@@ -26,9 +25,8 @@ def convert_video(video):
         duration = get_video_duration(video_path)
 
     if duration < MIN_ACCEPT_DURATION:
-        reason = VideoCrud.update_status(
+        reason = VideoCrud.record_failure(
             video.id,
-            VideoStatus.failed,
             VideoStatus.converted.log(
                 f"Duration is shorter than {MIN_ACCEPT_DURATION}s"
             ),
@@ -67,8 +65,8 @@ def convert_videos(host: str = ""):
             try:
                 convert_video(video)
             except Exception as e:
-                VideoCrud.update_status(
-                    video.id, VideoStatus.failed, VideoStatus.converted.log(str(e))
+                VideoCrud.record_failure(
+                    video.id, VideoStatus.converted.log(str(e))
                 )
                 exception_count += 1
                 traceback.print_exc()

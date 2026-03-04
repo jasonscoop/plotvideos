@@ -71,7 +71,7 @@ def download_and_update_thumbnails():
             status=[
                 status
                 for status in VideoStatus
-                if status not in [VideoStatus.fetched, VideoStatus.failed]
+                if status != VideoStatus.fetched
             ],
         )
 

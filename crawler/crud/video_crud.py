@@ -5,6 +5,7 @@ from sqlalchemy.orm import undefer
 from sqlalchemy import text
 from tenacity import stop_after_attempt, retry, wait_fixed
 
+from crawler.lib.config import MAX_FAILED_NUM
 from crawler.lib.connection import get_db
 from crawler.lib.enums import VideoStatus
 from crawler.lib.models import Video, TitleTranslation
@@ -40,6 +41,8 @@ class VideoCrud:
 
             if temp_status is not None:
                 query = query.filter(Video.temp_status == temp_status)
+
+            query = query.filter(Video.failed_count < MAX_FAILED_NUM)
 
             return query.order_by(Video.id.asc()).limit(batch_size).all()
 
@@ -115,6 +118,28 @@ class VideoCrud:
                 session.commit()
 
             return reason
+
+    @classmethod
+    def record_failure(cls, video_id: UUID, reason: str = "") -> str:
+        """Increment failed_count by 1 and set failed_reason. Status stays unchanged."""
+        with get_db() as session:
+            video = session.query(Video).filter(Video.id == video_id).first()
+            if video:
+                video.failed_count = video.failed_count + 1
+                video.failed_reason = reason
+                session.commit()
+        return reason
+
+    @classmethod
+    def get_exceeded_failed(cls, last_id: UUID | None, batch_size: int, host: str = "") -> list[Video]:
+        """Get videos that have reached MAX_FAILED_NUM (for cleanup)."""
+        with get_db() as session:
+            query = session.query(Video).filter(Video.failed_count >= MAX_FAILED_NUM)
+            if last_id is not None:
+                query = query.filter(Video.id > last_id)
+            if host:
+                query = query.filter(Video.host == host)
+            return query.order_by(Video.id.asc()).limit(batch_size).all()
 
     @classmethod
     def get_title_translations(cls, video_id: UUID) -> Dict[str, str]:

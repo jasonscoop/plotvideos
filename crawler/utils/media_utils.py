@@ -52,42 +52,48 @@ HLS_RENDITIONS = [
 
 def generate_hls(video_path: Path, output_dir: Path) -> Path:
     """
-    Transcode a video into multi-resolution HLS (H.264 / AAC).
+    Transcode a video into multi-resolution HLS (H.264 / AAC) in a single
+    ffmpeg invocation using filter_complex (one decode, three encodes).
 
     Returns the path to the master playlist (master.m3u8).
-
-    Layout:
-      output_dir/
-        master.m3u8
-        480p/index.m3u8  + segment_*.ts
-        720p/index.m3u8  + segment_*.ts
-        1080p/index.m3u8 + segment_*.ts
     """
     output_dir.mkdir(parents=True, exist_ok=True)
-    master_lines = ["#EXTM3U", "#EXT-X-VERSION:3"]
-
     for r in HLS_RENDITIONS:
-        variant_dir = output_dir / r["name"]
-        variant_dir.mkdir(parents=True, exist_ok=True)
+        (output_dir / r["name"]).mkdir(parents=True, exist_ok=True)
 
-        playlist = variant_dir / "index.m3u8"
-        segment_pattern = variant_dir / "segment_%03d.ts"
+    n = len(HLS_RENDITIONS)
 
-        command = [
-            "ffmpeg", "-y",
-            "-i", str(video_path),
-            "-vf", f"scale=-2:{r['height']}",
+    # Build filter_complex: split input once, scale each branch
+    filter_parts = [f"[0:v]split={n}" + "".join(f"[vin{i}]" for i in range(n))]
+    for i, r in enumerate(HLS_RENDITIONS):
+        filter_parts.append(f"[vin{i}]scale=-2:{r['height']}[v{i}]")
+    filter_complex = ";".join(filter_parts)
+
+    command = [
+        "ffmpeg", "-y",
+        "-i", str(video_path),
+        "-filter_complex", filter_complex,
+    ]
+
+    for i, r in enumerate(HLS_RENDITIONS):
+        seg = output_dir / r["name"] / "segment_%03d.ts"
+        playlist = output_dir / r["name"] / "index.m3u8"
+        command += [
+            "-map", f"[v{i}]", "-map", "0:a",
             "-c:v", "libx264", "-profile:v", "high", "-preset", "veryfast",
             "-b:v", r["video_bitrate"],
             "-c:a", "aac", "-ac", "2", "-b:a", r["audio_bitrate"],
             "-f", "hls",
             "-hls_time", "6",
             "-hls_playlist_type", "vod",
-            "-hls_segment_filename", str(segment_pattern),
+            "-hls_segment_filename", str(seg),
             str(playlist),
         ]
-        subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
+    subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+
+    master_lines = ["#EXTM3U", "#EXT-X-VERSION:3"]
+    for r in HLS_RENDITIONS:
         master_lines.append(
             f"#EXT-X-STREAM-INF:BANDWIDTH={r['bandwidth']},RESOLUTION={r['resolution']}"
         )

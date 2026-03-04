@@ -102,9 +102,7 @@ def download_and_update_thumbnails():
         videos = VideoCrud.batch_get(
             last_id=last_id,
             batch_size=BATCH_SIZE,
-            status=[
-                status for status in VideoStatus if status not in [VideoStatus.failed]
-            ],
+            status=list(VideoStatus),
         )
 
         if not videos:

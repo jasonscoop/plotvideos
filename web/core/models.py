@@ -78,6 +78,7 @@ class Video(Base, BaseModel):
     keyword = relationship("Keyword", lazy="selectin")
 
     status = Column(Enum(VideoStatus), default=VideoStatus.fetched, nullable=False)
+    failed_count = Column(Integer, nullable=False, default=0)
     failed_reason = Column(String(1000), nullable=False, default="")
 
     tags = Column(JSON, nullable=False, default=list)

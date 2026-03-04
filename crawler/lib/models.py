@@ -88,6 +88,7 @@ class Video(Base, BaseModel):
 
     word_count = Column(Integer, nullable=False, default=0)
     word_density = Column(Float, nullable=False, default=0.0)
+    failed_count = Column(Integer, nullable=False, default=0)
 
     __table_args__ = (Index("idx_id_status", "id", "status"),)
 

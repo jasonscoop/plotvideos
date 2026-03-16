@@ -9,7 +9,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.templating import Jinja2Templates
 
-from crawler.lib.languages import Language
+from crawler.core.languages import Language
 from web.core.config import B2_CDN_DOMAIN
 from web.core.db import get_db
 from web.core.enums import VideoStatus

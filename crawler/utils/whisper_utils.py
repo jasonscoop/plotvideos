@@ -3,7 +3,7 @@ from typing import BinaryIO, Optional
 import stt2vtt
 from faster_whisper import WhisperModel
 
-from crawler.lib.config import (
+from crawler.core.config import (
     MODELS_DIR,
     WHISPER_DEVICE,
     WHISPER_COMPUTE_TYPE,

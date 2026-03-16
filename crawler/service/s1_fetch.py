@@ -9,11 +9,11 @@ from loguru import logger
 
 from crawler.crud.keyword_crud import KeywordCrud
 from crawler.crud.video_crud import VideoCrud
-from crawler.lib.config import RAPIDAPI_KEY, RAPIDAPI_URL, S1_FETCH_MAX_PAGES
-from crawler.lib.consts import WEBSITES
-from crawler.lib.enums import VideoStatus
-from crawler.lib.models import Video, Keyword
-from crawler.lib.schemas import StorePath
+from crawler.core.config import RAPIDAPI_KEY, RAPIDAPI_URL, S1_FETCH_MAX_PAGES
+from crawler.core.consts import WEBSITES
+from crawler.core.enums import VideoStatus
+from crawler.core.models import Video, Keyword
+from crawler.core.schemas import StorePath
 
 
 def fetch_video_urls(query: str, page: int):

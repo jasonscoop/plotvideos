@@ -1,8 +1,8 @@
 from typing import List
 from uuid import UUID
 
-from crawler.lib.connection import get_db
-from crawler.lib.models import Video, Keyword
+from crawler.core.connection import get_db
+from crawler.core.models import Video, Keyword
 
 
 class KeywordCrud:

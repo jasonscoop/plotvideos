@@ -5,10 +5,10 @@ from sqlalchemy.orm import undefer
 from sqlalchemy import text
 from tenacity import stop_after_attempt, retry, wait_fixed
 
-from crawler.lib.config import MAX_FAILED_NUM
-from crawler.lib.connection import get_db
-from crawler.lib.enums import VideoStatus
-from crawler.lib.models import Video, TitleTranslation
+from crawler.core.config import MAX_FAILED_NUM
+from crawler.core.connection import get_db
+from crawler.core.enums import VideoStatus
+from crawler.core.models import Video, TitleTranslation
 
 
 class VideoCrud:

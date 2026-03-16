@@ -5,10 +5,10 @@ from typing import List
 from loguru import logger
 
 from crawler.crud.video_crud import VideoCrud
-from crawler.lib.config import S7_UPLOAD_BATCH_SIZE
-from crawler.lib.enums import VideoStatus
-from crawler.lib.languages import Language
-from crawler.lib.models import Video
+from crawler.core.config import S7_UPLOAD_BATCH_SIZE
+from crawler.core.enums import VideoStatus
+from crawler.core.languages import Language
+from crawler.core.models import Video
 from crawler.utils.b2_utils import get_b2_client
 from crawler.utils.file_utils import rm_video
 from crawler.utils.media_utils import generate_hls

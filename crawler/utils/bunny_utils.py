@@ -5,9 +5,9 @@ import requests
 from loguru import logger
 from tenacity import stop_after_attempt, retry, wait_fixed
 
-from crawler.lib.consts import WEBSITES
-from crawler.lib.languages import Language
-from crawler.lib.models import Video
+from crawler.core.consts import WEBSITES
+from crawler.core.languages import Language
+from crawler.core.models import Video
 from crawler.utils.vtt_utils import correct_vtt, is_valid_vtt
 
 

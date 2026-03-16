@@ -3,8 +3,8 @@ import torch
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from loguru import logger
 
-from crawler.lib.config import NLLB_MODEL, NLLB_DEVICE, NLLB_MAX_LENGTH, MODELS_DIR
-from crawler.lib.languages import Language
+from crawler.core.config import NLLB_MODEL, NLLB_DEVICE, NLLB_MAX_LENGTH, MODELS_DIR
+from crawler.core.languages import Language
 
 _model = None
 _tokenizer = None

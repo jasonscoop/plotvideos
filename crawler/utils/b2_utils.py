@@ -5,14 +5,14 @@ from loguru import logger
 from b2sdk.v2 import B2Api, InMemoryAccountInfo
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from crawler.lib.config import (
+from crawler.core.config import (
     B2_APPLICATION_KEY_ID,
     B2_APPLICATION_KEY,
     B2_BUCKET_NAME,
     B2_CDN_DOMAIN,
 )
-from crawler.lib.languages import Language
-from crawler.lib.models import Video
+from crawler.core.languages import Language
+from crawler.core.models import Video
 
 
 class B2Client:

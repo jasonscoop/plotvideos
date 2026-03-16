@@ -8,8 +8,8 @@ from requests.exceptions import HTTPError, Timeout, ReadTimeout
 from tenacity import stop_after_attempt, retry, wait_random, wait_fixed
 from urllib3.exceptions import ReadTimeoutError
 
-from crawler.lib.config import LLM_BASE_URL, LLM_MODEL, LLM_API_VERSION, LLM_API_KEY
-from crawler.lib.languages import Language
+from crawler.core.config import LLM_BASE_URL, LLM_MODEL, LLM_API_VERSION, LLM_API_KEY
+from crawler.core.languages import Language
 
 url = f"{LLM_BASE_URL}/openai/deployments/{LLM_MODEL}/chat/completions?api-version={LLM_API_VERSION}"
 headers = {"Content-Type": "application/json", "api-key": LLM_API_KEY}

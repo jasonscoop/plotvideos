@@ -5,9 +5,9 @@ import webvtt
 from loguru import logger
 
 from crawler.crud.video_crud import VideoCrud
-from crawler.lib.config import SUBTITLE_TOKEN_RATIO_THRESHOLD, S5_TRANSLATE_VTT_BATCH_SIZE
-from crawler.lib.enums import VideoStatus
-from crawler.lib.languages import Language
+from crawler.core.config import SUBTITLE_TOKEN_RATIO_THRESHOLD, S5_TRANSLATE_VTT_BATCH_SIZE
+from crawler.core.enums import VideoStatus
+from crawler.core.languages import Language
 from crawler.utils.translate_utils import translate_list
 
 

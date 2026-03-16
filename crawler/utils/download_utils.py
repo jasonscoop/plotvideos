@@ -9,8 +9,8 @@ import requests
 import ffmpeg
 from tenacity import stop_after_attempt, retry, wait_fixed, wait_exponential
 
-from crawler.lib.config import YT_DLP_PROXY, MAX_ACCEPT_VIDEO_SIZE
-from crawler.lib.consts import USER_AGENTS
+from crawler.core.config import YT_DLP_PROXY, MAX_ACCEPT_VIDEO_SIZE
+from crawler.core.consts import USER_AGENTS
 
 
 class SizeLimitExceeded(Exception):

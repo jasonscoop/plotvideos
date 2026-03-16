@@ -9,8 +9,8 @@ from loguru import logger
 from botocore.exceptions import ClientError
 
 from crawler.crud.video_crud import VideoCrud
-from crawler.lib.enums import VideoStatus
-from crawler.lib.models import Video
+from crawler.core.enums import VideoStatus
+from crawler.core.models import Video
 from crawler.utils.file_utils import s3_client, S3_BUCKET_NAME
 from crawler.utils.log_utils import init_logging
 from crawler.utils.string_utils import get_tokens

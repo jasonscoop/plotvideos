@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from loguru import logger
 from functools import wraps
 
-from crawler.lib.config import LOGS_DIR
+from crawler.core.config import LOGS_DIR
 
 
 def get_now():

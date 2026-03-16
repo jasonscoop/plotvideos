@@ -2,10 +2,10 @@ from botocore.exceptions import ClientError
 from loguru import logger
 
 from crawler.crud.video_crud import VideoCrud
-from crawler.lib.config import S3_BUCKET_NAME
-from crawler.lib.enums import VideoStatus
-from crawler.lib.languages import Language
-from crawler.lib.models import Video
+from crawler.core.config import S3_BUCKET_NAME
+from crawler.core.enums import VideoStatus
+from crawler.core.languages import Language
+from crawler.core.models import Video
 from crawler.service.s5_translate_vtt import translate_and_save
 from crawler.service.s7_upload import bunny_client
 from crawler.utils.file_utils import upload_dir_to_s3, s3_client

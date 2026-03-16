@@ -4,8 +4,8 @@ import traceback
 from loguru import logger
 
 from crawler.crud.video_crud import VideoCrud
-from crawler.lib.config import MIN_ACCEPT_DURATION, S3_CONVERT_BATCH_SIZE
-from crawler.lib.models import VideoStatus
+from crawler.core.config import MIN_ACCEPT_DURATION, S3_CONVERT_BATCH_SIZE
+from crawler.core.models import VideoStatus
 from crawler.utils.file_utils import rm_video
 from crawler.utils.media_utils import get_video_duration, media_to_wav
 

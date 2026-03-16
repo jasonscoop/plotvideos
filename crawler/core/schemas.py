@@ -2,8 +2,8 @@ from pathlib import Path
 
 from sqlalchemy.sql.coercions import cls
 
-from crawler.lib.config import VIDEOS_DIR
-from crawler.lib.consts import WEBSITES
+from crawler.core.config import VIDEOS_DIR
+from crawler.core.consts import WEBSITES
 
 
 class StorePath:

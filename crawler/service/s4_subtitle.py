@@ -4,11 +4,11 @@ import traceback
 from loguru import logger
 
 from crawler.crud.video_crud import VideoCrud
-from crawler.lib.config import S4_SUBTITLE_BATCH_SIZE, SUBTITLE_TOKEN_RATIO_THRESHOLD
-from crawler.lib.models import VideoStatus
+from crawler.core.config import S4_SUBTITLE_BATCH_SIZE, SUBTITLE_TOKEN_RATIO_THRESHOLD
+from crawler.core.models import VideoStatus
 from crawler.utils.file_utils import rm_video
 
-from crawler.lib.models import Video
+from crawler.core.models import Video
 
 from crawler.utils.whisper_utils import whisper_transcribe
 

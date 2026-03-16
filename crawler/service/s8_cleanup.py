@@ -1,7 +1,7 @@
 from loguru import logger
 
 from crawler.crud.video_crud import VideoCrud
-from crawler.lib.enums import VideoStatus
+from crawler.core.enums import VideoStatus
 from crawler.utils.file_utils import rm_video
 
 

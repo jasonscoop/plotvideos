@@ -3,8 +3,8 @@ from typing import List, Dict, Set
 
 from sqlalchemy import select
 
-from crawler.lib.connection import get_db
-from crawler.lib.models import Term
+from crawler.core.connection import get_db
+from crawler.core.models import Term
 
 
 class TermCrud:

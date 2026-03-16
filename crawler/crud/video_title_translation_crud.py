@@ -3,8 +3,8 @@ from uuid import UUID
 
 from sqlalchemy import delete
 
-from crawler.lib.connection import get_db
-from crawler.lib.models import TitleTranslation
+from crawler.core.connection import get_db
+from crawler.core.models import TitleTranslation
 
 
 class TitleTranslationCrud:

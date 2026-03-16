@@ -21,9 +21,9 @@ from sqlalchemy.orm import declarative_base, declared_attr, relationship
 from sqlalchemy.sql import func
 from uuid_utils import uuid7
 
-from crawler.lib.connection import engine
-from crawler.lib.enums import VideoStatus, ThumbnailStatus
-from crawler.lib.schemas import StorePath
+from crawler.core.connection import engine
+from crawler.core.enums import VideoStatus, ThumbnailStatus
+from crawler.core.schemas import StorePath
 
 Base = declarative_base()
 

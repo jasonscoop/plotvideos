@@ -6,10 +6,10 @@ from loguru import logger
 from crawler.crud.term_crud import TermCrud
 from crawler.crud.video_crud import VideoCrud
 from crawler.crud.video_title_translation_crud import TitleTranslationCrud
-from crawler.lib.config import S6_TRANSLATE_META_BATCH_SIZE
-from crawler.lib.enums import VideoStatus
-from crawler.lib.languages import Language
-from crawler.lib.models import Video
+from crawler.core.config import S6_TRANSLATE_META_BATCH_SIZE
+from crawler.core.enums import VideoStatus
+from crawler.core.languages import Language
+from crawler.core.models import Video
 from crawler.utils.translate_utils import translate_list
 
 

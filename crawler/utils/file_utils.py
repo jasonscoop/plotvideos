@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Union
 
 
-from crawler.lib.models import Video
+from crawler.core.models import Video
 
 
 def save_json(path: Union[str, Path], json_data: dict | list):

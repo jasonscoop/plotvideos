@@ -1,6 +1,6 @@
 from enum import StrEnum, IntEnum
 
-from crawler.lib.consts import DB_ERROR_LOG_LENGTH
+from crawler.core.consts import DB_ERROR_LOG_LENGTH
 
 
 class SubtitleType(StrEnum):

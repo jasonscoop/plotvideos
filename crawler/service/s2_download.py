@@ -6,9 +6,9 @@ from loguru import logger
 from yt_dlp.utils import DownloadError, RegexNotFoundError, ytdl_is_updateable
 
 from crawler.crud.video_crud import VideoCrud
-from crawler.lib.config import MAX_ACCEPT_VIDEO_SIZE, S2_DOWNLOAD_BATCH_SIZE
-from crawler.lib.enums import ThumbnailStatus
-from crawler.lib.models import VideoStatus, Video
+from crawler.core.config import MAX_ACCEPT_VIDEO_SIZE, S2_DOWNLOAD_BATCH_SIZE
+from crawler.core.enums import ThumbnailStatus
+from crawler.core.models import VideoStatus, Video
 from crawler.utils.download_utils import (
     download_remote_video,
     SizeLimitExceeded,

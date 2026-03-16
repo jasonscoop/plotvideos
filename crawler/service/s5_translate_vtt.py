@@ -4,10 +4,10 @@ import traceback
 import webvtt
 from loguru import logger
 
-from crawler.crud.language_crud import LanguageCrud
 from crawler.crud.video_crud import VideoCrud
 from crawler.lib.config import SUBTITLE_TOKEN_RATIO_THRESHOLD, S5_TRANSLATE_VTT_BATCH_SIZE
 from crawler.lib.enums import VideoStatus
+from crawler.lib.languages import Language
 from crawler.utils.translate_utils import translate_list
 
 
@@ -34,7 +34,7 @@ def translate_and_save(lang, vtt_content, video):
 def process_subtitled_videos(host: str = ""):
     last_id = None
     exception_count = 0
-    languages = LanguageCrud.get_all()
+    languages = Language.get_all()
 
     while True:
         videos = VideoCrud.batch_get(
@@ -44,7 +44,6 @@ def process_subtitled_videos(host: str = ""):
             logger.info("All vtt translated, sleeping for 5 minutes")
             time.sleep(5 * 60)
             last_id = None
-            languages = LanguageCrud.get_all()
             continue
 
         last_id = videos[-1].id

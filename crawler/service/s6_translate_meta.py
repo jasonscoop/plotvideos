@@ -3,12 +3,12 @@ import traceback
 
 from loguru import logger
 
-from crawler.crud.language_crud import LanguageCrud
 from crawler.crud.term_crud import TermCrud
 from crawler.crud.video_crud import VideoCrud
 from crawler.crud.video_title_translation_crud import TitleTranslationCrud
 from crawler.lib.config import S6_TRANSLATE_META_BATCH_SIZE
 from crawler.lib.enums import VideoStatus
+from crawler.lib.languages import Language
 from crawler.lib.models import Video
 from crawler.utils.translate_utils import translate_list
 
@@ -45,7 +45,7 @@ def translate_video(video: Video, languages):
 def translate_meta_infos(host: str = ""):
     last_id = None
     exception_count = 0
-    languages = LanguageCrud.get_all()
+    languages = Language.get_all()
 
     while True:
         videos = VideoCrud.batch_get(
@@ -55,7 +55,6 @@ def translate_meta_infos(host: str = ""):
             logger.info("All meta translated, sleeping for 5 minutes")
             time.sleep(5 * 60)
             last_id = None
-            languages = LanguageCrud.get_all()
             continue
 
         last_id = videos[-1].id

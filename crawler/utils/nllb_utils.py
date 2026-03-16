@@ -4,7 +4,7 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from loguru import logger
 
 from crawler.lib.config import NLLB_MODEL, NLLB_DEVICE, NLLB_MAX_LENGTH, MODELS_DIR
-from crawler.lib.models import Language
+from crawler.lib.languages import Language
 
 _model = None
 _tokenizer = None

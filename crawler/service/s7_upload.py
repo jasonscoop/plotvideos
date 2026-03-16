@@ -4,11 +4,11 @@ from typing import List
 
 from loguru import logger
 
-from crawler.crud.language_crud import LanguageCrud
 from crawler.crud.video_crud import VideoCrud
 from crawler.lib.config import S7_UPLOAD_BATCH_SIZE
 from crawler.lib.enums import VideoStatus
-from crawler.lib.models import Video, Language
+from crawler.lib.languages import Language
+from crawler.lib.models import Video
 from crawler.utils.b2_utils import get_b2_client
 from crawler.utils.file_utils import rm_video
 from crawler.utils.media_utils import generate_hls
@@ -104,7 +104,7 @@ def cleanup_files(host: str = ""):
 def upload_videos(host: str = ""):
     last_id = None
     exception_count = 0
-    languages = LanguageCrud.get_all()
+    languages = Language.get_all()
 
     while True:
         videos = VideoCrud.batch_get(
@@ -115,7 +115,6 @@ def upload_videos(host: str = ""):
             logger.info("All uploaded, sleeping for 5 minutes")
             time.sleep(5 * 60)
             last_id = None
-            languages = LanguageCrud.get_all()
             continue
 
         last_id = videos[-1].id

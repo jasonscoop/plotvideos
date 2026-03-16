@@ -11,7 +11,8 @@ from crawler.lib.config import (
     B2_BUCKET_NAME,
     B2_CDN_DOMAIN,
 )
-from crawler.lib.models import Video, Language
+from crawler.lib.languages import Language
+from crawler.lib.models import Video
 
 
 class B2Client:

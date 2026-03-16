@@ -9,10 +9,11 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.templating import Jinja2Templates
 
+from crawler.lib.languages import Language
 from web.core.config import B2_CDN_DOMAIN
 from web.core.db import get_db
 from web.core.enums import VideoStatus
-from web.core.models import Language, TitleTranslation, Video
+from web.core.models import TitleTranslation, Video
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
@@ -112,11 +113,7 @@ async def watch_video(
     if not video or video.status != VideoStatus.published:
         raise HTTPException(status_code=404, detail="Video not found")
 
-    # Enabled languages for which we may have subtitles
-    languages_result = await db.execute(
-        select(Language).where(Language.enabled.is_(True))
-    )
-    languages: List[Language] = languages_result.scalars().all()
+    languages = Language.get_all()
 
     # Title translations (if any)
     translations_result = await db.execute(

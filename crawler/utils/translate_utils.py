@@ -6,7 +6,7 @@ from loguru import logger
 from tenacity import stop_after_attempt, retry, wait_random
 
 from crawler.lib.config import RAPIDAPI_AI_TRANSLATE_KEY_URL, RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL
-from crawler.lib.models import Language
+from crawler.lib.languages import Language
 
 
 @lru_cache(maxsize=4)

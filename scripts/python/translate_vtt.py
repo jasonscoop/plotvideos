@@ -1,11 +1,10 @@
 from botocore.exceptions import ClientError
 from loguru import logger
 
-from crawler.crud.language_crud import LanguageCrud
 from crawler.crud.video_crud import VideoCrud
 from crawler.lib.config import S3_BUCKET_NAME
 from crawler.lib.enums import VideoStatus
-from crawler.lib.models import Language
+from crawler.lib.languages import Language
 from crawler.lib.models import Video
 from crawler.service.s5_translate_vtt import translate_and_save
 from crawler.service.s7_upload import bunny_client
@@ -58,7 +57,7 @@ def translate_video(video: Video, languages: list[Language]):
 
 def main():
     last_id = LAST_ID
-    languages = LanguageCrud.get_all()
+    languages = Language.get_all()
     while True:
         # Get videos that have VTT files but may not have translations
         videos = VideoCrud.batch_get(

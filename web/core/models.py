@@ -136,12 +136,4 @@ class Term(Base, BaseModel):
     __table_args__ = (UniqueConstraint("text", "lang", name="uix_text_lang"),)
 
 
-class Language(Base, BaseModel):
-    __tablename__ = "languages"
-
-    code = Column(String(2), nullable=False, unique=True)
-    locale = Column(String(5), nullable=False)
-    native_name = Column(String(50), nullable=False)
-    aliases = Column(JSON, nullable=False, default=list)
-    enabled = Column(Boolean, nullable=False, default=True)
 

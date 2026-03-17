@@ -16,7 +16,6 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import UUID as PgUUID
 from sqlalchemy.orm import declarative_base, declared_attr, relationship
 from sqlalchemy.sql import func
 
@@ -27,7 +26,7 @@ Base = declarative_base()
 
 
 class BaseModel:
-    id = Column(PgUUID(as_uuid=True), primary_key=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     @declared_attr
     def created_at(cls):  # type: ignore[no-untyped-def]
@@ -69,7 +68,7 @@ class Video(Base, BaseModel):
     store_dir = Column(String(100), nullable=False, default="")
     filename = Column(String(100), nullable=False, default="")
     keyword_id = Column(
-        PgUUID(as_uuid=True),
+        Integer,
         ForeignKey("keywords.id"),
         nullable=False,
         index=True,
@@ -114,7 +113,7 @@ class TitleTranslation(Base, BaseModel):
     __tablename__ = "title_translations"
 
     video_id = Column(
-        PgUUID(as_uuid=True),
+        Integer,
         ForeignKey("videos.id", ondelete="CASCADE"),
         nullable=False,
         index=True,

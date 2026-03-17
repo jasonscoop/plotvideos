@@ -1,5 +1,4 @@
 from typing import List, Dict
-from uuid import UUID
 
 from sqlalchemy.orm import undefer
 from sqlalchemy import text
@@ -15,7 +14,7 @@ class VideoCrud:
     @classmethod
     def batch_get(
         cls,
-        last_id: UUID | None,
+        last_id: int | None,
         batch_size: int,
         status: VideoStatus | List[VideoStatus] | None = None,
         host: str = "",
@@ -109,7 +108,7 @@ class VideoCrud:
             session.commit()
 
     @classmethod
-    def update_status(cls, video_id: UUID, status: VideoStatus, reason: str = ""):
+    def update_status(cls, video_id: int, status: VideoStatus, reason: str = ""):
         with get_db() as session:
             video = session.query(Video).filter(Video.id == video_id).first()
             if video:
@@ -120,7 +119,7 @@ class VideoCrud:
             return reason
 
     @classmethod
-    def record_failure(cls, video_id: UUID, reason: str = "") -> str:
+    def record_failure(cls, video_id: int, reason: str = "") -> str:
         """Increment failed_count by 1 and set failed_reason. Status stays unchanged."""
         with get_db() as session:
             video = session.query(Video).filter(Video.id == video_id).first()
@@ -131,7 +130,7 @@ class VideoCrud:
         return reason
 
     @classmethod
-    def get_exceeded_failed(cls, last_id: UUID | None, batch_size: int, host: str = "") -> list[Video]:
+    def get_exceeded_failed(cls, last_id: int | None, batch_size: int, host: str = "") -> list[Video]:
         """Get videos that have reached MAX_FAILED_NUM (for cleanup)."""
         with get_db() as session:
             query = session.query(Video).filter(Video.failed_count >= MAX_FAILED_NUM)
@@ -142,7 +141,7 @@ class VideoCrud:
             return query.order_by(Video.id.asc()).limit(batch_size).all()
 
     @classmethod
-    def get_title_translations(cls, video_id: UUID) -> Dict[str, str]:
+    def get_title_translations(cls, video_id: int) -> Dict[str, str]:
         with get_db() as session:
             translations = (
                 session.query(TitleTranslation)
@@ -152,6 +151,6 @@ class VideoCrud:
             return {t.lang: t.translated_title for t in translations}
 
     @classmethod
-    def get_by_id(cls, video_id: UUID) -> Video | None:
+    def get_by_id(cls, video_id: int) -> Video | None:
         with get_db() as session:
             return session.query(Video).filter(Video.id == video_id).first()

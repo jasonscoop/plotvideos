@@ -102,7 +102,7 @@ async def index(
 @app.get("/videos/{video_id}", response_class=HTMLResponse)
 async def watch_video(
     request: Request,
-    video_id: str,
+    video_id: int,
     lang: Optional[str] = Query(None, description="Preferred subtitle language code"),
     db: AsyncSession = Depends(get_db),
 ) -> HTMLResponse:

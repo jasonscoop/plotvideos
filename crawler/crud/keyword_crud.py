@@ -1,5 +1,4 @@
 from typing import List
-from uuid import UUID
 
 from crawler.core.connection import get_db
 from crawler.core.models import Video, Keyword
@@ -7,7 +6,7 @@ from crawler.core.models import Video, Keyword
 
 class KeywordCrud:
     @classmethod
-    def batch_get(cls, last_id: UUID | None, batch_size: int = 10) -> List[Keyword]:
+    def batch_get(cls, last_id: int | None, batch_size: int = 10) -> List[Keyword]:
         with get_db() as session:
             query = session.query(Keyword).filter(Keyword.enabled == True)
             if last_id is not None:

@@ -63,6 +63,9 @@ def whisper_transcribe(audio_data: BinaryIO, language: str = None) -> tuple[str,
             "words": words,
         })
 
+    if not segment_dicts:
+        return "WEBVTT\n", 0
+
     vtt_content = stt2vtt(segment_dicts)
     return vtt_content, word_count
 

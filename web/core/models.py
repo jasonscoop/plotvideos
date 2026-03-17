@@ -8,7 +8,6 @@ from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
-    Enum,
     Float,
     ForeignKey,
     Index,
@@ -77,7 +76,7 @@ class Video(Base, BaseModel):
     )
     keyword = relationship("Keyword", lazy="selectin")
 
-    status = Column(Enum(VideoStatus), default=VideoStatus.fetched, nullable=False)
+    status = Column(String(20), default=VideoStatus.fetched.value, nullable=False)
     failed_count = Column(Integer, nullable=False, default=0)
     failed_reason = Column(String(1000), nullable=False, default="")
 

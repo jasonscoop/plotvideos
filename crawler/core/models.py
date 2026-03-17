@@ -6,7 +6,6 @@ from sqlalchemy import (
     Integer,
     BigInteger,
     String,
-    Enum,
     Boolean,
     DateTime,
     JSON,
@@ -75,7 +74,7 @@ class Video(Base, BaseModel):
     keyword_id = Column(PgUUID(as_uuid=True), ForeignKey("keywords.id"), nullable=False, index=True)
     keyword = relationship("Keyword", lazy="selectin")
 
-    status = Column(Enum(VideoStatus), default=VideoStatus.fetched, nullable=False)
+    status = Column(String(20), default=VideoStatus.fetched.value, nullable=False)
     failed_reason = Column(String(1000), nullable=False, default="")
 
     tags = Column(JSON, nullable=False, default=[])

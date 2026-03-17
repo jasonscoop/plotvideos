@@ -17,4 +17,5 @@ class VideoStatus(StrEnum):
     uploaded = "uploaded"
     publishing = "publishing"
     published = "published"
+    low_density = "low_density"
 

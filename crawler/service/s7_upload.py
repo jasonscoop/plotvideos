@@ -82,6 +82,7 @@ def cleanup_files(host: str = ""):
         last_id = videos[-1].id
         for video in videos:
             rm_video(video)
+            VideoCrud.update_status(video.id, VideoStatus.cleaned)
             total_cleaned += 1
             logger.info(f"[{video.id} | {video.host} | {video.original_id}] cleaned up files")
 
@@ -94,6 +95,7 @@ def cleanup_files(host: str = ""):
         last_id = videos[-1].id
         for video in videos:
             rm_video(video)
+            VideoCrud.update_status(video.id, VideoStatus.cleaned)
             total_cleaned += 1
             logger.info(f"[{video.id} | {video.host} | {video.original_id}] cleaned up permanently failed files")
 

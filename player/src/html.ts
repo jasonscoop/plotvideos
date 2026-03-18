@@ -1,0 +1,316 @@
+import { t, LANGUAGES, langPrefix, nativeName, isRtl, type LangCode } from "./i18n";
+
+const GLOBAL_CSS = `
+<style>
+  :root { --yt-bg: #0f0f0f; --yt-surface: #272727; --yt-hover: #3f3f3f; --yt-border: #3f3f3f; --yt-text: #f1f1f1; --yt-text2: #aaa; --yt-blue: #3ea6ff; }
+  * { box-sizing: border-box; }
+  body { background: var(--yt-bg); color: var(--yt-text); font-family: Roboto, Arial, sans-serif; margin: 0; min-height: 100vh; }
+  a { color: inherit; text-decoration: none; }
+
+  .yt-header { position: sticky; top: 0; z-index: 50; background: var(--yt-bg); border-bottom: 1px solid var(--yt-border); height: 56px; display: flex; align-items: center; padding: 0 16px; gap: 8px; }
+  .yt-logo { display: flex; align-items: center; gap: 4px; font-size: 18px; font-weight: 700; white-space: nowrap; }
+  .yt-logo-icon { width: 32px; height: 22px; background: #f00; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+  .yt-logo-icon::after { content: ''; width: 0; height: 0; border-style: solid; border-width: 6px 0 6px 10px; border-color: transparent transparent transparent #fff; }
+  .yt-search { flex: 1; max-width: 540px; margin: 0 auto; display: flex; }
+  .yt-search input { flex: 1; background: var(--yt-bg); border: 1px solid var(--yt-border); border-radius: 20px 0 0 20px; padding: 6px 16px; color: var(--yt-text); font-size: 14px; outline: none; }
+  .yt-search input:focus { border-color: var(--yt-blue); }
+  .yt-search button { background: var(--yt-surface); border: 1px solid var(--yt-border); border-left: 0; border-radius: 0 20px 20px 0; padding: 0 20px; cursor: pointer; color: var(--yt-text); font-size: 14px; }
+  .yt-search button:hover { background: var(--yt-hover); }
+
+  .yt-lang-wrap { position: relative; }
+  .yt-lang-btn { background: var(--yt-surface); border: 1px solid var(--yt-border); border-radius: 20px; padding: 6px 14px; color: var(--yt-text); font-size: 13px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
+  .yt-lang-btn:hover { background: var(--yt-hover); }
+  .yt-lang-btn svg { width: 12px; height: 12px; fill: var(--yt-text2); }
+  .yt-lang-menu { display: none; position: absolute; top: 100%; right: 0; margin-top: 4px; background: var(--yt-surface); border: 1px solid var(--yt-border); border-radius: 12px; padding: 8px 0; min-width: 160px; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+  .yt-lang-wrap.open .yt-lang-menu { display: block; }
+  .yt-lang-menu a { display: block; padding: 8px 16px; font-size: 13px; color: var(--yt-text); }
+  .yt-lang-menu a:hover { background: var(--yt-hover); }
+  .yt-lang-menu a.active { color: var(--yt-blue); }
+
+  .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; padding: 24px 0; }
+  .yt-card { display: block; cursor: pointer; }
+  .yt-card:hover .yt-card-title { color: var(--yt-text); }
+  .yt-thumb { position: relative; width: 100%; padding-bottom: 56.25%; background: #181818; border-radius: 12px; overflow: hidden; }
+  .yt-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .yt-thumb-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #555; font-size: 13px; }
+  .yt-duration { position: absolute; bottom: 4px; right: 4px; background: rgba(0,0,0,.8); color: #fff; font-size: 12px; font-weight: 500; padding: 2px 6px; border-radius: 4px; letter-spacing: .5px; }
+  .yt-card-meta { padding: 12px 0 0; }
+  .yt-card-title { font-size: 14px; font-weight: 500; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 0 0 4px; color: var(--yt-text); }
+  .yt-card-sub { font-size: 12px; color: var(--yt-text2); line-height: 1.5; }
+
+  .yt-pagination { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 0 32px; }
+  .yt-pagination a, .yt-pagination span { font-size: 13px; padding: 8px 16px; border-radius: 20px; }
+  .yt-pagination a { background: var(--yt-surface); color: var(--yt-text); }
+  .yt-pagination a:hover { background: var(--yt-hover); }
+  .yt-pagination .yt-page-info { color: var(--yt-text2); }
+
+  .yt-watch { max-width: 1280px; margin: 0 auto; padding: 24px 24px 48px; }
+  .yt-player-wrap { width: 100%; border-radius: 12px; overflow: hidden; background: #000; }
+  .video-js { width: 100% !important; aspect-ratio: 16/9; }
+  .video-js .vjs-big-play-button { top: 50%; left: 50%; transform: translate(-50%,-50%); }
+  .yt-title { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 16px 0 0; }
+  .yt-meta-row { display: flex; align-items: center; gap: 12px; margin: 8px 0 0; font-size: 13px; color: var(--yt-text2); flex-wrap: wrap; }
+  .yt-desc-box { background: var(--yt-surface); border-radius: 12px; padding: 12px 16px; margin: 16px 0 0; font-size: 13px; line-height: 1.6; }
+  .yt-tag { display: inline-block; background: rgba(255,255,255,.1); border-radius: 8px; padding: 4px 12px; margin: 2px 4px 2px 0; font-size: 12px; color: var(--yt-blue); }
+  .yt-tag:hover { background: rgba(255,255,255,.2); }
+  .yt-original { font-size: 13px; color: var(--yt-text2); margin: 4px 0 0; }
+
+  @media (max-width: 640px) {
+    .yt-grid { grid-template-columns: 1fr; gap: 12px; }
+    .yt-search { max-width: none; margin: 0 0 0 12px; }
+    .yt-watch { padding: 0 0 32px; }
+    .yt-player-wrap { border-radius: 0; }
+    .yt-title { padding: 0 12px; font-size: 16px; }
+    .yt-meta-row { padding: 0 12px; }
+    .yt-desc-box { margin: 12px; }
+  }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+`;
+
+const CHEVRON_SVG = `<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>`;
+
+function langDropdown(currentLang: string, currentPath: string) {
+  const items = LANGUAGES.map((l) => {
+    const prefix = l.code === "en" ? "" : `/${l.code}`;
+    const cleanPath = currentPath.replace(/^\/(en|de|fr|nl|ja|ko|pt|ar|es|zh)(\/|$)/, "/");
+    const href = prefix + (cleanPath === "/" ? "/" : cleanPath);
+    const active = l.code === currentLang ? ' class="active"' : "";
+    return `<a href="${href}"${active}>${l.native}</a>`;
+  }).join("");
+
+  return `
+    <div class="yt-lang-wrap" id="lang-dropdown">
+      <button class="yt-lang-btn" type="button">${nativeName(currentLang)} ${CHEVRON_SVG}</button>
+      <div class="yt-lang-menu">${items}</div>
+    </div>
+    <script>
+      (function(){
+        var w=document.getElementById('lang-dropdown'), b=w.querySelector('.yt-lang-btn');
+        b.onclick=function(e){e.stopPropagation();w.classList.toggle('open')};
+        document.addEventListener('click',function(){w.classList.remove('open')});
+      })();
+    </script>`;
+}
+
+export function layout(title: string, lang: string, content: string, q = "", path = "/") {
+  const prefix = langPrefix(lang);
+  const dir = isRtl(lang) ? ' dir="rtl"' : "";
+  return `<!DOCTYPE html>
+<html lang="${lang}"${dir}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${esc(title)}</title>
+  <link href="https://cdn.jsdelivr.net/npm/video.js@8/dist/video-js.min.css" rel="stylesheet" />
+  ${GLOBAL_CSS}
+</head>
+<body>
+  <header class="yt-header">
+    <a href="${prefix}/" class="yt-logo"><span class="yt-logo-icon"></span> LuckVideos</a>
+    <form action="${prefix}/" method="get" class="yt-search">
+      <input type="text" name="q" value="${esc(q)}" placeholder="${t(lang, "search_placeholder")}" />
+      <button type="submit">${t(lang, "search")}</button>
+    </form>
+    ${langDropdown(lang, path)}
+  </header>
+  ${content}
+</body>
+</html>`;
+}
+
+export function fmtDuration(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+export function esc(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+interface VideoCard {
+  id: number;
+  title: string;
+  host: string;
+  duration: number;
+  thumbnail_url: string;
+}
+
+export function indexPage(
+  lang: string,
+  videos: VideoCard[],
+  page: number,
+  totalPages: number,
+  total: number,
+  q: string
+) {
+  const prefix = langPrefix(lang);
+  const qParam = q ? `&q=${encodeURIComponent(q)}` : "";
+
+  const cards = videos
+    .map(
+      (v) => `
+    <a href="${prefix}/videos/${v.id}" class="yt-card">
+      <div class="yt-thumb">
+        ${
+          v.thumbnail_url
+            ? `<img src="${esc(v.thumbnail_url)}" alt="${esc(v.title)}" loading="lazy" />`
+            : `<div class="yt-thumb-empty">${t(lang, "no_thumbnail")}</div>`
+        }
+        ${v.duration ? `<span class="yt-duration">${fmtDuration(v.duration)}</span>` : ""}
+      </div>
+      <div class="yt-card-meta">
+        <div class="yt-card-title">${esc(v.title)}</div>
+        <div class="yt-card-sub">${esc(v.host)}</div>
+      </div>
+    </a>`
+    )
+    .join("");
+
+  const pagination = `
+    <div class="yt-pagination">
+      ${page > 1 ? `<a href="${prefix}/?page=${page - 1}${qParam}">${t(lang, "previous")}</a>` : ""}
+      <span class="yt-page-info">${page} / ${totalPages} &middot; ${total} ${t(lang, "videos")}</span>
+      ${page < totalPages ? `<a href="${prefix}/?page=${page + 1}${qParam}">${t(lang, "next")}</a>` : ""}
+    </div>`;
+
+  const content = videos.length
+    ? `<main style="max-width:1400px;margin:0 auto;padding:0 24px">
+        <div class="yt-grid">${cards}</div>${pagination}
+      </main>`
+    : `<main style="max-width:1400px;margin:0 auto;padding:48px 24px;color:var(--yt-text2)">${t(lang, "no_videos")}</main>`;
+
+  return layout("LuckVideos", lang, content, q, "/");
+}
+
+interface WatchData {
+  id: number;
+  title: string;
+  original_title: string;
+  host: string;
+  duration: number;
+  thumbnail_url: string;
+  video_url: string;
+  hls_url: string;
+  keyword: string;
+  tags: string[];
+  categories: string[];
+}
+
+interface SubTrack {
+  lang: string;
+  label: string;
+  url: string;
+  isDefault: boolean;
+}
+
+export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTrack[]) {
+  const prefix = langPrefix(lang);
+
+  const tracks = subtitleTracks
+    .map(
+      (t) =>
+        `<track kind="subtitles" src="${esc(t.url)}" srclang="${esc(t.lang)}" label="${esc(t.label)}"${t.isDefault ? " default" : ""} />`
+    )
+    .join("\n        ");
+
+  const hlsSrc = video.hls_url
+    ? `{ src: ${JSON.stringify(video.hls_url)}, type: 'application/x-mpegURL' }`
+    : "";
+  const mp4Src = video.video_url
+    ? `{ src: ${JSON.stringify(video.video_url)}, type: 'video/mp4' }`
+    : "";
+  const sources = [hlsSrc, mp4Src].filter(Boolean).join(", ");
+
+  const allTags = [
+    ...(video.keyword ? [video.keyword] : []),
+    ...video.categories,
+    ...video.tags,
+  ];
+  const tagsHtml = allTags
+    .map((tag) => `<a class="yt-tag" href="${prefix}/?q=${encodeURIComponent(tag)}">${esc(tag)}</a>`)
+    .join("");
+
+  return layout(
+    `${video.title} - LuckVideos`,
+    lang,
+    `
+  <div class="yt-watch">
+    <div class="yt-player-wrap">
+      <video
+        id="video-player"
+        class="video-js vjs-big-play-centered"
+        controls
+        preload="auto"
+        crossorigin="anonymous"
+        poster="${esc(video.thumbnail_url)}"
+      >
+        ${tracks}
+      </video>
+    </div>
+
+    <h1 class="yt-title">${esc(video.title)}</h1>
+    ${video.original_title && video.original_title !== video.title ? `<p class="yt-original">${t(lang, "original")}: ${esc(video.original_title)}</p>` : ""}
+
+    <div class="yt-meta-row">
+      <span>${esc(video.host)}</span>
+      ${video.duration ? `<span>&middot;</span><span>${fmtDuration(video.duration)}</span>` : ""}
+      ${subtitleTracks.length ? `<span>&middot;</span><span>${subtitleTracks.length} ${t(lang, "subtitles")}</span>` : ""}
+    </div>
+
+    ${tagsHtml ? `<div class="yt-desc-box">${tagsHtml}</div>` : ""}
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/video.js@8/dist/video.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-levels@4/dist/videojs-contrib-quality-levels.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@2.0.0/dist/videojs-hls-quality-selector.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@2.0.0/dist/videojs-hls-quality-selector.css" rel="stylesheet" />
+  <script>
+  (function(){
+    var pageLang = ${JSON.stringify(lang)};
+    var player = videojs('video-player', {
+      fluid: false,
+      responsive: true,
+      playbackRates: [0.5, 1, 1.25, 1.5, 2],
+      html5: {
+        vhs: { overrideNative: !videojs.browser.IS_SAFARI }
+      },
+      techOrder: ['html5'],
+      sources: [${sources}]
+    });
+    player.hlsQualitySelector({ displayCurrentQuality: true });
+
+    var savedLang = localStorage.getItem('subtitle_lang');
+    var preferredLang = savedLang || pageLang;
+
+    player.ready(function(){
+      var tracks = player.textTracks();
+      for (var i = 0; i < tracks.length; i++) {
+        if (tracks[i].language === preferredLang) {
+          tracks[i].mode = 'showing';
+        } else if (tracks[i].kind === 'subtitles') {
+          tracks[i].mode = 'disabled';
+        }
+      }
+
+      tracks.addEventListener('change', function(){
+        for (var i = 0; i < tracks.length; i++) {
+          if (tracks[i].kind === 'subtitles' && tracks[i].mode === 'showing') {
+            localStorage.setItem('subtitle_lang', tracks[i].language);
+            break;
+          }
+        }
+      });
+    });
+  })();
+  </script>`,
+    "",
+    `/videos/${video.id}`
+  );
+}

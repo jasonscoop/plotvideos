@@ -39,7 +39,7 @@ def transcode_video(video: Video):
 
 
 def upload_video(video: Video, languages: List[Language]):
-    """I/O-bound: upload to B2. Safe to run in parallel."""
+    """I/O-bound: upload to B2, then clean local files."""
     try:
         logger.info(
             f"[{video.id} | {video.host} | {video.original_id}] start uploading to B2"
@@ -49,58 +49,24 @@ def upload_video(video: Video, languages: List[Language]):
         upload_results = b2_client.upload_video_and_subtitles(video, languages)
 
         logger.info(
-            f"[{video.id} | {video.host} | {video.original_id}] uploaded to B2: {upload_results['video_url']}"
+            f"[{video.id} | {video.host} | {video.original_id}] uploaded video and {len(upload_results['subtitle_urls'])} subtitle files to B2"
+        )
+
+        rm_video(video)
+        logger.info(
+            f"[{video.id} | {video.host} | {video.original_id}] cleaned up local files"
         )
 
         VideoCrud.update(
             {
                 "id": video.id,
-                "status": VideoStatus.published,
+                "status": VideoStatus.uploaded,
                 "failed_reason": "",
             }
-        )
-
-        logger.info(
-            f"[{video.id} | {video.host} | {video.original_id}] uploaded video and {len(upload_results['subtitle_urls'])} subtitle files to B2"
         )
     except Exception as e:
         VideoCrud.record_failure(video.id, VideoStatus.uploaded.log(e))
         raise e
-
-
-def cleanup_files(host: str = ""):
-    last_id = None
-    total_cleaned = 0
-
-    # Clean up published videos
-    while True:
-        videos = VideoCrud.batch_get(
-            last_id, S7_UPLOAD_BATCH_SIZE, VideoStatus.published, host
-        )
-        if not videos:
-            break
-        last_id = videos[-1].id
-        for video in videos:
-            rm_video(video)
-            VideoCrud.update_status(video.id, VideoStatus.cleaned)
-            total_cleaned += 1
-            logger.info(f"[{video.id} | {video.host} | {video.original_id}] cleaned up files")
-
-    # Clean up permanently failed videos (failed_num >= MAX_FAILED_NUM)
-    last_id = None
-    while True:
-        videos = VideoCrud.get_exceeded_failed(last_id, S7_UPLOAD_BATCH_SIZE, host)
-        if not videos:
-            break
-        last_id = videos[-1].id
-        for video in videos:
-            rm_video(video)
-            VideoCrud.update_status(video.id, VideoStatus.cleaned)
-            total_cleaned += 1
-            logger.info(f"[{video.id} | {video.host} | {video.original_id}] cleaned up permanently failed files")
-
-    if total_cleaned > 0:
-        logger.info(f"Cleanup completed: {total_cleaned} videos cleaned")
 
 
 def upload_videos(host: str = ""):
@@ -113,7 +79,6 @@ def upload_videos(host: str = ""):
             last_id, S7_UPLOAD_BATCH_SIZE, VideoStatus.meta_translated, host
         )
         if not videos:
-            cleanup_files(host)
             logger.info("All uploaded, sleeping for 5 minutes")
             time.sleep(5 * 60)
             last_id = None

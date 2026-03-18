@@ -17,7 +17,6 @@ class VideoStatus(StrEnum):
     meta_translated = "meta_translated"
     uploaded = "uploaded"
     published = "published"
-    cleaned = "cleaned"
     low_density = "low_density"
 
     def log(self, e: Exception | str = None) -> str:

@@ -1,0 +1,11 @@
+name = "luckvideos-player"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+[dev]
+port = 8000
+
+[[d1_databases]]
+binding = "DB"
+database_name = "luckvideos-db"
+database_id = "local"

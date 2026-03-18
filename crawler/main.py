@@ -10,6 +10,7 @@ from crawler.service.s5_translate_vtt import process_subtitled_videos
 from crawler.service.s6_translate_meta import translate_meta_infos
 from crawler.service.s7_upload import upload_videos
 from crawler.service.s8_cleanup import clean_files
+from crawler.service.s9_publish import publish_videos
 from crawler.utils.log_utils import init_logging
 
 RUNNERS = {
@@ -21,6 +22,7 @@ RUNNERS = {
     "s6_translate_meta": translate_meta_infos,
     "s7_upload": upload_videos,
     "s8_cleanup": clean_files,
+    "s9_publish": publish_videos,
 }
 
 if __name__ == '__main__':

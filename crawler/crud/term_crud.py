@@ -21,6 +21,19 @@ class TermCrud:
             return dict(translations)
 
     @staticmethod
+    def get_translations_map(texts: List[str]) -> Dict[str, Dict[str, str]]:
+        """Returns {lang: {original_text: translated_text}}"""
+        with get_db() as session:
+            stmt = select(Term).where(Term.text.in_(texts))
+            results = session.execute(stmt).scalars().all()
+
+            translations: Dict[str, Dict[str, str]] = defaultdict(dict)
+            for term in results:
+                translations[term.lang][term.text] = term.translation
+
+            return dict(translations)
+
+    @staticmethod
     def create(text: str, lang: str, translation: str):
         with get_db() as session:
             old = session.query(Term).filter(Term.text == text, Term.lang == lang).first()

@@ -64,7 +64,7 @@ const GLOBAL_CSS = `
   .yt-sidebar-info { flex: 1; min-width: 0; padding-top: 2px; }
   .yt-sidebar-title { font-size: 13px; font-weight: 500; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--yt-text); margin: 0; }
   .yt-sidebar-sub { font-size: 12px; color: var(--yt-text2); margin-top: 4px; }
-  .yt-player-wrap { width: 100%; aspect-ratio: 4/3; border-radius: 12px; overflow: hidden; background: #000; min-height: 360px; max-height: 500px; }
+  .yt-player-wrap { width: 100%; aspect-ratio: 4/3; border-radius: 12px; overflow: hidden; background: #000; min-height: 360px; max-height: 500px; margin: 0 auto; }
   .video-js .vjs-menu .vjs-menu-content { max-height: 250px; overflow-y: auto; }
   .video-js { width: 100% !important; height: 100% !important; }
   .video-js .vjs-poster { background-size: cover; }
@@ -79,6 +79,7 @@ const GLOBAL_CSS = `
   .video-js .vjs-play-progress, .video-js .vjs-load-progress { height: 100%; }
   .video-js .vjs-progress-holder:hover { height: 5px; }
   .video-js .vjs-icon-placeholder::before { font-size: 18px; line-height: 38px; }
+  .video-js .vjs-playback-rate .vjs-playback-rate-value { font-size: 12px; line-height: 38px; }
   .yt-title { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 16px 0 0; }
   .yt-meta-row { display: flex; align-items: center; gap: 12px; margin: 8px 0 0; font-size: 13px; color: var(--yt-text2); flex-wrap: wrap; }
   .yt-desc-box { background: var(--yt-surface); border-radius: 12px; padding: 12px 16px; margin: 16px 0 0; font-size: 13px; line-height: 1.6; }
@@ -87,21 +88,25 @@ const GLOBAL_CSS = `
   .yt-original { font-size: 13px; color: var(--yt-text2); margin: 4px 0 0; }
 
   @media (max-width: 1024px) {
-    .yt-watch { flex-direction: column; }
-    .yt-watch-sidebar { width: 100%; }
+    .yt-watch { flex-direction: column; padding: 16px 16px 32px; align-items: center; }
+    .yt-watch-main { width: 100%; max-width: 720px; }
+    .yt-watch-sidebar { width: 100%; max-width: 720px; flex-direction: row; overflow-x: auto; gap: 12px; height: auto !important; }
+    .yt-sidebar-card { flex: 0 0 200px; flex-direction: column; }
+    .yt-sidebar-thumb { width: 100%; min-width: 100%; }
+    .yt-player-wrap { max-height: none; aspect-ratio: 16/9; }
     .yt-home-sidebar { display: none; }
     .yt-home-main { padding-left: 0; }
   }
   @media (max-width: 640px) {
     .yt-grid { grid-template-columns: 1fr; gap: 12px; }
     .yt-search { max-width: none; margin: 0 0 0 12px; }
-    .yt-watch { padding: 0 0 32px; }
-    .yt-player-wrap { border-radius: 0; min-height: 240px; }
+    .yt-watch { padding: 0 0 32px; gap: 16px; }
+    .yt-player-wrap { border-radius: 0; min-height: 200px; }
     .yt-title { padding: 0 12px; font-size: 16px; }
     .yt-meta-row { padding: 0 12px; }
-    .yt-desc-box { margin: 12px; }
+    .yt-desc-box { margin: 0 12px; }
     .yt-watch-sidebar { padding: 0 12px; }
-    .yt-sidebar-thumb { width: 120px; min-width: 120px; }
+    .yt-sidebar-card { flex: 0 0 160px; }
   }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />

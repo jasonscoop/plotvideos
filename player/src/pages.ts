@@ -84,14 +84,14 @@ async function resolveWatch(c: any, lang: string) {
       .all<{ lang: string; label: string; url: string }>(),
     lang === "en"
       ? db
-          .prepare("SELECT id, title, duration, thumbnail_url FROM videos WHERE id != ? ORDER BY RANDOM() LIMIT 5")
+          .prepare("SELECT id, title, duration, thumbnail_url FROM videos WHERE id != ? ORDER BY RANDOM() LIMIT 10")
           .bind(id)
           .all<any>()
       : db
           .prepare(
             `SELECT v.id, COALESCE(vt.title, v.title) AS title, v.duration, v.thumbnail_url
              FROM videos v LEFT JOIN video_translations vt ON vt.video_id = v.id AND vt.lang = ?
-             WHERE v.id != ? ORDER BY RANDOM() LIMIT 5`
+             WHERE v.id != ? ORDER BY RANDOM() LIMIT 10`
           )
           .bind(lang, id)
           .all<any>(),

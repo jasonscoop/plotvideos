@@ -7,18 +7,18 @@ const GLOBAL_CSS = `
   body { background: var(--yt-bg); color: var(--yt-text); font-family: Roboto, Arial, sans-serif; margin: 0; min-height: 100vh; }
   a { color: inherit; text-decoration: none; }
 
-  .yt-header { position: sticky; top: 0; z-index: 200; background: var(--yt-bg); border-bottom: 1px solid var(--yt-border); height: 56px; display: flex; align-items: center; padding: 0 16px; gap: 8px; }
-  .yt-logo { display: flex; align-items: center; gap: 4px; font-size: 18px; font-weight: 700; white-space: nowrap; }
-  .yt-logo-icon { width: 32px; height: 22px; background: #f00; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+  .yt-header { position: sticky; top: 0; z-index: 200; background: var(--yt-bg); height: 56px; display: flex; align-items: center; padding: 0 16px; gap: 8px; }
+  .yt-logo { display: flex; align-items: center; gap: 4px; font-size: 18px; font-weight: 700; white-space: nowrap; height: 40px; }
+  .yt-logo-icon { width: 36px; height: 26px; background: #f00; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
   .yt-logo-icon::after { content: ''; width: 0; height: 0; border-style: solid; border-width: 6px 0 6px 10px; border-color: transparent transparent transparent #fff; }
   .yt-search { flex: 1; max-width: 540px; margin: 0 auto; display: flex; }
-  .yt-search input { flex: 1; background: var(--yt-bg); border: 1px solid var(--yt-border); border-radius: 20px 0 0 20px; padding: 6px 16px; color: var(--yt-text); font-size: 14px; outline: none; }
+  .yt-search input { flex: 1; background: var(--yt-bg); border: 1px solid var(--yt-border); border-radius: 20px 0 0 20px; padding: 10px 16px; color: var(--yt-text); font-size: 14px; outline: none; }
   .yt-search input:focus { border-color: var(--yt-blue); }
-  .yt-search button { background: var(--yt-surface); border: 1px solid var(--yt-border); border-left: 0; border-radius: 0 20px 20px 0; padding: 0 20px; cursor: pointer; color: var(--yt-text); font-size: 14px; }
+  .yt-search button { background: var(--yt-surface); border: 1px solid var(--yt-border); border-left: 0; border-radius: 0 20px 20px 0; padding: 10px 20px; cursor: pointer; color: var(--yt-text); font-size: 14px; }
   .yt-search button:hover { background: var(--yt-hover); }
 
   .yt-lang-wrap { position: relative; }
-  .yt-lang-btn { background: var(--yt-surface); border: 1px solid var(--yt-border); border-radius: 20px; padding: 6px 14px; color: var(--yt-text); font-size: 13px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
+  .yt-lang-btn { background: var(--yt-surface); border: 1px solid var(--yt-border); border-radius: 20px; padding: 10px 16px; color: var(--yt-text); font-size: 14px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
   .yt-lang-btn:hover { background: var(--yt-hover); }
   .yt-lang-btn svg { width: 12px; height: 12px; fill: var(--yt-text2); }
   .yt-lang-menu { display: none; position: absolute; top: 100%; right: 0; margin-top: 4px; background: var(--yt-surface); border: 1px solid var(--yt-border); border-radius: 12px; padding: 8px 0; min-width: 160px; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.4); max-height: calc(100vh - 70px); overflow-y: auto; }
@@ -27,8 +27,8 @@ const GLOBAL_CSS = `
   .yt-lang-menu a:hover { background: var(--yt-hover); }
   .yt-lang-menu a.active { color: var(--yt-blue); }
 
-  .yt-home { max-width: 1400px; margin: 0 auto; padding: 0 24px; display: flex; gap: 0; }
-  .yt-home-sidebar { width: 200px; flex-shrink: 0; position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto; padding: 12px 0; border-right: 1px solid var(--yt-border); }
+  .yt-home { width: 100%; padding: 0 24px; display: flex; gap: 0; }
+  .yt-home-sidebar { width: 200px; flex-shrink: 0; position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto; padding: 12px 0; }
   .yt-home-sidebar::-webkit-scrollbar { width: 4px; }
   .yt-home-sidebar::-webkit-scrollbar-thumb { background: var(--yt-hover); border-radius: 2px; }
   .yt-home-main { flex: 1; min-width: 0; padding-left: 24px; }
@@ -53,17 +53,10 @@ const GLOBAL_CSS = `
   .yt-pagination a:hover { background: var(--yt-hover); }
   .yt-pagination .yt-page-info { color: var(--yt-text2); }
 
-  .yt-watch { max-width: 1400px; margin: 0 auto; padding: 24px 24px 48px; display: flex; gap: 24px; align-items: flex-start; }
+  .yt-watch { width: 100%; padding: 24px 24px 48px; display: flex; gap: 24px; align-items: flex-start; }
   .yt-watch-main { flex: 1; min-width: 0; }
-  .yt-watch-sidebar { width: 400px; flex-shrink: 0; display: flex; flex-direction: column; overflow: hidden; }
-  .yt-sidebar-card { display: flex; gap: 8px; flex: 1; cursor: pointer; border-radius: 8px; padding: 4px; }
-  .yt-sidebar-card:hover { background: var(--yt-surface); }
-  .yt-sidebar-thumb { position: relative; width: 168px; min-width: 168px; aspect-ratio: 16/9; background: #181818; border-radius: 8px; overflow: hidden; }
-  .yt-sidebar-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .yt-sidebar-dur { position: absolute; bottom: 4px; right: 4px; background: rgba(0,0,0,.8); color: #fff; font-size: 11px; font-weight: 500; padding: 1px 4px; border-radius: 3px; }
-  .yt-sidebar-info { flex: 1; min-width: 0; padding-top: 2px; }
-  .yt-sidebar-title { font-size: 13px; font-weight: 500; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--yt-text); margin: 0; }
-  .yt-sidebar-sub { font-size: 12px; color: var(--yt-text2); margin-top: 4px; }
+  .yt-watch-sidebar { width: 300px; flex-shrink: 0; }
+  .yt-recommended { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; padding: 24px; }
   .yt-player-wrap { width: 100%; aspect-ratio: 4/3; border-radius: 12px; overflow: hidden; background: #000; min-height: 360px; max-height: 500px; margin: 0 auto; }
   .video-js .vjs-menu .vjs-menu-content { max-height: 250px; overflow-y: auto; }
   .video-js { width: 100% !important; height: 100% !important; }
@@ -83,17 +76,26 @@ const GLOBAL_CSS = `
   .yt-title { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 16px 0 0; }
   .yt-meta-row { display: flex; align-items: center; gap: 12px; margin: 8px 0 0; font-size: 13px; color: var(--yt-text2); flex-wrap: wrap; }
   .yt-desc-box { background: var(--yt-surface); border-radius: 12px; padding: 12px 16px; margin: 16px 0 0; font-size: 13px; line-height: 1.6; }
-  .yt-tag { display: inline-block; background: rgba(255,255,255,.1); border-radius: 8px; padding: 4px 12px; margin: 2px 4px 2px 0; font-size: 12px; color: var(--yt-blue); }
-  .yt-tag:hover { background: rgba(255,255,255,.2); }
+  .yt-tag { display: inline-block; padding: 0 4px; margin: 2px 4px 2px 0; font-size: 13px; color: var(--yt-blue); }
+  .yt-tag:hover { text-decoration: underline; }
   .yt-original { font-size: 13px; color: var(--yt-text2); margin: 4px 0 0; }
+  .yt-transcript { background: var(--yt-surface); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+  .yt-transcript-header { padding: 12px 16px; font-size: 14px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .yt-transcript-list { flex: 1; overflow-y: auto; padding: 0 8px 8px; }
+  .yt-transcript-list::-webkit-scrollbar { width: 4px; }
+  .yt-transcript-list::-webkit-scrollbar-thumb { background: var(--yt-hover); border-radius: 2px; }
+  .yt-cue { display: flex; gap: 12px; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 13px; line-height: 1.5; }
+  .yt-cue:hover { background: var(--yt-hover); }
+  .yt-cue.active { background: rgba(62,166,255,.15); }
+  .yt-cue-time { color: var(--yt-blue); font-size: 12px; white-space: nowrap; min-width: 48px; padding-top: 1px; }
+  .yt-cue-text { color: var(--yt-text); }
 
   @media (max-width: 1024px) {
     .yt-watch { flex-direction: column; padding: 16px 16px 32px; align-items: center; }
     .yt-watch-main { width: 100%; max-width: 720px; }
-    .yt-watch-sidebar { width: 100%; max-width: 720px; flex-direction: row; overflow-x: auto; gap: 12px; height: auto !important; }
-    .yt-sidebar-card { flex: 0 0 200px; flex-direction: column; }
-    .yt-sidebar-thumb { width: 100%; min-width: 100%; }
+    .yt-watch-sidebar { width: 100%; max-width: 720px; }
     .yt-player-wrap { max-height: none; aspect-ratio: 16/9; }
+    .yt-recommended { padding: 16px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
     .yt-home-sidebar { display: none; }
     .yt-home-main { padding-left: 0; }
   }
@@ -104,9 +106,8 @@ const GLOBAL_CSS = `
     .yt-player-wrap { border-radius: 0; min-height: 200px; }
     .yt-title { padding: 0 12px; font-size: 16px; }
     .yt-meta-row { padding: 0 12px; }
-    .yt-desc-box { margin: 0 12px; }
     .yt-watch-sidebar { padding: 0 12px; }
-    .yt-sidebar-card { flex: 0 0 160px; }
+    .yt-recommended { padding: 12px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
   }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -304,7 +305,7 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
     ...video.tags,
   ];
   const tagsHtml = allTags
-    .map((tag) => `<a class="yt-tag" href="${prefix}/?q=${encodeURIComponent(tag)}">${esc(tag)}</a>`)
+    .map((tag) => `<a class="yt-tag" href="${prefix}/?q=${encodeURIComponent(tag)}">#${esc(tag)}</a>`)
     .join("");
 
   return layout(
@@ -327,36 +328,43 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
       </div>
 
       <h1 class="yt-title">${esc(video.title)}</h1>
-      ${video.original_title && video.original_title !== video.title ? `<p class="yt-original">${t(lang, "original")}: ${esc(video.original_title)}</p>` : ""}
 
       <div class="yt-meta-row">
         ${video.duration ? `<span>${fmtDuration(video.duration)}</span>` : ""}
         ${subtitleTracks.length ? `<span>&middot;</span><span>${subtitleTracks.length} ${t(lang, "subtitles")}</span>` : ""}
       </div>
 
-      ${tagsHtml ? `<div class="yt-desc-box">${tagsHtml}</div>` : ""}
+      ${tagsHtml ? `<div style="margin-top:12px">${tagsHtml}</div>` : ""}
     </div>
     <div class="yt-watch-sidebar">
-      ${recommended.map((r) => `
-        <a href="${prefix}/videos/${r.id}" class="yt-sidebar-card">
-          <div class="yt-sidebar-thumb">
-            ${r.thumbnail_url ? `<img src="${esc(r.thumbnail_url)}" alt="${esc(r.title)}" loading="lazy" />` : ""}
-            ${r.duration ? `<span class="yt-sidebar-dur">${fmtDuration(r.duration)}</span>` : ""}
-          </div>
-          <div class="yt-sidebar-info">
-            <p class="yt-sidebar-title">${esc(r.title)}</p>
-          </div>
-        </a>`).join("")}
+      <div class="yt-transcript" id="transcript-panel" style="display:none">
+        <div class="yt-transcript-header">
+          <span>Transcript</span>
+        </div>
+        <div class="yt-transcript-list" id="transcript-list"></div>
+      </div>
     </div>
+  </div>
+  <div class="yt-recommended">
+    ${recommended.map((r) => `
+      <a href="${prefix}/videos/${r.id}" class="yt-card">
+        <div class="yt-thumb">
+          ${r.thumbnail_url ? `<img src="${esc(r.thumbnail_url)}" alt="${esc(r.title)}" loading="lazy" />` : ""}
+          ${r.duration ? `<span class="yt-duration">${fmtDuration(r.duration)}</span>` : ""}
+        </div>
+        <div class="yt-card-meta">
+          <div class="yt-card-title">${esc(r.title)}</div>
+        </div>
+      </a>`).join("")}
   </div>
   <script>
   (function(){
-    function syncHeight(){
-      var p=document.querySelector('.yt-player-wrap'), s=document.querySelector('.yt-watch-sidebar');
-      if(p&&s) s.style.height=p.offsetHeight+'px';
+    function syncTranscript(){
+      var p=document.querySelector('.yt-player-wrap'), t=document.getElementById('transcript-panel');
+      if(p&&t) t.style.height=p.offsetHeight+'px';
     }
-    syncHeight();
-    window.addEventListener('resize',syncHeight);
+    syncTranscript();
+    window.addEventListener('resize',syncTranscript);
   })();
   </script>
   <script src="https://cdn.jsdelivr.net/npm/video.js@8/dist/video.min.js"></script>
@@ -379,6 +387,51 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
 
     var savedLang = localStorage.getItem('subtitle_lang');
     var preferredLang = savedLang || pageLang;
+    var subMap = ${JSON.stringify(Object.fromEntries(subtitleTracks.map((st) => [st.lang, st.url])))};
+
+    function parseVTT(text) {
+      var cues = [], blocks = text.split(/\\n\\n+/);
+      for (var i = 0; i < blocks.length; i++) {
+        var lines = blocks[i].trim().split('\\n');
+        for (var j = 0; j < lines.length; j++) {
+          var m = lines[j].match(/(\\d{2}:\\d{2}[:\\.]\\d{2,3})\\s*-->\\s*(\\d{2}:\\d{2}[:\\.]\\d{2,3})/);
+          if (m) {
+            var txt = lines.slice(j + 1).join(' ').replace(/<[^>]+>/g, '').trim();
+            if (txt) cues.push({ start: toSec(m[1]), end: toSec(m[2]), text: txt });
+            break;
+          }
+        }
+      }
+      return cues;
+    }
+    function toSec(t) {
+      var p = t.replace('.', ':').split(':');
+      if (p.length === 3) return +p[0]*60 + +p[1] + +p[2]/1000;
+      return +p[0]*3600 + +p[1]*60 + +p[2] + +(p[3]||0)/1000;
+    }
+    function fmtTime(s) {
+      var m = Math.floor(s/60), sec = Math.floor(s%60);
+      return m + ':' + (sec<10?'0':'') + sec;
+    }
+    function loadTranscript(lang) {
+      var url = subMap[lang];
+      if (!url) { document.getElementById('transcript-panel').style.display='none'; return; }
+      fetch(url).then(function(r){ return r.text(); }).then(function(text){
+        var cues = parseVTT(text);
+        if (!cues.length) { document.getElementById('transcript-panel').style.display='none'; return; }
+        var panel = document.getElementById('transcript-panel');
+        var list = document.getElementById('transcript-list');
+        panel.style.display = '';
+        list.innerHTML = cues.map(function(c, i){
+          return '<div class="yt-cue" data-idx="'+i+'" data-start="'+c.start+'"><span class="yt-cue-time">'+fmtTime(c.start)+'</span><span class="yt-cue-text">'+c.text+'</span></div>';
+        }).join('');
+        list.onclick = function(e){
+          var el = e.target.closest('.yt-cue');
+          if (el) player.currentTime(+el.dataset.start);
+        };
+        window._transcriptCues = cues;
+      }).catch(function(){ document.getElementById('transcript-panel').style.display='none'; });
+    }
 
     player.ready(function(){
       var tracks = player.textTracks();
@@ -390,12 +443,31 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
         }
       }
 
+      loadTranscript(preferredLang);
+
       tracks.addEventListener('change', function(){
         for (var i = 0; i < tracks.length; i++) {
           if (tracks[i].kind === 'subtitles' && tracks[i].mode === 'showing') {
             localStorage.setItem('subtitle_lang', tracks[i].language);
-            break;
+            loadTranscript(tracks[i].language);
+            return;
           }
+        }
+      });
+
+      player.on('timeupdate', function(){
+        var cues = window._transcriptCues;
+        if (!cues) return;
+        var ct = player.currentTime(), els = document.querySelectorAll('.yt-cue');
+        var activeIdx = -1;
+        for (var i = 0; i < cues.length; i++) {
+          if (ct >= cues[i].start && ct < cues[i].end) { activeIdx = i; break; }
+        }
+        for (var i = 0; i < els.length; i++) {
+          els[i].classList.toggle('active', i === activeIdx);
+        }
+        if (activeIdx >= 0 && els[activeIdx]) {
+          els[activeIdx].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         }
       });
     });

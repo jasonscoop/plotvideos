@@ -37,9 +37,10 @@ async function resolveIndex(c: any, lang: string) {
   listSql += " ORDER BY " + (lang === DEFAULT_LANG ? "" : "v.") + "created_at DESC LIMIT ? OFFSET ?";
 
   const countParams = q ? [`%${q}%`] : [];
-  const [countResult, listResult] = await Promise.all([
+  const [countResult, listResult, tagsResult] = await Promise.all([
     db.prepare(countSql).bind(...countParams).first<{ total: number }>(),
     db.prepare(listSql).bind(...params, pageSize, (page - 1) * pageSize).all(),
+    db.prepare("SELECT keyword AS tag, COUNT(*) AS count FROM videos WHERE keyword != '' GROUP BY keyword ORDER BY count DESC LIMIT 20").all<{ tag: string; count: number }>(),
   ]);
 
   const total = countResult?.total || 0;
@@ -50,7 +51,7 @@ async function resolveIndex(c: any, lang: string) {
     title: row.tr_title || row.title,
   }));
 
-  return c.html(indexPage(lang, videos as any, page, totalPages, total, q));
+  return c.html(indexPage(lang, videos as any, page, totalPages, total, q, tagsResult.results));
 }
 
 async function resolveWatch(c: any, lang: string) {
@@ -64,7 +65,7 @@ async function resolveWatch(c: any, lang: string) {
 
   if (!video) return c.text("Video not found", 404);
 
-  const [translationResult, subsResult] = await Promise.all([
+  const [translationResult, subsResult, recResult] = await Promise.all([
     db
       .prepare("SELECT title, keyword, tags, categories FROM video_translations WHERE video_id = ? AND lang = ?")
       .bind(id, lang)
@@ -73,6 +74,19 @@ async function resolveWatch(c: any, lang: string) {
       .prepare("SELECT lang, label, url FROM subtitle_tracks WHERE video_id = ?")
       .bind(id)
       .all<{ lang: string; label: string; url: string }>(),
+    lang === "en"
+      ? db
+          .prepare("SELECT id, title, host, duration, thumbnail_url FROM videos WHERE id != ? ORDER BY RANDOM() LIMIT 5")
+          .bind(id)
+          .all<any>()
+      : db
+          .prepare(
+            `SELECT v.id, COALESCE(vt.title, v.title) AS title, v.host, v.duration, v.thumbnail_url
+             FROM videos v LEFT JOIN video_translations vt ON vt.video_id = v.id AND vt.lang = ?
+             WHERE v.id != ? ORDER BY RANDOM() LIMIT 5`
+          )
+          .bind(lang, id)
+          .all<any>(),
   ]);
 
   const subtitleTracks = subsResult.results.map((s) => ({
@@ -105,7 +119,8 @@ async function resolveWatch(c: any, lang: string) {
         tags: displayTags,
         categories: displayCategories,
       },
-      subtitleTracks
+      subtitleTracks,
+      recResult.results
     )
   );
 }

@@ -27,7 +27,16 @@ const GLOBAL_CSS = `
   .yt-lang-menu a:hover { background: var(--yt-hover); }
   .yt-lang-menu a.active { color: var(--yt-blue); }
 
-  .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; padding: 24px 0; }
+  .yt-home { max-width: 1400px; margin: 0 auto; padding: 0 24px; display: flex; gap: 0; }
+  .yt-home-sidebar { width: 200px; flex-shrink: 0; position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto; padding: 12px 0; border-right: 1px solid var(--yt-border); }
+  .yt-home-sidebar::-webkit-scrollbar { width: 4px; }
+  .yt-home-sidebar::-webkit-scrollbar-thumb { background: var(--yt-hover); border-radius: 2px; }
+  .yt-home-main { flex: 1; min-width: 0; padding-left: 24px; }
+  .yt-nav-item { display: block; padding: 8px 12px; font-size: 13px; color: var(--yt-text); border-radius: 8px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .yt-nav-item:hover { background: var(--yt-surface); }
+  .yt-nav-item.active { background: var(--yt-surface); color: var(--yt-blue); font-weight: 500; }
+  .yt-nav-heading { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--yt-text2); padding: 16px 12px 6px; }
+  .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding: 24px 0; }
   .yt-card { display: block; cursor: pointer; }
   .yt-card:hover .yt-card-title { color: var(--yt-text); }
   .yt-thumb { position: relative; width: 100%; padding-bottom: 56.25%; background: #181818; border-radius: 12px; overflow: hidden; }
@@ -44,10 +53,23 @@ const GLOBAL_CSS = `
   .yt-pagination a:hover { background: var(--yt-hover); }
   .yt-pagination .yt-page-info { color: var(--yt-text2); }
 
-  .yt-watch { max-width: 1280px; margin: 0 auto; padding: 24px 24px 48px; }
-  .yt-player-wrap { width: 100%; border-radius: 12px; overflow: hidden; background: #000; }
-  .video-js { width: 100% !important; aspect-ratio: 16/9; }
-  .video-js .vjs-big-play-button { top: 50%; left: 50%; transform: translate(-50%,-50%); }
+  .yt-watch { max-width: 1400px; margin: 0 auto; padding: 24px 24px 48px; display: flex; gap: 24px; align-items: flex-start; }
+  .yt-watch-main { flex: 1; min-width: 0; }
+  .yt-watch-sidebar { width: 400px; flex-shrink: 0; display: flex; flex-direction: column; overflow: hidden; }
+  .yt-sidebar-card { display: flex; gap: 8px; flex: 1; cursor: pointer; border-radius: 8px; padding: 4px; }
+  .yt-sidebar-card:hover { background: var(--yt-surface); }
+  .yt-sidebar-thumb { position: relative; width: 168px; min-width: 168px; aspect-ratio: 16/9; background: #181818; border-radius: 8px; overflow: hidden; }
+  .yt-sidebar-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .yt-sidebar-dur { position: absolute; bottom: 4px; right: 4px; background: rgba(0,0,0,.8); color: #fff; font-size: 11px; font-weight: 500; padding: 1px 4px; border-radius: 3px; }
+  .yt-sidebar-info { flex: 1; min-width: 0; padding-top: 2px; }
+  .yt-sidebar-title { font-size: 13px; font-weight: 500; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--yt-text); margin: 0; }
+  .yt-sidebar-sub { font-size: 12px; color: var(--yt-text2); margin-top: 4px; }
+  .yt-player-wrap { width: 100%; aspect-ratio: 4/3; border-radius: 12px; overflow: hidden; background: #000; min-height: 360px; max-height: 500px; }
+  .video-js { width: 100% !important; height: 100% !important; }
+  .video-js .vjs-poster { background-size: cover; }
+  .video-js .vjs-big-play-button { top: 50%; left: 50%; transform: translate(-50%,-50%); width: 68px; height: 48px; background: rgba(255,0,0,.85); border: none; border-radius: 14px; line-height: 48px; font-size: 24px; transition: background .15s, opacity .15s; }
+  .video-js:hover .vjs-big-play-button { background: rgba(255,0,0,1); }
+  .video-js .vjs-big-play-button .vjs-icon-placeholder::before { font-size: 28px; }
   .yt-title { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 16px 0 0; }
   .yt-meta-row { display: flex; align-items: center; gap: 12px; margin: 8px 0 0; font-size: 13px; color: var(--yt-text2); flex-wrap: wrap; }
   .yt-desc-box { background: var(--yt-surface); border-radius: 12px; padding: 12px 16px; margin: 16px 0 0; font-size: 13px; line-height: 1.6; }
@@ -55,14 +77,22 @@ const GLOBAL_CSS = `
   .yt-tag:hover { background: rgba(255,255,255,.2); }
   .yt-original { font-size: 13px; color: var(--yt-text2); margin: 4px 0 0; }
 
+  @media (max-width: 1024px) {
+    .yt-watch { flex-direction: column; }
+    .yt-watch-sidebar { width: 100%; }
+    .yt-home-sidebar { display: none; }
+    .yt-home-main { padding-left: 0; }
+  }
   @media (max-width: 640px) {
     .yt-grid { grid-template-columns: 1fr; gap: 12px; }
     .yt-search { max-width: none; margin: 0 0 0 12px; }
     .yt-watch { padding: 0 0 32px; }
-    .yt-player-wrap { border-radius: 0; }
+    .yt-player-wrap { border-radius: 0; min-height: 240px; }
     .yt-title { padding: 0 12px; font-size: 16px; }
     .yt-meta-row { padding: 0 12px; }
     .yt-desc-box { margin: 12px; }
+    .yt-watch-sidebar { padding: 0 12px; }
+    .yt-sidebar-thumb { width: 120px; min-width: 120px; }
   }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -143,16 +173,37 @@ interface VideoCard {
   thumbnail_url: string;
 }
 
+interface TagItem {
+  tag: string;
+  count: number;
+}
+
 export function indexPage(
   lang: string,
   videos: VideoCard[],
   page: number,
   totalPages: number,
   total: number,
-  q: string
+  q: string,
+  topTags: TagItem[] = []
 ) {
   const prefix = langPrefix(lang);
   const qParam = q ? `&q=${encodeURIComponent(q)}` : "";
+
+  const sidebarItems = topTags
+    .map((tg) => {
+      const active = q === tg.tag ? " active" : "";
+      return `<a href="${prefix}/?q=${encodeURIComponent(tg.tag)}" class="yt-nav-item${active}" title="${esc(tg.tag)}">${esc(tg.tag)}</a>`;
+    })
+    .join("");
+
+  const sidebar = topTags.length
+    ? `<nav class="yt-home-sidebar">
+        <a href="${prefix}/" class="yt-nav-item${!q ? " active" : ""}">🏠 ${t(lang, "latest_videos")}</a>
+        <div class="yt-nav-heading">Tags</div>
+        ${sidebarItems}
+      </nav>`
+    : "";
 
   const cards = videos
     .map(
@@ -181,11 +232,11 @@ export function indexPage(
       ${page < totalPages ? `<a href="${prefix}/?page=${page + 1}${qParam}">${t(lang, "next")}</a>` : ""}
     </div>`;
 
-  const content = videos.length
-    ? `<main style="max-width:1400px;margin:0 auto;padding:0 24px">
-        <div class="yt-grid">${cards}</div>${pagination}
-      </main>`
-    : `<main style="max-width:1400px;margin:0 auto;padding:48px 24px;color:var(--yt-text2)">${t(lang, "no_videos")}</main>`;
+  const main = videos.length
+    ? `<div class="yt-home-main"><div class="yt-grid">${cards}</div>${pagination}</div>`
+    : `<div class="yt-home-main" style="padding:48px 0;color:var(--yt-text2)">${t(lang, "no_videos")}</div>`;
+
+  const content = `<div class="yt-home">${sidebar}${main}</div>`;
 
   return layout("LuckVideos", lang, content, q, "/");
 }
@@ -211,7 +262,15 @@ interface SubTrack {
   isDefault: boolean;
 }
 
-export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTrack[]) {
+interface RecommendedVideo {
+  id: number;
+  title: string;
+  host: string;
+  duration: number;
+  thumbnail_url: string;
+}
+
+export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTrack[], recommended: RecommendedVideo[] = []) {
   const prefix = langPrefix(lang);
 
   const tracks = subtitleTracks
@@ -243,30 +302,55 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
     lang,
     `
   <div class="yt-watch">
-    <div class="yt-player-wrap">
-      <video
-        id="video-player"
-        class="video-js vjs-big-play-centered"
-        controls
-        preload="auto"
-        crossorigin="anonymous"
-        poster="${esc(video.thumbnail_url)}"
-      >
-        ${tracks}
-      </video>
+    <div class="yt-watch-main">
+      <div class="yt-player-wrap">
+        <video
+          id="video-player"
+          class="video-js vjs-big-play-centered"
+          controls
+          preload="auto"
+          crossorigin="anonymous"
+          poster="${esc(video.thumbnail_url)}"
+        >
+          ${tracks}
+        </video>
+      </div>
+
+      <h1 class="yt-title">${esc(video.title)}</h1>
+      ${video.original_title && video.original_title !== video.title ? `<p class="yt-original">${t(lang, "original")}: ${esc(video.original_title)}</p>` : ""}
+
+      <div class="yt-meta-row">
+        <span>${esc(video.host)}</span>
+        ${video.duration ? `<span>&middot;</span><span>${fmtDuration(video.duration)}</span>` : ""}
+        ${subtitleTracks.length ? `<span>&middot;</span><span>${subtitleTracks.length} ${t(lang, "subtitles")}</span>` : ""}
+      </div>
+
+      ${tagsHtml ? `<div class="yt-desc-box">${tagsHtml}</div>` : ""}
     </div>
-
-    <h1 class="yt-title">${esc(video.title)}</h1>
-    ${video.original_title && video.original_title !== video.title ? `<p class="yt-original">${t(lang, "original")}: ${esc(video.original_title)}</p>` : ""}
-
-    <div class="yt-meta-row">
-      <span>${esc(video.host)}</span>
-      ${video.duration ? `<span>&middot;</span><span>${fmtDuration(video.duration)}</span>` : ""}
-      ${subtitleTracks.length ? `<span>&middot;</span><span>${subtitleTracks.length} ${t(lang, "subtitles")}</span>` : ""}
+    <div class="yt-watch-sidebar">
+      ${recommended.map((r) => `
+        <a href="${prefix}/videos/${r.id}" class="yt-sidebar-card">
+          <div class="yt-sidebar-thumb">
+            ${r.thumbnail_url ? `<img src="${esc(r.thumbnail_url)}" alt="${esc(r.title)}" loading="lazy" />` : ""}
+            ${r.duration ? `<span class="yt-sidebar-dur">${fmtDuration(r.duration)}</span>` : ""}
+          </div>
+          <div class="yt-sidebar-info">
+            <p class="yt-sidebar-title">${esc(r.title)}</p>
+            <div class="yt-sidebar-sub">${esc(r.host)}</div>
+          </div>
+        </a>`).join("")}
     </div>
-
-    ${tagsHtml ? `<div class="yt-desc-box">${tagsHtml}</div>` : ""}
   </div>
+  <script>
+  (function(){
+    function syncHeight(){
+      var p=document.querySelector('.yt-player-wrap'), s=document.querySelector('.yt-watch-sidebar');
+      if(p&&s) s.style.height=p.offsetHeight+'px';
+    }
+    syncHeight();
+    window.addEventListener('resize',syncHeight);
+  })();
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/video.js@8/dist/video.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-levels@4/dist/videojs-contrib-quality-levels.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@2.0.0/dist/videojs-hls-quality-selector.min.js"></script>
@@ -281,7 +365,6 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
       html5: {
         vhs: { overrideNative: !videojs.browser.IS_SAFARI }
       },
-      techOrder: ['html5'],
       sources: [${sources}]
     });
     player.hlsQualitySelector({ displayCurrentQuality: true });

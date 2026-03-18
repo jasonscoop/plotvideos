@@ -182,7 +182,6 @@ export function esc(s: string): string {
 interface VideoCard {
   id: number;
   title: string;
-  host: string;
   duration: number;
   thumbnail_url: string;
 }
@@ -233,7 +232,6 @@ export function indexPage(
       </div>
       <div class="yt-card-meta">
         <div class="yt-card-title">${esc(v.title)}</div>
-        <div class="yt-card-sub">${esc(v.host)}</div>
       </div>
     </a>`
     )
@@ -259,7 +257,6 @@ interface WatchData {
   id: number;
   title: string;
   original_title: string;
-  host: string;
   duration: number;
   thumbnail_url: string;
   video_url: string;
@@ -279,7 +276,6 @@ interface SubTrack {
 interface RecommendedVideo {
   id: number;
   title: string;
-  host: string;
   duration: number;
   thumbnail_url: string;
 }
@@ -334,8 +330,7 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
       ${video.original_title && video.original_title !== video.title ? `<p class="yt-original">${t(lang, "original")}: ${esc(video.original_title)}</p>` : ""}
 
       <div class="yt-meta-row">
-        <span>${esc(video.host)}</span>
-        ${video.duration ? `<span>&middot;</span><span>${fmtDuration(video.duration)}</span>` : ""}
+        ${video.duration ? `<span>${fmtDuration(video.duration)}</span>` : ""}
         ${subtitleTracks.length ? `<span>&middot;</span><span>${subtitleTracks.length} ${t(lang, "subtitles")}</span>` : ""}
       </div>
 
@@ -350,7 +345,6 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
           </div>
           <div class="yt-sidebar-info">
             <p class="yt-sidebar-title">${esc(r.title)}</p>
-            <div class="yt-sidebar-sub">${esc(r.host)}</div>
           </div>
         </a>`).join("")}
     </div>

@@ -13,7 +13,6 @@ interface TranslationPayload {
 interface IngestPayload {
   original_id: number;
   title: string;
-  host: string;
   duration?: number;
   width?: number;
   height?: number;
@@ -41,13 +40,12 @@ apiRoutes.post("/videos", async (c) => {
 
   const result = await db
     .prepare(
-      `INSERT INTO videos (original_id, title, host,
+      `INSERT INTO videos (original_id, title,
         duration, width, height, thumbnail_url, video_url, hls_url,
         store_dir, keyword, tags, categories)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(original_id) DO UPDATE SET
         title = excluded.title,
-        host = excluded.host,
         duration = excluded.duration,
         width = excluded.width,
         height = excluded.height,
@@ -63,7 +61,6 @@ apiRoutes.post("/videos", async (c) => {
     .bind(
       body.original_id,
       body.title,
-      body.host || "",
       body.duration || 0,
       body.width || 0,
       body.height || 0,

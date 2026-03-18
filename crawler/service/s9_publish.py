@@ -50,7 +50,6 @@ def _build_payload(video: Video, languages: List[Language]) -> dict:
     return {
         "original_id": video.id,
         "title": video.title,
-        "host": video.host,
         "duration": video.duration,
         "width": video.width,
         "height": video.height,

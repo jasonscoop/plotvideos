@@ -40,7 +40,15 @@ async function resolveIndex(c: any, lang: string) {
   const [countResult, listResult, tagsResult] = await Promise.all([
     db.prepare(countSql).bind(...countParams).first<{ total: number }>(),
     db.prepare(listSql).bind(...params, pageSize, (page - 1) * pageSize).all(),
-    db.prepare("SELECT keyword AS tag, COUNT(*) AS count FROM videos WHERE keyword != '' GROUP BY keyword ORDER BY count DESC LIMIT 20").all<{ tag: string; count: number }>(),
+    db.prepare(
+      `SELECT tag, COUNT(*) AS count FROM (
+        SELECT keyword AS tag FROM videos WHERE keyword != ''
+        UNION ALL
+        SELECT j.value AS tag FROM videos, json_each(videos.tags) AS j WHERE videos.tags != '[]'
+        UNION ALL
+        SELECT j.value AS tag FROM videos, json_each(videos.categories) AS j WHERE videos.categories != '[]'
+      ) GROUP BY tag ORDER BY count DESC LIMIT 20`
+    ).all<{ tag: string; count: number }>(),
   ]);
 
   const total = countResult?.total || 0;
@@ -76,12 +84,12 @@ async function resolveWatch(c: any, lang: string) {
       .all<{ lang: string; label: string; url: string }>(),
     lang === "en"
       ? db
-          .prepare("SELECT id, title, host, duration, thumbnail_url FROM videos WHERE id != ? ORDER BY RANDOM() LIMIT 5")
+          .prepare("SELECT id, title, duration, thumbnail_url FROM videos WHERE id != ? ORDER BY RANDOM() LIMIT 5")
           .bind(id)
           .all<any>()
       : db
           .prepare(
-            `SELECT v.id, COALESCE(vt.title, v.title) AS title, v.host, v.duration, v.thumbnail_url
+            `SELECT v.id, COALESCE(vt.title, v.title) AS title, v.duration, v.thumbnail_url
              FROM videos v LEFT JOIN video_translations vt ON vt.video_id = v.id AND vt.lang = ?
              WHERE v.id != ? ORDER BY RANDOM() LIMIT 5`
           )
@@ -110,7 +118,6 @@ async function resolveWatch(c: any, lang: string) {
         id: video.id,
         title: displayTitle,
         original_title: video.title,
-        host: video.host,
         duration: video.duration,
         thumbnail_url: video.thumbnail_url,
         video_url: video.video_url,

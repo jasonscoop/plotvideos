@@ -2,7 +2,6 @@ CREATE TABLE IF NOT EXISTS videos (
   id            INTEGER PRIMARY KEY AUTOINCREMENT,
   original_id   INTEGER NOT NULL UNIQUE,
   title         TEXT    NOT NULL,
-  host          TEXT    NOT NULL DEFAULT '',
   duration      INTEGER NOT NULL DEFAULT 0,
   width         INTEGER NOT NULL DEFAULT 0,
   height        INTEGER NOT NULL DEFAULT 0,

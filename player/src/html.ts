@@ -7,7 +7,7 @@ const GLOBAL_CSS = `
   body { background: var(--yt-bg); color: var(--yt-text); font-family: Roboto, Arial, sans-serif; margin: 0; min-height: 100vh; }
   a { color: inherit; text-decoration: none; }
 
-  .yt-header { position: sticky; top: 0; z-index: 50; background: var(--yt-bg); border-bottom: 1px solid var(--yt-border); height: 56px; display: flex; align-items: center; padding: 0 16px; gap: 8px; }
+  .yt-header { position: sticky; top: 0; z-index: 200; background: var(--yt-bg); border-bottom: 1px solid var(--yt-border); height: 56px; display: flex; align-items: center; padding: 0 16px; gap: 8px; }
   .yt-logo { display: flex; align-items: center; gap: 4px; font-size: 18px; font-weight: 700; white-space: nowrap; }
   .yt-logo-icon { width: 32px; height: 22px; background: #f00; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
   .yt-logo-icon::after { content: ''; width: 0; height: 0; border-style: solid; border-width: 6px 0 6px 10px; border-color: transparent transparent transparent #fff; }
@@ -21,7 +21,7 @@ const GLOBAL_CSS = `
   .yt-lang-btn { background: var(--yt-surface); border: 1px solid var(--yt-border); border-radius: 20px; padding: 6px 14px; color: var(--yt-text); font-size: 13px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
   .yt-lang-btn:hover { background: var(--yt-hover); }
   .yt-lang-btn svg { width: 12px; height: 12px; fill: var(--yt-text2); }
-  .yt-lang-menu { display: none; position: absolute; top: 100%; right: 0; margin-top: 4px; background: var(--yt-surface); border: 1px solid var(--yt-border); border-radius: 12px; padding: 8px 0; min-width: 160px; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+  .yt-lang-menu { display: none; position: absolute; top: 100%; right: 0; margin-top: 4px; background: var(--yt-surface); border: 1px solid var(--yt-border); border-radius: 12px; padding: 8px 0; min-width: 160px; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.4); max-height: calc(100vh - 70px); overflow-y: auto; }
   .yt-lang-wrap.open .yt-lang-menu { display: block; }
   .yt-lang-menu a { display: block; padding: 8px 16px; font-size: 13px; color: var(--yt-text); }
   .yt-lang-menu a:hover { background: var(--yt-hover); }
@@ -65,11 +65,20 @@ const GLOBAL_CSS = `
   .yt-sidebar-title { font-size: 13px; font-weight: 500; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--yt-text); margin: 0; }
   .yt-sidebar-sub { font-size: 12px; color: var(--yt-text2); margin-top: 4px; }
   .yt-player-wrap { width: 100%; aspect-ratio: 4/3; border-radius: 12px; overflow: hidden; background: #000; min-height: 360px; max-height: 500px; }
+  .video-js .vjs-menu .vjs-menu-content { max-height: 250px; overflow-y: auto; }
   .video-js { width: 100% !important; height: 100% !important; }
   .video-js .vjs-poster { background-size: cover; }
   .video-js .vjs-big-play-button { top: 50%; left: 50%; transform: translate(-50%,-50%); width: 68px; height: 48px; background: rgba(255,0,0,.85); border: none; border-radius: 14px; line-height: 48px; font-size: 24px; transition: background .15s, opacity .15s; }
   .video-js:hover .vjs-big-play-button { background: rgba(255,0,0,1); }
   .video-js .vjs-big-play-button .vjs-icon-placeholder::before { font-size: 28px; }
+  .video-js .vjs-control-bar { height: 38px; font-size: 13px; }
+  .video-js .vjs-control { width: 38px; }
+  .video-js .vjs-time-control { font-size: 12px; line-height: 38px; padding: 0 5px; }
+  .video-js .vjs-progress-control { height: 38px; }
+  .video-js .vjs-progress-holder { height: 3px; }
+  .video-js .vjs-play-progress, .video-js .vjs-load-progress { height: 100%; }
+  .video-js .vjs-progress-holder:hover { height: 5px; }
+  .video-js .vjs-icon-placeholder::before { font-size: 18px; line-height: 38px; }
   .yt-title { font-size: 20px; font-weight: 600; line-height: 1.4; margin: 16px 0 0; }
   .yt-meta-row { display: flex; align-items: center; gap: 12px; margin: 8px 0 0; font-size: 13px; color: var(--yt-text2); flex-wrap: wrap; }
   .yt-desc-box { background: var(--yt-surface); border-radius: 12px; padding: 12px 16px; margin: 16px 0 0; font-size: 13px; line-height: 1.6; }

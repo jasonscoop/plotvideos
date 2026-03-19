@@ -42,6 +42,7 @@ const translations: Record<string, Record<string, string>> = {
     duration: "Duration",
     subtitles: "subtitles",
     no_thumbnail: "No thumbnail",
+    recommended: "You may also like",
   },
   de: {
     search: "Suchen",
@@ -56,6 +57,7 @@ const translations: Record<string, Record<string, string>> = {
     duration: "Dauer",
     subtitles: "Untertitel",
     no_thumbnail: "Kein Thumbnail",
+    recommended: "Das könnte dir auch gefallen",
   },
   fr: {
     search: "Rechercher",
@@ -70,6 +72,7 @@ const translations: Record<string, Record<string, string>> = {
     duration: "Durée",
     subtitles: "sous-titres",
     no_thumbnail: "Pas de miniature",
+    recommended: "Vous aimerez aussi",
   },
   nl: {
     search: "Zoeken",
@@ -84,6 +87,7 @@ const translations: Record<string, Record<string, string>> = {
     duration: "Duur",
     subtitles: "ondertitels",
     no_thumbnail: "Geen thumbnail",
+    recommended: "Misschien vind je dit ook leuk",
   },
   ja: {
     search: "検索",
@@ -98,6 +102,7 @@ const translations: Record<string, Record<string, string>> = {
     duration: "再生時間",
     subtitles: "字幕",
     no_thumbnail: "サムネイルなし",
+    recommended: "おすすめ",
   },
   ko: {
     search: "검색",
@@ -112,6 +117,7 @@ const translations: Record<string, Record<string, string>> = {
     duration: "재생시간",
     subtitles: "자막",
     no_thumbnail: "썸네일 없음",
+    recommended: "이런 영상은 어때요",
   },
   pt: {
     search: "Pesquisar",
@@ -126,6 +132,7 @@ const translations: Record<string, Record<string, string>> = {
     duration: "Duração",
     subtitles: "legendas",
     no_thumbnail: "Sem miniatura",
+    recommended: "Você também pode gostar",
   },
   ar: {
     search: "بحث",
@@ -140,6 +147,7 @@ const translations: Record<string, Record<string, string>> = {
     duration: "المدة",
     subtitles: "ترجمات",
     no_thumbnail: "لا توجد صورة مصغرة",
+    recommended: "قد يعجبك أيضاً",
   },
   es: {
     search: "Buscar",
@@ -154,6 +162,7 @@ const translations: Record<string, Record<string, string>> = {
     duration: "Duración",
     subtitles: "subtítulos",
     no_thumbnail: "Sin miniatura",
+    recommended: "También te puede gustar",
   },
   zh: {
     search: "搜索",
@@ -168,6 +177,7 @@ const translations: Record<string, Record<string, string>> = {
     duration: "时长",
     subtitles: "字幕",
     no_thumbnail: "无缩略图",
+    recommended: "猜你喜欢",
   },
 };
 

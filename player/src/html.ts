@@ -80,7 +80,10 @@ const GLOBAL_CSS = `
   .yt-tag:hover { text-decoration: underline; }
   .yt-original { font-size: 13px; color: var(--yt-text2); margin: 4px 0 0; }
   .yt-transcript { background: var(--yt-surface); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
-  .yt-transcript-header { padding: 12px 16px; font-size: 14px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .yt-transcript-header { padding: 12px 16px; font-size: 14px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; cursor: pointer; }
+  .yt-transcript-toggle { background: none; border: none; color: var(--yt-text2); font-size: 18px; cursor: pointer; padding: 0 4px; transition: transform .2s; }
+  .yt-transcript.collapsed .yt-transcript-toggle { transform: rotate(180deg); }
+  .yt-transcript.collapsed .yt-transcript-list { display: none; }
   .yt-transcript-list { flex: 1; overflow-y: auto; padding: 0 8px 8px; }
   .yt-transcript-list::-webkit-scrollbar { width: 4px; }
   .yt-transcript-list::-webkit-scrollbar-thumb { background: var(--yt-hover); border-radius: 2px; }
@@ -90,6 +93,14 @@ const GLOBAL_CSS = `
   .yt-cue-time { color: var(--yt-blue); font-size: 12px; white-space: nowrap; min-width: 48px; padding-top: 1px; }
   .yt-cue-text { color: var(--yt-text); }
 
+  [dir="rtl"] .yt-search input { border-radius: 0 20px 20px 0; border-left: 1px solid var(--yt-border); border-right: 1px solid var(--yt-border); }
+  [dir="rtl"] .yt-search button { border-radius: 20px 0 0 20px; border-right: 0; border-left: 1px solid var(--yt-border); }
+  [dir="rtl"] .yt-home-main { padding-left: 0; padding-right: 24px; }
+  [dir="rtl"] .yt-cue { direction: rtl; }
+  [dir="rtl"] .yt-cue-time { text-align: left; }
+  [dir="rtl"] .yt-lang-menu { right: auto; left: 0; }
+  [dir="rtl"] .yt-duration { right: auto; left: 4px; }
+
   @media (max-width: 1024px) {
     .yt-watch { flex-direction: column; padding: 16px 16px 32px; align-items: center; }
     .yt-watch-main { width: 100%; max-width: 720px; }
@@ -98,10 +109,12 @@ const GLOBAL_CSS = `
     .yt-recommended { padding: 16px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
     .yt-home-sidebar { display: none; }
     .yt-home-main { padding-left: 0; }
+    [dir="rtl"] .yt-home-main { padding-right: 0; }
   }
   @media (max-width: 640px) {
     .yt-grid { grid-template-columns: 1fr; gap: 12px; }
     .yt-search { max-width: none; margin: 0 0 0 12px; }
+    [dir="rtl"] .yt-search { margin: 0 12px 0 0; }
     .yt-watch { padding: 0 0 32px; gap: 16px; }
     .yt-player-wrap { border-radius: 0; min-height: 200px; }
     .yt-title { padding: 0 12px; font-size: 16px; }
@@ -338,13 +351,15 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
     </div>
     <div class="yt-watch-sidebar">
       <div class="yt-transcript" id="transcript-panel" style="display:none">
-        <div class="yt-transcript-header">
+        <div class="yt-transcript-header" onclick="var p=document.getElementById('transcript-panel');p.classList.toggle('collapsed');localStorage.setItem('transcript_hidden',p.classList.contains('collapsed')?'1':'0')">
           <span>Transcript</span>
+          <span class="yt-transcript-toggle">&#9650;</span>
         </div>
         <div class="yt-transcript-list" id="transcript-list"></div>
       </div>
     </div>
   </div>
+  ${recommended.length ? `<h2 style="padding:24px 24px 0;font-size:18px;font-weight:500">${t(lang, "recommended")}</h2>` : ""}
   <div class="yt-recommended">
     ${recommended.map((r) => `
       <a href="${prefix}/videos/${r.id}" class="yt-card">
@@ -413,24 +428,43 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
       var m = Math.floor(s/60), sec = Math.floor(s%60);
       return m + ':' + (sec<10?'0':'') + sec;
     }
-    function loadTranscript(lang) {
-      var url = subMap[lang];
-      if (!url) { document.getElementById('transcript-panel').style.display='none'; return; }
-      fetch(url).then(function(r){ return r.text(); }).then(function(text){
+    function renderTranscript(cues) {
+      var panel = document.getElementById('transcript-panel');
+      var list = document.getElementById('transcript-list');
+      panel.style.display = '';
+      if (localStorage.getItem('transcript_hidden') === '1') panel.classList.add('collapsed');
+      else panel.classList.remove('collapsed');
+      list.innerHTML = cues.map(function(c, i){
+        return '<div class="yt-cue" data-idx="'+i+'" data-start="'+c.start+'"><span class="yt-cue-time">'+fmtTime(c.start)+'</span><span class="yt-cue-text">'+c.text+'</span></div>';
+      }).join('');
+      list.onclick = function(e){
+        var el = e.target.closest('.yt-cue');
+        if (el) player.currentTime(+el.dataset.start);
+      };
+      window._transcriptCues = cues;
+    }
+    function fetchVTT(url) {
+      return fetch(url).then(function(r){
+        if (!r.ok) throw new Error(r.status);
+        return r.text();
+      }).then(function(text){
         var cues = parseVTT(text);
-        if (!cues.length) { document.getElementById('transcript-panel').style.display='none'; return; }
-        var panel = document.getElementById('transcript-panel');
-        var list = document.getElementById('transcript-list');
-        panel.style.display = '';
-        list.innerHTML = cues.map(function(c, i){
-          return '<div class="yt-cue" data-idx="'+i+'" data-start="'+c.start+'"><span class="yt-cue-time">'+fmtTime(c.start)+'</span><span class="yt-cue-text">'+c.text+'</span></div>';
-        }).join('');
-        list.onclick = function(e){
-          var el = e.target.closest('.yt-cue');
-          if (el) player.currentTime(+el.dataset.start);
-        };
-        window._transcriptCues = cues;
-      }).catch(function(){ document.getElementById('transcript-panel').style.display='none'; });
+        if (!cues.length) throw new Error('empty');
+        return cues;
+      });
+    }
+    function loadTranscript(lang) {
+      var urls = [];
+      if (subMap[lang]) urls.push(subMap[lang]);
+      var keys = Object.keys(subMap);
+      for (var i = 0; i < keys.length; i++) {
+        if (keys[i] !== lang && subMap[keys[i]]) urls.push(subMap[keys[i]]);
+      }
+      if (!urls.length) { document.getElementById('transcript-panel').style.display='none'; return; }
+      (function tryNext(idx) {
+        if (idx >= urls.length) { document.getElementById('transcript-panel').style.display='none'; return; }
+        fetchVTT(urls[idx]).then(renderTranscript).catch(function(){ tryNext(idx + 1); });
+      })(0);
     }
 
     player.ready(function(){

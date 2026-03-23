@@ -57,15 +57,12 @@ def download_video(video: Video):
             }
         )
         if video_size > MAX_ACCEPT_VIDEO_SIZE:
-            reason = VideoCrud.record_failure(
-                video.id,
-                VideoStatus.downloaded.log(
-                    f"Video large than {to_mb(MAX_ACCEPT_VIDEO_SIZE)}MB."
-                ),
-            )
+            VideoCrud.update({"id": video.id, "status": VideoStatus.oversized})
             logger.warning(
-                f"[{video.id} | {video.host} | {video.original_id}] {reason}"
+                f"[{video.id} | {video.host} | {video.original_id}] "
+                f"Video oversized: {to_mb(video_size)}MB > {to_mb(MAX_ACCEPT_VIDEO_SIZE)}MB"
             )
+            rm_video(video)
         else:
             logger.info(
                 f"[{video.id} | {video.host} | {video.original_id}]  Downloaded"

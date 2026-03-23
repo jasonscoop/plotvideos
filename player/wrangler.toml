@@ -2,6 +2,11 @@ name = "luckvideos-player"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
+[[rules]]
+type = "Text"
+globs = ["**/*.css"]
+fallthrough = true
+
 [dev]
 port = 8000
 

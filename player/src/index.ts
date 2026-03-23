@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { apiRoutes } from "./api";
 import { pageRoutes } from "./pages";
 import { mediaRoutes } from "./b2";
+import STYLES_CSS from "./styles.css";
 
 export type Env = {
   Bindings: {
@@ -14,6 +15,13 @@ export type Env = {
 };
 
 const app = new Hono<Env>();
+
+app.get("/styles.css", (c) => {
+  return c.body(STYLES_CSS, 200, {
+    "Content-Type": "text/css; charset=utf-8",
+    "Cache-Control": "public, max-age=3600",
+  });
+});
 
 app.route("/api", apiRoutes);
 app.route("/media", mediaRoutes);

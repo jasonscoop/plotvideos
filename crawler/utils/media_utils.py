@@ -1,6 +1,5 @@
 import json
 import platform
-import shutil
 import subprocess
 from pathlib import Path
 
@@ -47,10 +46,12 @@ def media_to_mp3(video_path: Path, mp3_path: Path, bitrate="192k"):
 
 
 ALL_RENDITIONS = [
-    {"name": "480p",  "height": 480,  "bitrate": "1500k", "size": "854x480",  "bandwidth": 1_500_000},
-    {"name": "720p",  "height": 720,  "bitrate": "3000k", "size": "1280x720", "bandwidth": 3_000_000},
-    {"name": "1080p", "height": 1080, "bitrate": "5000k", "size": "1920x1080","bandwidth": 5_000_000},
+    {"name": "480p",  "height": 480,  "bitrate": "1500k", "audio_bitrate": "128k", "bandwidth": 1_500_000},
+    {"name": "720p",  "height": 720,  "bitrate": "3000k", "audio_bitrate": "128k", "bandwidth": 3_000_000},
+    {"name": "1080p", "height": 1080, "bitrate": "5000k", "audio_bitrate": "192k", "bandwidth": 5_000_000},
 ]
+
+HLS_SEGMENT_SECONDS = 6
 
 
 def _get_video_height(video_path: Path) -> int:
@@ -77,17 +78,26 @@ def generate_hls(video_path: Path, output_dir: Path) -> Path:
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    stream_map = " ".join(f"v:{r['idx']},a:{r['idx']}" for r in renditions)
+    stream_map = " ".join(f"v:{r['idx']},a:{r['idx']},name:{r['name']}" for r in renditions)
 
     command = ["ffmpeg", "-y", "-i", str(video_path)]
 
-    for _ in renditions:
-        command += ["-map", "0:v", "-map", "0:a"]
+    # Build filter_complex: split video into N scaled outputs, pass audio through
+    split = f"[0:v]split={len(renditions)}" + "".join(f"[vin{r['idx']}]" for r in renditions)
+    scale_filters = ";".join(
+        f"[vin{r['idx']}]scale=-2:{r['height']}[vout{r['idx']}]" for r in renditions
+    )
+    filter_complex = f"{split};{scale_filters}"
+
+    command += ["-filter_complex", filter_complex]
+
+    for r in renditions:
+        command += ["-map", f"[vout{r['idx']}]", "-map", "0:a"]
 
     for r in renditions:
         command += [
             f"-b:v:{r['idx']}", r["bitrate"],
-            f"-s:v:{r['idx']}", r["size"],
+            f"-b:a:{r['idx']}", r["audio_bitrate"],
         ]
 
     if platform.system() == "Darwin":
@@ -96,10 +106,11 @@ def generate_hls(video_path: Path, output_dir: Path) -> Path:
         command += ["-c:v", "libx264", "-preset", "veryfast"]
 
     command += [
-        "-g", "48", "-keyint_min", "48", "-sc_threshold", "0",
-        "-c:a", "aac", "-ac", "2", "-b:a", "128k",
+        # Force keyframes at segment boundaries so quality switching is seamless
+        "-force_key_frames", f"expr:gte(t,n_forced*{HLS_SEGMENT_SECONDS})",
+        "-c:a", "aac", "-ac", "2",
         "-f", "hls",
-        "-hls_time", "6",
+        "-hls_time", str(HLS_SEGMENT_SECONDS),
         "-hls_playlist_type", "vod",
         "-hls_segment_type", "fmp4",
         "-master_pl_name", "master.m3u8",
@@ -109,21 +120,4 @@ def generate_hls(video_path: Path, output_dir: Path) -> Path:
 
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
-    # Rename numbered dirs (0, 1, 2) to friendly names (480p, 720p, 1080p)
-    for r in renditions:
-        src = output_dir / str(r["idx"])
-        dst = output_dir / r["name"]
-        if src.exists() and src != dst:
-            if dst.exists():
-                shutil.rmtree(dst)
-            src.rename(dst)
-
-    # Rewrite master playlist with friendly directory names
-    master_path = output_dir / "master.m3u8"
-    if master_path.exists():
-        content = master_path.read_text()
-        for r in renditions:
-            content = content.replace(f"{r['idx']}/prog_index.m3u8", f"{r['name']}/prog_index.m3u8")
-        master_path.write_text(content)
-
-    return master_path
+    return output_dir / "master.m3u8"

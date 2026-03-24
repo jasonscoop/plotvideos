@@ -34,4 +34,4 @@ class StartAdTrimmer:
         return 0.0
 
     def trim_video(self, start_time):
-        ffmpeg.input(self.video_path.as_posix(), ss=start_time).output(self.new_video_path.as_posix(), c='copy').run()
+        ffmpeg.input(self.video_path.as_posix(), ss=start_time).output(self.new_video_path.as_posix(), c='copy').run(overwrite_output=True)

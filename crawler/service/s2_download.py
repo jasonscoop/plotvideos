@@ -16,6 +16,7 @@ from crawler.utils.download_utils import (
     download_image,
 )
 from crawler.utils.file_utils import rm_video
+from crawler.utils.signal_utils import setup_graceful_shutdown, should_stop
 
 
 def download_video(video: Video):
@@ -78,9 +79,9 @@ def download_video(video: Video):
 
 
 def download_videos(host: str = ""):
+    setup_graceful_shutdown()
     last_id = None
-    exception_count = 0
-    while True:
+    while not should_stop():
         videos = VideoCrud.batch_get(
             last_id, S2_DOWNLOAD_BATCH_SIZE, VideoStatus.fetched, host
         )
@@ -91,11 +92,12 @@ def download_videos(host: str = ""):
             continue
 
         last_id = videos[-1].id
+        exception_count = 0
         with ThreadPoolExecutor(max_workers=len(videos)) as executor:
             futures = [executor.submit(download_video, video) for video in videos]
             for future in as_completed(futures):
                 try:
-                    future.result()  # This will raise any exceptions that occurred
+                    future.result()
                 except Exception as e:
                     exception_count += 1
                     logger.error(f"Error in download: {str(e)}")

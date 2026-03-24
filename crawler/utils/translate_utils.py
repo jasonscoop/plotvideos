@@ -1,4 +1,4 @@
-from functools import lru_cache
+import time
 from typing import List
 
 import requests
@@ -8,10 +8,19 @@ from tenacity import stop_after_attempt, retry, wait_random
 from crawler.core.config import RAPIDAPI_AI_TRANSLATE_KEY_URL, RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL
 from crawler.core.languages import Language
 
+_API_KEY_TTL = 3600  # 1 hour
+_api_key_cache: dict[str, tuple[str, float]] = {}
 
-@lru_cache(maxsize=4)
+
 def _fetch_api_key(url: str) -> str:
-    return requests.get(url, timeout=10).text.strip()
+    now = time.monotonic()
+    if url in _api_key_cache:
+        key, expires_at = _api_key_cache[url]
+        if now < expires_at:
+            return key
+    key = requests.get(url, timeout=10).text.strip()
+    _api_key_cache[url] = (key, now + _API_KEY_TTL)
+    return key
 
 
 def translate_list(texts: List[str], lang: Language) -> List[str]:

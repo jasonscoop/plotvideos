@@ -60,7 +60,7 @@ def _get_video_height(video_path: Path) -> int:
         capture_output=True, text=True, check=True,
     )
     streams = json.loads(result.stdout).get("streams", [])
-    return streams[0]["height"] if streams else 0
+    return streams[0].get("height", 0) if streams else 0
 
 
 def generate_hls(video_path: Path, output_dir: Path) -> Path:

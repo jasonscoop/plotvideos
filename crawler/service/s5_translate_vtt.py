@@ -8,6 +8,7 @@ from crawler.crud.video_crud import VideoCrud
 from crawler.core.config import SUBTITLE_TOKEN_RATIO_THRESHOLD, S5_TRANSLATE_VTT_BATCH_SIZE
 from crawler.core.enums import VideoStatus
 from crawler.core.languages import Language
+from crawler.utils.signal_utils import setup_graceful_shutdown, should_stop
 from crawler.utils.translate_utils import translate_list
 
 
@@ -15,6 +16,11 @@ def translate_vtt(vtt_content: str, lang) -> str:
     vtt = webvtt.from_string(vtt_content)
     texts = [c.text for c in vtt]
     translated_texts = translate_list(texts, lang)
+
+    if len(translated_texts) != len(vtt.captions):
+        raise ValueError(
+            f"Translation count mismatch: expected {len(vtt.captions)}, got {len(translated_texts)}"
+        )
 
     for i, t in enumerate(translated_texts):
         vtt.captions[i].text = t
@@ -32,11 +38,11 @@ def translate_and_save(lang, vtt_content, video):
 
 
 def process_subtitled_videos(host: str = ""):
+    setup_graceful_shutdown()
     last_id = None
-    exception_count = 0
     languages = Language.get_all()
 
-    while True:
+    while not should_stop():
         videos = VideoCrud.batch_get(
             last_id, S5_TRANSLATE_VTT_BATCH_SIZE, VideoStatus.subtitled, host
         )
@@ -47,6 +53,7 @@ def process_subtitled_videos(host: str = ""):
             continue
 
         last_id = videos[-1].id
+        exception_count = 0
 
         for video in videos:
             if len(video.subtitle_content.strip()) == 0:

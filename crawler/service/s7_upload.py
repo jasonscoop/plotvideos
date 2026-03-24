@@ -12,6 +12,7 @@ from crawler.core.models import Video
 from crawler.utils.b2_utils import get_b2_client
 from crawler.utils.file_utils import rm_video
 from crawler.utils.media_utils import generate_hls
+from crawler.utils.signal_utils import setup_graceful_shutdown, should_stop
 
 
 def transcode_video(video: Video):
@@ -52,11 +53,8 @@ def upload_video(video: Video, languages: List[Language]):
             f"[{video.id} | {video.host} | {video.original_id}] uploaded video and {len(upload_results['subtitle_urls'])} subtitle files to B2"
         )
 
-        rm_video(video)
-        logger.info(
-            f"[{video.id} | {video.host} | {video.original_id}] cleaned up local files"
-        )
-
+        # Mark uploaded in DB before deleting local files — if deletion fails,
+        # s8_cleanup will handle it; if DB update had failed, files would be preserved for retry
         VideoCrud.update(
             {
                 "id": video.id,
@@ -64,17 +62,22 @@ def upload_video(video: Video, languages: List[Language]):
                 "failed_reason": "",
             }
         )
+
+        rm_video(video)
+        logger.info(
+            f"[{video.id} | {video.host} | {video.original_id}] cleaned up local files"
+        )
     except Exception as e:
         VideoCrud.record_failure(video.id, VideoStatus.uploaded.log(e))
         raise e
 
 
 def upload_videos(host: str = ""):
+    setup_graceful_shutdown()
     last_id = None
-    exception_count = 0
     languages = Language.get_all()
 
-    while True:
+    while not should_stop():
         videos = VideoCrud.batch_get(
             last_id, S7_UPLOAD_BATCH_SIZE, VideoStatus.meta_translated, host
         )
@@ -85,6 +88,7 @@ def upload_videos(host: str = ""):
             continue
 
         last_id = videos[-1].id
+        exception_count = 0
 
         # Transcode sequentially (CPU-bound — one ffmpeg at a time)
         ready = []

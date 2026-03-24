@@ -54,6 +54,19 @@ WHISPER_BEAM_SIZE = get_int("WHISPER_BEAM_SIZE", 1)
 WHISPER_DEVICE_INDEX = get_int("WHISPER_DEVICE_INDEX", 0)
 
 S1_FETCH_MAX_PAGES: int = get_int("S1_FETCH_MAX_PAGES", 10)
+
+
+def validate_config():
+    """Raise early with a clear message if required env vars are missing."""
+    missing = []
+    if not DB_URL:
+        missing.append("DB_URL")
+    if not RAPIDAPI_KEY:
+        missing.append("RAPIDAPI_KEY")
+    if missing:
+        raise EnvironmentError(
+            f"Missing required environment variables: {', '.join(missing)}"
+        )
 S2_DOWNLOAD_BATCH_SIZE: int = get_int("S2_DOWNLOAD_BATCH_SIZE", 5)
 S3_CONVERT_BATCH_SIZE: int = get_int("S3_CONVERT_BATCH_SIZE", 5)
 S4_SUBTITLE_BATCH_SIZE: int = get_int("S4_SUBTITLE_BATCH_SIZE", 1)

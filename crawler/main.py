@@ -11,6 +11,7 @@ from crawler.service.s6_translate_meta import translate_meta_infos
 from crawler.service.s7_upload import upload_videos
 from crawler.service.s8_cleanup import clean_files
 from crawler.service.s9_publish import publish_videos
+from crawler.core.config import validate_config
 from crawler.utils.log_utils import init_logging
 
 RUNNERS = {
@@ -32,6 +33,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     init_logging(args.runner)
+    validate_config()
     logger.info(f"Starting runner: {args.runner} with args: {args}")
 
     if args.runner not in RUNNERS:

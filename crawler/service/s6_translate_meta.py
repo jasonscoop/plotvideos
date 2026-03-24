@@ -10,13 +10,14 @@ from crawler.core.config import S6_TRANSLATE_META_BATCH_SIZE
 from crawler.core.enums import VideoStatus
 from crawler.core.languages import Language
 from crawler.core.models import Video
+from crawler.utils.signal_utils import setup_graceful_shutdown, should_stop
 from crawler.utils.translate_utils import translate_list
 
 
 def translate_video(video: Video, languages):
     title_translations = {}
     all_terms = [video.keyword.name] + video.tags + video.categories
-    all_translations = TermCrud.get_translations(all_terms)
+    all_translations = TermCrud.get_translations_map(all_terms)
 
     for lang in languages:
         existing_translations = all_translations.get(lang.code, {})
@@ -43,11 +44,11 @@ def translate_video(video: Video, languages):
 
 
 def translate_meta_infos(host: str = ""):
+    setup_graceful_shutdown()
     last_id = None
-    exception_count = 0
     languages = Language.get_all()
 
-    while True:
+    while not should_stop():
         videos = VideoCrud.batch_get(
             last_id, S6_TRANSLATE_META_BATCH_SIZE, VideoStatus.vtt_translated, host
         )
@@ -58,6 +59,7 @@ def translate_meta_infos(host: str = ""):
             continue
 
         last_id = videos[-1].id
+        exception_count = 0
         for video in videos:
             try:
                 translate_video(video, languages)

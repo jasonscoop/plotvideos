@@ -10,11 +10,20 @@ from crawler.utils.file_utils import rm_video
 
 from crawler.core.models import Video
 
+from crawler.utils.signal_utils import setup_graceful_shutdown, should_stop
 from crawler.utils.whisper_utils import whisper_transcribe
 
 
 def subtitle_video(video: Video):
     try:
+        if not video.store_path.audio.exists():
+            reason = VideoCrud.record_failure(
+                video.id,
+                VideoStatus.subtitled.log(f"Audio file not found: {video.store_path.audio}"),
+            )
+            logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
+            return None
+
         vtt_content, word_count = whisper_transcribe(video.store_path.audio)
         word_density = round(word_count / video.duration, 2) if video.duration > 0 else 0
 
@@ -57,9 +66,10 @@ def subtitle_video(video: Video):
 
 
 def subtitle_videos(host: str = ""):
+    setup_graceful_shutdown()
     last_id = None
 
-    while True:
+    while not should_stop():
         videos = VideoCrud.batch_get(
             last_id, S4_SUBTITLE_BATCH_SIZE, VideoStatus.converted, host
         )

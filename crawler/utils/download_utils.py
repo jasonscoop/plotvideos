@@ -12,6 +12,8 @@ from tenacity import stop_after_attempt, retry, wait_fixed, wait_exponential
 from crawler.core.config import YT_DLP_PROXY, MAX_ACCEPT_VIDEO_SIZE
 from crawler.core.consts import USER_AGENTS
 
+MAX_IMAGE_SIZE = MAX_IMAGE_SIZE  # 50 MB
+
 
 class SizeLimitExceeded(Exception):
     pass
@@ -110,7 +112,7 @@ def download_image(url: str, image_path: Path) -> bool:
         content_length = response.headers.get("content-length")
         if content_length:
             file_size = int(content_length)
-            max_size = 50 * 1024 * 1024  # 50MB limit for images
+            max_size = MAX_IMAGE_SIZE  # 50MB limit for images
             if file_size > max_size:
                 logger.error(f"Image file too large: {file_size / 1024 / 1024:.2f}MB")
                 return False
@@ -129,7 +131,7 @@ def download_image(url: str, image_path: Path) -> bool:
                     total_size += len(chunk)
 
                     # Check size during download
-                    if total_size > 50 * 1024 * 1024:  # 50MB limit
+                    if total_size > MAX_IMAGE_SIZE:  # 50MB limit
                         f.close()
                         temp_image_path.unlink()  # Delete partial file
                         logger.error("Image file too large during download")

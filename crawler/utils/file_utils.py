@@ -15,7 +15,7 @@ def save_json(path: Union[str, Path], json_data: dict | list):
 
 
 def is_path_match(path: str) -> bool:
-    return re.match(r".*/works/videos/\w{2}/[a-zA-Z]{2}/\w+$", path) is not None
+    return re.match(r".*/works/videos/[a-z]{2}/[a-z]{2}/\w+$", path) is not None
 
 
 def rm_video(video: Video):

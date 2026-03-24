@@ -18,7 +18,6 @@ class VideoCrud:
         batch_size: int,
         status: VideoStatus | List[VideoStatus] | None = None,
         host: str = "",
-        temp_status: int | None = None,
     ) -> List[Video]:
         with get_db() as session:
             query = (
@@ -37,9 +36,6 @@ class VideoCrud:
 
             if host:
                 query = query.filter(Video.host == host)
-
-            if temp_status is not None:
-                query = query.filter(Video.temp_status == temp_status)
 
             query = query.filter(Video.failed_count < MAX_FAILED_NUM)
 

@@ -8,6 +8,7 @@ from crawler.core.config import MIN_ACCEPT_DURATION, S3_CONVERT_BATCH_SIZE
 from crawler.core.models import VideoStatus
 from crawler.utils.file_utils import rm_video
 from crawler.utils.media_utils import get_video_duration, media_to_wav
+from crawler.utils.signal_utils import setup_graceful_shutdown, should_stop
 
 
 def convert_video(video):
@@ -47,10 +48,10 @@ def convert_video(video):
 
 
 def convert_videos(host: str = ""):
+    setup_graceful_shutdown()
     last_id = None
-    exception_count = 0
 
-    while True:
+    while not should_stop():
         videos = VideoCrud.batch_get(
             last_id, S3_CONVERT_BATCH_SIZE, VideoStatus.downloaded, host
         )
@@ -61,6 +62,7 @@ def convert_videos(host: str = ""):
             continue
 
         last_id = videos[-1].id
+        exception_count = 0
         for video in videos:
             try:
                 convert_video(video)

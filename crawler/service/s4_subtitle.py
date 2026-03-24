@@ -1,13 +1,12 @@
 import time
 import traceback
+from typing import Optional, Tuple
 
 from loguru import logger
 
 from crawler.crud.video_crud import VideoCrud
 from crawler.core.config import S4_SUBTITLE_BATCH_SIZE, SUBTITLE_TOKEN_RATIO_THRESHOLD
 from crawler.core.models import VideoStatus
-from crawler.utils.file_utils import rm_video
-
 from crawler.core.models import Video
 
 from crawler.utils.signal_utils import setup_graceful_shutdown, should_stop
@@ -65,20 +64,25 @@ def subtitle_video(video: Video):
         return e
 
 
-def subtitle_videos(host: str = ""):
+def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
+    """Subtitle one batch of converted videos. Returns (had_work, next_last_id)."""
+    videos = VideoCrud.batch_get(last_id, S4_SUBTITLE_BATCH_SIZE, VideoStatus.converted)
+    if not videos:
+        return False, None
+
+    for video in videos:
+        subtitle_video(video)
+
+    return True, videos[-1].id
+
+
+def subtitle_videos():
     setup_graceful_shutdown()
     last_id = None
 
     while not should_stop():
-        videos = VideoCrud.batch_get(
-            last_id, S4_SUBTITLE_BATCH_SIZE, VideoStatus.converted, host
-        )
-        if not videos:
+        had_work, last_id = process_batch(last_id)
+        if not had_work:
             logger.info("All subtitled, sleeping for 5 minutes")
             time.sleep(5 * 60)
             last_id = None
-            continue
-
-        last_id = videos[-1].id
-        for video in videos:
-            subtitle_video(video)

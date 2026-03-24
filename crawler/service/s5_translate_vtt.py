@@ -1,5 +1,6 @@
 import time
 import traceback
+from typing import Optional, Tuple
 
 import webvtt
 from loguru import logger
@@ -37,76 +38,80 @@ def translate_and_save(lang, vtt_content, video):
     )
 
 
-def process_subtitled_videos(host: str = ""):
+def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
+    """Translate VTT subtitles for one batch of subtitled videos. Returns (had_work, next_last_id)."""
+    languages = Language.get_all()
+    videos = VideoCrud.batch_get(last_id, S5_TRANSLATE_VTT_BATCH_SIZE, VideoStatus.subtitled)
+    if not videos:
+        return False, None
+
+    exception_count = 0
+    for video in videos:
+        if len(video.subtitle_content.strip()) == 0:
+            reason = VideoCrud.record_failure(
+                video.id,
+                VideoStatus.subtitled.log("Subtitle content is empty"),
+            )
+            logger.warning(
+                f"[{video.id} | {video.host} | {video.original_id}] {reason}"
+            )
+            continue
+
+        if video.word_density < SUBTITLE_TOKEN_RATIO_THRESHOLD:
+            reason = VideoCrud.record_failure(
+                video.id,
+                VideoStatus.subtitled.log("Subtitle content is too short"),
+            )
+            logger.warning(
+                f"[{video.id} | {video.host} | {video.original_id}] {reason}"
+            )
+            continue
+
+        if not video.store_path.vtt.exists():
+            reason = VideoCrud.record_failure(
+                video.id,
+                VideoStatus.subtitled.log("Subtitle file isn't exist"),
+            )
+            logger.warning(
+                f"[{video.id} | {video.host} | {video.original_id}] {reason}"
+            )
+            continue
+
+        logger.info(
+            f"[{video.id} | {video.host} | {video.original_id}] vtt translation started"
+        )
+
+        try:
+            vtt_content = video.store_path.vtt.read_text()
+            video.store_path.translated_vtts.mkdir(exist_ok=True)
+
+            for lang in languages:
+                translate_and_save(lang, vtt_content, video)
+
+            VideoCrud.update_status(video.id, VideoStatus.vtt_translated)
+            logger.info(
+                f"[{video.id} | {video.host} | {video.original_id}] all vtt translated"
+            )
+        except Exception as e:
+            reason = VideoCrud.record_failure(
+                video.id, VideoStatus.vtt_translated.log(e)
+            )
+            logger.error(f"[{video.id} | {video.original_id}] {reason}")
+            exception_count += 1
+            if exception_count >= 3:
+                raise e
+            traceback.print_exc()
+
+    return True, videos[-1].id
+
+
+def process_subtitled_videos():
     setup_graceful_shutdown()
     last_id = None
-    languages = Language.get_all()
 
     while not should_stop():
-        videos = VideoCrud.batch_get(
-            last_id, S5_TRANSLATE_VTT_BATCH_SIZE, VideoStatus.subtitled, host
-        )
-        if not videos:
+        had_work, last_id = process_batch(last_id)
+        if not had_work:
             logger.info("All vtt translated, sleeping for 5 minutes")
             time.sleep(5 * 60)
             last_id = None
-            continue
-
-        last_id = videos[-1].id
-        exception_count = 0
-
-        for video in videos:
-            if len(video.subtitle_content.strip()) == 0:
-                reason = VideoCrud.record_failure(
-                    video.id,
-                    VideoStatus.subtitled.log("Subtitle content is empty"),
-                )
-                logger.warning(
-                    f"[{video.id} | {video.host} | {video.original_id}] {reason}"
-                )
-                continue
-
-            if video.word_density < SUBTITLE_TOKEN_RATIO_THRESHOLD:
-                reason = VideoCrud.record_failure(
-                    video.id,
-                    VideoStatus.subtitled.log("Subtitle content is too short"),
-                )
-                logger.warning(
-                    f"[{video.id} | {video.host} | {video.original_id}] {reason}"
-                )
-                continue
-
-            if not video.store_path.vtt.exists():
-                reason = VideoCrud.record_failure(
-                    video.id,
-                    VideoStatus.subtitled.log("Subtitle file isn't exist"),
-                )
-                logger.warning(
-                    f"[{video.id} | {video.host} | {video.original_id}] {reason}"
-                )
-                continue
-
-            logger.info(
-                f"[{video.id} | {video.host} | {video.original_id}] vtt translation started"
-            )
-
-            try:
-                vtt_content = video.store_path.vtt.read_text()
-                video.store_path.translated_vtts.mkdir(exist_ok=True)
-
-                for lang in languages:
-                    translate_and_save(lang, vtt_content, video)
-
-                VideoCrud.update_status(video.id, VideoStatus.vtt_translated)
-                logger.info(
-                    f"[{video.id} | {video.host} | {video.original_id}] all vtt translated"
-                )
-            except Exception as e:
-                reason = VideoCrud.record_failure(
-                    video.id, VideoStatus.vtt_translated.log(e)
-                )
-                logger.error(f"[{video.id} | {video.original_id}] {reason}")
-                exception_count += 1
-                if exception_count >= 3:
-                    raise e
-                traceback.print_exc()

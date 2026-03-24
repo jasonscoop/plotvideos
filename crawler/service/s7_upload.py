@@ -1,6 +1,6 @@
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List
+from typing import List, Optional, Tuple
 
 from loguru import logger
 
@@ -72,48 +72,53 @@ def upload_video(video: Video, languages: List[Language]):
         raise e
 
 
-def upload_videos(host: str = ""):
+def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
+    """Transcode and upload one batch of meta-translated videos. Returns (had_work, next_last_id)."""
+    languages = Language.get_all()
+    videos = VideoCrud.batch_get(last_id, S7_UPLOAD_BATCH_SIZE, VideoStatus.meta_translated)
+    if not videos:
+        return False, None
+
+    exception_count = 0
+
+    # Transcode sequentially (CPU-bound — one ffmpeg at a time)
+    ready = []
+    for video in videos:
+        try:
+            if transcode_video(video):
+                ready.append(video)
+        except Exception as e:
+            VideoCrud.record_failure(video.id, VideoStatus.uploaded.log(e))
+            exception_count += 1
+            logger.error(f"Error in transcode: {str(e)}")
+            if exception_count >= 3:
+                raise e
+
+    # Upload in parallel (I/O-bound)
+    if ready:
+        with ThreadPoolExecutor(max_workers=len(ready)) as executor:
+            futures = [
+                executor.submit(upload_video, video, languages) for video in ready
+            ]
+            for future in as_completed(futures):
+                try:
+                    future.result()
+                except Exception as e:
+                    exception_count += 1
+                    logger.error(f"Error in upload: {str(e)}")
+                    if exception_count >= 3:
+                        raise e
+
+    return True, videos[-1].id
+
+
+def upload_videos():
     setup_graceful_shutdown()
     last_id = None
-    languages = Language.get_all()
 
     while not should_stop():
-        videos = VideoCrud.batch_get(
-            last_id, S7_UPLOAD_BATCH_SIZE, VideoStatus.meta_translated, host
-        )
-        if not videos:
+        had_work, last_id = process_batch(last_id)
+        if not had_work:
             logger.info("All uploaded, sleeping for 5 minutes")
             time.sleep(5 * 60)
             last_id = None
-            continue
-
-        last_id = videos[-1].id
-        exception_count = 0
-
-        # Transcode sequentially (CPU-bound — one ffmpeg at a time)
-        ready = []
-        for video in videos:
-            try:
-                if transcode_video(video):
-                    ready.append(video)
-            except Exception as e:
-                VideoCrud.record_failure(video.id, VideoStatus.uploaded.log(e))
-                exception_count += 1
-                logger.error(f"Error in transcode: {str(e)}")
-                if exception_count >= 3:
-                    raise e
-
-        # Upload in parallel (I/O-bound)
-        if ready:
-            with ThreadPoolExecutor(max_workers=len(ready)) as executor:
-                futures = [
-                    executor.submit(upload_video, video, languages) for video in ready
-                ]
-                for future in as_completed(futures):
-                    try:
-                        future.result()
-                    except Exception as e:
-                        exception_count += 1
-                        logger.error(f"Error in upload: {str(e)}")
-                        if exception_count >= 3:
-                            raise e

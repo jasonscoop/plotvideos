@@ -1,9 +1,10 @@
 import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Optional, Tuple
 
 from loguru import logger
-from yt_dlp.utils import DownloadError, RegexNotFoundError, ytdl_is_updateable
+from yt_dlp.utils import DownloadError, RegexNotFoundError
 
 from crawler.crud.video_crud import VideoCrud
 from crawler.core.config import MAX_ACCEPT_VIDEO_SIZE, S2_DOWNLOAD_BATCH_SIZE
@@ -78,28 +79,33 @@ def download_video(video: Video):
         raise e
 
 
-def download_videos(host: str = ""):
+def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
+    """Download one batch of fetched videos. Returns (had_work, next_last_id)."""
+    videos = VideoCrud.batch_get(last_id, S2_DOWNLOAD_BATCH_SIZE, VideoStatus.fetched)
+    if not videos:
+        return False, None
+
+    exception_count = 0
+    with ThreadPoolExecutor(max_workers=len(videos)) as executor:
+        futures = [executor.submit(download_video, video) for video in videos]
+        for future in as_completed(futures):
+            try:
+                future.result()
+            except Exception as e:
+                exception_count += 1
+                logger.error(f"Error in download: {str(e)}")
+                if exception_count >= 3:
+                    raise e
+
+    return True, videos[-1].id
+
+
+def download_videos():
     setup_graceful_shutdown()
     last_id = None
     while not should_stop():
-        videos = VideoCrud.batch_get(
-            last_id, S2_DOWNLOAD_BATCH_SIZE, VideoStatus.fetched, host
-        )
-        if not videos:
+        had_work, last_id = process_batch(last_id)
+        if not had_work:
             logger.info("All downloaded, sleeping for 1 hour")
             time.sleep(1 * 60 * 60)
             last_id = None
-            continue
-
-        last_id = videos[-1].id
-        exception_count = 0
-        with ThreadPoolExecutor(max_workers=len(videos)) as executor:
-            futures = [executor.submit(download_video, video) for video in videos]
-            for future in as_completed(futures):
-                try:
-                    future.result()
-                except Exception as e:
-                    exception_count += 1
-                    logger.error(f"Error in download: {str(e)}")
-                    if exception_count >= 3:
-                        raise e

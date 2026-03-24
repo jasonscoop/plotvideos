@@ -1,5 +1,6 @@
 import time
 import traceback
+from typing import Optional, Tuple
 
 from loguru import logger
 
@@ -47,30 +48,33 @@ def convert_video(video):
     logger.info(f"[{video.id} | {video.host} | {video.original_id}] converted to audio")
 
 
-def convert_videos(host: str = ""):
+def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
+    """Convert one batch of downloaded videos to WAV. Returns (had_work, next_last_id)."""
+    videos = VideoCrud.batch_get(last_id, S3_CONVERT_BATCH_SIZE, VideoStatus.downloaded)
+    if not videos:
+        return False, None
+
+    exception_count = 0
+    for video in videos:
+        try:
+            convert_video(video)
+        except Exception as e:
+            VideoCrud.record_failure(video.id, VideoStatus.converted.log(str(e)))
+            exception_count += 1
+            traceback.print_exc()
+            if exception_count > 3:
+                raise
+
+    return True, videos[-1].id
+
+
+def convert_videos():
     setup_graceful_shutdown()
     last_id = None
 
     while not should_stop():
-        videos = VideoCrud.batch_get(
-            last_id, S3_CONVERT_BATCH_SIZE, VideoStatus.downloaded, host
-        )
-        if not videos:
+        had_work, last_id = process_batch(last_id)
+        if not had_work:
             logger.info("All converted, sleeping for 10 minutes")
             time.sleep(10 * 60)
             last_id = None
-            continue
-
-        last_id = videos[-1].id
-        exception_count = 0
-        for video in videos:
-            try:
-                convert_video(video)
-            except Exception as e:
-                VideoCrud.record_failure(
-                    video.id, VideoStatus.converted.log(str(e))
-                )
-                exception_count += 1
-                traceback.print_exc()
-                if exception_count > 3:
-                    raise

@@ -1,7 +1,7 @@
 import time
 import traceback
 from os import getenv
-from typing import List
+from typing import List, Optional, Tuple
 
 import requests
 from loguru import logger
@@ -13,6 +13,7 @@ from crawler.core.config import S7_UPLOAD_BATCH_SIZE
 from crawler.core.enums import VideoStatus
 from crawler.core.languages import Language
 from crawler.core.models import Video
+from crawler.utils.signal_utils import setup_graceful_shutdown, should_stop
 
 PLAYER_API_URL = getenv("PLAYER_API_URL", "http://localhost:8000/api/videos")
 
@@ -75,32 +76,37 @@ def _publish_one(video: Video, languages: List[Language]):
     )
 
 
-def publish_videos(host: str = ""):
-    last_id = None
-    exception_count = 0
+def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
+    """Publish one batch of uploaded videos. Returns (had_work, next_last_id)."""
     languages = Language.get_all()
+    videos = VideoCrud.batch_get(last_id, S7_UPLOAD_BATCH_SIZE, VideoStatus.uploaded)
+    if not videos:
+        return False, None
 
-    while True:
-        videos = VideoCrud.batch_get(
-            last_id, S7_UPLOAD_BATCH_SIZE, VideoStatus.uploaded, host
-        )
-        if not videos:
+    exception_count = 0
+    for video in videos:
+        try:
+            _publish_one(video, languages)
+            VideoCrud.update_status(video.id, VideoStatus.published)
+        except Exception as e:
+            VideoCrud.record_failure(video.id, VideoStatus.published.log(e))
+            exception_count += 1
+            logger.error(
+                f"[{video.id} | {video.original_id}] publish failed: {e}"
+            )
+            traceback.print_exc()
+            if exception_count >= 3:
+                raise e
+
+    return True, videos[-1].id
+
+
+def publish_videos():
+    setup_graceful_shutdown()
+    last_id = None
+    while not should_stop():
+        had_work, last_id = process_batch(last_id)
+        if not had_work:
             logger.info("No uploaded videos to publish, sleeping 5 min")
             time.sleep(5 * 60)
             last_id = None
-            continue
-
-        last_id = videos[-1].id
-        for video in videos:
-            try:
-                _publish_one(video, languages)
-                VideoCrud.update_status(video.id, VideoStatus.published)
-            except Exception as e:
-                VideoCrud.record_failure(video.id, VideoStatus.published.log(e))
-                exception_count += 1
-                logger.error(
-                    f"[{video.id} | {video.original_id}] publish failed: {e}"
-                )
-                traceback.print_exc()
-                if exception_count >= 3:
-                    raise e

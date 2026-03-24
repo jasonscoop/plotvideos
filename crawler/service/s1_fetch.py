@@ -1,7 +1,6 @@
-import time
 import traceback
 import zlib
-from typing import List
+from typing import List, Optional, Tuple
 from urllib.parse import urlparse
 
 import requests
@@ -14,6 +13,7 @@ from crawler.core.consts import WEBSITES
 from crawler.core.enums import VideoStatus
 from crawler.core.models import Video, Keyword
 from crawler.core.schemas import StorePath
+from crawler.utils.signal_utils import setup_graceful_shutdown, should_stop
 
 
 def fetch_video_urls(query: str, page: int):
@@ -27,70 +27,78 @@ def fetch_video_urls(query: str, page: int):
     return response.json()
 
 
-def fetch_and_save_videos(host: str = ""):
-    last_id = None
+def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
+    """Fetch one batch of keywords and save their videos. Returns (had_work, next_last_id)."""
+    keywords: List[Keyword] = KeywordCrud.batch_get(last_id=last_id)
+    if not keywords:
+        return False, None
+
     exception_count = 0
+    for keyword in keywords:
+        logger.info(f"[{keyword.name}] keyword fetching started")
 
-    while True:
-        keywords: List[Keyword] = KeywordCrud.batch_get(last_id=last_id)
-        if not keywords:
-            logger.info("All fetching, sleeping for 1 hour")
-            time.sleep(1 * 60 * 60)
-            last_id = None
-            continue
+        for page in range(0, S1_FETCH_MAX_PAGES):
+            data = fetch_video_urls(keyword.name, page + 1)
+            sites = data.get("data", [])
+            for site in sites:
+                if not site["links"]:
+                    continue
 
-        last_id = keywords[-1].id
-        for keyword in keywords:
-            logger.info(f"[{keyword.name}] keyword fetching started")
+                videos = []
+                site_host = site["site"]["host"]
+                name = site["site"]["name"]
+                website = WEBSITES.get(site_host)
+                if not website:
+                    logger.error("❌ Can not find a extractor for host %s", site_host)
+                    continue
+                id_extractor = website[1]()
 
-            for page in range(0, S1_FETCH_MAX_PAGES):
-                data = fetch_video_urls(keyword.name, page + 1)
-                sites = data.get("data", [])
-                for site in sites:
-                    if not site["links"]:
-                        continue
+                try:
+                    for link in site["links"]:
+                        title = link.get("title")
+                        if not title:
+                            continue
 
-                    videos = []
-                    host = site["site"]["host"]
-                    name = site["site"]["name"]
-                    id_extractor = WEBSITES.get(host)[1]()
-                    if not id_extractor:
-                        logger.error("❌ Can not find a extractor for host %s", host)
-                        continue
-
-                    try:
-                        for link in site["links"]:
-                            title = link.get("title")
-                            if not title:
-                                continue
-
-                            original_id = id_extractor.get(link.get("url"))
-                            if not original_id:
-                                logger.error(
-                                    f"❌ Can not find a id from: {link.get('url')}"
-                                )
-                                continue
-
-                            new_video = Video(
-                                title=link.get("title"),
-                                url=link.get("url"),
-                                url_crc32=zlib.crc32(link.get("url").encode()),
-                                thumbnail_url=link.get("image"),
-                                original_id=original_id,
-                                host=host,
-                                status=VideoStatus.fetched,
-                                keyword_id=keyword.id,
-                                author_name=link.get("channel", "").get("name", ""),
-                                author_url=link.get("channel", "").get("url", ""),
-                                store_dir=StorePath.build_prefix(host, original_id),
+                        original_id = id_extractor.get(link.get("url"))
+                        if not original_id:
+                            logger.error(
+                                f"❌ Can not find a id from: {link.get('url')}"
                             )
-                            videos.append(new_video)
-                        added, updated = VideoCrud.batch_add_or_update(videos)
-                        logger.info(
-                            f"[{name}] fetched [{len(videos)}], added [{added}], updated [{updated}]"
+                            continue
+
+                        new_video = Video(
+                            title=link.get("title"),
+                            url=link.get("url"),
+                            url_crc32=zlib.crc32(link.get("url").encode()),
+                            thumbnail_url=link.get("image"),
+                            original_id=original_id,
+                            host=site_host,
+                            status=VideoStatus.fetched,
+                            keyword_id=keyword.id,
+                            author_name=link.get("channel", "").get("name", ""),
+                            author_url=link.get("channel", "").get("url", ""),
+                            store_dir=StorePath.build_prefix(site_host, original_id),
                         )
-                    except Exception as e:
-                        exception_count += 1
-                        if exception_count >= 3:
-                            raise e
-                        traceback.print_exc()
+                        videos.append(new_video)
+                    added, updated = VideoCrud.batch_add_or_update(videos)
+                    logger.info(
+                        f"[{name}] fetched [{len(videos)}], added [{added}], updated [{updated}]"
+                    )
+                except Exception as e:
+                    exception_count += 1
+                    if exception_count >= 3:
+                        raise e
+                    traceback.print_exc()
+
+    return True, keywords[-1].id
+
+
+def fetch_and_save_videos():
+    setup_graceful_shutdown()
+    last_id = None
+    while not should_stop():
+        had_work, last_id = process_batch(last_id)
+        if not had_work:
+            logger.info("All fetching, sleeping for 1 hour")
+            import time; time.sleep(1 * 60 * 60)
+            last_id = None

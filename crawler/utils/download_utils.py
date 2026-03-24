@@ -12,7 +12,7 @@ from tenacity import stop_after_attempt, retry, wait_fixed, wait_exponential
 from crawler.core.config import YT_DLP_PROXY, MAX_ACCEPT_VIDEO_SIZE
 from crawler.core.consts import USER_AGENTS
 
-MAX_IMAGE_SIZE = MAX_IMAGE_SIZE  # 50 MB
+MAX_IMAGE_SIZE = 50 * 1024 * 1024  # 50 MB
 
 
 class SizeLimitExceeded(Exception):

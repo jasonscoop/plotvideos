@@ -6,82 +6,20 @@ services:
     ports:
       - "9050:9050"
 
-  s1_fetch:
+  crawler:
     build: .
-    container_name: s1_fetch
-    env_file:
-      - .env
-    volumes:
-      - ./works:/workspace/works
-    command: python -m crawler.main --runner=s1_fetch
-
-  s2_download:
-    build: .
-    container_name: s2_download
+    container_name: crawler
+    restart: unless-stopped
+    cpus: "4"
+    mem_limit: 4g
+    memswap_limit: 12g
     env_file:
       - .env
     depends_on:
       - tor
     volumes:
       - ./works:/workspace/works
-    command: python -m crawler.main --runner=s2_download
-
-  s3_convert:
-    build: .
-    container_name: s3_convert
-    env_file:
-      - .env
-    volumes:
-      - ./works:/workspace/works
-    command: python -m crawler.main --runner=s3_convert
-
-  s4_subtitle:
-    build: .
-    container_name: s4_subtitle
-    cpus: "2"
-    mem_limit: 2g
-    memswap_limit: 10g
-    env_file:
-      - .env
-    volumes:
-      - ./works:/workspace/works
-    command: python -m crawler.main --runner=s4_subtitle
-
-  s5_translate_vtt:
-    build: .
-    container_name: s5_translate_vtt
-    env_file:
-      - .env
-    volumes:
-      - ./works:/workspace/works
-    command: python -m crawler.main --runner=s5_translate_vtt
-
-  s6_translate_meta:
-    build: .
-    container_name: s6_translate_meta
-    env_file:
-      - .env
-    volumes:
-      - ./works:/workspace/works
-    command: python -m crawler.main --runner=s6_translate_meta
-
-  s7_upload:
-    build: .
-    container_name: s7_upload
-    env_file:
-      - .env
-    volumes:
-      - ./works:/workspace/works
-    command: python -m crawler.main --runner=s7_upload
-
-  #  s8_cleanup:
-  #    build: .
-  #    container_name: s8_cleanup
-  #    env_file:
-  #      - .env
-  #    volumes:
-  #      - ./works:/workspace/works
-  #    command: python -m crawler.main --runner=s8_cleanup
+    command: python -m crawler.main --runner=all
 
   retranslate:
     build: .
@@ -99,7 +37,7 @@ services:
     env_file:
       - .env
     depends_on:
-      - s7_upload
+      - crawler
     ports:
       - "8000:8000"
     volumes:

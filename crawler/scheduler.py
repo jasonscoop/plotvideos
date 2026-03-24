@@ -1,13 +1,14 @@
 """
 Async scheduler: runs all pipeline stages concurrently in a single process.
 
-Each stage runs as an asyncio task.  When a stage finds work it calls its
+Each stage runs as an asyncio task. When a stage finds work it calls its
 sync `process_batch` in a thread (via asyncio.to_thread) so the event loop
-stays responsive.  When a stage's queue is empty it yields with asyncio.sleep
-so other stages can make progress without blocking.
+stays responsive. When a stage's queue is empty it sleeps via an asyncio
+Event so a SIGTERM (or Ctrl+C) wakes it up immediately instead of waiting
+out the full idle timeout.
 
 Usage:
-    python -m crawler.main --runner all
+    python -m crawler.main --runner=all
 """
 
 import asyncio
@@ -27,7 +28,11 @@ from crawler.service import (
     s8_cleanup,
     s9_publish,
 )
-from crawler.utils.signal_utils import setup_graceful_shutdown, should_stop
+from crawler.utils.signal_utils import (
+    register_shutdown_event,
+    setup_graceful_shutdown,
+    should_stop,
+)
 
 BatchFn = Callable[[Optional[int]], Tuple[bool, Optional[int]]]
 
@@ -52,7 +57,17 @@ STAGES: list[StageConfig] = [
 ]
 
 
-async def _run_stage(stage: StageConfig) -> None:
+async def _idle_sleep(seconds: int, shutdown_event: asyncio.Event) -> bool:
+    """Sleep for `seconds` or until shutdown is requested.
+    Returns True if shutdown was signalled (caller should stop), False if timed out normally."""
+    try:
+        await asyncio.wait_for(asyncio.shield(shutdown_event.wait()), timeout=seconds)
+        return True  # shutdown event fired
+    except asyncio.TimeoutError:
+        return False  # normal timeout, keep running
+
+
+async def _run_stage(stage: StageConfig, shutdown_event: asyncio.Event) -> None:
     last_id: Optional[int] = None
     logger.info(f"[{stage.name}] stage started")
 
@@ -65,13 +80,21 @@ async def _run_stage(stage: StageConfig) -> None:
 
         if not had_work:
             logger.debug(f"[{stage.name}] queue empty, sleeping {stage.idle_sleep}s")
-            await asyncio.sleep(stage.idle_sleep)
+            stopped = await _idle_sleep(stage.idle_sleep, shutdown_event)
+            if stopped:
+                break
 
     logger.info(f"[{stage.name}] stage stopped")
 
 
 async def run_all() -> None:
+    shutdown_event = asyncio.Event()
+    register_shutdown_event(shutdown_event)
     setup_graceful_shutdown()
+
     logger.info("Scheduler starting — all stages running concurrently")
-    await asyncio.gather(*[_run_stage(stage) for stage in STAGES])
+    try:
+        await asyncio.gather(*[_run_stage(stage, shutdown_event) for stage in STAGES])
+    except asyncio.CancelledError:
+        logger.info("Scheduler cancelled (Ctrl+C)")
     logger.info("Scheduler stopped")

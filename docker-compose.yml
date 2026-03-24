@@ -19,27 +19,25 @@ services:
       - tor
     volumes:
       - ./works:/workspace/works
-    command: python -m crawler.main --runner=all
+    command: python -m crawler.scheduler --runner=all
 
-  retranslate:
+  api:
     build: .
-    container_name: retranslate
+    container_name: api
+    restart: unless-stopped
     env_file:
       - .env
+    ports:
+      - "8001:8001"
     volumes:
       - ./works:/workspace/works
-      - ./scripts:/workspace/scripts
-    command: python scripts/python/translate_vtt.py
+    command: uvicorn crawler.api:app --host 0.0.0.0 --port 8001
 
   web:
     build: .
     container_name: web
     env_file:
       - .env
-    depends_on:
-      - crawler
     ports:
       - "8000:8000"
-    volumes:
-      - ./works:/workspace/works
     command: uvicorn web.main:app --host 0.0.0.0 --port 8000

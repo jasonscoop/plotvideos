@@ -74,6 +74,7 @@ export function esc(s: string): string {
 
 interface VideoCard {
   id: number;
+  slug?: string;
   title: string;
   duration: number;
   thumbnail_url: string;
@@ -114,7 +115,7 @@ export function indexPage(
   const cards = videos
     .map(
       (v) => `
-    <a href="${prefix}/videos/${v.id}" class="yt-card">
+    <a href="${prefix}${v.slug ? `/video/${v.slug}.html` : `/videos/${v.id}`}" class="yt-card">
       <div class="yt-thumb">
         ${
           v.thumbnail_url
@@ -148,6 +149,7 @@ export function indexPage(
 
 interface WatchData {
   id: number;
+  slug?: string;
   title: string;
   original_title: string;
   duration: number;
@@ -168,6 +170,7 @@ interface SubTrack {
 
 interface RecommendedVideo {
   id: number;
+  slug?: string;
   title: string;
   duration: number;
   thumbnail_url: string;
@@ -241,7 +244,7 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
   ${recommended.length ? `<h2 class="yt-recommended-title">${t(lang, "recommended")}</h2>` : ""}
   <div class="yt-recommended">
     ${recommended.map((r) => `
-      <a href="${prefix}/videos/${r.id}" class="yt-card">
+      <a href="${prefix}${r.slug ? `/video/${r.slug}.html` : `/videos/${r.id}`}" class="yt-card">
         <div class="yt-thumb">
           ${r.thumbnail_url ? `<img src="${esc(r.thumbnail_url)}" alt="${esc(r.title)}" loading="lazy" />` : ""}
           ${r.duration ? `<span class="yt-duration">${fmtDuration(r.duration)}</span>` : ""}
@@ -387,6 +390,6 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
   })();
   </script>`,
     "",
-    `/videos/${video.id}`
+    video.slug ? `/video/${video.slug}.html` : `/videos/${video.id}`
   );
 }

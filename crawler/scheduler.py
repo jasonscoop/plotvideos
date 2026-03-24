@@ -1,38 +1,34 @@
 """
-Async scheduler: runs all pipeline stages concurrently in a single process.
+Pipeline scheduler and CLI entry point.
 
-Each stage runs as an asyncio task. When a stage finds work it calls its
-sync `process_batch` in a thread (via asyncio.to_thread) so the event loop
-stays responsive. When a stage's queue is empty it sleeps via an asyncio
-Event so a SIGTERM (or Ctrl+C) wakes it up immediately instead of waiting
-out the full idle timeout.
+Run a single stage:
+    python -m crawler.scheduler --runner s4_subtitle
 
-Usage:
-    python -m crawler.main --runner=all
+Run all stages concurrently:
+    python -m crawler.scheduler --runner all
+
+Serve the pull API:
+    python -m crawler.scheduler --runner api
 """
 
+import argparse
 import asyncio
 from dataclasses import dataclass
 from typing import Callable, Optional, Tuple
 
 from loguru import logger
 
+from crawler.core.config import validate_config
 from crawler.service import (
-    s1_fetch,
-    s2_download,
-    s3_convert,
-    s4_subtitle,
-    s5_translate_vtt,
-    s6_translate_meta,
-    s7_upload,
-    s8_cleanup,
-    s9_publish,
+    s1_fetch, s2_download, s3_convert, s4_subtitle,
+    s5_translate_vtt, s6_translate_meta, s7_upload, s8_cleanup, s9_publish,
 )
+from crawler.utils.log_utils import init_logging
 from crawler.utils.signal_utils import (
-    register_shutdown_event,
-    setup_graceful_shutdown,
-    should_stop,
+    register_shutdown_event, setup_graceful_shutdown, should_stop,
 )
+
+# ── Async scheduler ───────────────────────────────────────────────────────────
 
 BatchFn = Callable[[Optional[int]], Tuple[bool, Optional[int]]]
 
@@ -58,13 +54,13 @@ STAGES: list[StageConfig] = [
 
 
 async def _idle_sleep(seconds: int, shutdown_event: asyncio.Event) -> bool:
-    """Sleep for `seconds` or until shutdown is requested.
-    Returns True if shutdown was signalled (caller should stop), False if timed out normally."""
+    """Sleep for `seconds` or until shutdown is signalled.
+    Returns True if shutdown fired (caller should stop), False on normal timeout."""
     try:
         await asyncio.wait_for(asyncio.shield(shutdown_event.wait()), timeout=seconds)
-        return True  # shutdown event fired
+        return True
     except asyncio.TimeoutError:
-        return False  # normal timeout, keep running
+        return False
 
 
 async def _run_stage(stage: StageConfig, shutdown_event: asyncio.Event) -> None:
@@ -80,8 +76,7 @@ async def _run_stage(stage: StageConfig, shutdown_event: asyncio.Event) -> None:
 
         if not had_work:
             logger.debug(f"[{stage.name}] queue empty, sleeping {stage.idle_sleep}s")
-            stopped = await _idle_sleep(stage.idle_sleep, shutdown_event)
-            if stopped:
+            if await _idle_sleep(stage.idle_sleep, shutdown_event):
                 break
 
     logger.info(f"[{stage.name}] stage stopped")
@@ -98,3 +93,51 @@ async def run_all() -> None:
     except asyncio.CancelledError:
         logger.info("Scheduler cancelled (Ctrl+C)")
     logger.info("Scheduler stopped")
+
+
+# ── Single-stage runners ──────────────────────────────────────────────────────
+
+RUNNERS = {
+    "s1_fetch":          s1_fetch.fetch_and_save_videos,
+    "s2_download":       s2_download.download_videos,
+    "s3_convert":        s3_convert.convert_videos,
+    "s4_subtitle":       s4_subtitle.subtitle_videos,
+    "s5_translate_vtt":  s5_translate_vtt.process_subtitled_videos,
+    "s6_translate_meta": s6_translate_meta.translate_meta_infos,
+    "s7_upload":         s7_upload.upload_videos,
+    "s8_cleanup":        s8_cleanup.clean_files,
+    "s9_publish":        s9_publish.publish_videos,
+}
+
+
+# ── Entry point ───────────────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Video processing pipeline")
+    parser.add_argument(
+        "--runner",
+        required=True,
+        help=(
+            "Stage to run ('all' for all stages concurrently, "
+            "'api' for the pull API, or a stage name)"
+        ),
+    )
+    args = parser.parse_args()
+    init_logging(args.runner)
+    validate_config()
+    logger.info(f"Starting runner: {args.runner}")
+
+    if args.runner == "all":
+        asyncio.run(run_all())
+    elif args.runner == "api":
+        import uvicorn
+        from crawler.api import app as api_app
+        uvicorn.run(api_app, host="0.0.0.0", port=8001, log_level="info")
+    elif args.runner in RUNNERS:
+        RUNNERS[args.runner]()
+    else:
+        logger.error(
+            f"Invalid runner: {args.runner}. "
+            f"Choose from: all, api, {', '.join(RUNNERS)}"
+        )
+        exit(1)

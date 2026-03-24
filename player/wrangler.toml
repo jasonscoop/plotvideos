@@ -14,3 +14,10 @@ port = 8000
 binding = "DB"
 database_name = "luckvideos-db"
 database_id = "local"
+
+[triggers]
+crons = ["*/10 * * * *"]
+
+[vars]
+CRAWLER_API_URL = ""
+CRAWLER_API_KEY = ""

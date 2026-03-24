@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS videos (
   id            INTEGER PRIMARY KEY AUTOINCREMENT,
   original_id   INTEGER NOT NULL UNIQUE,
+  slug          TEXT    NOT NULL DEFAULT '',
   title         TEXT    NOT NULL,
   duration      INTEGER NOT NULL DEFAULT 0,
   width         INTEGER NOT NULL DEFAULT 0,
@@ -14,6 +15,9 @@ CREATE TABLE IF NOT EXISTS videos (
   categories    TEXT    NOT NULL DEFAULT '[]',
   created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
 );
+
+-- Migration: ALTER TABLE videos ADD COLUMN slug TEXT NOT NULL DEFAULT '';
+-- Migration: CREATE UNIQUE INDEX IF NOT EXISTS idx_videos_slug ON videos(slug) WHERE slug != '';
 
 CREATE TABLE IF NOT EXISTS video_translations (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,5 +40,6 @@ CREATE TABLE IF NOT EXISTS subtitle_tracks (
 );
 
 CREATE INDEX IF NOT EXISTS idx_videos_created_at ON videos(created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_videos_slug ON videos(slug) WHERE slug != '';
 CREATE INDEX IF NOT EXISTS idx_video_translations_video_id ON video_translations(video_id);
 CREATE INDEX IF NOT EXISTS idx_subtitle_tracks_video_id ON subtitle_tracks(video_id);

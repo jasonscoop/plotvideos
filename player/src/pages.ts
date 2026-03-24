@@ -62,6 +62,19 @@ async function resolveIndex(c: any, lang: string) {
   return c.html(indexPage(lang, videos as any, page, totalPages, total, q, tagsResult.results));
 }
 
+async function resolveWatchBySlug(c: any, lang: string) {
+  const db = c.env.DB;
+  const slug = c.req.param("slug");
+
+  const video = await db
+    .prepare("SELECT * FROM videos WHERE slug = ?")
+    .bind(slug)
+    .first<any>();
+
+  if (!video) return c.text("Video not found", 404);
+  return _renderWatch(c, lang, video);
+}
+
 async function resolveWatch(c: any, lang: string) {
   const db = c.env.DB;
   const id = c.req.param("id");
@@ -72,6 +85,12 @@ async function resolveWatch(c: any, lang: string) {
     .first<any>();
 
   if (!video) return c.text("Video not found", 404);
+  return _renderWatch(c, lang, video);
+}
+
+async function _renderWatch(c: any, lang: string, video: any) {
+  const db = c.env.DB;
+  const id = video.id;
 
   const [translationResult, subsResult, recResult] = await Promise.all([
     db
@@ -84,12 +103,12 @@ async function resolveWatch(c: any, lang: string) {
       .all<{ lang: string; label: string; url: string }>(),
     lang === "en"
       ? db
-          .prepare("SELECT id, title, duration, thumbnail_url FROM videos WHERE id != ? ORDER BY RANDOM() LIMIT 10")
+          .prepare("SELECT id, slug, title, duration, thumbnail_url FROM videos WHERE id != ? ORDER BY RANDOM() LIMIT 10")
           .bind(id)
           .all<any>()
       : db
           .prepare(
-            `SELECT v.id, COALESCE(vt.title, v.title) AS title, v.duration, v.thumbnail_url
+            `SELECT v.id, v.slug, COALESCE(vt.title, v.title) AS title, v.duration, v.thumbnail_url
              FROM videos v LEFT JOIN video_translations vt ON vt.video_id = v.id AND vt.lang = ?
              WHERE v.id != ? ORDER BY RANDOM() LIMIT 10`
           )
@@ -116,6 +135,7 @@ async function resolveWatch(c: any, lang: string) {
       lang,
       {
         id: video.id,
+        slug: video.slug || "",
         title: displayTitle,
         original_title: video.title,
         duration: video.duration,
@@ -134,6 +154,7 @@ async function resolveWatch(c: any, lang: string) {
 
 pageRoutes.get("/", (c) => resolveIndex(c, DEFAULT_LANG));
 pageRoutes.get("/videos/:id", (c) => resolveWatch(c, DEFAULT_LANG));
+pageRoutes.get("/video/:slug.html", (c) => resolveWatchBySlug(c, DEFAULT_LANG));
 
 pageRoutes.get("/:lang/", (c) => {
   const lang = c.req.param("lang");
@@ -145,4 +166,10 @@ pageRoutes.get("/:lang/videos/:id", (c) => {
   const lang = c.req.param("lang");
   if (!isValidLang(lang)) return c.text("Not found", 404);
   return resolveWatch(c, lang);
+});
+
+pageRoutes.get("/:lang/video/:slug.html", (c) => {
+  const lang = c.req.param("lang");
+  if (!isValidLang(lang)) return c.text("Not found", 404);
+  return resolveWatchBySlug(c, lang);
 });

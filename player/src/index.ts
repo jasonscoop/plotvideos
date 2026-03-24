@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { apiRoutes } from "./api";
+import { apiRoutes, syncFromCrawler } from "./api";
 import { pageRoutes } from "./pages";
 import { mediaRoutes } from "./b2";
 import STYLES_CSS from "./styles.css";
@@ -11,6 +11,8 @@ export type Env = {
     B2_REGION: string;
     B2_KEY_ID: string;
     B2_APP_KEY: string;
+    CRAWLER_API_URL: string;
+    CRAWLER_API_KEY: string;
   };
 };
 
@@ -28,3 +30,11 @@ app.route("/media", mediaRoutes);
 app.route("/", pageRoutes);
 
 export default app;
+
+export const scheduled: ExportedHandlerScheduledHandler<Env["Bindings"]> = async (
+  _event,
+  env,
+  ctx
+) => {
+  ctx.waitUntil(syncFromCrawler(env));
+};

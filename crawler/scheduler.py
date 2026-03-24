@@ -7,8 +7,8 @@ Run a single stage:
 Run all stages concurrently:
     python -m crawler.scheduler --runner all
 
-Serve the pull API:
-    python -m crawler.scheduler --runner api
+The pull API runs separately:
+    uvicorn crawler.api:app --host 0.0.0.0 --port 8001
 """
 
 import argparse
@@ -118,8 +118,8 @@ if __name__ == "__main__":
         "--runner",
         required=True,
         help=(
-            "Stage to run ('all' for all stages concurrently, "
-            "'api' for the pull API, or a stage name)"
+            "Stage to run: 'all' for all stages concurrently, "
+            f"or one of: {', '.join(RUNNERS)}"
         ),
     )
     args = parser.parse_args()
@@ -129,15 +129,11 @@ if __name__ == "__main__":
 
     if args.runner == "all":
         asyncio.run(run_all())
-    elif args.runner == "api":
-        import uvicorn
-        from crawler.api import app as api_app
-        uvicorn.run(api_app, host="0.0.0.0", port=8001, log_level="info")
     elif args.runner in RUNNERS:
         RUNNERS[args.runner]()
     else:
         logger.error(
             f"Invalid runner: {args.runner}. "
-            f"Choose from: all, api, {', '.join(RUNNERS)}"
+            f"Choose from: all, {', '.join(RUNNERS)}"
         )
         exit(1)

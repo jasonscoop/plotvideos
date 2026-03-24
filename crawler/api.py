@@ -1,4 +1,3 @@
-from os import getenv
 from typing import List, Optional
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
@@ -6,13 +5,14 @@ from fastapi.security.api_key import APIKeyHeader
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
+from crawler.core.config import CRAWLER_API_KEY, B2_CDN_DOMAIN
 from crawler.core.enums import VideoStatus
 from crawler.core.languages import Language
 from crawler.core.models import Video
 from crawler.crud.term_crud import TermCrud
 from crawler.crud.video_title_translation_crud import TitleTranslationCrud
 
-API_KEY = getenv("CRAWLER_API_KEY", "")
+API_KEY = CRAWLER_API_KEY
 _api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
@@ -75,11 +75,13 @@ def _build_payload(video: Video, languages: list) -> dict:
             "categories": [lang_terms.get(c, c) for c in categories],
         }
 
+    cdn = B2_CDN_DOMAIN.rstrip("/")
+
     subtitle_tracks = [
         {
             "lang": lang.code,
             "label": lang.native_name,
-            "url": f"/media/{sp.translated_s3_key}{lang.code}.vtt",
+            "url": f"{cdn}/media/{sp.translated_s3_key}{lang.code}.vtt",
         }
         for lang in languages
     ]
@@ -90,9 +92,9 @@ def _build_payload(video: Video, languages: list) -> dict:
         "duration": video.duration,
         "width": video.width,
         "height": video.height,
-        "thumbnail_url": f"/media/{sp.thumbnail_s3_key}",
-        "video_url": f"/media/{sp.video_s3_key}",
-        "hls_url": f"/media/{sp.hls_master_s3_key}",
+        "thumbnail_url": f"{cdn}/media/{sp.thumbnail_s3_key}",
+        "video_url": f"{cdn}/media/{sp.video_s3_key}",
+        "hls_url": f"{cdn}/media/{sp.hls_master_s3_key}",
         "store_dir": video.store_dir,
         "keyword": keyword,
         "tags": tags,
@@ -100,3 +102,8 @@ def _build_payload(video: Video, languages: list) -> dict:
         "translations": translations,
         "subtitle_tracks": subtitle_tracks,
     }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("crawler.api:app", host="0.0.0.0", port=8001)

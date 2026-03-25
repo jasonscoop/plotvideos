@@ -380,7 +380,6 @@ export function watchPage(
       src: tr.url,
       srclang: tr.lang,
       label: tr.label,
-      default: tr.isDefault,
     })),
   };
 

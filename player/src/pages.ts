@@ -1,9 +1,26 @@
 import { Hono } from "hono";
 import type { Env } from "./index";
 import { indexPage, watchPage } from "./html";
-import { DEFAULT_LANG, isValidLang } from "./i18n";
+import { DEFAULT_LANG, isValidLang, langPrefix } from "./i18n";
 
 export const pageRoutes = new Hono<Env>();
+
+/** Parse `/video/<slug>.html` segment: accepts `123` or `123.0` (float artifact), returns INTEGER slug or null. */
+function parsePublicSlugParam(slugParam: string): number | null {
+  const s = slugParam.replace(/\.html$/i, "").trim();
+  if (!/^\d+(\.0+)?$/.test(s)) return null;
+  const n = Number(s);
+  if (!Number.isFinite(n)) return null;
+  return Math.trunc(n);
+}
+
+const TOP_TAGS_SQL = `SELECT tag, COUNT(*) AS count FROM (
+  SELECT keyword AS tag FROM videos WHERE keyword != ''
+  UNION ALL
+  SELECT j.value AS tag FROM videos, json_each(videos.tags) AS j WHERE videos.tags != '[]'
+  UNION ALL
+  SELECT j.value AS tag FROM videos, json_each(videos.categories) AS j WHERE videos.categories != '[]'
+) GROUP BY tag ORDER BY count DESC LIMIT 20`;
 
 async function resolveIndex(c: any, lang: string) {
   const db = c.env.DB;
@@ -40,15 +57,7 @@ async function resolveIndex(c: any, lang: string) {
   const [countResult, listResult, tagsResult] = await Promise.all([
     db.prepare(countSql).bind(...countParams).first<{ total: number }>(),
     db.prepare(listSql).bind(...params, pageSize, (page - 1) * pageSize).all(),
-    db.prepare(
-      `SELECT tag, COUNT(*) AS count FROM (
-        SELECT keyword AS tag FROM videos WHERE keyword != ''
-        UNION ALL
-        SELECT j.value AS tag FROM videos, json_each(videos.tags) AS j WHERE videos.tags != '[]'
-        UNION ALL
-        SELECT j.value AS tag FROM videos, json_each(videos.categories) AS j WHERE videos.categories != '[]'
-      ) GROUP BY tag ORDER BY count DESC LIMIT 20`
-    ).all<{ tag: string; count: number }>(),
+    db.prepare(TOP_TAGS_SQL).all<{ tag: string; count: number }>(),
   ]);
 
   const total = countResult?.total || 0;
@@ -64,9 +73,8 @@ async function resolveIndex(c: any, lang: string) {
 
 async function resolveWatchBySlug(c: any, lang: string) {
   const db = c.env.DB;
-  const raw = c.req.param("slug").replace(/\.html$/i, "");
-  const slugNum = /^\d+$/.test(raw) ? parseInt(raw, 10) : NaN;
-  if (!Number.isFinite(slugNum)) return c.text("Video not found", 404);
+  const slugNum = parsePublicSlugParam(c.req.param("slug"));
+  if (slugNum == null) return c.text("Video not found", 404);
 
   const video = await db
     .prepare("SELECT * FROM videos WHERE slug = ?")
@@ -87,6 +95,11 @@ async function resolveWatch(c: any, lang: string) {
     .first<any>();
 
   if (!video) return c.text("Video not found", 404);
+
+  const slug = video.slug;
+  if (slug != null && Number.isFinite(Number(slug))) {
+    return c.redirect(`${langPrefix(lang)}/video/${Math.trunc(Number(slug))}.html`, 302);
+  }
   return _renderWatch(c, lang, video);
 }
 
@@ -94,7 +107,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
   const db = c.env.DB;
   const id = video.id;
 
-  const [translationResult, subsResult, recResult] = await Promise.all([
+  const [translationResult, subsResult, recResult, tagsResult] = await Promise.all([
     db
       .prepare("SELECT title, keyword, tags, categories FROM video_translations WHERE video_id = ? AND lang = ?")
       .bind(id, lang)
@@ -116,6 +129,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
           )
           .bind(lang, id)
           .all<any>(),
+    db.prepare(TOP_TAGS_SQL).all<{ tag: string; count: number }>(),
   ]);
 
   const subtitleTracks = subsResult.results.map((s) => ({
@@ -149,7 +163,8 @@ async function _renderWatch(c: any, lang: string, video: any) {
         categories: displayCategories,
       },
       subtitleTracks,
-      recResult.results
+      recResult.results,
+      tagsResult.results
     )
   );
 }

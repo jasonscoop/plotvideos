@@ -73,7 +73,10 @@ export function esc(s: string): string {
 }
 
 function videoWatchPath(v: { id: number; slug?: number | null }): string {
-  return v.slug != null && Number.isFinite(v.slug) ? `/video/${v.slug}.html` : `/videos/${v.id}`;
+  if (v.slug == null) return `/videos/${v.id}`;
+  const n = Number(v.slug);
+  if (!Number.isFinite(n)) return `/videos/${v.id}`;
+  return `/video/${Math.trunc(n)}.html`;
 }
 
 interface VideoCard {
@@ -89,6 +92,21 @@ interface TagItem {
   count: number;
 }
 
+function homeSidebar(lang: string, prefix: string, q: string, topTags: TagItem[]): string {
+  if (!topTags.length) return "";
+  const sidebarItems = topTags
+    .map((tg) => {
+      const active = q === tg.tag ? " active" : "";
+      return `<a href="${prefix}/?q=${encodeURIComponent(tg.tag)}" class="yt-nav-item${active}" title="${esc(tg.tag)}">${esc(tg.tag)}</a>`;
+    })
+    .join("");
+  return `<nav class="yt-home-sidebar">
+        <a href="${prefix}/" class="yt-nav-item${!q ? " active" : ""}">🏠 ${t(lang, "latest_videos")}</a>
+        <div class="yt-nav-heading">Tags</div>
+        ${sidebarItems}
+      </nav>`;
+}
+
 export function indexPage(
   lang: string,
   videos: VideoCard[],
@@ -101,20 +119,7 @@ export function indexPage(
   const prefix = langPrefix(lang);
   const qParam = q ? `&q=${encodeURIComponent(q)}` : "";
 
-  const sidebarItems = topTags
-    .map((tg) => {
-      const active = q === tg.tag ? " active" : "";
-      return `<a href="${prefix}/?q=${encodeURIComponent(tg.tag)}" class="yt-nav-item${active}" title="${esc(tg.tag)}">${esc(tg.tag)}</a>`;
-    })
-    .join("");
-
-  const sidebar = topTags.length
-    ? `<nav class="yt-home-sidebar">
-        <a href="${prefix}/" class="yt-nav-item${!q ? " active" : ""}">🏠 ${t(lang, "latest_videos")}</a>
-        <div class="yt-nav-heading">Tags</div>
-        ${sidebarItems}
-      </nav>`
-    : "";
+  const sidebar = homeSidebar(lang, prefix, q, topTags);
 
   const cards = videos
     .map(
@@ -180,13 +185,20 @@ interface RecommendedVideo {
   thumbnail_url: string;
 }
 
-export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTrack[], recommended: RecommendedVideo[] = []) {
+export function watchPage(
+  lang: string,
+  video: WatchData,
+  subtitleTracks: SubTrack[],
+  recommended: RecommendedVideo[] = [],
+  topTags: TagItem[] = []
+) {
   const prefix = langPrefix(lang);
+  const sidebar = homeSidebar(lang, prefix, "", topTags);
 
   const tracks = subtitleTracks
     .map(
-      (t) =>
-        `<track kind="subtitles" src="${esc(t.url)}" srclang="${esc(t.lang)}" label="${esc(t.label)}"${t.isDefault ? " default" : ""} />`
+      (tr) =>
+        `<track kind="subtitles" src="${esc(tr.url)}" srclang="${esc(tr.lang)}" label="${esc(tr.label)}"${tr.isDefault ? " default" : ""} />`
     )
     .join("\n        ");
 
@@ -207,10 +219,7 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
     .map((tag) => `<a class="yt-tag" href="${prefix}/?q=${encodeURIComponent(tag)}">#${esc(tag)}</a>`)
     .join("");
 
-  return layout(
-    `${video.title} - LuckVideos`,
-    lang,
-    `
+  const watchBody = `
   <div class="yt-watch">
     <div class="yt-watch-main">
       <div class="yt-player-wrap">
@@ -219,7 +228,6 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
           class="video-js vjs-big-play-centered"
           controls
           preload="auto"
-          crossorigin="anonymous"
           poster="${esc(video.thumbnail_url)}"
         >
           ${tracks}
@@ -392,8 +400,9 @@ export function watchPage(lang: string, video: WatchData, subtitleTracks: SubTra
       });
     });
   })();
-  </script>`,
-    "",
-    videoWatchPath(video)
-  );
+  </script>`;
+
+  const content = `<div class="yt-home">${sidebar}<div class="yt-home-main yt-watch-page-main">${watchBody}</div></div>`;
+
+  return layout(`${video.title} - LuckVideos`, lang, content, "", videoWatchPath(video));
 }

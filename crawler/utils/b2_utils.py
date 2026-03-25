@@ -51,9 +51,9 @@ class B2Client:
                 try:
                     url = self.upload_file(file_path, b2_key)
                     uploaded_urls.append(url)
-                    logger.debug(f"Uploaded {file_path} to {b2_key}")
+                    logger.debug(f"Uploaded {b2_key}")
                 except Exception as e:
-                    logger.error(f"Failed to upload {file_path} to {b2_key}: {e}")
+                    logger.error(f"Failed to upload {b2_key}: {e}")
                     raise e
 
         return uploaded_urls
@@ -69,7 +69,7 @@ class B2Client:
             results["video_url"] = self.upload_file(
                 video.store_path.video, video.store_path.video_s3_key
             )
-            logger.info(f"[{video.id}] Uploaded video to B2: {results['video_url']}")
+            logger.info(f"[{video.id}] Uploaded video: {results['video_url']}")
         else:
             raise FileNotFoundError(f"Video file not found: {video.store_path.video}")
 
@@ -83,7 +83,7 @@ class B2Client:
                     results["subtitle_urls"][lang.code] = self.upload_file(
                         vtt_file, vtt_b2_key
                     )
-                    logger.info(f"[{video.id}] Uploaded {lang.code} subtitle to B2")
+                    logger.info(f"[{video.id}] Uploaded {lang.code} subtitle")
                 else:
                     logger.warning(
                         f"[{video.id}] Subtitle file for {lang.code} not found"
@@ -94,7 +94,7 @@ class B2Client:
             results["thumbnail_url"] = self.upload_file(
                 video.store_path.thumbnail, video.store_path.thumbnail_s3_key
             )
-            logger.info(f"[{video.id}] Uploaded thumbnail to B2")
+            logger.info(f"[{video.id}] Uploaded thumbnail")
 
         # Upload HLS directory (master.m3u8 + variant playlists + .ts segments)
         if video.store_path.hls_dir.exists():
@@ -103,7 +103,7 @@ class B2Client:
             )
             results["hls_urls"] = hls_urls
             logger.info(
-                f"[{video.id}] Uploaded {len(hls_urls)} HLS files to B2"
+                f"[{video.id}] Uploaded {len(hls_urls)} HLS files"
             )
 
         return results

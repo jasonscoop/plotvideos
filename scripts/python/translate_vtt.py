@@ -72,7 +72,7 @@ def main():
 if __name__ == "__main__":
     # 1. look at the supabase for videos with VTT files
     # 2. translate subtitles for all languages using @s5_translate_vtt.py
-    # 3. upload translated subtitles to S3
+    # 3. upload translated subtitles to S3 (see pipeline s8_upload for B2)
     # note: 1. using multiple processes to speed up the process
     # note: 2. save the last_id in a file and load it when the script is run again
     init_logging("translate_vtt")

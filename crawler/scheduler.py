@@ -21,7 +21,7 @@ from loguru import logger
 from crawler.core.config import validate_config
 from crawler.service import (
     s1_fetch, s2_download, s3_convert, s4_subtitle,
-    s5_translate_vtt, s6_translate_meta, s7_upload, s8_cleanup,
+    s5_translate_vtt, s6_translate_meta, s7_hls, s8_upload, s9_cleanup,
 )
 from crawler.utils.log_utils import init_logging
 from crawler.utils.signal_utils import (
@@ -47,8 +47,9 @@ STAGES: list[StageConfig] = [
     StageConfig("s4_subtitle",       s4_subtitle.process_batch,       300),
     StageConfig("s5_translate_vtt",  s5_translate_vtt.process_batch,  300),
     StageConfig("s6_translate_meta", s6_translate_meta.process_batch, 300),
-    StageConfig("s7_upload",         s7_upload.process_batch,         300),
-    StageConfig("s8_cleanup",        s8_cleanup.process_batch,        3600),
+    StageConfig("s7_hls",           s7_hls.process_batch,             300),
+    StageConfig("s8_upload",        s8_upload.process_batch,          300),
+    StageConfig("s9_cleanup",       s9_cleanup.process_batch,        3600),
 ]
 
 
@@ -103,8 +104,9 @@ RUNNERS = {
     "s4_subtitle":       s4_subtitle.subtitle_videos,
     "s5_translate_vtt":  s5_translate_vtt.process_subtitled_videos,
     "s6_translate_meta": s6_translate_meta.translate_meta_infos,
-    "s7_upload":         s7_upload.upload_videos,
-    "s8_cleanup":        s8_cleanup.clean_files,
+    "s7_hls":            s7_hls.generate_hls_videos,
+    "s8_upload":         s8_upload.upload_videos,
+    "s9_cleanup":        s9_cleanup.clean_files,
 }
 
 

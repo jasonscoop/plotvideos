@@ -2,6 +2,9 @@ services:
   tor:
     image: dperson/torproxy
     restart: unless-stopped
+    ports:
+      # Host scripts / YT_DLP_PROXY=socks5://localhost:9050
+      - "9050:9050"
 
   crawler:
     build: .

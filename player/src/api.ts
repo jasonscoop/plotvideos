@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import type { Env } from "./index";
+import { slugify } from "./slug";
 
 export const apiRoutes = new Hono<Env>();
 
@@ -37,6 +38,92 @@ function publicSlug(originalId: number, slugOffset: number, override?: number): 
 function parseSlugOffsetValue(raw: string | undefined): number {
   const n = parseInt(raw ?? "0", 10);
   return Number.isFinite(n) ? n : 0;
+}
+
+async function getOrCreateTaxonomyId(
+  db: D1Database,
+  table: "tags" | "categories",
+  name: string
+): Promise<number | null> {
+  const trimmed = name.trim();
+  if (!trimmed) return null;
+  const existing = await db
+    .prepare(`SELECT id FROM ${table} WHERE name = ?`)
+    .bind(trimmed)
+    .first<{ id: number }>();
+  if (existing) return existing.id;
+  const base = slugify(trimmed);
+  for (let i = 0; i < 50; i++) {
+    const slug = i === 0 ? base : `${base}-${i}`;
+    try {
+      const row = await db
+        .prepare(`INSERT INTO ${table} (name, slug) VALUES (?, ?) RETURNING id`)
+        .bind(trimmed, slug)
+        .first<{ id: number }>();
+      if (row?.id != null) return row.id;
+    } catch {
+      /* slug or name race */
+    }
+  }
+  return null;
+}
+
+export async function resyncVideoTaxonomies(
+  db: D1Database,
+  videoId: number,
+  keyword: string,
+  tags: string[],
+  categories: string[]
+): Promise<void> {
+  await db.prepare("DELETE FROM video_tags WHERE video_id = ?").bind(videoId).run();
+  await db.prepare("DELETE FROM video_categories WHERE video_id = ?").bind(videoId).run();
+
+  const tagNames = new Set<string>();
+  const kw = keyword?.trim();
+  if (kw) tagNames.add(kw);
+  for (const t of tags) {
+    const x = typeof t === "string" ? t.trim() : "";
+    if (x) tagNames.add(x);
+  }
+
+  for (const t of tagNames) {
+    const id = await getOrCreateTaxonomyId(db, "tags", t);
+    if (id != null) {
+      await db
+        .prepare("INSERT OR IGNORE INTO video_tags (video_id, tag_id) VALUES (?, ?)")
+        .bind(videoId, id)
+        .run();
+    }
+  }
+
+  for (const c of categories) {
+    const x = typeof c === "string" ? c.trim() : "";
+    if (!x) continue;
+    const id = await getOrCreateTaxonomyId(db, "categories", x);
+    if (id != null) {
+      await db
+        .prepare("INSERT OR IGNORE INTO video_categories (video_id, category_id) VALUES (?, ?)")
+        .bind(videoId, id)
+        .run();
+    }
+  }
+}
+
+export async function rebuildAllTaxonomies(db: D1Database): Promise<{ videos: number }> {
+  const rows = await db.prepare("SELECT id, keyword, tags, categories FROM videos").all<{
+    id: number;
+    keyword: string;
+    tags: string;
+    categories: string;
+  }>();
+  let n = 0;
+  for (const v of rows.results) {
+    const tags = JSON.parse(v.tags || "[]") as string[];
+    const categories = JSON.parse(v.categories || "[]") as string[];
+    await resyncVideoTaxonomies(db, v.id, v.keyword || "", tags, categories);
+    n++;
+  }
+  return { videos: n };
 }
 
 async function ingestVideo(db: D1Database, body: IngestPayload, slugOffset: number): Promise<number> {
@@ -120,6 +207,14 @@ async function ingestVideo(db: D1Database, body: IngestPayload, slugOffset: numb
     if (batch.length) await db.batch(batch);
   }
 
+  await resyncVideoTaxonomies(
+    db,
+    videoId,
+    body.keyword || "",
+    body.tags || [],
+    body.categories || []
+  );
+
   return videoId;
 }
 
@@ -180,6 +275,16 @@ export async function syncFromCrawler(env: Env["Bindings"]): Promise<{ synced: n
 apiRoutes.post("/sync", async (c) => {
   try {
     const result = await syncFromCrawler(c.env);
+    return c.json(result);
+  } catch (e: any) {
+    return c.json({ error: e.message }, 500);
+  }
+});
+
+/** One-time / maintenance: rebuild `tags`, `categories`, and junction tables from `videos` JSON. */
+apiRoutes.post("/rebuild-taxonomies", async (c) => {
+  try {
+    const result = await rebuildAllTaxonomies(c.env.DB);
     return c.json(result);
   } catch (e: any) {
     return c.json({ error: e.message }, 500);

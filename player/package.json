@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "db:init": "wrangler d1 execute luckvideos-db --local --file=src/schema.sql"
+    "db:init": "wrangler d1 execute luckvideos-db --local --file=src/schema.sql",
+    "db:clean": "wrangler d1 execute luckvideos-db --local --file=src/schema.sql && wrangler d1 execute luckvideos-db --local --file=scripts/clean-local-d1.sql"
   },
   "dependencies": {
     "hono": "^4"

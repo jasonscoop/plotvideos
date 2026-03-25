@@ -1,4 +1,5 @@
 import { t, LANGUAGES, langPrefix, nativeName, isRtl } from "./i18n";
+import type { VttCue } from "./vtt";
 
 const GLOBAL_CSS = `
 <link href="/styles.css" rel="stylesheet" />
@@ -29,7 +30,7 @@ export function layout(
   content: string,
   q = "",
   path = "/",
-  opts?: { playerAssets?: boolean }
+  opts?: { playerAssets?: boolean; jsonLd?: string }
 ) {
   const prefix = langPrefix(lang);
   const dir = isRtl(lang) ? ' dir="rtl"' : "";
@@ -37,12 +38,16 @@ export function layout(
     ? `<link href="https://cdn.jsdelivr.net/npm/video.js@8/dist/video-js.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@2.0.0/dist/videojs-hls-quality-selector.css" rel="stylesheet" />`
     : "";
+  const jsonLdTag = opts?.jsonLd
+    ? `<script type="application/ld+json">${opts.jsonLd}</script>`
+    : "";
   return `<!DOCTYPE html>
 <html lang="${lang}"${dir}>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${esc(title)}</title>
+  ${jsonLdTag}
   ${playerCss}
   ${GLOBAL_CSS}
 </head>
@@ -82,6 +87,18 @@ export function escJsonForScript(obj: unknown): string {
   return JSON.stringify(obj).replace(/</g, "\\u003c");
 }
 
+function durationIso8601(seconds: number): string | undefined {
+  if (!seconds || seconds <= 0) return undefined;
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  let p = "PT";
+  if (h) p += `${h}H`;
+  if (m) p += `${m}M`;
+  if (s || (!h && !m)) p += `${s}S`;
+  return p;
+}
+
 function videoWatchPath(v: { id: number; slug?: number | null }): string {
   if (v.slug == null) return `/videos/${v.id}`;
   const n = Number(v.slug);
@@ -97,23 +114,65 @@ interface VideoCard {
   thumbnail_url: string;
 }
 
-interface TagItem {
-  tag: string;
+/** Sidebar navigation item (tag or category with URL slug). */
+export interface NavTaxonomyItem {
+  name: string;
+  slug: string;
   count: number;
 }
 
-function homeSidebar(lang: string, prefix: string, q: string, topTags: TagItem[]): string {
-  if (!topTags.length) return "";
-  const sidebarItems = topTags
+export type ActiveTaxonomy =
+  | { kind: "tag"; slug: string }
+  | { kind: "category"; slug: string }
+  | null;
+
+function tagPageHref(prefix: string, slug: string): string {
+  return `${prefix}/tag/${slug}.html`;
+}
+
+function categoryPageHref(prefix: string, slug: string): string {
+  return `${prefix}/category/${slug}.html`;
+}
+
+function homeSidebar(
+  lang: string,
+  prefix: string,
+  navTags: NavTaxonomyItem[],
+  navCategories: NavTaxonomyItem[],
+  active: ActiveTaxonomy
+): string {
+  if (!navTags.length && !navCategories.length) return "";
+  const homeActive = !active ? " active" : "";
+  const tagItems = navTags
     .map((tg) => {
-      const active = q === tg.tag ? " active" : "";
-      return `<a href="${prefix}/?q=${encodeURIComponent(tg.tag)}" class="yt-nav-item${active}" title="${esc(tg.tag)}">${esc(tg.tag)}</a>`;
+      const isActive = active?.kind === "tag" && active.slug === tg.slug ? " active" : "";
+      return `<a href="${tagPageHref(prefix, tg.slug)}" class="yt-nav-item${isActive}" title="${esc(
+        tg.name
+      )}">${esc(tg.name)} <span class="yt-nav-count">${tg.count}</span></a>`;
+    })
+    .join("");
+  const catItems = navCategories
+    .map((cg) => {
+      const isActive = active?.kind === "category" && active.slug === cg.slug ? " active" : "";
+      return `<a href="${categoryPageHref(prefix, cg.slug)}" class="yt-nav-item${isActive}" title="${esc(
+        cg.name
+      )}">${esc(cg.name)} <span class="yt-nav-count">${cg.count}</span></a>`;
     })
     .join("");
   return `<nav class="yt-home-sidebar">
-        <a href="${prefix}/" class="yt-nav-item${!q ? " active" : ""}">🏠 ${t(lang, "latest_videos")}</a>
-        <div class="yt-nav-heading">Tags</div>
-        ${sidebarItems}
+        <a href="${prefix}/" class="yt-nav-item${homeActive}">🏠 ${t(lang, "latest_videos")}</a>
+        ${
+          tagItems
+            ? `<div class="yt-nav-heading">${t(lang, "tags")}</div>
+        ${tagItems}`
+            : ""
+        }
+        ${
+          catItems
+            ? `<div class="yt-nav-heading">${t(lang, "categories")}</div>
+        ${catItems}`
+            : ""
+        }
       </nav>`;
 }
 
@@ -124,12 +183,14 @@ export function indexPage(
   totalPages: number,
   total: number,
   q: string,
-  topTags: TagItem[] = []
+  navTags: NavTaxonomyItem[] = [],
+  navCategories: NavTaxonomyItem[] = [],
+  activeTaxonomy: ActiveTaxonomy = null
 ) {
   const prefix = langPrefix(lang);
   const qParam = q ? `&q=${encodeURIComponent(q)}` : "";
 
-  const sidebar = homeSidebar(lang, prefix, q, topTags);
+  const sidebar = homeSidebar(lang, prefix, navTags, navCategories, activeTaxonomy);
 
   const cards = videos
     .map(
@@ -166,6 +227,75 @@ export function indexPage(
   return layout("LuckVideos", lang, content, q, "/");
 }
 
+export function taxonomyListingPage(
+  lang: string,
+  kind: "tag" | "category",
+  taxName: string,
+  taxSlug: string,
+  videos: VideoCard[],
+  page: number,
+  totalPages: number,
+  total: number,
+  navTags: NavTaxonomyItem[],
+  navCategories: NavTaxonomyItem[],
+  browserTitle: string,
+  currentPath: string
+) {
+  const prefix = langPrefix(lang);
+  const baseHref =
+    kind === "tag" ? tagPageHref(prefix, taxSlug) : categoryPageHref(prefix, taxSlug);
+
+  const sidebar = homeSidebar(lang, prefix, navTags, navCategories, {
+    kind,
+    slug: taxSlug,
+  });
+
+  const cards = videos
+    .map(
+      (v) => `
+    <a href="${prefix}${videoWatchPath(v)}" class="yt-card">
+      <div class="yt-thumb">
+        ${
+          v.thumbnail_url
+            ? `<img src="${esc(v.thumbnail_url)}" alt="${esc(v.title)}" loading="lazy" />`
+            : `<div class="yt-thumb-empty">${t(lang, "no_thumbnail")}</div>`
+        }
+        ${v.duration ? `<span class="yt-duration">${fmtDuration(v.duration)}</span>` : ""}
+      </div>
+      <div class="yt-card-meta">
+        <div class="yt-card-title">${esc(v.title)}</div>
+      </div>
+    </a>`
+    )
+    .join("");
+
+  const pagination = `
+    <div class="yt-pagination">
+      ${page > 1 ? `<a href="${baseHref}${page > 2 ? `?page=${page - 1}` : ""}">${t(lang, "previous")}</a>` : ""}
+      <span class="yt-page-info">${page} / ${totalPages} &middot; ${total} ${t(lang, "videos")}</span>
+      ${
+        page < totalPages
+          ? `<a href="${baseHref}?page=${page + 1}">${t(lang, "next")}</a>`
+          : ""
+      }
+    </div>`;
+
+  const heading = `<h1 class="yt-taxonomy-title">${esc(
+    kind === "tag" ? t(lang, "tag_page_title").replace("{name}", taxName) : t(lang, "category_page_title").replace("{name}", taxName)
+  )}</h1>`;
+
+  const main = videos.length
+    ? `<div class="yt-home-main">${heading}<div class="yt-grid">${cards}</div>${pagination}</div>`
+    : `<div class="yt-home-main">${heading}<div style="padding:24px 0;color:var(--yt-text2)">${t(
+        lang,
+        "no_videos"
+      )}</div></div>`;
+
+  const content = `<div class="yt-home">${sidebar}${main}</div>`;
+
+  return layout(`${browserTitle} - LuckVideos`, lang, content, "", currentPath);
+}
+
 interface WatchData {
   id: number;
   slug?: number | null;
@@ -178,6 +308,13 @@ interface WatchData {
   keyword: string;
   tags: string[];
   categories: string[];
+}
+
+export interface WatchTaxonomyLinks {
+  /** Keyword row in DB is also linked as a tag when present in `tags` table. */
+  keyword: { name: string; slug: string } | null;
+  tags: { name: string; slug: string }[];
+  categories: { name: string; slug: string }[];
 }
 
 interface SubTrack {
@@ -200,10 +337,13 @@ export function watchPage(
   video: WatchData,
   subtitleTracks: SubTrack[],
   recommended: RecommendedVideo[] = [],
-  topTags: TagItem[] = []
+  navTags: NavTaxonomyItem[] = [],
+  navCategories: NavTaxonomyItem[] = [],
+  seoTranscriptCues: VttCue[] = [],
+  taxonomyLinks: WatchTaxonomyLinks = { keyword: null, tags: [], categories: [] }
 ) {
   const prefix = langPrefix(lang);
-  const sidebar = homeSidebar(lang, prefix, "", topTags);
+  const sidebar = homeSidebar(lang, prefix, navTags, navCategories, null);
 
   const tracks = subtitleTracks
     .map(
@@ -212,14 +352,26 @@ export function watchPage(
     )
     .join("\n        ");
 
-  const allTags = [
-    ...(video.keyword ? [video.keyword] : []),
-    ...video.categories,
-    ...video.tags,
-  ];
-  const tagsHtml = allTags
-    .map((tag) => `<a class="yt-tag" href="${prefix}/?q=${encodeURIComponent(tag)}">#${esc(tag)}</a>`)
-    .join("");
+  const kw = taxonomyLinks.keyword;
+  const kwName = kw?.name?.trim() || "";
+  const tagPills = taxonomyLinks.tags.filter(
+    (x) => !kwName || x.name.trim().toLowerCase() !== kwName.toLowerCase()
+  );
+  const tagParts: string[] = [];
+  if (kw) {
+    tagParts.push(
+      `<a class="yt-tag yt-tag-keyword" href="${tagPageHref(prefix, kw.slug)}">#${esc(kw.name)}</a>`
+    );
+  }
+  for (const c of taxonomyLinks.categories) {
+    tagParts.push(
+      `<a class="yt-tag" href="${categoryPageHref(prefix, c.slug)}">#${esc(c.name)}</a>`
+    );
+  }
+  for (const tg of tagPills) {
+    tagParts.push(`<a class="yt-tag" href="${tagPageHref(prefix, tg.slug)}">#${esc(tg.name)}</a>`);
+  }
+  const tagsHtml = tagParts.join("");
 
   const watchConfig = {
     pageLang: lang,
@@ -229,8 +381,31 @@ export function watchPage(
         : []),
       ...(video.video_url ? [{ src: video.video_url, type: "video/mp4" as const }] : []),
     ],
-    subMap: Object.fromEntries(subtitleTracks.map((st) => [st.lang, st.url])),
   };
+
+  const seoTranscriptBlock =
+    seoTranscriptCues.length > 0
+      ? `<details class="yt-transcript-seo">
+  <summary class="yt-transcript-seo-summary">${t(lang, "full_transcript")}</summary>
+  <div class="yt-transcript-seo-body">
+    ${seoTranscriptCues.map((c) => `<p>${esc(c.text)}</p>`).join("")}
+  </div>
+</details>`
+      : "";
+
+  const transcriptTextForLd = seoTranscriptCues.map((c) => c.text).join("\n");
+  const isoDur = durationIso8601(video.duration);
+  const jsonLd =
+    seoTranscriptCues.length > 0
+      ? escJsonForScript({
+          "@context": "https://schema.org",
+          "@type": "VideoObject",
+          name: video.title,
+          description: video.title,
+          transcript: transcriptTextForLd,
+          ...(isoDur ? { duration: isoDur } : {}),
+        })
+      : undefined;
 
   const watchBody = `
   <div class="yt-watch">
@@ -255,15 +430,7 @@ export function watchPage(
       </div>
 
       ${tagsHtml ? `<div style="margin-top:12px">${tagsHtml}</div>` : ""}
-    </div>
-    <div class="yt-watch-sidebar">
-      <div class="yt-transcript" id="transcript-panel" style="display:none">
-        <div class="yt-transcript-header" id="transcript-panel-toggle" role="button" tabindex="0">
-          <span>Transcript</span>
-          <span class="yt-transcript-toggle">&#9650;</span>
-        </div>
-        <div class="yt-transcript-list" id="transcript-list"></div>
-      </div>
+      ${seoTranscriptBlock}
     </div>
   </div>
   ${recommended.length ? `<h2 class="yt-recommended-title">${t(lang, "recommended")}</h2>` : ""}
@@ -289,5 +456,6 @@ export function watchPage(
 
   return layout(`${video.title} - LuckVideos`, lang, content, "", videoWatchPath(video), {
     playerAssets: true,
+    jsonLd,
   });
 }

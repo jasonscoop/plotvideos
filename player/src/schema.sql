@@ -44,7 +44,36 @@ CREATE TABLE IF NOT EXISTS languages (
   locale      TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS tags (
+  id   INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL UNIQUE,
+  slug TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+  id   INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL UNIQUE,
+  slug TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS video_tags (
+  video_id INTEGER NOT NULL REFERENCES videos(id) ON DELETE CASCADE,
+  tag_id   INTEGER NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+  PRIMARY KEY (video_id, tag_id)
+);
+
+CREATE TABLE IF NOT EXISTS video_categories (
+  video_id    INTEGER NOT NULL REFERENCES videos(id) ON DELETE CASCADE,
+  category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+  PRIMARY KEY (video_id, category_id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_videos_created_at ON videos(created_at DESC);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_videos_slug ON videos(slug);
 CREATE INDEX IF NOT EXISTS idx_video_translations_video_id ON video_translations(video_id);
 CREATE INDEX IF NOT EXISTS idx_subtitle_tracks_video_id ON subtitle_tracks(video_id);
+CREATE INDEX IF NOT EXISTS idx_video_tags_tag ON video_tags(tag_id);
+CREATE INDEX IF NOT EXISTS idx_video_categories_category ON video_categories(category_id);
+
+-- After creating these tables on an existing DB, run: POST /api/rebuild-taxonomies
+-- (or re-sync videos so ingest repopulates junction rows).

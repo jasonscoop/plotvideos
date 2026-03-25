@@ -24,8 +24,6 @@ Base = declarative_base()
 
 
 class BaseModel:
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    
     @declared_attr
     def created_at(cls):
         return Column(
@@ -44,12 +42,16 @@ class BaseModel:
 
 class Keyword(Base, BaseModel):
     __tablename__ = "keywords"
+    
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False, unique=True)
     enabled = Column(Boolean, nullable=False, default=True)
 
 
 class Video(Base, BaseModel):
     __tablename__ = "videos"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     host = Column(String(50), nullable=False, index=True)
     title = Column(String(512), nullable=False)
     url = Column(String(512), nullable=False, unique=True)
@@ -96,6 +98,8 @@ class Video(Base, BaseModel):
 
 class TitleTranslation(Base, BaseModel):
     __tablename__ = "title_translations"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     video_id = Column(Integer, ForeignKey("videos.id", ondelete="CASCADE"), nullable=False, index=True)
     lang = Column(String(2), nullable=False)
     translated_title = Column(String(512), nullable=False)
@@ -105,6 +109,8 @@ class TitleTranslation(Base, BaseModel):
 
 class Term(Base, BaseModel):
     __tablename__ = "terms"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     text = Column(String(255), nullable=False)
     lang = Column(String(2), nullable=False)
     translation = Column(Text, nullable=False)

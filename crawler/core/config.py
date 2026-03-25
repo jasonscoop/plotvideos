@@ -45,6 +45,8 @@ B2_APPLICATION_KEY_ID = getenv("B2_APPLICATION_KEY_ID")
 B2_APPLICATION_KEY = getenv("B2_APPLICATION_KEY")
 B2_BUCKET_NAME = getenv("B2_BUCKET_NAME", "luckvideos")
 B2_CDN_DOMAIN = getenv("B2_CDN_DOMAIN", "https://play.luckvideos.com")
+# Parallel segment uploads for HLS (many small files); tune if you hit B2 rate limits.
+B2_UPLOAD_CONCURRENCY: int = get_int("B2_UPLOAD_CONCURRENCY", 16)
 
 
 def b2_cdn_object_url(object_key: str) -> str:

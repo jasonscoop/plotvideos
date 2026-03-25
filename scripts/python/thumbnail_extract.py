@@ -69,8 +69,6 @@ def search_and_add_videos():
                             host=host,
                             status=VideoStatus.fetched,
                             keyword_id=video.keyword_id,
-                            author_name=link.get("channel", {}).get("name", ""),
-                            author_url=link.get("channel", {}).get("url", ""),
                         )
                         videos_to_update.append(new_video)
 

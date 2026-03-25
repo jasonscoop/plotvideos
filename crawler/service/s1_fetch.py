@@ -64,8 +64,6 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
                             host=site_host,
                             status=VideoStatus.fetched,
                             keyword_id=keyword.id,
-                            author_name=link.get("channel", {}).get("name", ""),
-                            author_url=link.get("channel", {}).get("url", ""),
                         )
                         videos.append(new_video)
                     if videos:

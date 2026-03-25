@@ -1,4 +1,4 @@
-import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional
 from loguru import logger
@@ -9,6 +9,7 @@ from crawler.core.config import (
     B2_APPLICATION_KEY_ID,
     B2_APPLICATION_KEY,
     B2_BUCKET_NAME,
+    B2_UPLOAD_CONCURRENCY,
     b2_cdn_object_url,
 )
 from crawler.core.languages import Language
@@ -33,27 +34,35 @@ class B2Client:
 
     @retry(wait=wait_fixed(2), stop=stop_after_attempt(3), reraise=True)
     def upload_directory(self, directory_path: Path, prefix: str) -> list[str]:
-        """Upload all files in a directory to B2 with the given prefix"""
-        uploaded_urls = []
-
+        """Upload all files in a directory to B2 with the given prefix (parallel for speed)."""
         if not directory_path.exists():
             logger.warning(f"Directory {directory_path} does not exist")
-            return uploaded_urls
+            return []
 
+        tasks: list[tuple[Path, str]] = []
         for file_path in directory_path.rglob("*"):
             if file_path.is_file():
-                # Calculate relative path from directory
                 relative_path = file_path.relative_to(directory_path)
-                b2_key = f"{prefix}/{relative_path}".replace(
-                    "\\", "/"
-                )  # Ensure forward slashes
+                b2_key = f"{prefix}/{relative_path}".replace("\\", "/")
+                tasks.append((file_path, b2_key))
 
+        if not tasks:
+            return []
+
+        uploaded_urls: list[str] = []
+        workers = max(1, min(B2_UPLOAD_CONCURRENCY, len(tasks)))
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            future_to_key = {
+                executor.submit(self.upload_file, fp, key): key for fp, key in tasks
+            }
+            for future in as_completed(future_to_key):
+                key = future_to_key[future]
                 try:
-                    url = self.upload_file(file_path, b2_key)
+                    url = future.result()
                     uploaded_urls.append(url)
-                    logger.debug(f"Uploaded {b2_key}")
+                    logger.debug(f"Uploaded {key}")
                 except Exception as e:
-                    logger.error(f"Failed to upload {b2_key}: {e}")
+                    logger.error(f"Failed to upload {key}: {e}")
                     raise e
 
         return uploaded_urls

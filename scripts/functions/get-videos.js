@@ -123,7 +123,7 @@ Deno.serve(async (req) => {
         // Get videos
         const {data: videos, error: videoError} = await supabase
             .from('videos')
-            .select("id, host, title, url, filename, keyword, title_translations, file_size, duration, author_name, author_url, width, height, aspect_ratio, tags, categories, thumbnail_url")
+            .select("id, host, title, url, filename, keyword, title_translations, file_size, duration, width, height, aspect_ratio, tags, categories, thumbnail_url")
             .gt('id', lastId)
             .eq('status', 'published')
             .order('id', {ascending: true})

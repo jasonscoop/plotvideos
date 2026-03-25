@@ -52,8 +52,6 @@ class Video(Base, BaseModel):
     __tablename__ = "videos"
     host = Column(String(50), nullable=False, index=True)
     title = Column(String(512), nullable=False)
-    author_name = Column(String(100), nullable=False, default="")
-    author_url = Column(String(500), nullable=False, default="")
     url = Column(String(512), nullable=False, unique=True)
     url_crc32 = Column(BigInteger, nullable=False, default=0, index=True)
     thumbnail_url = Column(String(512), nullable=False, default="")

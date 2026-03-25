@@ -25,7 +25,6 @@ def transcode_video(video: Video) -> bool:
         )
         return False
 
-    logger.info(f"[{video.id} | {video.host}] generating HLS variants")
     generate_hls(video.store_path.video, video.store_path.hls_dir)
     logger.info(f"[{video.id} | {video.host}] HLS variants generated")
     return True

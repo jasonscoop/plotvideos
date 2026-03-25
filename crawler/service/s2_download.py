@@ -69,7 +69,17 @@ def download_video(video: Video):
             logger.info(
                 f"[{video.id} | {video.host}]  Downloaded"
             )
-    except (SizeLimitExceeded, DownloadError, RegexNotFoundError) as e:
+    except SizeLimitExceeded as e:
+        reason = VideoStatus.downloaded.log(e)
+        try:
+            rm_video(video)
+        except OSError:
+            pass
+        VideoCrud.update_status(video.id, VideoStatus.oversized, reason)
+        logger.warning(
+            f"[{video.id} | {video.host}] Oversized (early abort): {e}"
+        )
+    except (DownloadError, RegexNotFoundError) as e:
         VideoCrud.record_failure(video.id, VideoStatus.downloaded.log(e))
         logger.warning(str(e))
     except Exception as e:

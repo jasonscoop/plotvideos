@@ -1,4 +1,4 @@
-import { t, LANGUAGES, langPrefix, nativeName, isRtl, type LangCode } from "./i18n";
+import { t, LANGUAGES, langPrefix, nativeName, isRtl } from "./i18n";
 
 const GLOBAL_CSS = `
 <link href="/styles.css" rel="stylesheet" />
@@ -17,29 +17,33 @@ function langDropdown(currentLang: string, currentPath: string) {
   }).join("");
 
   return `
-    <div class="yt-lang-wrap" id="lang-dropdown">
+    <div class="yt-lang-wrap">
       <button class="yt-lang-btn" type="button">${nativeName(currentLang)} ${CHEVRON_SVG}</button>
       <div class="yt-lang-menu">${items}</div>
-    </div>
-    <script>
-      (function(){
-        var w=document.getElementById('lang-dropdown'), b=w.querySelector('.yt-lang-btn');
-        b.onclick=function(e){e.stopPropagation();w.classList.toggle('open')};
-        document.addEventListener('click',function(){w.classList.remove('open')});
-      })();
-    </script>`;
+    </div>`;
 }
 
-export function layout(title: string, lang: string, content: string, q = "", path = "/") {
+export function layout(
+  title: string,
+  lang: string,
+  content: string,
+  q = "",
+  path = "/",
+  opts?: { playerAssets?: boolean }
+) {
   const prefix = langPrefix(lang);
   const dir = isRtl(lang) ? ' dir="rtl"' : "";
+  const playerCss = opts?.playerAssets
+    ? `<link href="https://cdn.jsdelivr.net/npm/video.js@8/dist/video-js.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@2.0.0/dist/videojs-hls-quality-selector.css" rel="stylesheet" />`
+    : "";
   return `<!DOCTYPE html>
 <html lang="${lang}"${dir}>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${esc(title)}</title>
-  <link href="https://cdn.jsdelivr.net/npm/video.js@8/dist/video-js.min.css" rel="stylesheet" />
+  ${playerCss}
   ${GLOBAL_CSS}
 </head>
 <body>
@@ -52,6 +56,7 @@ export function layout(title: string, lang: string, content: string, q = "", pat
     ${langDropdown(lang, path)}
   </header>
   ${content}
+  <script src="/lang-dropdown.js" defer></script>
 </body>
 </html>`;
 }
@@ -70,6 +75,11 @@ export function esc(s: string): string {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+/** Safe embedding of JSON inside a `<script type="application/json">` block. */
+export function escJsonForScript(obj: unknown): string {
+  return JSON.stringify(obj).replace(/</g, "\\u003c");
 }
 
 function videoWatchPath(v: { id: number; slug?: number | null }): string {
@@ -202,14 +212,6 @@ export function watchPage(
     )
     .join("\n        ");
 
-  const hlsSrc = video.hls_url
-    ? `{ src: ${JSON.stringify(video.hls_url)}, type: 'application/x-mpegURL' }`
-    : "";
-  const mp4Src = video.video_url
-    ? `{ src: ${JSON.stringify(video.video_url)}, type: 'video/mp4' }`
-    : "";
-  const sources = [hlsSrc, mp4Src].filter(Boolean).join(", ");
-
   const allTags = [
     ...(video.keyword ? [video.keyword] : []),
     ...video.categories,
@@ -218,6 +220,17 @@ export function watchPage(
   const tagsHtml = allTags
     .map((tag) => `<a class="yt-tag" href="${prefix}/?q=${encodeURIComponent(tag)}">#${esc(tag)}</a>`)
     .join("");
+
+  const watchConfig = {
+    pageLang: lang,
+    sources: [
+      ...(video.hls_url
+        ? [{ src: video.hls_url, type: "application/x-mpegURL" as const }]
+        : []),
+      ...(video.video_url ? [{ src: video.video_url, type: "video/mp4" as const }] : []),
+    ],
+    subMap: Object.fromEntries(subtitleTracks.map((st) => [st.lang, st.url])),
+  };
 
   const watchBody = `
   <div class="yt-watch">
@@ -245,7 +258,7 @@ export function watchPage(
     </div>
     <div class="yt-watch-sidebar">
       <div class="yt-transcript" id="transcript-panel" style="display:none">
-        <div class="yt-transcript-header" onclick="var p=document.getElementById('transcript-panel');p.classList.toggle('collapsed');localStorage.setItem('transcript_hidden',p.classList.contains('collapsed')?'1':'0')">
+        <div class="yt-transcript-header" id="transcript-panel-toggle" role="button" tabindex="0">
           <span>Transcript</span>
           <span class="yt-transcript-toggle">&#9650;</span>
         </div>
@@ -266,143 +279,15 @@ export function watchPage(
         </div>
       </a>`).join("")}
   </div>
-  <script>
-  (function(){
-    function syncTranscript(){
-      var p=document.querySelector('.yt-player-wrap'), t=document.getElementById('transcript-panel');
-      if(p&&t) t.style.height=p.offsetHeight+'px';
-    }
-    syncTranscript();
-    window.addEventListener('resize',syncTranscript);
-  })();
-  </script>
+  <script type="application/json" id="watch-page-config">${escJsonForScript(watchConfig)}</script>
   <script src="https://cdn.jsdelivr.net/npm/video.js@8/dist/video.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-levels@4/dist/videojs-contrib-quality-levels.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@2.0.0/dist/videojs-hls-quality-selector.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@2.0.0/dist/videojs-hls-quality-selector.css" rel="stylesheet" />
-  <script>
-  (function(){
-    var pageLang = ${JSON.stringify(lang)};
-    var player = videojs('video-player', {
-      fluid: false,
-      responsive: true,
-      playbackRates: [0.5, 1, 1.25, 1.5, 2],
-      html5: {
-        vhs: { overrideNative: !videojs.browser.IS_SAFARI }
-      },
-      sources: [${sources}]
-    });
-    player.hlsQualitySelector({ displayCurrentQuality: true });
-
-    var savedLang = localStorage.getItem('subtitle_lang');
-    var preferredLang = savedLang || pageLang;
-    var subMap = ${JSON.stringify(Object.fromEntries(subtitleTracks.map((st) => [st.lang, st.url])))};
-
-    function parseVTT(text) {
-      var cues = [], blocks = text.split(/\\n\\n+/);
-      for (var i = 0; i < blocks.length; i++) {
-        var lines = blocks[i].trim().split('\\n');
-        for (var j = 0; j < lines.length; j++) {
-          var m = lines[j].match(/(\\d{2}:\\d{2}[:\\.]\\d{2,3})\\s*-->\\s*(\\d{2}:\\d{2}[:\\.]\\d{2,3})/);
-          if (m) {
-            var txt = lines.slice(j + 1).join(' ').replace(/<[^>]+>/g, '').trim();
-            if (txt) cues.push({ start: toSec(m[1]), end: toSec(m[2]), text: txt });
-            break;
-          }
-        }
-      }
-      return cues;
-    }
-    function toSec(t) {
-      var p = t.replace('.', ':').split(':');
-      if (p.length === 3) return +p[0]*60 + +p[1] + +p[2]/1000;
-      return +p[0]*3600 + +p[1]*60 + +p[2] + +(p[3]||0)/1000;
-    }
-    function fmtTime(s) {
-      var m = Math.floor(s/60), sec = Math.floor(s%60);
-      return m + ':' + (sec<10?'0':'') + sec;
-    }
-    function renderTranscript(cues) {
-      var panel = document.getElementById('transcript-panel');
-      var list = document.getElementById('transcript-list');
-      panel.style.display = '';
-      if (localStorage.getItem('transcript_hidden') === '1') panel.classList.add('collapsed');
-      else panel.classList.remove('collapsed');
-      list.innerHTML = cues.map(function(c, i){
-        return '<div class="yt-cue" data-idx="'+i+'" data-start="'+c.start+'"><span class="yt-cue-time">'+fmtTime(c.start)+'</span><span class="yt-cue-text">'+c.text+'</span></div>';
-      }).join('');
-      list.onclick = function(e){
-        var el = e.target.closest('.yt-cue');
-        if (el) player.currentTime(+el.dataset.start);
-      };
-      window._transcriptCues = cues;
-    }
-    function fetchVTT(url) {
-      return fetch(url).then(function(r){
-        if (!r.ok) throw new Error(r.status);
-        return r.text();
-      }).then(function(text){
-        var cues = parseVTT(text);
-        if (!cues.length) throw new Error('empty');
-        return cues;
-      });
-    }
-    function loadTranscript(lang) {
-      var urls = [];
-      if (subMap[lang]) urls.push(subMap[lang]);
-      var keys = Object.keys(subMap);
-      for (var i = 0; i < keys.length; i++) {
-        if (keys[i] !== lang && subMap[keys[i]]) urls.push(subMap[keys[i]]);
-      }
-      if (!urls.length) { document.getElementById('transcript-panel').style.display='none'; return; }
-      (function tryNext(idx) {
-        if (idx >= urls.length) { document.getElementById('transcript-panel').style.display='none'; return; }
-        fetchVTT(urls[idx]).then(renderTranscript).catch(function(){ tryNext(idx + 1); });
-      })(0);
-    }
-
-    player.ready(function(){
-      var tracks = player.textTracks();
-      for (var i = 0; i < tracks.length; i++) {
-        if (tracks[i].language === preferredLang) {
-          tracks[i].mode = 'showing';
-        } else if (tracks[i].kind === 'subtitles') {
-          tracks[i].mode = 'disabled';
-        }
-      }
-
-      loadTranscript(preferredLang);
-
-      tracks.addEventListener('change', function(){
-        for (var i = 0; i < tracks.length; i++) {
-          if (tracks[i].kind === 'subtitles' && tracks[i].mode === 'showing') {
-            localStorage.setItem('subtitle_lang', tracks[i].language);
-            loadTranscript(tracks[i].language);
-            return;
-          }
-        }
-      });
-
-      player.on('timeupdate', function(){
-        var cues = window._transcriptCues;
-        if (!cues) return;
-        var ct = player.currentTime(), els = document.querySelectorAll('.yt-cue');
-        var activeIdx = -1;
-        for (var i = 0; i < cues.length; i++) {
-          if (ct >= cues[i].start && ct < cues[i].end) { activeIdx = i; break; }
-        }
-        for (var i = 0; i < els.length; i++) {
-          els[i].classList.toggle('active', i === activeIdx);
-        }
-        if (activeIdx >= 0 && els[activeIdx]) {
-          els[activeIdx].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-        }
-      });
-    });
-  })();
-  </script>`;
+  <script src="/watch-page.js" defer></script>`;
 
   const content = `<div class="yt-home">${sidebar}<div class="yt-home-main yt-watch-page-main">${watchBody}</div></div>`;
 
-  return layout(`${video.title} - LuckVideos`, lang, content, "", videoWatchPath(video));
+  return layout(`${video.title} - LuckVideos`, lang, content, "", videoWatchPath(video), {
+    playerAssets: true,
+  });
 }

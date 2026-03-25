@@ -64,11 +64,13 @@ async function resolveIndex(c: any, lang: string) {
 
 async function resolveWatchBySlug(c: any, lang: string) {
   const db = c.env.DB;
-  const slug = c.req.param("slug");
+  const raw = c.req.param("slug").replace(/\.html$/i, "");
+  const slugNum = /^\d+$/.test(raw) ? parseInt(raw, 10) : NaN;
+  if (!Number.isFinite(slugNum)) return c.text("Video not found", 404);
 
   const video = await db
     .prepare("SELECT * FROM videos WHERE slug = ?")
-    .bind(slug)
+    .bind(slugNum)
     .first<any>();
 
   if (!video) return c.text("Video not found", 404);
@@ -135,7 +137,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
       lang,
       {
         id: video.id,
-        slug: video.slug || "",
+        slug: video.slug,
         title: displayTitle,
         original_title: video.title,
         duration: video.duration,
@@ -154,7 +156,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
 
 pageRoutes.get("/", (c) => resolveIndex(c, DEFAULT_LANG));
 pageRoutes.get("/videos/:id", (c) => resolveWatch(c, DEFAULT_LANG));
-pageRoutes.get("/video/:slug.html", (c) => resolveWatchBySlug(c, DEFAULT_LANG));
+pageRoutes.get("/video/:slug", (c) => resolveWatchBySlug(c, DEFAULT_LANG));
 
 pageRoutes.get("/:lang/", (c) => {
   const lang = c.req.param("lang");
@@ -168,7 +170,7 @@ pageRoutes.get("/:lang/videos/:id", (c) => {
   return resolveWatch(c, lang);
 });
 
-pageRoutes.get("/:lang/video/:slug.html", (c) => {
+pageRoutes.get("/:lang/video/:slug", (c) => {
   const lang = c.req.param("lang");
   if (!isValidLang(lang)) return c.text("Not found", 404);
   return resolveWatchBySlug(c, lang);

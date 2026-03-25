@@ -19,5 +19,6 @@ database_id = "local"
 crons = ["*/10 * * * *"]
 
 [vars]
-CRAWLER_API_URL = ""
-CRAWLER_API_KEY = ""
+VIDEO_FETCH_API_URL = ""
+VIDEO_FETCH_API_KEY = ""
+SLUG_OFFSET_VALUE = "0"

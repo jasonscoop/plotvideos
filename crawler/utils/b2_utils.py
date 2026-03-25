@@ -9,7 +9,7 @@ from crawler.core.config import (
     B2_APPLICATION_KEY_ID,
     B2_APPLICATION_KEY,
     B2_BUCKET_NAME,
-    B2_CDN_DOMAIN,
+    b2_cdn_object_url,
 )
 from crawler.core.languages import Language
 from crawler.core.models import Video
@@ -29,7 +29,7 @@ class B2Client:
         uploaded_file = self.bucket.upload_local_file(
             local_file=str(file_path), file_name=b2_key
         )
-        return f"{B2_CDN_DOMAIN}/{b2_key}"
+        return b2_cdn_object_url(b2_key)
 
     @retry(wait=wait_fixed(2), stop=stop_after_attempt(3), reraise=True)
     def upload_directory(self, directory_path: Path, prefix: str) -> list[str]:

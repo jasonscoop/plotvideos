@@ -10,6 +10,7 @@ export default {
         "http://localhost:8000",
         "https://wp.garymeng.com",
         "https://luckvideos.com",
+        "https://play.luckvideos.com",
         "https://hopevideos.com",
         "https://muchvideos.com",
         "https://weekvideos.com",

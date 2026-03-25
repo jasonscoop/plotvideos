@@ -12,7 +12,8 @@ interface TranslationPayload {
 
 interface IngestPayload {
   original_id: number;
-  slug?: string;
+  /** Optional override; default is original_id + SLUG_OFFSET_VALUE (public URL slug). */
+  slug?: number;
   title: string;
   duration?: number;
   width?: number;
@@ -28,17 +29,18 @@ interface IngestPayload {
   subtitle_tracks?: { lang: string; label: string; url: string }[];
 }
 
-function toSlug(title: string, originalId: number): string {
-  const base = title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 50);
-  return `${base}-${originalId}`;
+function publicSlug(originalId: number, slugOffset: number, override?: number): number {
+  if (override != null && Number.isFinite(override)) return Math.trunc(override);
+  return originalId + slugOffset;
 }
 
-async function ingestVideo(db: D1Database, body: IngestPayload): Promise<number> {
-  const slug = body.slug || toSlug(body.title, body.original_id);
+function parseSlugOffsetValue(raw: string | undefined): number {
+  const n = parseInt(raw ?? "0", 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+async function ingestVideo(db: D1Database, body: IngestPayload, slugOffset: number): Promise<number> {
+  const slug = publicSlug(body.original_id, slugOffset, body.slug);
   const tagsJson = JSON.stringify(body.tags || []);
   const catsJson = JSON.stringify(body.categories || []);
 
@@ -121,9 +123,28 @@ async function ingestVideo(db: D1Database, body: IngestPayload): Promise<number>
   return videoId;
 }
 
+async function syncLanguages(db: D1Database, crawlerUrl: string, crawlerKey: string): Promise<void> {
+  const resp = await fetch(`${crawlerUrl}/languages`, {
+    headers: { "X-API-Key": crawlerKey },
+  });
+  if (!resp.ok) throw new Error(`Crawler API error: ${resp.status}`);
+
+  const languages: { code: string; name: string; locale: string }[] = await resp.json();
+  if (!languages.length) return;
+
+  const stmt = db.prepare(
+    `INSERT INTO languages (code, name, locale) VALUES (?, ?, ?)
+     ON CONFLICT(code) DO UPDATE SET name = excluded.name, locale = excluded.locale`
+  );
+  await db.batch(languages.map((l) => stmt.bind(l.code, l.name, l.locale)));
+}
+
 export async function syncFromCrawler(env: Env["Bindings"]): Promise<{ synced: number }> {
-  const crawlerUrl = env.CRAWLER_API_URL;
-  const crawlerKey = env.CRAWLER_API_KEY;
+  const crawlerUrl = env.VIDEO_FETCH_API_URL;
+  const crawlerKey = env.VIDEO_FETCH_API_KEY;
+  const slugOffset = parseSlugOffsetValue(env.SLUG_OFFSET_VALUE);
+
+  await syncLanguages(env.DB, crawlerUrl, crawlerKey);
 
   const maxRow = await env.DB
     .prepare("SELECT MAX(original_id) AS max_id FROM videos")
@@ -144,7 +165,7 @@ export async function syncFromCrawler(env: Env["Bindings"]): Promise<{ synced: n
     if (!videos.length) break;
 
     for (const video of videos) {
-      await ingestVideo(env.DB, video);
+      await ingestVideo(env.DB, video, slugOffset);
       synced++;
     }
 

@@ -21,7 +21,7 @@ from loguru import logger
 from crawler.core.config import validate_config
 from crawler.service import (
     s1_fetch, s2_download, s3_convert, s4_subtitle,
-    s5_translate_vtt, s6_translate_meta, s7_upload, s8_cleanup, s9_publish,
+    s5_translate_vtt, s6_translate_meta, s7_upload, s8_cleanup,
 )
 from crawler.utils.log_utils import init_logging
 from crawler.utils.signal_utils import (
@@ -49,7 +49,6 @@ STAGES: list[StageConfig] = [
     StageConfig("s6_translate_meta", s6_translate_meta.process_batch, 300),
     StageConfig("s7_upload",         s7_upload.process_batch,         300),
     StageConfig("s8_cleanup",        s8_cleanup.process_batch,        3600),
-    StageConfig("s9_publish",        s9_publish.process_batch,        300),
 ]
 
 
@@ -106,7 +105,6 @@ RUNNERS = {
     "s6_translate_meta": s6_translate_meta.translate_meta_infos,
     "s7_upload":         s7_upload.upload_videos,
     "s8_cleanup":        s8_cleanup.clean_files,
-    "s9_publish":        s9_publish.publish_videos,
 }
 
 

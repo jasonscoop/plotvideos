@@ -5,7 +5,7 @@ from fastapi.security.api_key import APIKeyHeader
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-from crawler.core.config import CRAWLER_API_KEY, B2_CDN_DOMAIN
+from crawler.core.config import CRAWLER_API_KEY, b2_cdn_object_url
 from crawler.core.enums import VideoStatus
 from crawler.core.languages import Language
 from crawler.core.models import Video
@@ -34,6 +34,18 @@ def _check_auth(api_key: str = Depends(_api_key_header)) -> str:
     return api_key
 
 
+@app.get("/languages")
+@limiter.limit("60/minute")
+def get_languages(
+    request: Request,
+    _: str = Depends(_check_auth),
+) -> List[dict]:
+    return [
+        {"code": lang.code, "name": lang.native_name, "locale": lang.locale}
+        for lang in Language.get_all()
+    ]
+
+
 @app.get("/videos")
 @limiter.limit("60/minute")
 def get_videos(
@@ -43,14 +55,14 @@ def get_videos(
     _: str = Depends(_check_auth),
 ) -> List[dict]:
     languages = Language.get_all()
-    videos = _fetch_published(after_id, limit)
+    videos = _fetch_uploaded(after_id, limit)
     return [_build_payload(v, languages) for v in videos]
 
 
-def _fetch_published(last_id: Optional[int], limit: int) -> List[Video]:
+def _fetch_uploaded(last_id: Optional[int], limit: int) -> List[Video]:
     from crawler.core.connection import get_db
     with get_db() as session:
-        query = session.query(Video).filter(Video.status == VideoStatus.published)
+        query = session.query(Video).filter(Video.status == VideoStatus.uploaded)
         if last_id is not None:
             query = query.filter(Video.id > last_id)
         return query.order_by(Video.id.asc()).limit(limit).all()
@@ -75,13 +87,11 @@ def _build_payload(video: Video, languages: list) -> dict:
             "categories": [lang_terms.get(c, c) for c in categories],
         }
 
-    cdn = B2_CDN_DOMAIN.rstrip("/")
-
     subtitle_tracks = [
         {
             "lang": lang.code,
             "label": lang.native_name,
-            "url": f"{cdn}/media/{sp.translated_s3_key}{lang.code}.vtt",
+            "url": b2_cdn_object_url(f"{sp.translated_s3_key}{lang.code}.vtt"),
         }
         for lang in languages
     ]
@@ -92,10 +102,9 @@ def _build_payload(video: Video, languages: list) -> dict:
         "duration": video.duration,
         "width": video.width,
         "height": video.height,
-        "thumbnail_url": f"{cdn}/media/{sp.thumbnail_s3_key}",
-        "video_url": f"{cdn}/media/{sp.video_s3_key}",
-        "hls_url": f"{cdn}/media/{sp.hls_master_s3_key}",
-        "store_dir": video.store_dir,
+        "thumbnail_url": b2_cdn_object_url(sp.thumbnail_s3_key),
+        "video_url": b2_cdn_object_url(sp.video_s3_key),
+        "hls_url": b2_cdn_object_url(sp.hls_master_s3_key),
         "keyword": keyword,
         "tags": tags,
         "categories": categories,
@@ -106,4 +115,4 @@ def _build_payload(video: Video, languages: list) -> dict:
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("crawler.api:app", host="0.0.0.0", port=8001)
+    uvicorn.run("crawler.api:app", host="0.0.0.0", port=8001, reload=True)

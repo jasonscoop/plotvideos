@@ -46,6 +46,14 @@ B2_APPLICATION_KEY = getenv("B2_APPLICATION_KEY")
 B2_BUCKET_NAME = getenv("B2_BUCKET_NAME", "luckvideos")
 B2_CDN_DOMAIN = getenv("B2_CDN_DOMAIN", "https://play.luckvideos.com")
 
+
+def b2_cdn_object_url(object_key: str) -> str:
+    """Public CDN URL for a B2 object key."""
+    base = B2_CDN_DOMAIN.rstrip("/")
+    key = object_key.lstrip("/")
+    return f"{base}/{key}"
+
+
 WHISPER_MODEL = getenv("WHISPER_MODEL", "medium")
 WHISPER_DEVICE = getenv("WHISPER_DEVICE", "cpu")
 WHISPER_COMPUTE_TYPE = getenv("WHISPER_COMPUTE_TYPE", "int8")

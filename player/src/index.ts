@@ -1,22 +1,29 @@
 import { Hono } from "hono";
 import { apiRoutes, syncFromCrawler } from "./api";
 import { pageRoutes } from "./pages";
-import { mediaRoutes } from "./b2";
 import STYLES_CSS from "./styles.css";
 
 export type Env = {
   Bindings: {
     DB: D1Database;
-    B2_BUCKET: string;
-    B2_REGION: string;
-    B2_KEY_ID: string;
-    B2_APP_KEY: string;
-    CRAWLER_API_URL: string;
-    CRAWLER_API_KEY: string;
+    VIDEO_FETCH_API_URL: string;
+    VIDEO_FETCH_API_KEY: string;
+    /** Added to each crawler `original_id` to form the public numeric slug (e.g. 5 + 100 → `/video/105.html`). */
+    SLUG_OFFSET_VALUE?: string;
   };
 };
 
+let synced = false;
+
 const app = new Hono<Env>();
+
+app.use("*", async (c, next) => {
+  if (!synced) {
+    synced = true;
+    c.executionCtx.waitUntil(syncFromCrawler(c.env));
+  }
+  return next();
+});
 
 app.get("/styles.css", (c) => {
   return c.body(STYLES_CSS, 200, {
@@ -26,7 +33,6 @@ app.get("/styles.css", (c) => {
 });
 
 app.route("/api", apiRoutes);
-app.route("/media", mediaRoutes);
 app.route("/", pageRoutes);
 
 export default app;

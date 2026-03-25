@@ -16,7 +16,6 @@ class VideoStatus(StrEnum):
     vtt_translated = "vtt_translated"
     meta_translated = "meta_translated"
     uploaded = "uploaded"
-    published = "published"
     low_density = "low_density"
     oversized = "oversized"
 

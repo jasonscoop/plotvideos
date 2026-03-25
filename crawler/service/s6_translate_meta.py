@@ -56,7 +56,7 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
         try:
             translate_video(video, languages)
             logger.info(
-                f"[{video.id} | {video.host} | {video.original_id}] translated"
+                f"[{video.id} | {video.host}] translated"
             )
         except Exception as e:
             VideoCrud.record_failure(

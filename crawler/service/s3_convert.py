@@ -19,7 +19,7 @@ def convert_video(video):
             video.id,
             VideoStatus.converted.log(f"Video file {video_path} not found."),
         )
-        logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
+        logger.warning(f"[{video.id} | {video.host}] {reason}")
         return
 
     duration = video.duration
@@ -33,7 +33,7 @@ def convert_video(video):
                 f"Duration is shorter than {MIN_ACCEPT_DURATION}s"
             ),
         )
-        logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
+        logger.warning(f"[{video.id} | {video.host}] {reason}")
         return
 
     media_to_wav(video_path, video.store_path.audio)
@@ -45,7 +45,7 @@ def convert_video(video):
             "failed_reason": "",
         }
     )
-    logger.info(f"[{video.id} | {video.host} | {video.original_id}] converted to audio")
+    logger.info(f"[{video.id} | {video.host}] converted to audio")
 
 
 def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:

@@ -13,14 +13,11 @@ from crawler.core.config import (
     B2_APPLICATION_KEY,
     B2_BUCKET_NAME,
 )
-from crawler.core.consts import WEBSITES
 from crawler.core.enums import VideoStatus, ThumbnailStatus
 from crawler.core.models import Video
 from crawler.crud.video_crud import VideoCrud
 from crawler.service.s1_fetch import fetch_video_urls
 from crawler.utils.download_utils import download_image
-from crawler.core.schemas import StorePath
-
 load_dotenv()
 
 # Configuration
@@ -92,12 +89,6 @@ def download_and_update_thumbnails():
 
         max_id = last_id
         for video in videos_to_process:
-
-            website_info = WEBSITES.get(video.host)
-            if website_info is None:
-                logger.info(f"⚠️ 【{video.id}】Unknown host {video.host}")
-                max_id = video.id
-                continue
 
             logger.info(
                 f"📥 【{video.id}】Downloading thumbnail: {video.thumbnail_url}"

@@ -1,13 +1,12 @@
 import time
+import zlib
 from loguru import logger
 from dotenv import load_dotenv
 
-from crawler.core.consts import WEBSITES
 from crawler.core.enums import VideoStatus
 from crawler.core.models import Video
 from crawler.crud.video_crud import VideoCrud
 from crawler.service.s1_fetch import fetch_video_urls
-from crawler.core.schemas import StorePath
 
 load_dotenv()
 BATCH_SIZE = 50
@@ -53,15 +52,6 @@ def search_and_add_videos():
                         continue
 
                     host = site["site"]["host"]
-                    website_info = WEBSITES.get(host)
-                    if not website_info:
-                        logger.error(f"❌ Can not find website from {host}")
-                        continue
-
-                    id_extractor = website_info[1]()
-                    if not id_extractor:
-                        logger.error(f"❌ Can not find a extractor for host {host}")
-                        continue
 
                     for link in site["links"]:
                         title = link.get("title")
@@ -71,24 +61,16 @@ def search_and_add_videos():
                         if not title or not url:
                             continue
 
-                        # Extract original_id for this link
-                        original_id = id_extractor.get(url)
-                        if not original_id:
-                            logger.error(f"❌ Can not find a id from: {url}")
-                            continue
-
-                        # Create video entry for all links
                         new_video = Video(
                             title=title,
                             url=url,
+                            url_crc32=zlib.crc32(url.encode()),
                             thumbnail_url=thumbnail_url or "",
-                            original_id=original_id,
                             host=host,
                             status=VideoStatus.fetched,
-                            keyword=video.keyword,  # Use search video's keyword
+                            keyword_id=video.keyword_id,
                             author_name=link.get("channel", {}).get("name", ""),
                             author_url=link.get("channel", {}).get("url", ""),
-                            store_dir=StorePath.build_prefix(host, original_id),
                         )
                         videos_to_update.append(new_video)
 

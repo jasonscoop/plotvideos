@@ -34,7 +34,7 @@ def translate_and_save(lang, vtt_content, video):
     translated_file = video.store_path.translated_vtts / f"{lang.code}.vtt"
     translated_file.write_text(translated_vtt)
     logger.info(
-        f"[{video.id} | {video.host} | {video.original_id}] vtt translated '{lang.code}'"
+        f"[{video.id} | {video.host}] vtt translated '{lang.code}'"
     )
 
 
@@ -53,7 +53,7 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
                 VideoStatus.subtitled.log("Subtitle content is empty"),
             )
             logger.warning(
-                f"[{video.id} | {video.host} | {video.original_id}] {reason}"
+                f"[{video.id} | {video.host}] {reason}"
             )
             continue
 
@@ -63,7 +63,7 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
                 VideoStatus.subtitled.log("Subtitle content is too short"),
             )
             logger.warning(
-                f"[{video.id} | {video.host} | {video.original_id}] {reason}"
+                f"[{video.id} | {video.host}] {reason}"
             )
             continue
 
@@ -73,12 +73,12 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
                 VideoStatus.subtitled.log("Subtitle file isn't exist"),
             )
             logger.warning(
-                f"[{video.id} | {video.host} | {video.original_id}] {reason}"
+                f"[{video.id} | {video.host}] {reason}"
             )
             continue
 
         logger.info(
-            f"[{video.id} | {video.host} | {video.original_id}] vtt translation started"
+            f"[{video.id} | {video.host}] vtt translation started"
         )
 
         try:
@@ -90,13 +90,13 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
 
             VideoCrud.update_status(video.id, VideoStatus.vtt_translated)
             logger.info(
-                f"[{video.id} | {video.host} | {video.original_id}] all vtt translated"
+                f"[{video.id} | {video.host}] all vtt translated"
             )
         except Exception as e:
             reason = VideoCrud.record_failure(
                 video.id, VideoStatus.vtt_translated.log(e)
             )
-            logger.error(f"[{video.id} | {video.original_id}] {reason}")
+            logger.error(f"[{video.id} | {video.host}] {reason}")
             exception_count += 1
             if exception_count >= 3:
                 raise e

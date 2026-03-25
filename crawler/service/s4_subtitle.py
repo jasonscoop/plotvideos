@@ -20,7 +20,7 @@ def subtitle_video(video: Video):
                 video.id,
                 VideoStatus.subtitled.log(f"Audio file not found: {video.store_path.audio}"),
             )
-            logger.warning(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
+            logger.warning(f"[{video.id} | {video.host}] {reason}")
             return None
 
         vtt_content, word_count = whisper_transcribe(video.store_path.audio)
@@ -37,7 +37,7 @@ def subtitle_video(video: Video):
                 }
             )
             logger.warning(
-                f"[{video.id} | {video.host} | {video.original_id}] low_density: {word_density} < {SUBTITLE_TOKEN_RATIO_THRESHOLD}"
+                f"[{video.id} | {video.host}] low_density: {word_density} < {SUBTITLE_TOKEN_RATIO_THRESHOLD}"
             )
             return None
 
@@ -52,14 +52,14 @@ def subtitle_video(video: Video):
             }
         )
         logger.info(
-            f"[{video.id} | {video.host} | {video.original_id}] subtitle generated"
+            f"[{video.id} | {video.host}] subtitle generated"
         )
         return None
     except Exception as e:
         reason = VideoCrud.record_failure(
             video.id, VideoStatus.subtitled.log(e)
         )
-        logger.info(f"[{video.id} | {video.host} | {video.original_id}] {reason}")
+        logger.info(f"[{video.id} | {video.host}] {reason}")
         traceback.print_exc()
         return e
 

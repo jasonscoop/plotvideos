@@ -42,43 +42,6 @@ Run with docker
 docker build . -t wuse
 ```
 
-## Migration: BunnyCDN to B2
-
-Migrate video embeds from BunnyCDN iframes to direct video tags with B2 URLs.
-
-hopevideos
-toovideos
-weekvideos
-flatvideos
-muchvideos
-
-```bash
-docker build . -t wuse
-
-
-docker run --rm --network container:dockerpress-mysql-1 \
-  -e MYSQL_PWD=12345678 \
-  mysql:8.0.36 \
-  mysqldump -h 127.0.0.1 -u root weekvideos > weekvideos.sql
-
-docker run --rm \
-  --network container:dockerpress-mysql-1  \
-  -e MYSQL_DB_HOST=127.0.0.1 \
-  -e MYSQL_DB_USER=root \
-  -e MYSQL_DB_PASSWORD=12345678 \
-  -e MYSQL_DB_NAME=muchvideos \
-  -e MYSQL_TABLE_PREFIX=wp_ \
-  -v ./works:/workspace/works \
-  wuse bash -c "pip install pymysql && python scripts/python/migrate_bunny_to_b2.py"
-
-
-docker run --rm --network container:dockerpress-mysql-1 \
-  -e MYSQL_PWD=12345678 \
-  mysql:8.0.36 \
-  mysql -h 127.0.0.1 -u root -p12345678 -e "USE toovideos; UPDATE wp_postmeta SET meta_value = REPLACE(meta_value, '/thumbnail.jpg', '/thumbnail.webp') WHERE meta_value LIKE '%/thumbnail.jpg%';"
-```
-
-
 yt-dlp download image:
 ```bash
 yt-dlp -j --proxy "socks5://127.0.0.1:9150"  https://xhamster.com/videos/would-you-like-us-to-suck-you-off-grandpa-serina-gomez-and-mia-trejsi-for-oldhans-xhJOEen > info.json

@@ -1,14 +1,17 @@
 from pathlib import Path
 
-from sqlalchemy.sql.coercions import cls
-
 from crawler.core.config import VIDEOS_DIR
-from crawler.core.consts import WEBSITES
 
 
 class StorePath:
-    def __init__(self, host: str, original_id: str):
-        self.prefix: str = self.build_prefix(host, original_id)
+    """Local + B2 layout: ``{id % 100 :02d}/{id}/…``.
+
+    Shard is ``id mod 100`` (00–99) so buckets stay balanced; the full ``id`` in the
+    next segment keeps paths unique (e.g. ``05/5/…``, ``05/105/…``, ``23/123/…``).
+    """
+
+    def __init__(self, video_id: int):
+        self.prefix: str = self.build_prefix(video_id)
         self.parent: Path = VIDEOS_DIR / self.prefix
 
         self.video_s3_key = self.prefix + "/video.mp4"
@@ -31,11 +34,9 @@ class StorePath:
         self.hls_master: Path = VIDEOS_DIR / self.hls_master_s3_key
 
     @classmethod
-    def build_prefix(cls, host: str, original_id: str):
-        if host not in WEBSITES:
-            raise ValueError(f"❌ Can not find website from {host}")
-
-        if not original_id:
-            raise ValueError(f"❌ Original id is required")
-
-        return f"{WEBSITES[host][0]}/{original_id[0:2]}/{original_id}"
+    def build_prefix(cls, video_id: int) -> str:
+        if not video_id:
+            raise ValueError("video id is required")
+        vid = int(video_id)
+        shard = f"{vid % 100:02d}"
+        return f"{shard}/{vid}"

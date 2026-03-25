@@ -61,13 +61,13 @@ def download_video(video: Video):
         if video_size > MAX_ACCEPT_VIDEO_SIZE:
             VideoCrud.update({"id": video.id, "status": VideoStatus.oversized})
             logger.warning(
-                f"[{video.id} | {video.host} | {video.original_id}] "
+                f"[{video.id} | {video.host}] "
                 f"Video oversized: {to_mb(video_size)}MB > {to_mb(MAX_ACCEPT_VIDEO_SIZE)}MB"
             )
             rm_video(video)
         else:
             logger.info(
-                f"[{video.id} | {video.host} | {video.original_id}]  Downloaded"
+                f"[{video.id} | {video.host}]  Downloaded"
             )
     except (SizeLimitExceeded, DownloadError, RegexNotFoundError) as e:
         VideoCrud.record_failure(video.id, VideoStatus.downloaded.log(e))

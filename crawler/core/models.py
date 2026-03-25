@@ -52,7 +52,6 @@ class Video(Base, BaseModel):
     __tablename__ = "videos"
     host = Column(String(50), nullable=False, index=True)
     title = Column(String(512), nullable=False)
-    original_id = Column(String(80), nullable=False)
     author_name = Column(String(100), nullable=False, default="")
     author_url = Column(String(500), nullable=False, default="")
     url = Column(String(512), nullable=False, unique=True)
@@ -85,9 +84,9 @@ class Video(Base, BaseModel):
 
     @property
     def store_path(self) -> StorePath:
-        if not self.host or not self.original_id:
-            logger.error(f"[{self.id}] host or original_id is not set")
-        return StorePath(self.host, self.original_id)
+        if not self.id:
+            logger.error("Video id is not set")
+        return StorePath(self.id)
 
     @property
     def subtitle_content(self) -> str:

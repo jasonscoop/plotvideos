@@ -20,7 +20,7 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
         for video in uploaded:
             rm_video(video)
             logger.info(
-                f"[{video.id} | {video.host} | {video.original_id}] remove all files"
+                f"[{video.id} | {video.host}] remove all files"
             )
         next_last_id = uploaded[-1].id
         did_work = True
@@ -30,7 +30,7 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
         for video in failed:
             rm_video(video)
             logger.info(
-                f"[{video.id} | {video.host} | {video.original_id}] remove permanently failed files"
+                f"[{video.id} | {video.host}] remove permanently failed files"
             )
         did_work = True
 

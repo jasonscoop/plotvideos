@@ -16,32 +16,11 @@ const createSuccessResponse = (data) => {
     });
 };
 
-const getIframeUrl = (libraryId, videoId) => {
-    const params = {
-        autoplay: 'false',
-        loop: 'false',
-        muted: 'false',
-        preload: 'true',
-        responsive: 'true',
-        captions: 'true'
-    };
-    const queryString = new URLSearchParams(params).toString();
-    return `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?${queryString}`;
-};
-
-const getThumbnailUrl = (cdnDomain, videoId) => {
-    return `https://${cdnDomain}/${videoId}/thumbnail.jpg`;
-};
-
 const processVideoUrls = (video) => {
-    const {bunny_library_id, bunny_video_id, bunny_cdn_domain, ...videoWithoutSensitive} = video;
-
     return {
-        ...videoWithoutSensitive,
+        ...video,
         tag_translations: {},
         category_translations: {},
-        iframe_url: getIframeUrl(bunny_library_id, bunny_video_id),
-        thumbnail_url: getThumbnailUrl(bunny_cdn_domain, bunny_video_id)
     };
 };
 
@@ -144,7 +123,7 @@ Deno.serve(async (req) => {
         // Get videos
         const {data: videos, error: videoError} = await supabase
             .from('videos')
-            .select("id, host, original_id, title, url, filename, keyword, title_translations, file_size, duration, author_name, author_url, width, height, aspect_ratio, tags, categories, bunny_library_id, bunny_video_id, bunny_cdn_domain")
+            .select("id, host, title, url, filename, keyword, title_translations, file_size, duration, author_name, author_url, width, height, aspect_ratio, tags, categories, thumbnail_url")
             .gt('id', lastId)
             .eq('status', 'published')
             .order('id', {ascending: true})

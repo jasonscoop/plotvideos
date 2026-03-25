@@ -8,6 +8,7 @@ from crawler.core.config import MAX_FAILED_NUM
 from crawler.core.connection import get_db
 from crawler.core.enums import VideoStatus
 from crawler.core.models import Video, TitleTranslation
+from crawler.core.schemas import StorePath
 
 
 class VideoCrud:
@@ -85,6 +86,9 @@ class VideoCrud:
             if to_insert:
                 for video in to_insert:
                     session.add(video)
+                session.flush()
+                for video in to_insert:
+                    video.store_dir = StorePath.build_prefix(video.id)
 
             session.commit()
             return len(to_insert), len(to_update)

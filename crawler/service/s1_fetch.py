@@ -9,10 +9,8 @@ from loguru import logger
 from crawler.crud.keyword_crud import KeywordCrud
 from crawler.crud.video_crud import VideoCrud
 from crawler.core.config import RAPIDAPI_KEY, RAPIDAPI_URL, S1_FETCH_MAX_PAGES
-from crawler.core.consts import WEBSITES
 from crawler.core.enums import VideoStatus
 from crawler.core.models import Video, Keyword
-from crawler.core.schemas import StorePath
 from crawler.utils.signal_utils import setup_graceful_shutdown, should_stop
 
 
@@ -47,11 +45,6 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
                 videos = []
                 site_host = site["site"]["host"]
                 name = site["site"]["name"]
-                website = WEBSITES.get(site_host)
-                if not website:
-                    logger.error("❌ Can not find a extractor for host %s", site_host)
-                    continue
-                id_extractor = website[1]()
 
                 try:
                     for link in site["links"]:
@@ -59,31 +52,27 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
                         if not title:
                             continue
 
-                        original_id = id_extractor.get(link.get("url"))
-                        if not original_id:
-                            logger.error(
-                                f"❌ Can not find a id from: {link.get('url')}"
-                            )
+                        url = link.get("url")
+                        if not url:
                             continue
 
                         new_video = Video(
                             title=link.get("title"),
-                            url=link.get("url"),
-                            url_crc32=zlib.crc32(link.get("url").encode()),
+                            url=url,
+                            url_crc32=zlib.crc32(url.encode()),
                             thumbnail_url=link.get("image"),
-                            original_id=original_id,
                             host=site_host,
                             status=VideoStatus.fetched,
                             keyword_id=keyword.id,
-                            author_name=link.get("channel", "").get("name", ""),
-                            author_url=link.get("channel", "").get("url", ""),
-                            store_dir=StorePath.build_prefix(site_host, original_id),
+                            author_name=link.get("channel", {}).get("name", ""),
+                            author_url=link.get("channel", {}).get("url", ""),
                         )
                         videos.append(new_video)
-                    added, updated = VideoCrud.batch_add_or_update(videos)
-                    logger.info(
-                        f"[{name}] fetched [{len(videos)}], added [{added}], updated [{updated}]"
-                    )
+                    if videos:
+                        added, updated = VideoCrud.batch_add_or_update(videos)
+                        logger.info(
+                            f"[{name}] fetched [{len(videos)}], added [{added}], updated [{updated}]"
+                        )
                 except Exception as e:
                     exception_count += 1
                     if exception_count >= 3:

@@ -25,16 +25,16 @@ def transcode_video(video: Video):
             ),
         )
         logger.error(
-            f"[{video.id} | {video.host} | {video.original_id}] Video '{video.store_path.video}' does not exist"
+            f"[{video.id} | {video.host}] Video '{video.store_path.video}' does not exist"
         )
         return False
 
     logger.info(
-        f"[{video.id} | {video.host} | {video.original_id}] generating HLS variants"
+        f"[{video.id} | {video.host}] generating HLS variants"
     )
     generate_hls(video.store_path.video, video.store_path.hls_dir)
     logger.info(
-        f"[{video.id} | {video.host} | {video.original_id}] HLS variants generated"
+        f"[{video.id} | {video.host}] HLS variants generated"
     )
     return True
 
@@ -43,14 +43,14 @@ def upload_video(video: Video, languages: List[Language]):
     """I/O-bound: upload to B2, then clean local files."""
     try:
         logger.info(
-            f"[{video.id} | {video.host} | {video.original_id}] start uploading to B2"
+            f"[{video.id} | {video.host}] start uploading to B2"
         )
 
         b2_client = get_b2_client()
         upload_results = b2_client.upload_video_and_subtitles(video, languages)
 
         logger.info(
-            f"[{video.id} | {video.host} | {video.original_id}] uploaded video and {len(upload_results['subtitle_urls'])} subtitle files to B2"
+            f"[{video.id} | {video.host}] uploaded video and {len(upload_results['subtitle_urls'])} subtitle files to B2"
         )
 
         # Mark uploaded in DB before deleting local files — if deletion fails,
@@ -65,7 +65,7 @@ def upload_video(video: Video, languages: List[Language]):
 
         rm_video(video)
         logger.info(
-            f"[{video.id} | {video.host} | {video.original_id}] cleaned up local files"
+            f"[{video.id} | {video.host}] cleaned up local files"
         )
     except Exception as e:
         VideoCrud.record_failure(video.id, VideoStatus.uploaded.log(e))

@@ -11,6 +11,7 @@
 
   var pageLang = cfg.pageLang;
   var sources = cfg.sources || [];
+  var subtitleTracks = cfg.subtitleTracks || [];
 
   if (typeof videojs === "undefined") return;
 
@@ -22,6 +23,15 @@
       vhs: { overrideNative: !videojs.browser.IS_SAFARI },
     },
     sources: sources,
+    tracks: subtitleTracks.map(function (t) {
+      return {
+        kind: t.kind,
+        src: t.src,
+        srclang: t.srclang,
+        label: t.label,
+        default: !!t.default,
+      };
+    }),
   });
   player.hlsQualitySelector({ displayCurrentQuality: true });
 

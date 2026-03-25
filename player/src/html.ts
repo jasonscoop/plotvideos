@@ -345,13 +345,6 @@ export function watchPage(
   const prefix = langPrefix(lang);
   const sidebar = homeSidebar(lang, prefix, navTags, navCategories, null);
 
-  const tracks = subtitleTracks
-    .map(
-      (tr) =>
-        `<track kind="subtitles" src="${esc(tr.url)}" srclang="${esc(tr.lang)}" label="${esc(tr.label)}"${tr.isDefault ? " default" : ""} />`
-    )
-    .join("\n        ");
-
   const kw = taxonomyLinks.keyword;
   const kwName = kw?.name?.trim() || "";
   const tagPills = taxonomyLinks.tags.filter(
@@ -381,6 +374,14 @@ export function watchPage(
         : []),
       ...(video.video_url ? [{ src: video.video_url, type: "video/mp4" as const }] : []),
     ],
+    /** Passed to Video.js only — avoid inline track tags (browser would fetch VTT before Video.js / CORS). */
+    subtitleTracks: subtitleTracks.map((tr) => ({
+      kind: "subtitles" as const,
+      src: tr.url,
+      srclang: tr.lang,
+      label: tr.label,
+      default: tr.isDefault,
+    })),
   };
 
   const seoTranscriptBlock =
@@ -417,9 +418,7 @@ export function watchPage(
           controls
           preload="auto"
           poster="${esc(video.thumbnail_url)}"
-        >
-          ${tracks}
-        </video>
+        ></video>
       </div>
 
       <h1 class="yt-title">${esc(video.title)}</h1>

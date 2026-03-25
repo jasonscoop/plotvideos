@@ -79,8 +79,6 @@ export async function resyncVideoTaxonomies(
   await db.prepare("DELETE FROM video_categories WHERE video_id = ?").bind(videoId).run();
 
   const tagNames = new Set<string>();
-  const kw = keyword?.trim();
-  if (kw) tagNames.add(kw);
   for (const t of tags) {
     const x = typeof t === "string" ? t.trim() : "";
     if (x) tagNames.add(x);
@@ -96,10 +94,16 @@ export async function resyncVideoTaxonomies(
     }
   }
 
+  const categoryNames = new Set<string>();
+  const kw = keyword?.trim();
+  if (kw) categoryNames.add(kw);
   for (const c of categories) {
     const x = typeof c === "string" ? c.trim() : "";
-    if (!x) continue;
-    const id = await getOrCreateTaxonomyId(db, "categories", x);
+    if (x) categoryNames.add(x);
+  }
+
+  for (const c of categoryNames) {
+    const id = await getOrCreateTaxonomyId(db, "categories", c);
     if (id != null) {
       await db
         .prepare("INSERT OR IGNORE INTO video_categories (video_id, category_id) VALUES (?, ?)")

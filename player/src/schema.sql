@@ -76,4 +76,5 @@ CREATE INDEX IF NOT EXISTS idx_video_tags_tag ON video_tags(tag_id);
 CREATE INDEX IF NOT EXISTS idx_video_categories_category ON video_categories(category_id);
 
 -- After creating these tables on an existing DB, run: POST /api/rebuild-taxonomies
--- (or re-sync videos so ingest repopulates junction rows).
+-- (or re-sync videos so ingest repopulates junction rows). Crawler `keyword` is stored
+-- in `video_categories` with `categories` JSON terms, not in `video_tags`.

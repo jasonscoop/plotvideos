@@ -327,28 +327,31 @@ async function _renderWatch(c: any, lang: string, video: any) {
     ? JSON.parse(translationResult.categories)
     : JSON.parse(video.categories || "[]");
 
-  const tagSlugMap = await fetchNameSlugMap(db, "tags", [
+  const tagSlugMap = await fetchNameSlugMap(db, "tags", displayTags);
+  const catSlugMap = await fetchNameSlugMap(db, "categories", [
     displayKeyword,
-    ...displayTags,
+    ...displayCategories,
   ]);
-  const catSlugMap = await fetchNameSlugMap(db, "categories", displayCategories);
   const kwTrim = displayKeyword.trim();
+  const kwLower = kwTrim.toLowerCase();
   const keywordLink =
-    kwTrim && tagSlugMap.has(kwTrim) ? { name: kwTrim, slug: tagSlugMap.get(kwTrim)! } : null;
+    kwTrim && catSlugMap.has(kwTrim) ? { name: kwTrim, slug: catSlugMap.get(kwTrim)! } : null;
   const tagLinks = displayTags
     .map((t) => {
       const tr = t.trim();
       const sl = tagSlugMap.get(tr);
       return sl ? { name: tr, slug: sl } : null;
     })
-    .filter((x): x is { name: string; slug: string } => x != null);
+    .filter((x): x is { name: string; slug: string } => x != null)
+    .filter((x) => !kwLower || x.name.trim().toLowerCase() !== kwLower);
   const categoryLinks = displayCategories
     .map((c) => {
       const cr = c.trim();
       const sl = catSlugMap.get(cr);
       return sl ? { name: cr, slug: sl } : null;
     })
-    .filter((x): x is { name: string; slug: string } => x != null);
+    .filter((x): x is { name: string; slug: string } => x != null)
+    .filter((x) => !kwLower || x.name.trim().toLowerCase() !== kwLower);
 
   const vttUrls = orderedSubtitleUrls(subtitleTracks, lang);
   const seoTranscriptCues =

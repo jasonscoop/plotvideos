@@ -162,15 +162,15 @@ function homeSidebar(
   return `<nav class="yt-home-sidebar">
         <a href="${prefix}/" class="yt-nav-item${homeActive}">🏠 ${t(lang, "latest_videos")}</a>
         ${
-          tagItems
-            ? `<div class="yt-nav-heading">${t(lang, "tags")}</div>
-        ${tagItems}`
-            : ""
-        }
-        ${
           catItems
             ? `<div class="yt-nav-heading">${t(lang, "categories")}</div>
         ${catItems}`
+            : ""
+        }
+        ${
+          tagItems
+            ? `<div class="yt-nav-heading">${t(lang, "tags")}</div>
+        ${tagItems}`
             : ""
         }
       </nav>`;
@@ -311,7 +311,7 @@ interface WatchData {
 }
 
 export interface WatchTaxonomyLinks {
-  /** Keyword row in DB is also linked as a tag when present in `tags` table. */
+  /** Crawler keyword; linked under `categories` for navigation and listings. */
   keyword: { name: string; slug: string } | null;
   tags: { name: string; slug: string }[];
   categories: { name: string; slug: string }[];
@@ -360,7 +360,7 @@ export function watchPage(
   const tagParts: string[] = [];
   if (kw) {
     tagParts.push(
-      `<a class="yt-tag yt-tag-keyword" href="${tagPageHref(prefix, kw.slug)}">#${esc(kw.name)}</a>`
+      `<a class="yt-tag yt-tag-keyword" href="${categoryPageHref(prefix, kw.slug)}">#${esc(kw.name)}</a>`
     );
   }
   for (const c of taxonomyLinks.categories) {

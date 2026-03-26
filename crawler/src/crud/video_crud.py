@@ -1,7 +1,7 @@
 from typing import List, Dict
 
 from sqlalchemy.orm import undefer
-from sqlalchemy import text
+from sqlalchemy import or_, text
 from tenacity import stop_after_attempt, retry, wait_fixed
 
 from core.config import MAX_FAILED_NUM
@@ -47,41 +47,49 @@ class VideoCrud:
         if len(videos) == 0:
             return 0, 0
 
+        # One fetch response can list the same URL twice; only the first row would match DB.
+        # Without deduping, two INSERTs for the same URL hit videos_url_key.
+        seen: set[str] = set()
+        deduped: List[Video] = []
+        for v in videos:
+            if v.url in seen:
+                continue
+            seen.add(v.url)
+            deduped.append(v)
+
         with get_db() as session:
-            # Get all videos with matching url_crc32 values
-            url_crc32s = [video.url_crc32 for video in videos]
-            potential_matches = (
-                session.query(Video).filter(Video.url_crc32.in_(url_crc32s)).all()
+            urls = list({v.url for v in deduped})
+            crc32s = list({v.url_crc32 for v in deduped})
+            # Load rows that may overlap this batch: same URL (unique) or same crc32 bucket.
+            candidates = (
+                session.query(Video)
+                .filter(or_(Video.url.in_(urls), Video.url_crc32.in_(crc32s)))
+                .all()
             )
+            existing_by_url = {row.url: row for row in candidates}
 
-            # Create lookup by url_crc32 for potential matches
-            potential_by_crc32 = {}
-            for video in potential_matches:
-                if video.url_crc32 not in potential_by_crc32:
-                    potential_by_crc32[video.url_crc32] = []
-                potential_by_crc32[video.url_crc32].append(video)
+            to_insert: List[Video] = []
+            to_update: List[Video] = []
 
-            to_insert = []
-            to_update = []
-
-            for video in videos:
-                existing_video = None
-
-                # Check if there are potential matches by url_crc32
-                if video.url_crc32 in potential_by_crc32:
-                    # Find exact match by comparing url
-                    for potential_match in potential_by_crc32[video.url_crc32]:
-                        if potential_match.url == video.url:
-                            existing_video = potential_match
-                            break
-
-                if existing_video:
-                    # Update thumbnail_url only
-                    if existing_video.thumbnail_url != video.thumbnail_url:
-                        existing_video.thumbnail_url = video.thumbnail_url
-                        to_update.append(existing_video)
-                else:
+            for video in deduped:
+                existing = existing_by_url.get(video.url)
+                if existing is None:
                     to_insert.append(video)
+                    continue
+
+                # Same video iff URL and url_crc32 both match (canonical identity).
+                same_video = existing.url_crc32 == video.url_crc32
+                if same_video:
+                    if existing.thumbnail_url != video.thumbnail_url:
+                        existing.thumbnail_url = video.thumbnail_url
+                        to_update.append(existing)
+                else:
+                    # Row exists for this URL but crc32 differs; cannot insert again (url unique).
+                    # Reconcile stored row to incoming crc32 + thumbnail.
+                    existing.url_crc32 = video.url_crc32
+                    if existing.thumbnail_url != video.thumbnail_url:
+                        existing.thumbnail_url = video.thumbnail_url
+                    to_update.append(existing)
 
             if to_insert:
                 for video in to_insert:

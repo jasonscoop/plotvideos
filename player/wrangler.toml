@@ -18,7 +18,7 @@ port = 8000
 [[d1_databases]]
 binding = "DB"
 database_name = "plotvideos-db"
-database_id = "local"
+database_id = "331653b8-0b55-42f2-9d10-24d9c58dc3dc"
 
 [triggers]
 crons = ["*/10 * * * *"]

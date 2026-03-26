@@ -1,4 +1,4 @@
-name = "luckvideos-player"
+name = "plotvideos-player"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
@@ -17,7 +17,7 @@ port = 8000
 
 [[d1_databases]]
 binding = "DB"
-database_name = "luckvideos-db"
+database_name = "plotvideos-db"
 database_id = "local"
 
 [triggers]

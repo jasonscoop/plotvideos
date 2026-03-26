@@ -36,6 +36,7 @@ htmlcov/
 # Local settings
 .env
 .env.local
+*.env
 
 # IDE
 .vscode/

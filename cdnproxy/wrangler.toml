@@ -1,11 +1,10 @@
-name = "plotvideos-cdnproxy"
+name = "plotvideos-cdn-proxy"
 main = "src/index.js"
 compatibility_date = "2025-01-01"
 
 # Non-secret config (override in dashboard or here):
 [vars]
-B2_BUCKET = ""
-B2_REGION = ""
+
 
 # Sensitive: set for production with:
 #   wrangler secret put B2_KEY_ID

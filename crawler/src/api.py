@@ -9,6 +9,7 @@ from core.config import CRAWLER_API_KEY, b2_cdn_object_url
 from core.enums import VideoStatus
 from core.languages import Language
 from core.models import Video
+from core.path_layout import video_cdn_keys
 from crud.term_crud import TermCrud
 from crud.video_title_translation_crud import TitleTranslationCrud
 
@@ -69,7 +70,7 @@ def _fetch_uploaded(last_id: Optional[int], limit: int) -> List[Video]:
 
 
 def _build_payload(video: Video, languages: list) -> dict:
-    sp = video.store_path
+    sp = video_cdn_keys(video.id)
     title_translations = TitleTranslationCrud.get_by_video_id_as_dict(video.id)
     keyword = video.keyword.name if video.keyword else ""
     tags = video.tags or []

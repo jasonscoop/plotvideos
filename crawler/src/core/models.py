@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from loguru import logger
 from sqlalchemy import (
     Column,
@@ -18,7 +20,9 @@ from sqlalchemy.sql import func
 
 from core.connection import engine
 from core.enums import VideoStatus, ThumbnailStatus
-from core.schemas import StorePath
+
+if TYPE_CHECKING:
+    from core.schemas import StorePath
 
 Base = declarative_base()
 
@@ -83,7 +87,9 @@ class Video(Base, BaseModel):
     __table_args__ = (Index("idx_id_status", "id", "status"),)
 
     @property
-    def store_path(self) -> StorePath:
+    def store_path(self) -> "StorePath":
+        from core.schemas import StorePath
+
         if not self.id:
             logger.error("Video id is not set")
         return StorePath(self.id)

@@ -3,7 +3,7 @@ from typing import BinaryIO, Optional
 import stt2vtt
 from faster_whisper import WhisperModel
 
-from core.consts import MODELS_DIR
+from core.workdirs import MODELS_DIR
 from core.config import (
     WHISPER_DEVICE,
     WHISPER_COMPUTE_TYPE,

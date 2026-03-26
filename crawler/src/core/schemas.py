@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from core.consts import VIDEOS_DIR
+from core.path_layout import store_prefix
 
 
 class StorePath:
@@ -8,9 +8,12 @@ class StorePath:
 
     Shard is ``id mod 100`` (00–99) so buckets stay balanced; the full ``id`` in the
     next segment keeps paths unique (e.g. ``05/5/…``, ``05/105/…``, ``23/123/…``).
+    Local paths import ``workdirs`` only inside ``__init__`` (pipeline / workers).
     """
 
     def __init__(self, video_id: int):
+        from core.workdirs import VIDEOS_DIR
+
         self.prefix: str = self.build_prefix(video_id)
         self.parent: Path = VIDEOS_DIR / self.prefix
 
@@ -35,8 +38,4 @@ class StorePath:
 
     @classmethod
     def build_prefix(cls, video_id: int) -> str:
-        if not video_id:
-            raise ValueError("video id is required")
-        vid = int(video_id)
-        shard = f"{vid % 100:02d}"
-        return f"{shard}/{vid}"
+        return store_prefix(video_id)

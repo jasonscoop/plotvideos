@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from loguru import logger
 from functools import wraps
 
-from core.consts import LOGS_DIR
+from core.workdirs import LOGS_DIR
 
 
 def get_now():

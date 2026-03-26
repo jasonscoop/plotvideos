@@ -1,7 +1,6 @@
 CREATE TABLE IF NOT EXISTS videos (
   id            INTEGER PRIMARY KEY AUTOINCREMENT,
   original_id   INTEGER NOT NULL UNIQUE,
-  slug          INTEGER NOT NULL,
   title         TEXT    NOT NULL,
   duration      INTEGER NOT NULL DEFAULT 0,
   width         INTEGER NOT NULL DEFAULT 0,
@@ -16,7 +15,9 @@ CREATE TABLE IF NOT EXISTS videos (
   created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 
--- Migration (TEXT slug → numeric): recreate `videos` or ALTER; backfill slug = original_id + SLUG_OFFSET_VALUE then set NOT NULL.
+-- Public watch URL is `/video/{id + SLUG_OFFSET}.html` (no stored slug column). Existing DBs:
+--   ALTER TABLE videos DROP COLUMN slug;  (SQLite 3.35+)
+--   DROP INDEX IF EXISTS idx_videos_slug;
 
 CREATE TABLE IF NOT EXISTS video_translations (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,7 +70,6 @@ CREATE TABLE IF NOT EXISTS video_categories (
 );
 
 CREATE INDEX IF NOT EXISTS idx_videos_created_at ON videos(created_at DESC);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_videos_slug ON videos(slug);
 CREATE INDEX IF NOT EXISTS idx_video_translations_video_id ON video_translations(video_id);
 CREATE INDEX IF NOT EXISTS idx_subtitle_tracks_video_id ON subtitle_tracks(video_id);
 CREATE INDEX IF NOT EXISTS idx_video_tags_tag ON video_tags(tag_id);

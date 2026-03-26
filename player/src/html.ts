@@ -1,4 +1,5 @@
 import { t, LANGUAGES, langPrefix, nativeName, isRtl } from "./i18n";
+import { publicWatchSegmentFromVideoId } from "./slug";
 import type { VttCue } from "./vtt";
 
 const GLOBAL_CSS = `
@@ -99,16 +100,12 @@ function durationIso8601(seconds: number): string | undefined {
   return p;
 }
 
-function videoWatchPath(v: { id: number; slug?: number | null }): string {
-  if (v.slug == null) return `/videos/${v.id}`;
-  const n = Number(v.slug);
-  if (!Number.isFinite(n)) return `/videos/${v.id}`;
-  return `/video/${Math.trunc(n)}.html`;
+function videoWatchPath(v: { id: number }, slugOffset: number): string {
+  return `/video/${publicWatchSegmentFromVideoId(v.id, slugOffset)}.html`;
 }
 
 interface VideoCard {
   id: number;
-  slug?: number | null;
   title: string;
   duration: number;
   thumbnail_url: string;
@@ -185,7 +182,8 @@ export function indexPage(
   q: string,
   navTags: NavTaxonomyItem[] = [],
   navCategories: NavTaxonomyItem[] = [],
-  activeTaxonomy: ActiveTaxonomy = null
+  activeTaxonomy: ActiveTaxonomy = null,
+  slugOffset = 0
 ) {
   const prefix = langPrefix(lang);
   const qParam = q ? `&q=${encodeURIComponent(q)}` : "";
@@ -195,7 +193,7 @@ export function indexPage(
   const cards = videos
     .map(
       (v) => `
-    <a href="${prefix}${videoWatchPath(v)}" class="yt-card">
+    <a href="${prefix}${videoWatchPath(v, slugOffset)}" class="yt-card">
       <div class="yt-thumb">
         ${
           v.thumbnail_url
@@ -239,7 +237,8 @@ export function taxonomyListingPage(
   navTags: NavTaxonomyItem[],
   navCategories: NavTaxonomyItem[],
   browserTitle: string,
-  currentPath: string
+  currentPath: string,
+  slugOffset = 0
 ) {
   const prefix = langPrefix(lang);
   const baseHref =
@@ -253,7 +252,7 @@ export function taxonomyListingPage(
   const cards = videos
     .map(
       (v) => `
-    <a href="${prefix}${videoWatchPath(v)}" class="yt-card">
+    <a href="${prefix}${videoWatchPath(v, slugOffset)}" class="yt-card">
       <div class="yt-thumb">
         ${
           v.thumbnail_url
@@ -298,7 +297,6 @@ export function taxonomyListingPage(
 
 interface WatchData {
   id: number;
-  slug?: number | null;
   title: string;
   original_title: string;
   duration: number;
@@ -326,7 +324,6 @@ interface SubTrack {
 
 interface RecommendedVideo {
   id: number;
-  slug?: number | null;
   title: string;
   duration: number;
   thumbnail_url: string;
@@ -340,7 +337,8 @@ export function watchPage(
   navTags: NavTaxonomyItem[] = [],
   navCategories: NavTaxonomyItem[] = [],
   seoTranscriptCues: VttCue[] = [],
-  taxonomyLinks: WatchTaxonomyLinks = { keyword: null, tags: [], categories: [] }
+  taxonomyLinks: WatchTaxonomyLinks = { keyword: null, tags: [], categories: [] },
+  slugOffset = 0
 ) {
   const prefix = langPrefix(lang);
   const sidebar = homeSidebar(lang, prefix, navTags, navCategories, null);
@@ -434,7 +432,7 @@ export function watchPage(
   ${recommended.length ? `<h2 class="yt-recommended-title">${t(lang, "recommended")}</h2>` : ""}
   <div class="yt-recommended">
     ${recommended.map((r) => `
-      <a href="${prefix}${videoWatchPath(r)}" class="yt-card">
+      <a href="${prefix}${videoWatchPath(r, slugOffset)}" class="yt-card">
         <div class="yt-thumb">
           ${r.thumbnail_url ? `<img src="${esc(r.thumbnail_url)}" alt="${esc(r.title)}" loading="lazy" />` : ""}
           ${r.duration ? `<span class="yt-duration">${fmtDuration(r.duration)}</span>` : ""}
@@ -452,7 +450,7 @@ export function watchPage(
 
   const content = `<div class="yt-home">${sidebar}<div class="yt-home-main yt-watch-page-main">${watchBody}</div></div>`;
 
-  return layout(`${video.title} - LuckVideos`, lang, content, "", videoWatchPath(video), {
+  return layout(`${video.title} - LuckVideos`, lang, content, "", videoWatchPath(video, slugOffset), {
     playerAssets: true,
     jsonLd,
   });

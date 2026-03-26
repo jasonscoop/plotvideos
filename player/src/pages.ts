@@ -3,12 +3,17 @@ import type { Env } from "./index";
 import { indexPage, watchPage, taxonomyListingPage, type NavTaxonomyItem } from "./html";
 import { DEFAULT_LANG, isValidLang, langPrefix, t } from "./i18n";
 import { fetchVttCues, orderedSubtitleUrls } from "./vtt";
-import { parseTaxonomySlugParam } from "./slug";
+import {
+  parseTaxonomySlugParam,
+  parseSlugOffsetValue,
+  videoIdFromPublicWatchSegment,
+  publicWatchSegmentFromVideoId,
+} from "./slug";
 
 export const pageRoutes = new Hono<Env>();
 
-/** Parse `/video/<slug>.html` segment: accepts `123` or `123.0` (float artifact), returns INTEGER slug or null. */
-function parsePublicSlugParam(slugParam: string): number | null {
+/** Parse `/video/<n>.html` segment: accepts `123` or `123.0` (float artifact), returns INTEGER or null. */
+function parsePublicWatchSegmentParam(slugParam: string): number | null {
   const s = slugParam.replace(/\.html$/i, "").trim();
   if (!/^\d+(\.0+)?$/.test(s)) return null;
   const n = Number(s);
@@ -53,8 +58,13 @@ async function fetchNameSlugMap(
   return new Map(rows.results.map((r) => [r.name, r.slug]));
 }
 
+function watchSlugOffset(c: { env: Env["Bindings"] }): number {
+  return parseSlugOffsetValue(c.env.SLUG_OFFSET_VALUE);
+}
+
 async function resolveIndex(c: any, lang: string) {
   const db = c.env.DB;
+  const slugOffset = watchSlugOffset(c);
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = 24;
   const q = c.req.query("q")?.trim() || "";
@@ -101,7 +111,18 @@ async function resolveIndex(c: any, lang: string) {
   }));
 
   return c.html(
-    indexPage(lang, videos as any, page, totalPages, total, q, navTags.results, navCategories.results, null)
+    indexPage(
+      lang,
+      videos as any,
+      page,
+      totalPages,
+      total,
+      q,
+      navTags.results,
+      navCategories.results,
+      null,
+      slugOffset
+    )
   );
 }
 
@@ -159,6 +180,7 @@ async function resolveTagListing(c: any, lang: string) {
   const prefix = langPrefix(lang);
   const pagePath = `${prefix}/tag/${row.slug}.html`;
   const browserTitle = t(lang, "tag_page_title").replace("{name}", row.name);
+  const slugOffset = watchSlugOffset(c);
 
   return c.html(
     taxonomyListingPage(
@@ -173,7 +195,8 @@ async function resolveTagListing(c: any, lang: string) {
       navTags,
       navCategories,
       browserTitle,
-      pagePath
+      pagePath,
+      slugOffset
     )
   );
 }
@@ -232,6 +255,7 @@ async function resolveCategoryListing(c: any, lang: string) {
   const prefix = langPrefix(lang);
   const pagePath = `${prefix}/category/${row.slug}.html`;
   const browserTitle = t(lang, "category_page_title").replace("{name}", row.name);
+  const slugOffset = watchSlugOffset(c);
 
   return c.html(
     taxonomyListingPage(
@@ -246,20 +270,22 @@ async function resolveCategoryListing(c: any, lang: string) {
       navTags,
       navCategories,
       browserTitle,
-      pagePath
+      pagePath,
+      slugOffset
     )
   );
 }
 
 async function resolveWatchBySlug(c: any, lang: string) {
   const db = c.env.DB;
-  const slugNum = parsePublicSlugParam(c.req.param("slug"));
-  if (slugNum == null) return c.text("Video not found", 404);
+  const segment = parsePublicWatchSegmentParam(c.req.param("slug"));
+  if (segment == null) return c.text("Video not found", 404);
 
-  const video = await db
-    .prepare("SELECT * FROM videos WHERE slug = ?")
-    .bind(slugNum)
-    .first<any>();
+  const offset = watchSlugOffset(c);
+  const videoId = videoIdFromPublicWatchSegment(segment, offset);
+  if (videoId < 1) return c.text("Video not found", 404);
+
+  const video = await db.prepare("SELECT * FROM videos WHERE id = ?").bind(videoId).first<any>();
 
   if (!video) return c.text("Video not found", 404);
   return _renderWatch(c, lang, video);
@@ -267,7 +293,8 @@ async function resolveWatchBySlug(c: any, lang: string) {
 
 async function resolveWatch(c: any, lang: string) {
   const db = c.env.DB;
-  const id = c.req.param("id");
+  const id = Math.trunc(Number(c.req.param("id")));
+  if (!Number.isFinite(id) || id < 1) return c.text("Video not found", 404);
 
   const video = await db
     .prepare("SELECT * FROM videos WHERE id = ?")
@@ -276,16 +303,14 @@ async function resolveWatch(c: any, lang: string) {
 
   if (!video) return c.text("Video not found", 404);
 
-  const slug = video.slug;
-  if (slug != null && Number.isFinite(Number(slug))) {
-    return c.redirect(`${langPrefix(lang)}/video/${Math.trunc(Number(slug))}.html`, 302);
-  }
-  return _renderWatch(c, lang, video);
+  const seg = publicWatchSegmentFromVideoId(video.id, watchSlugOffset(c));
+  return c.redirect(`${langPrefix(lang)}/video/${seg}.html`, 302);
 }
 
 async function _renderWatch(c: any, lang: string, video: any) {
   const db = c.env.DB;
   const id = video.id;
+  const slugOffset = watchSlugOffset(c);
 
   const [translationResult, subsResult, recResult, navTagsResult, navCategoriesResult] = await Promise.all([
     db
@@ -298,12 +323,12 @@ async function _renderWatch(c: any, lang: string, video: any) {
       .all<{ lang: string; label: string; url: string }>(),
     lang === "en"
       ? db
-          .prepare("SELECT id, slug, title, duration, thumbnail_url FROM videos WHERE id != ? ORDER BY RANDOM() LIMIT 10")
+          .prepare("SELECT id, title, duration, thumbnail_url FROM videos WHERE id != ? ORDER BY RANDOM() LIMIT 10")
           .bind(id)
           .all<any>()
       : db
           .prepare(
-            `SELECT v.id, v.slug, COALESCE(vt.title, v.title) AS title, v.duration, v.thumbnail_url
+            `SELECT v.id, COALESCE(vt.title, v.title) AS title, v.duration, v.thumbnail_url
              FROM videos v LEFT JOIN video_translations vt ON vt.video_id = v.id AND vt.lang = ?
              WHERE v.id != ? ORDER BY RANDOM() LIMIT 10`
           )
@@ -362,7 +387,6 @@ async function _renderWatch(c: any, lang: string, video: any) {
       lang,
       {
         id: video.id,
-        slug: video.slug,
         title: displayTitle,
         original_title: video.title,
         duration: video.duration,
@@ -378,7 +402,8 @@ async function _renderWatch(c: any, lang: string, video: any) {
       navTagsResult.results,
       navCategoriesResult.results,
       seoTranscriptCues,
-      { keyword: keywordLink, tags: tagLinks, categories: categoryLinks }
+      { keyword: keywordLink, tags: tagLinks, categories: categoryLinks },
+      slugOffset
     )
   );
 }

@@ -10,7 +10,7 @@ export type Env = {
     DB: D1Database;
     VIDEO_FETCH_API_URL: string;
     VIDEO_FETCH_API_KEY: string;
-    /** Added to each crawler `original_id` to form the public numeric slug (e.g. 5 + 100 → `/video/105.html`). */
+    /** Added to each D1 `videos.id` for the public watch URL only (e.g. id 5 + offset 100 → `/video/105.html`). Not stored in D1. Defaults to 0 if unset. */
     SLUG_OFFSET_VALUE?: string;
   };
 };

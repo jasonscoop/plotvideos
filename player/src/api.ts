@@ -13,8 +13,6 @@ interface TranslationPayload {
 
 interface IngestPayload {
   original_id: number;
-  /** Optional override; default is original_id + SLUG_OFFSET_VALUE (public URL slug). */
-  slug?: number;
   title: string;
   duration?: number;
   width?: number;
@@ -28,16 +26,6 @@ interface IngestPayload {
   categories?: string[];
   translations?: Record<string, TranslationPayload>;
   subtitle_tracks?: { lang: string; label: string; url: string }[];
-}
-
-function publicSlug(originalId: number, slugOffset: number, override?: number): number {
-  if (override != null && Number.isFinite(override)) return Math.trunc(override);
-  return originalId + slugOffset;
-}
-
-function parseSlugOffsetValue(raw: string | undefined): number {
-  const n = parseInt(raw ?? "0", 10);
-  return Number.isFinite(n) ? n : 0;
 }
 
 async function getOrCreateTaxonomyId(
@@ -130,19 +118,17 @@ export async function rebuildAllTaxonomies(db: D1Database): Promise<{ videos: nu
   return { videos: n };
 }
 
-async function ingestVideo(db: D1Database, body: IngestPayload, slugOffset: number): Promise<number> {
-  const slug = publicSlug(body.original_id, slugOffset, body.slug);
+async function ingestVideo(db: D1Database, body: IngestPayload): Promise<number> {
   const tagsJson = JSON.stringify(body.tags || []);
   const catsJson = JSON.stringify(body.categories || []);
 
   const result = await db
     .prepare(
-      `INSERT INTO videos (original_id, slug, title,
+      `INSERT INTO videos (original_id, title,
         duration, width, height, thumbnail_url, video_url, hls_url,
         store_dir, keyword, tags, categories)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(original_id) DO UPDATE SET
-        slug = excluded.slug,
         title = excluded.title,
         duration = excluded.duration,
         width = excluded.width,
@@ -158,7 +144,6 @@ async function ingestVideo(db: D1Database, body: IngestPayload, slugOffset: numb
     )
     .bind(
       body.original_id,
-      slug,
       body.title,
       body.duration || 0,
       body.width || 0,
@@ -241,7 +226,6 @@ async function syncLanguages(db: D1Database, crawlerUrl: string, crawlerKey: str
 export async function syncFromCrawler(env: Env["Bindings"]): Promise<{ synced: number }> {
   const crawlerUrl = env.VIDEO_FETCH_API_URL;
   const crawlerKey = env.VIDEO_FETCH_API_KEY;
-  const slugOffset = parseSlugOffsetValue(env.SLUG_OFFSET_VALUE);
 
   await syncLanguages(env.DB, crawlerUrl, crawlerKey);
 
@@ -264,7 +248,7 @@ export async function syncFromCrawler(env: Env["Bindings"]): Promise<{ synced: n
     if (!videos.length) break;
 
     for (const video of videos) {
-      await ingestVideo(env.DB, video, slugOffset);
+      await ingestVideo(env.DB, video);
       synced++;
     }
 

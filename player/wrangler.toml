@@ -26,4 +26,5 @@ crons = ["*/10 * * * *"]
 [vars]
 VIDEO_FETCH_API_URL = ""
 VIDEO_FETCH_API_KEY = ""
+# Optional; if you omit this key entirely, runtime defaults to 0 (see parseSlugOffsetValue).
 SLUG_OFFSET_VALUE = "0"

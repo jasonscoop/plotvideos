@@ -1,5 +1,5 @@
 {
-  "name": "luckvideos-cdnproxy",
+  "name": "plotvideos-cdn-proxy",
   "private": true,
   "scripts": {
     "dev": "wrangler dev",

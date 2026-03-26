@@ -24,6 +24,4 @@ database_id = "local"
 crons = ["*/10 * * * *"]
 
 [vars]
-VIDEO_FETCH_API_URL=
-VIDEO_FETCH_API_KEY=
-SLUG_OFFSET_VALUE=21753
+SLUG_OFFSET_VALUE = "21753"

@@ -1,10 +1,7 @@
-"""Object key layout for stored video assets (B2 / CDN). No local filesystem — safe for API."""
-
 from dataclasses import dataclass
 
 
 def store_prefix(video_id: int) -> str:
-    """``{shard}/{id}`` e.g. ``05/123``."""
     if not video_id:
         raise ValueError("video id is required")
     vid = int(video_id)
@@ -22,7 +19,6 @@ class VideoCdnKeys:
 
 
 def video_cdn_keys(video_id: int) -> VideoCdnKeys:
-    """Relative object keys under the bucket / CDN root (same layout as ``StorePath`` string fields)."""
     p = store_prefix(video_id)
     hls_p = f"{p}/hls"
     return VideoCdnKeys(

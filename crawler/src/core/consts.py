@@ -1,5 +1,3 @@
-"""Lightweight constants (safe to import from API, enums, etc.). No filesystem side effects."""
-
 DB_ERROR_LOG_LENGTH = 1000
 
 USER_AGENTS = [

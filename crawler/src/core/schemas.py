@@ -4,13 +4,6 @@ from core.path_layout import store_prefix
 
 
 class StorePath:
-    """Local + B2 layout: ``{id % 100 :02d}/{id}/…``.
-
-    Shard is ``id mod 100`` (00–99) so buckets stay balanced; the full ``id`` in the
-    next segment keeps paths unique (e.g. ``05/5/…``, ``05/105/…``, ``23/123/…``).
-    Local paths import ``workdirs`` only inside ``__init__`` (pipeline / workers).
-    """
-
     def __init__(self, video_id: int):
         from core.workdirs import VIDEOS_DIR
 

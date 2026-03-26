@@ -18,7 +18,6 @@ _api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
 def _get_api_key(request: Request) -> str:
-    """Rate-limit key: use the API key header value."""
     return request.headers.get("X-API-Key", request.client.host)
 
 

@@ -15,7 +15,7 @@ import shutil
 
 from loguru import logger
 
-from core.config import VIDEOS_DIR
+from core.consts import VIDEOS_DIR
 from core.connection import get_db
 from core.models import Video
 from core.schemas import StorePath

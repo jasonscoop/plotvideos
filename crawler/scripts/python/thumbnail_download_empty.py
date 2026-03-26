@@ -8,8 +8,8 @@ from b2sdk.v2 import B2Api, InMemoryAccountInfo
 from dotenv import load_dotenv
 import yt_dlp
 
+from core.consts import WORKS_DIR
 from core.config import (
-    WORKS_DIR,
     B2_APPLICATION_KEY_ID,
     B2_APPLICATION_KEY,
     B2_BUCKET_NAME,

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from core.config import VIDEOS_DIR
+from core.consts import VIDEOS_DIR
 
 
 class StorePath:

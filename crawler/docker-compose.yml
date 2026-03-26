@@ -16,7 +16,7 @@ services:
     depends_on:
       - tor
     volumes:
-      - ../works:/workspace/works
+      - ./works:/workspace/works
     command: python -m scheduler --runner=all
 
   api:

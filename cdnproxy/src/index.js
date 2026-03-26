@@ -127,33 +127,41 @@ async function handleFetch(request, env) {
   }
 
   const path = url.pathname.toLowerCase();
-  // Images: B2 may store wrong Content-Type; set explicitly so browsers/CDN don’t treat as video.
+  // B2 may store wrong Content-Type (e.g. video/* or octet-stream). Override so Chrome doesn’t
+  // open the URL in the video pipeline (second Range request, DevTools “media” type).
+  let explicitType = "";
   if (path.endsWith(".webp")) {
-    responseHeaders.set("Content-Type", "image/webp");
+    explicitType = "image/webp";
   } else if (path.endsWith(".png")) {
-    responseHeaders.set("Content-Type", "image/png");
+    explicitType = "image/png";
   } else if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
-    responseHeaders.set("Content-Type", "image/jpeg");
+    explicitType = "image/jpeg";
   } else if (path.endsWith(".gif")) {
-    responseHeaders.set("Content-Type", "image/gif");
+    explicitType = "image/gif";
   } else if (path.endsWith(".avif")) {
-    responseHeaders.set("Content-Type", "image/avif");
+    explicitType = "image/avif";
   } else if (path.endsWith(".svg")) {
-    responseHeaders.set("Content-Type", "image/svg+xml");
+    explicitType = "image/svg+xml";
   } else if (path.endsWith(".ico")) {
-    responseHeaders.set("Content-Type", "image/x-icon");
+    explicitType = "image/x-icon";
   } else if (path.endsWith(".vtt")) {
-    responseHeaders.set("Content-Type", "text/vtt");
+    explicitType = "text/vtt";
   } else if (path.endsWith(".m3u8")) {
-    responseHeaders.set("Content-Type", "application/vnd.apple.mpegurl");
+    explicitType = "application/vnd.apple.mpegurl";
   } else if (path.endsWith(".m4s")) {
-    responseHeaders.set("Content-Type", "video/iso.segment");
+    explicitType = "video/iso.segment";
   } else if (path.endsWith(".ts")) {
-    responseHeaders.set("Content-Type", "video/mp2t");
+    explicitType = "video/mp2t";
   } else if (path.endsWith(".mp4")) {
-    responseHeaders.set("Content-Type", "video/mp4");
+    explicitType = "video/mp4";
   } else if (path.endsWith(".webm")) {
-    responseHeaders.set("Content-Type", "video/webm");
+    explicitType = "video/webm";
+  }
+  if (explicitType) {
+    responseHeaders.delete("Content-Type");
+    responseHeaders.set("Content-Type", explicitType);
+    // Stops Chrome from MIME-sniffing navigation loads as video (avoids duplicate Range/media fetch).
+    responseHeaders.set("X-Content-Type-Options", "nosniff");
   }
   responseHeaders.set("Accept-Ranges", "bytes");
   responseHeaders.set("Cache-Control", "public, max-age=31536000");

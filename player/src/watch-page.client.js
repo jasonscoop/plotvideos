@@ -25,6 +25,8 @@
     playbackRates: [0.5, 1, 1.25, 1.5, 2],
     html5: {
       vhs: { overrideNative: !videojs.browser.IS_SAFARI },
+      // Fetch each .vtt only when that track’s mode becomes non-disabled (see Video.js TextTrack).
+      preloadTextTracks: false,
     },
     sources: sources,
     controlBar: {

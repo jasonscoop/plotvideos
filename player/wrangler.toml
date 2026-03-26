@@ -1,4 +1,4 @@
-name = "plotvideos-player"
+name = "plotvideos"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
@@ -24,7 +24,6 @@ database_id = "local"
 crons = ["*/10 * * * *"]
 
 [vars]
-VIDEO_FETCH_API_URL = ""
-VIDEO_FETCH_API_KEY = ""
-# Optional; if you omit this key entirely, runtime defaults to 0 (see parseSlugOffsetValue).
-SLUG_OFFSET_VALUE = "0"
+VIDEO_FETCH_API_URL=
+VIDEO_FETCH_API_KEY=
+SLUG_OFFSET_VALUE=21753

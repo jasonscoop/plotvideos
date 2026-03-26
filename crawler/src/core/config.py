@@ -1,0 +1,109 @@
+from os import getenv
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+from utils.env_utils import get_str, get_int, get_bool, get_float
+
+load_dotenv()
+
+
+def _project_root() -> Path:
+    """Directory that contains `pyproject.toml` (Python project root, e.g. `crawler/` or `/workspace` in Docker)."""
+    p = Path(__file__).resolve().parent
+    while p != p.parent:
+        if (p / "pyproject.toml").exists():
+            return p
+        p = p.parent
+    raise RuntimeError("Could not find pyproject.toml above config.py")
+
+
+def _works_dir(project_root: Path) -> Path:
+    """Prefer repo-root `works/` (sibling of `crawler/`); else `crawler/works` (e.g. Docker mount)."""
+    repo_works = project_root.parent / "works"
+    local_works = project_root / "works"
+    if repo_works.is_dir():
+        return repo_works
+    if local_works.is_dir():
+        return local_works
+    return repo_works
+
+
+WORKS_DIR = _works_dir(_project_root())
+
+VIDEOS_DIR = WORKS_DIR.joinpath("videos")
+VIDEOS_DIR.mkdir(exist_ok=True)
+LOGS_DIR = WORKS_DIR.joinpath("logs")
+LOGS_DIR.mkdir(exist_ok=True)
+MODELS_DIR = WORKS_DIR.joinpath("models")
+
+DB_URL = getenv("DB_URL")
+
+RAPIDAPI_URL = getenv("RAPIDAPI_URL", "https://quality-porn.p.rapidapi.com/search")
+RAPIDAPI_KEY = getenv("RAPIDAPI_KEY")
+RAPIDAPI_FETCH_PAGE = get_int("RAPIDAPI_FETCH_PAGE", 2)
+
+RAPIDAPI_AI_TRANSLATE_KEY_URL = getenv("RAPIDAPI_AI_TRANSLATE_KEY_URL", "")
+RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL = getenv(
+    "RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL", ""
+)
+
+YT_DLP_PROXY = getenv("YT_DLP_PROXY", None)
+
+MAX_ACCEPT_VIDEO_SIZE = get_int("MAX_ACCEPT_VIDEO_SIZE", 1 * 1024 * 1024 * 1024)  # 1GB maximum
+MIN_ACCEPT_DURATION = get_int("MIN_ACCEPT_DURATION", 3 * 60)  # 3 mins
+SUBTITLE_TOKEN_RATIO_THRESHOLD = get_float("SUBTITLE_TOKEN_RATIO_THRESHOLD", 0.15)
+MAX_FAILED_NUM = get_int("MAX_FAILED_NUM", 3)
+
+LLM_BASE_URL = getenv("LLM_BASE_URL")
+LLM_MODEL = getenv("LLM_MODEL")
+LLM_API_KEY = getenv("LLM_API_KEY")
+LLM_API_VERSION = getenv("LLM_API_VERSION")
+
+CRAWLER_API_KEY = getenv("CRAWLER_API_KEY", "Test@789")
+
+B2_APPLICATION_KEY_ID = getenv("B2_APPLICATION_KEY_ID")
+B2_APPLICATION_KEY = getenv("B2_APPLICATION_KEY")
+B2_BUCKET_NAME = getenv("B2_BUCKET_NAME", "luckvideos")
+B2_CDN_DOMAIN = getenv("B2_CDN_DOMAIN", "https://play.luckvideos.com")
+# Parallel segment uploads for HLS (many small files); tune if you hit B2 rate limits.
+B2_UPLOAD_CONCURRENCY: int = get_int("B2_UPLOAD_CONCURRENCY", 16)
+
+
+def b2_cdn_object_url(object_key: str) -> str:
+    """Public CDN URL for a B2 object key."""
+    base = B2_CDN_DOMAIN.rstrip("/")
+    key = object_key.lstrip("/")
+    return f"{base}/{key}"
+
+
+WHISPER_MODEL = getenv("WHISPER_MODEL", "medium")
+WHISPER_DEVICE = getenv("WHISPER_DEVICE", "cpu")
+WHISPER_COMPUTE_TYPE = getenv("WHISPER_COMPUTE_TYPE", "int8")
+WHISPER_CPU_THREADS = get_int("WHISPER_CPU_THREADS", 1)
+WHISPER_NUM_WORKERS = get_int("WHISPER_NUM_WORKERS", 2)
+WHISPER_LOCAL_FILES_ONLY = get_bool("WHISPER_LOCAL_FILES_ONLY", False)
+WHISPER_BEAM_SIZE = get_int("WHISPER_BEAM_SIZE", 1)
+WHISPER_DEVICE_INDEX = get_int("WHISPER_DEVICE_INDEX", 0)
+
+S1_FETCH_MAX_PAGES: int = get_int("S1_FETCH_MAX_PAGES", 10)
+
+
+def validate_config():
+    """Raise early with a clear message if required env vars are missing."""
+    missing = []
+    if not DB_URL:
+        missing.append("DB_URL")
+    if not RAPIDAPI_KEY:
+        missing.append("RAPIDAPI_KEY")
+    if missing:
+        raise EnvironmentError(
+            f"Missing required environment variables: {', '.join(missing)}"
+        )
+S2_DOWNLOAD_BATCH_SIZE: int = get_int("S2_DOWNLOAD_BATCH_SIZE", 5)
+S3_CONVERT_BATCH_SIZE: int = get_int("S3_CONVERT_BATCH_SIZE", 5)
+S4_SUBTITLE_BATCH_SIZE: int = get_int("S4_SUBTITLE_BATCH_SIZE", 1)
+S5_TRANSLATE_VTT_BATCH_SIZE: int = get_int("S5_TRANSLATE_VTT_BATCH_SIZE", 5)
+S6_TRANSLATE_META_BATCH_SIZE: int = get_int("S6_TRANSLATE_META_BATCH_SIZE", 5)
+S7_UPLOAD_BATCH_SIZE: int = get_int("S7_UPLOAD_BATCH_SIZE", 5)
+

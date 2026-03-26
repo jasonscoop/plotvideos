@@ -17,7 +17,7 @@ services:
       - tor
     volumes:
       - ../works:/workspace/works
-    command: python -m crawler.scheduler --runner=all
+    command: python -m scheduler --runner=all
 
   api:
     build: .
@@ -26,4 +26,4 @@ services:
       - .env
     ports:
       - "8999:8001"
-    command: uvicorn crawler.api:app --host 0.0.0.0 --port 8001
+    command: uvicorn api:app --host 0.0.0.0 --port 8001

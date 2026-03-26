@@ -1,14 +1,14 @@
 from botocore.exceptions import ClientError
 from loguru import logger
 
-from crawler.crud.video_crud import VideoCrud
-from crawler.core.config import S3_BUCKET_NAME
-from crawler.core.enums import VideoStatus
-from crawler.core.languages import Language
-from crawler.core.models import Video
-from crawler.service.s5_translate_vtt import translate_and_save
-from crawler.utils.file_utils import upload_dir_to_s3, s3_client
-from crawler.utils.log_utils import init_logging
+from crud.video_crud import VideoCrud
+from core.config import S3_BUCKET_NAME
+from core.enums import VideoStatus
+from core.languages import Language
+from core.models import Video
+from service.s5_translate_vtt import translate_and_save
+from utils.file_utils import upload_dir_to_s3, s3_client
+from utils.log_utils import init_logging
 
 BATCH_SIZE = 10
 MAX_ID = 27555

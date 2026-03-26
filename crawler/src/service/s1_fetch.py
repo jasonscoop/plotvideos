@@ -1,0 +1,91 @@
+import traceback
+import zlib
+from typing import List, Optional, Tuple
+from urllib.parse import urlparse
+
+import requests
+from loguru import logger
+
+from crud.keyword_crud import KeywordCrud
+from crud.video_crud import VideoCrud
+from core.config import RAPIDAPI_KEY, RAPIDAPI_URL, S1_FETCH_MAX_PAGES
+from core.enums import VideoStatus
+from core.models import Video, Keyword
+from utils.signal_utils import setup_graceful_shutdown, should_stop
+
+
+def fetch_video_urls(query: str, page: int):
+    querystring = {"query": query, "page": str(page), "timeout": "5000"}
+    headers = {
+        "x-rapidapi-key": RAPIDAPI_KEY,
+        "x-rapidapi-host": urlparse(RAPIDAPI_URL).netloc,
+    }
+    response = requests.get(RAPIDAPI_URL, headers=headers, params=querystring)
+    response.raise_for_status()
+    return response.json()
+
+
+def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
+    """Fetch one batch of keywords and save their videos. Returns (had_work, next_last_id)."""
+    keywords: List[Keyword] = KeywordCrud.batch_get(last_id=last_id)
+    if not keywords:
+        return False, None
+
+    exception_count = 0
+    for keyword in keywords:
+        logger.info(f"[{keyword.name}] keyword fetching started")
+
+        for page in range(0, S1_FETCH_MAX_PAGES):
+            data = fetch_video_urls(keyword.name, page + 1)
+            sites = data.get("data", [])
+            for site in sites:
+                if not site["links"]:
+                    continue
+
+                videos = []
+                site_host = site["site"]["host"]
+                name = site["site"]["name"]
+
+                try:
+                    for link in site["links"]:
+                        title = link.get("title")
+                        if not title:
+                            continue
+
+                        url = link.get("url")
+                        if not url:
+                            continue
+
+                        new_video = Video(
+                            title=link.get("title"),
+                            url=url,
+                            url_crc32=zlib.crc32(url.encode()),
+                            thumbnail_url=link.get("image"),
+                            host=site_host,
+                            status=VideoStatus.fetched,
+                            keyword_id=keyword.id,
+                        )
+                        videos.append(new_video)
+                    if videos:
+                        added, updated = VideoCrud.batch_add_or_update(videos)
+                        logger.info(
+                            f"[{name}] fetched [{len(videos)}], added [{added}], updated [{updated}]"
+                        )
+                except Exception as e:
+                    exception_count += 1
+                    if exception_count >= 3:
+                        raise e
+                    traceback.print_exc()
+
+    return True, keywords[-1].id
+
+
+def fetch_and_save_videos():
+    setup_graceful_shutdown()
+    last_id = None
+    while not should_stop():
+        had_work, last_id = process_batch(last_id)
+        if not had_work:
+            logger.info("All fetching, sleeping for 1 hour")
+            import time; time.sleep(1 * 60 * 60)
+            last_id = None

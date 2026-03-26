@@ -3,10 +3,10 @@ import zlib
 from loguru import logger
 from dotenv import load_dotenv
 
-from crawler.core.enums import VideoStatus
-from crawler.core.models import Video
-from crawler.crud.video_crud import VideoCrud
-from crawler.service.s1_fetch import fetch_video_urls
+from core.enums import VideoStatus
+from core.models import Video
+from crud.video_crud import VideoCrud
+from service.s1_fetch import fetch_video_urls
 
 load_dotenv()
 BATCH_SIZE = 50

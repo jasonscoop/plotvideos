@@ -10,5 +10,5 @@ services=("$@")
 
 (cd "$script_dir" && \
 git pull origin main && \
-docker compose -f docker-compose.yml up -d --build --no-deps "${services[@]}")
+docker compose -f crawler/docker-compose.yml up -d --build --no-deps "${services[@]}")
 

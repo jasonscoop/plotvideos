@@ -39,7 +39,7 @@ CREATE POLICY "Allow public access"
 Run with docker
 
 ```bash
-docker build . -t wuse
+docker build -t wuse -f crawler/Dockerfile crawler
 ```
 
 yt-dlp download image:

@@ -7,8 +7,29 @@ from crawler.utils.env_utils import get_str, get_int, get_bool, get_float
 
 load_dotenv()
 
-ROOT_DIR = Path(__file__).parent.parent.parent
-WORKS_DIR = ROOT_DIR / "works"
+
+def _crawler_project_root() -> Path:
+    """Directory that contains `pyproject.toml` (e.g. `crawler/` or `/workspace` in Docker)."""
+    p = Path(__file__).resolve().parent
+    while p != p.parent:
+        if (p / "pyproject.toml").exists():
+            return p
+        p = p.parent
+    raise RuntimeError("Could not find pyproject.toml above config.py")
+
+
+def _works_dir(project_root: Path) -> Path:
+    """Prefer repo-root `works/` (sibling of `crawler/`); else `crawler/works` (e.g. Docker mount)."""
+    repo_works = project_root.parent / "works"
+    local_works = project_root / "works"
+    if repo_works.is_dir():
+        return repo_works
+    if local_works.is_dir():
+        return local_works
+    return repo_works
+
+
+WORKS_DIR = _works_dir(_crawler_project_root())
 
 VIDEOS_DIR = WORKS_DIR.joinpath("videos")
 VIDEOS_DIR.mkdir(exist_ok=True)

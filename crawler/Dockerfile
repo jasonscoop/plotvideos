@@ -15,7 +15,7 @@ RUN apt-get update \
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /workspace
-ENV PYTHONPATH=.
+ENV PYTHONPATH=/workspace/src
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 ENV PATH="/workspace/.venv/bin:$PATH"
@@ -28,7 +28,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-COPY crawler/ crawler/
+COPY src/ src/
 COPY scripts/ scripts/
 
 ENTRYPOINT ["/docker-entrypoint.sh"]

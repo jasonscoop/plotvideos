@@ -38,6 +38,3 @@ dependencies = [
 dev = [
     "pytest>=8.3.5",
 ]
-
-[tool.uv.sources]
-yt-dlp = { git = "https://github.com/yt-dlp/yt-dlp.git" }

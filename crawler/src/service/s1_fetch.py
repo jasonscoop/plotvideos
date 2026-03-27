@@ -20,8 +20,8 @@ def _log_page_summary(keyword_name: str, page_1based: int, by_host: Dict[str, Tu
         f"{host}: {added + updated} / {fetched}"
         for host, (added, updated, fetched) in sorted(by_host.items())
     ]
-    body = "\n".join(lines) if lines else "(no links)"
-    logger.info(f"[{keyword_name} - {page_1based}] added/fetched:\n{body}")
+    body = "; ".join(lines) if lines else "(no links)"
+    logger.info(f"[{keyword_name}-{page_1based}] added/fetched: {body}")
 
 
 def fetch_video_urls(query: str, page: int):

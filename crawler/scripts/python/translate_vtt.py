@@ -56,7 +56,7 @@ def main():
         videos = VideoCrud.batch_get(
             last_id,
             BATCH_SIZE,
-            status=[VideoStatus.uploaded, VideoStatus.published],
+            status=VideoStatus.uploaded,
             temp_status=1,
         )
         videos = [v for v in videos if v.id <= MAX_ID]

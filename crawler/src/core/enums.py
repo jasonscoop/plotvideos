@@ -19,6 +19,7 @@ class VideoStatus(StrEnum):
     uploaded = "uploaded"
     low_density = "low_density"
     oversized = "oversized"
+    failed_cleaned = "failed_cleaned"
 
     def log(self, e: Exception | str = None) -> str:
         n = DB_ERROR_LOG_LENGTH - len(self.value) - 3

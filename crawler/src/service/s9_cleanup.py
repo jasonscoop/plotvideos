@@ -11,30 +11,32 @@ _BATCH_SIZE = S7_UPLOAD_BATCH_SIZE
 
 
 def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
-    """Clean local files for one batch of uploaded/failed videos. Returns (had_work, next_last_id)."""
-    did_work = False
-    next_last_id = last_id
-
-    uploaded = VideoCrud.batch_get(last_id, _BATCH_SIZE, VideoStatus.uploaded)
-    if uploaded:
-        for video in uploaded:
-            rm_video(video)
-            logger.info(
-                f"[{video.id} | {video.host}] remove all files"
-            )
-        next_last_id = uploaded[-1].id
-        did_work = True
-
+    """Clean local files for one batch of permanently failed videos. Returns (had_work, next_last_id)."""
     failed = VideoCrud.get_exceeded_failed(last_id, _BATCH_SIZE)
-    if failed:
-        for video in failed:
-            rm_video(video)
-            logger.info(
-                f"[{video.id} | {video.host}] remove permanently failed files"
-            )
-        did_work = True
+    if not failed:
+        return False, None
 
-    return did_work, next_last_id if did_work else None
+    for video in failed:
+        try:
+            rm_video(video)
+        except OSError as e:
+            logger.warning(f"[{video.id} | {video.host}] rm_video: {e}")
+        VideoCrud.update(
+            {
+                "id": video.id,
+                "status": VideoStatus.failed_cleaned,
+                "failed_count": 0,
+                "failed_reason": "",
+            }
+        )
+        logger.debug(
+            f"[{video.id} | {video.host}] remove permanently failed local files"
+        )
+    logger.info(
+        f"s9_cleanup: cleaned {len(failed)} permanently failed video(s) (status → failed_cleaned)"
+    )
+
+    return True, failed[-1].id
 
 
 def clean_files():

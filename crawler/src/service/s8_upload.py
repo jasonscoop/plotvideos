@@ -10,11 +10,12 @@ from core.enums import VideoStatus
 from core.languages import Language
 from core.models import Video
 from utils.b2_utils import get_b2_client
+from utils.file_utils import rm_video
 from utils.signal_utils import setup_graceful_shutdown, should_stop
 
 
 def upload_video(video: Video, languages: List[Language]) -> None:
-    """Upload to B2. Local cleanup is ``s9_cleanup``."""
+    """Upload to B2, then remove local copy."""
     try:
         logger.info(f"[{video.id} | {video.host}] start uploading to B2")
 
@@ -33,6 +34,10 @@ def upload_video(video: Video, languages: List[Language]) -> None:
                 "failed_reason": "",
             }
         )
+        try:
+            rm_video(video)
+        except OSError as e:
+            logger.warning(f"[{video.id} | {video.host}] rm_video after upload: {e}")
     except Exception as e:
         VideoCrud.record_failure(video.id, VideoStatus.uploaded.log(e))
         raise e

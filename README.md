@@ -32,7 +32,7 @@ CREATE POLICY "Allow public access"
     FOR SELECT
     TO anon
     USING (
-        (status = 'published'::videostatus)
+        (status = 'uploaded'::videostatus)
         );
 ```
 

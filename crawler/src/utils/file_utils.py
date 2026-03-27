@@ -19,8 +19,11 @@ def is_path_match(path: str) -> bool:
     return re.match(r".*/works/videos/\d{2}/\d+$", path) is not None
 
 
-def rm_video(video: Video):
-    if video.store_path.parent.exists() and is_path_match(
-        video.store_path.parent.as_posix()
-    ):
-        shutil.rmtree(str(video.store_path.parent), ignore_errors=False)
+def rm_video(video: Video) -> bool:
+    parent = video.store_path.parent
+    if not parent.exists():
+        return True
+    if is_path_match(parent.as_posix()):
+        shutil.rmtree(str(parent), ignore_errors=False)
+        return not parent.exists()
+    return False

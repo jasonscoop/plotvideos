@@ -5,6 +5,7 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "db:init": "wrangler d1 execute plotvideos-db --local --file=src/schema.sql",
+    "db:reset": "rm -rf .wrangler/state/v3/d1/miniflare-D1DatabaseObject && wrangler d1 execute plotvideos-db --local --file=src/schema.sql",
     "db:clean": "wrangler d1 execute plotvideos-db --local --file=src/schema.sql && wrangler d1 execute plotvideos-db --local --file=scripts/clean-local-d1.sql"
   },
   "dependencies": {

@@ -59,6 +59,8 @@ WHISPER_BEAM_SIZE = get_int("WHISPER_BEAM_SIZE", 1)
 WHISPER_DEVICE_INDEX = get_int("WHISPER_DEVICE_INDEX", 0)
 
 S1_FETCH_MAX_PAGES: int = get_int("S1_FETCH_MAX_PAGES", 10)
+# Keyword eligibility window and idle backoff when no work: same hours. 0 = no cooldown / poll ~every 60s.
+S1_KEYWORD_COOLDOWN_HOURS: int = get_int("S1_KEYWORD_COOLDOWN_HOURS", 24)
 
 
 def validate_config():

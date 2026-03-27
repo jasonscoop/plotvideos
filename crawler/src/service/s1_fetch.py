@@ -9,7 +9,12 @@ from loguru import logger
 
 from crud.keyword_crud import KeywordCrud
 from crud.video_crud import VideoCrud
-from core.config import RAPIDAPI_KEY, RAPIDAPI_URL, S1_FETCH_MAX_PAGES
+from core.config import (
+    RAPIDAPI_KEY,
+    RAPIDAPI_URL,
+    S1_FETCH_MAX_PAGES,
+    S1_KEYWORD_COOLDOWN_HOURS,
+)
 from core.enums import VideoStatus
 from core.models import Video, Keyword
 from utils.signal_utils import setup_graceful_shutdown, should_stop
@@ -37,7 +42,9 @@ def fetch_video_urls(query: str, page: int):
 
 def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
     """Fetch one batch of keywords and save their videos. Returns (had_work, next_last_id)."""
-    keywords: List[Keyword] = KeywordCrud.batch_get(last_id=last_id)
+    keywords: List[Keyword] = KeywordCrud.batch_get(
+        last_id=last_id, cooldown_hours=S1_KEYWORD_COOLDOWN_HOURS
+    )
     if not keywords:
         return False, None
 
@@ -87,6 +94,8 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
 
             _log_page_summary(keyword.name, page + 1, dict(by_host))
 
+        KeywordCrud.touch_fetched(keyword.id)
+
     return True, keywords[-1].id
 
 
@@ -96,6 +105,7 @@ def fetch_and_save_videos():
     while not should_stop():
         had_work, last_id = process_batch(last_id)
         if not had_work:
-            logger.info("All fetching, sleeping for 1 hour")
-            import time; time.sleep(1 * 60 * 60)
+            sleep_s = max(60, S1_KEYWORD_COOLDOWN_HOURS * 3600)
+            logger.info(f"No keywords due for fetch, sleeping {sleep_s}s")
+            import time; time.sleep(sleep_s)
             last_id = None

@@ -18,7 +18,7 @@ from typing import Callable, Optional, Tuple
 
 from loguru import logger
 
-from core.config import validate_config
+from core.config import S1_KEYWORD_COOLDOWN_HOURS, validate_config
 from service import (
     s1_fetch, s2_download, s3_convert, s4_subtitle,
     s5_translate_vtt, s6_translate_meta, s7_hls, s8_upload, s9_cleanup,
@@ -42,7 +42,11 @@ class StageConfig:
 
 
 STAGES: list[StageConfig] = [
-    StageConfig("s1_fetch",          s1_fetch.process_batch,          3600 * 24),
+    StageConfig(
+        "s1_fetch",
+        s1_fetch.process_batch,
+        max(60, S1_KEYWORD_COOLDOWN_HOURS * 3600),
+    ),
     StageConfig("s2_download",       s2_download.process_batch,       3600),
     StageConfig("s3_convert",        s3_convert.process_batch,        600),
     StageConfig("s4_subtitle",       s4_subtitle.process_batch,       300),

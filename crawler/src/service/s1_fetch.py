@@ -1,6 +1,7 @@
 import traceback
 import zlib
-from typing import List, Optional, Tuple
+from collections import defaultdict
+from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
 import requests
@@ -12,6 +13,15 @@ from core.config import RAPIDAPI_KEY, RAPIDAPI_URL, S1_FETCH_MAX_PAGES
 from core.enums import VideoStatus
 from core.models import Video, Keyword
 from utils.signal_utils import setup_graceful_shutdown, should_stop
+
+
+def _log_page_summary(keyword_name: str, page_1based: int, by_host: Dict[str, Tuple[int, int, int]]) -> None:
+    lines = [
+        f"{host}: {added + updated} / {fetched}"
+        for host, (added, updated, fetched) in sorted(by_host.items())
+    ]
+    body = "\n".join(lines) if lines else "(no links)"
+    logger.info(f"[{keyword_name} - {page_1based}] added/fetched:\n{body}")
 
 
 def fetch_video_urls(query: str, page: int):
@@ -33,9 +43,9 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
 
     exception_count = 0
     for keyword in keywords:
-        logger.info(f"[{keyword.name}] keyword fetching started")
-
         for page in range(0, S1_FETCH_MAX_PAGES):
+            by_host: Dict[str, Tuple[int, int, int]] = defaultdict(lambda: (0, 0, 0))
+
             data = fetch_video_urls(keyword.name, page + 1)
             sites = data.get("data", [])
             for site in sites:
@@ -44,7 +54,6 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
 
                 videos = []
                 site_host = site["site"]["host"]
-                name = site["site"]["name"]
 
                 try:
                     for link in site["links"]:
@@ -68,14 +77,15 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
                         videos.append(new_video)
                     if videos:
                         added, updated = VideoCrud.batch_add_or_update(videos)
-                        logger.info(
-                            f"[{name}] fetched [{len(videos)}], added [{added}], updated [{updated}]"
-                        )
-                except Exception as e:
+                        a, u, f = by_host[site_host]
+                        by_host[site_host] = (a + added, u + updated, f + len(videos))
+                except Exception:
                     exception_count += 1
                     if exception_count >= 3:
-                        raise e
+                        raise
                     traceback.print_exc()
+
+            _log_page_summary(keyword.name, page + 1, dict(by_host))
 
     return True, keywords[-1].id
 

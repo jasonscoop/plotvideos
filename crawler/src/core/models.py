@@ -57,10 +57,10 @@ class Video(Base, BaseModel):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     host = Column(String(50), nullable=False, index=True)
-    title = Column(String(512), nullable=False)
-    url = Column(String(512), nullable=False, unique=True)
+    title = Column(String(2000), nullable=False)
+    url = Column(String(2000), nullable=False, unique=True)
     url_crc32 = Column(BigInteger, nullable=False, default=0, index=True)
-    thumbnail_url = Column(String(512), nullable=False, default="")
+    thumbnail_url = Column(String(2000), nullable=False, default="")
     thumbnail_status = Column(
         Integer, nullable=False, default=ThumbnailStatus.pending.value
     )

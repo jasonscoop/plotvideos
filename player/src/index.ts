@@ -11,6 +11,7 @@ export type Env = {
     VIDEO_FETCH_API_URL: string;
     VIDEO_FETCH_API_KEY: string;
     SITE_NAME?: string;
+    GA_ID?: string;
     /** Added to each D1 `videos.id` for the public watch URL only (e.g. id 5 + offset 100 → `/video/105.html`). Not stored in D1. Defaults to 0 if unset. */
     SLUG_OFFSET_VALUE?: string;
   };

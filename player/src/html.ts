@@ -32,11 +32,21 @@ export function layout(
   content: string,
   q = "",
   path = "/",
-  opts?: { playerAssets?: boolean; jsonLd?: string; siteName?: string }
+  opts?: {
+    playerAssets?: boolean;
+    jsonLd?: string;
+    siteName?: string;
+    gaMeasurementId?: string;
+  }
 ) {
   const brand = opts?.siteName?.trim() || DEFAULT_SITE_NAME;
   const prefix = langPrefix(lang);
   const dir = isRtl(lang) ? ' dir="rtl"' : "";
+  const gaId = opts?.gaMeasurementId?.trim();
+  const gaHead =
+    gaId !== undefined && gaId !== ""
+      ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${esc(gaId)}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","${esc(gaId)}");</script>`
+      : "";
   const playerCss = opts?.playerAssets
     ? `<link href="https://cdn.jsdelivr.net/npm/video.js@8/dist/video-js.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@2.0.0/dist/videojs-hls-quality-selector.css" rel="stylesheet" />`
@@ -50,6 +60,7 @@ export function layout(
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${esc(title)}</title>
+  ${gaHead}
   ${jsonLdTag}
   ${playerCss}
   ${GLOBAL_CSS}
@@ -186,7 +197,8 @@ export function indexPage(
   navCategories: NavTaxonomyItem[] = [],
   activeTaxonomy: ActiveTaxonomy = null,
   slugOffset = 0,
-  siteName: string
+  siteName: string,
+  gaMeasurementId?: string
 ) {
   const prefix = langPrefix(lang);
   const qParam = q ? `&q=${encodeURIComponent(q)}` : "";
@@ -225,7 +237,7 @@ export function indexPage(
 
   const content = `<div class="yt-home">${sidebar}${main}</div>`;
 
-  return layout(siteName, lang, content, q, "/", { siteName });
+  return layout(siteName, lang, content, q, "/", { siteName, gaMeasurementId });
 }
 
 export function taxonomyListingPage(
@@ -242,7 +254,8 @@ export function taxonomyListingPage(
   browserTitle: string,
   currentPath: string,
   slugOffset = 0,
-  siteName: string
+  siteName: string,
+  gaMeasurementId?: string
 ) {
   const prefix = langPrefix(lang);
   const baseHref =
@@ -296,7 +309,10 @@ export function taxonomyListingPage(
 
   const content = `<div class="yt-home">${sidebar}${main}</div>`;
 
-  return layout(`${browserTitle} - ${siteName}`, lang, content, "", currentPath, { siteName });
+  return layout(`${browserTitle} - ${siteName}`, lang, content, "", currentPath, {
+    siteName,
+    gaMeasurementId,
+  });
 }
 
 interface WatchData {
@@ -343,7 +359,8 @@ export function watchPage(
   seoTranscriptCues: VttCue[] = [],
   taxonomyLinks: WatchTaxonomyLinks = { keyword: null, tags: [], categories: [] },
   slugOffset = 0,
-  siteName: string
+  siteName: string,
+  gaMeasurementId?: string
 ) {
   const prefix = langPrefix(lang);
   const sidebar = homeSidebar(lang, prefix, navTags, navCategories, null);
@@ -459,5 +476,6 @@ export function watchPage(
     playerAssets: true,
     jsonLd,
     siteName,
+    gaMeasurementId,
   });
 }

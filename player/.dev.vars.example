@@ -1,0 +1,10 @@
+# Local: copy to `.dev.vars` (gitignored) for `wrangler dev`.
+# Production: Workers → plotvideos → Settings → Variables and Secrets (same names).
+
+# Required for crawler sync
+VIDEO_FETCH_API_URL=
+VIDEO_FETCH_API_KEY=
+
+# Optional
+# SITE_NAME=          # Header / title branding (default: PlotVideos)
+# GA_ID=              # GA4 ID (G-xxxxxxxxxx). If unset, no Google Analytics scripts are emitted.

@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Env } from "./index";
 import { indexPage, watchPage, taxonomyListingPage, type NavTaxonomyItem } from "./html";
+import { gaMeasurementIdFromEnv } from "./analytics";
 import { siteNameFromEnv } from "./site";
 import { DEFAULT_LANG, isValidLang, langPrefix, t } from "./i18n";
 import { fetchVttCues, orderedSubtitleUrls } from "./vtt";
@@ -63,9 +64,16 @@ function watchSlugOffset(c: { env: Env["Bindings"] }): number {
   return parseSlugOffsetValue(c.env.SLUG_OFFSET_VALUE);
 }
 
+function pageContext(env: Env["Bindings"]) {
+  return {
+    siteName: siteNameFromEnv(env),
+    gaMeasurementId: gaMeasurementIdFromEnv(env),
+  };
+}
+
 async function resolveIndex(c: any, lang: string) {
   const db = c.env.DB;
-  const siteName = siteNameFromEnv(c.env);
+  const { siteName, gaMeasurementId } = pageContext(c.env);
   const slugOffset = watchSlugOffset(c);
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = 24;
@@ -124,7 +132,8 @@ async function resolveIndex(c: any, lang: string) {
       navCategories.results,
       null,
       slugOffset,
-      siteName
+      siteName,
+      gaMeasurementId
     )
   );
 }
@@ -133,7 +142,7 @@ async function resolveTagListing(c: any, lang: string) {
   const slug = parseTaxonomySlugParam(c.req.param("slug"));
   if (!slug) return c.text("Not found", 404);
 
-  const siteName = siteNameFromEnv(c.env);
+  const { siteName, gaMeasurementId } = pageContext(c.env);
   const db = c.env.DB;
   const row = await db
     .prepare("SELECT id, name, slug FROM tags WHERE slug = ?")
@@ -201,7 +210,8 @@ async function resolveTagListing(c: any, lang: string) {
       browserTitle,
       pagePath,
       slugOffset,
-      siteName
+      siteName,
+      gaMeasurementId
     )
   );
 }
@@ -210,7 +220,7 @@ async function resolveCategoryListing(c: any, lang: string) {
   const slug = parseTaxonomySlugParam(c.req.param("slug"));
   if (!slug) return c.text("Not found", 404);
 
-  const siteName = siteNameFromEnv(c.env);
+  const { siteName, gaMeasurementId } = pageContext(c.env);
   const db = c.env.DB;
   const row = await db
     .prepare("SELECT id, name, slug FROM categories WHERE slug = ?")
@@ -278,7 +288,8 @@ async function resolveCategoryListing(c: any, lang: string) {
       browserTitle,
       pagePath,
       slugOffset,
-      siteName
+      siteName,
+      gaMeasurementId
     )
   );
 }
@@ -316,7 +327,7 @@ async function resolveWatch(c: any, lang: string) {
 
 async function _renderWatch(c: any, lang: string, video: any) {
   const db = c.env.DB;
-  const siteName = siteNameFromEnv(c.env);
+  const { siteName, gaMeasurementId } = pageContext(c.env);
   const id = video.id;
   const slugOffset = watchSlugOffset(c);
 
@@ -412,7 +423,8 @@ async function _renderWatch(c: any, lang: string, video: any) {
       seoTranscriptCues,
       { keyword: keywordLink, tags: tagLinks, categories: categoryLinks },
       slugOffset,
-      siteName
+      siteName,
+      gaMeasurementId
     )
   );
 }

@@ -27,6 +27,7 @@ from utils.log_utils import init_logging
 from utils.signal_utils import (
     register_shutdown_event, setup_graceful_shutdown, should_stop,
 )
+from utils.telegram_notify import notify_stage_failure
 
 # ── Async scheduler ───────────────────────────────────────────────────────────
 
@@ -71,8 +72,13 @@ async def _run_stage(stage: StageConfig, shutdown_event: asyncio.Event) -> None:
         try:
             had_work, last_id = await asyncio.to_thread(stage.process_batch, last_id)
         except Exception as e:
-            logger.error(f"[{stage.name}] fatal error — stage stopped: {e}")
-            break
+            logger.exception(
+                f"[{stage.name}] batch failed; retrying after {stage.idle_sleep}s"
+            )
+            notify_stage_failure(stage.name, e)
+            if await _idle_sleep(stage.idle_sleep, shutdown_event):
+                break
+            continue
 
         if not had_work:
             logger.debug(f"[{stage.name}] queue empty, sleeping {stage.idle_sleep}s")

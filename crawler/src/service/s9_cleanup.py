@@ -26,7 +26,6 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
                 "id": video.id,
                 "status": VideoStatus.failed_cleaned,
                 "failed_count": 0,
-                "failed_reason": "",
             }
         )
         logger.debug(

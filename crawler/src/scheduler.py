@@ -42,7 +42,7 @@ class StageConfig:
 
 
 STAGES: list[StageConfig] = [
-    StageConfig("s1_fetch",          s1_fetch.process_batch,          3600),
+    StageConfig("s1_fetch",          s1_fetch.process_batch,          3600 * 24),
     StageConfig("s2_download",       s2_download.process_batch,       3600),
     StageConfig("s3_convert",        s3_convert.process_batch,        600),
     StageConfig("s4_subtitle",       s4_subtitle.process_batch,       300),

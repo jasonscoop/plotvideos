@@ -50,7 +50,7 @@ STAGES: list[StageConfig] = [
     StageConfig("s6_translate_meta", s6_translate_meta.process_batch, 300),
     StageConfig("s7_hls",           s7_hls.process_batch,             300),
     StageConfig("s8_upload",        s8_upload.process_batch,          300),
-    StageConfig("s9_cleanup",       s9_cleanup.process_batch,        3600),
+    StageConfig("s9_cleanup",       s9_cleanup.process_batch,        3600 * 24),
 ]
 
 

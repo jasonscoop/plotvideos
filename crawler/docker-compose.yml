@@ -6,8 +6,8 @@ services:
   crawler:
     build: .
     restart: unless-stopped
-    cpus: "4"
-    mem_limit: 4g
+    cpus: "8"
+    mem_limit: 8g
     memswap_limit: 12g
     env_file:
       - .env

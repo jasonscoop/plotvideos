@@ -10,6 +10,8 @@ export type Env = {
     DB: D1Database;
     VIDEO_FETCH_API_URL: string;
     VIDEO_FETCH_API_KEY: string;
+    /** Public site name from Cloudflare dashboard only (do not set in wrangler.toml / .dev.vars). */
+    SITE_NAME?: string;
     /** Added to each D1 `videos.id` for the public watch URL only (e.g. id 5 + offset 100 → `/video/105.html`). Not stored in D1. Defaults to 0 if unset. */
     SLUG_OFFSET_VALUE?: string;
   };

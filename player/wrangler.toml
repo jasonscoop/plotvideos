@@ -1,3 +1,5 @@
+# SITE_NAME: set only in the Cloudflare dashboard (Workers → plotvideos → Settings → Variables).
+# Do not add SITE_NAME to [vars] below or to .dev.vars — a deploy or local dev would override the portal value.
 name = "plotvideos"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"

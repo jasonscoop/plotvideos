@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Env } from "./index";
 import { indexPage, watchPage, taxonomyListingPage, type NavTaxonomyItem } from "./html";
+import { siteNameFromEnv } from "./site";
 import { DEFAULT_LANG, isValidLang, langPrefix, t } from "./i18n";
 import { fetchVttCues, orderedSubtitleUrls } from "./vtt";
 import {
@@ -64,6 +65,7 @@ function watchSlugOffset(c: { env: Env["Bindings"] }): number {
 
 async function resolveIndex(c: any, lang: string) {
   const db = c.env.DB;
+  const siteName = siteNameFromEnv(c.env);
   const slugOffset = watchSlugOffset(c);
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = 24;
@@ -121,7 +123,8 @@ async function resolveIndex(c: any, lang: string) {
       navTags.results,
       navCategories.results,
       null,
-      slugOffset
+      slugOffset,
+      siteName
     )
   );
 }
@@ -130,6 +133,7 @@ async function resolveTagListing(c: any, lang: string) {
   const slug = parseTaxonomySlugParam(c.req.param("slug"));
   if (!slug) return c.text("Not found", 404);
 
+  const siteName = siteNameFromEnv(c.env);
   const db = c.env.DB;
   const row = await db
     .prepare("SELECT id, name, slug FROM tags WHERE slug = ?")
@@ -196,7 +200,8 @@ async function resolveTagListing(c: any, lang: string) {
       navCategories,
       browserTitle,
       pagePath,
-      slugOffset
+      slugOffset,
+      siteName
     )
   );
 }
@@ -205,6 +210,7 @@ async function resolveCategoryListing(c: any, lang: string) {
   const slug = parseTaxonomySlugParam(c.req.param("slug"));
   if (!slug) return c.text("Not found", 404);
 
+  const siteName = siteNameFromEnv(c.env);
   const db = c.env.DB;
   const row = await db
     .prepare("SELECT id, name, slug FROM categories WHERE slug = ?")
@@ -271,7 +277,8 @@ async function resolveCategoryListing(c: any, lang: string) {
       navCategories,
       browserTitle,
       pagePath,
-      slugOffset
+      slugOffset,
+      siteName
     )
   );
 }
@@ -309,6 +316,7 @@ async function resolveWatch(c: any, lang: string) {
 
 async function _renderWatch(c: any, lang: string, video: any) {
   const db = c.env.DB;
+  const siteName = siteNameFromEnv(c.env);
   const id = video.id;
   const slugOffset = watchSlugOffset(c);
 
@@ -403,7 +411,8 @@ async function _renderWatch(c: any, lang: string, video: any) {
       navCategoriesResult.results,
       seoTranscriptCues,
       { keyword: keywordLink, tags: tagLinks, categories: categoryLinks },
-      slugOffset
+      slugOffset,
+      siteName
     )
   );
 }

@@ -1,5 +1,6 @@
 import { t, LANGUAGES, langPrefix, nativeName, isRtl } from "./i18n";
 import { publicWatchSegmentFromVideoId } from "./slug";
+import { DEFAULT_SITE_NAME } from "./site";
 import type { VttCue } from "./vtt";
 
 const GLOBAL_CSS = `
@@ -31,8 +32,9 @@ export function layout(
   content: string,
   q = "",
   path = "/",
-  opts?: { playerAssets?: boolean; jsonLd?: string }
+  opts?: { playerAssets?: boolean; jsonLd?: string; siteName?: string }
 ) {
+  const brand = opts?.siteName?.trim() || DEFAULT_SITE_NAME;
   const prefix = langPrefix(lang);
   const dir = isRtl(lang) ? ' dir="rtl"' : "";
   const playerCss = opts?.playerAssets
@@ -54,7 +56,7 @@ export function layout(
 </head>
 <body>
   <header class="yt-header">
-    <a href="${prefix}/" class="yt-logo"><span class="yt-logo-icon"></span> LuckVideos</a>
+    <a href="${prefix}/" class="yt-logo"><span class="yt-logo-icon"></span> ${esc(brand)}</a>
     <form action="${prefix}/" method="get" class="yt-search">
       <input type="text" name="q" value="${esc(q)}" placeholder="${t(lang, "search_placeholder")}" />
       <button type="submit">${t(lang, "search")}</button>
@@ -183,7 +185,8 @@ export function indexPage(
   navTags: NavTaxonomyItem[] = [],
   navCategories: NavTaxonomyItem[] = [],
   activeTaxonomy: ActiveTaxonomy = null,
-  slugOffset = 0
+  slugOffset = 0,
+  siteName: string
 ) {
   const prefix = langPrefix(lang);
   const qParam = q ? `&q=${encodeURIComponent(q)}` : "";
@@ -222,7 +225,7 @@ export function indexPage(
 
   const content = `<div class="yt-home">${sidebar}${main}</div>`;
 
-  return layout("LuckVideos", lang, content, q, "/");
+  return layout(siteName, lang, content, q, "/", { siteName });
 }
 
 export function taxonomyListingPage(
@@ -238,7 +241,8 @@ export function taxonomyListingPage(
   navCategories: NavTaxonomyItem[],
   browserTitle: string,
   currentPath: string,
-  slugOffset = 0
+  slugOffset = 0,
+  siteName: string
 ) {
   const prefix = langPrefix(lang);
   const baseHref =
@@ -292,7 +296,7 @@ export function taxonomyListingPage(
 
   const content = `<div class="yt-home">${sidebar}${main}</div>`;
 
-  return layout(`${browserTitle} - LuckVideos`, lang, content, "", currentPath);
+  return layout(`${browserTitle} - ${siteName}`, lang, content, "", currentPath, { siteName });
 }
 
 interface WatchData {
@@ -338,7 +342,8 @@ export function watchPage(
   navCategories: NavTaxonomyItem[] = [],
   seoTranscriptCues: VttCue[] = [],
   taxonomyLinks: WatchTaxonomyLinks = { keyword: null, tags: [], categories: [] },
-  slugOffset = 0
+  slugOffset = 0,
+  siteName: string
 ) {
   const prefix = langPrefix(lang);
   const sidebar = homeSidebar(lang, prefix, navTags, navCategories, null);
@@ -450,8 +455,9 @@ export function watchPage(
 
   const content = `<div class="yt-home">${sidebar}<div class="yt-home-main yt-watch-page-main">${watchBody}</div></div>`;
 
-  return layout(`${video.title} - LuckVideos`, lang, content, "", videoWatchPath(video, slugOffset), {
+  return layout(`${video.title} - ${siteName}`, lang, content, "", videoWatchPath(video, slugOffset), {
     playerAssets: true,
     jsonLd,
+    siteName,
   });
 }

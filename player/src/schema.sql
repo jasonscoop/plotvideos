@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS videos (
   keyword       TEXT    NOT NULL DEFAULT '',
   tags          TEXT    NOT NULL DEFAULT '[]',
   categories    TEXT    NOT NULL DEFAULT '[]',
-  created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+  created_at    TEXT    NOT NULL DEFAULT (datetime('now')),
+  random_key    INTEGER NOT NULL DEFAULT 0
 );
 
 -- Public watch URL is `/video/{id + SLUG_OFFSET}.html` (no stored slug column). Existing DBs:
@@ -70,6 +71,7 @@ CREATE TABLE IF NOT EXISTS video_categories (
 );
 
 CREATE INDEX IF NOT EXISTS idx_videos_created_at ON videos(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_videos_random_key ON videos(random_key DESC);
 CREATE INDEX IF NOT EXISTS idx_video_translations_video_id ON video_translations(video_id);
 CREATE INDEX IF NOT EXISTS idx_subtitle_tracks_video_id ON subtitle_tracks(video_id);
 CREATE INDEX IF NOT EXISTS idx_video_tags_tag ON video_tags(tag_id);

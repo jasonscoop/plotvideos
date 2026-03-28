@@ -101,6 +101,14 @@ export async function resyncVideoTaxonomies(
   }
 }
 
+function randomInt31(): number {
+  return Math.floor(Math.random() * 2147483647);
+}
+
+export async function refreshRandomKeys(db: D1Database): Promise<void> {
+  await db.prepare(`UPDATE videos SET random_key = RANDOM()`).run();
+}
+
 export async function rebuildAllTaxonomies(db: D1Database): Promise<{ videos: number }> {
   const rows = await db.prepare("SELECT id, keyword, tags, categories FROM videos").all<{
     id: number;
@@ -126,8 +134,8 @@ async function ingestVideo(db: D1Database, body: IngestPayload): Promise<number>
     .prepare(
       `INSERT INTO videos (original_id, title,
         duration, width, height, thumbnail_url, video_url, hls_url,
-        store_dir, keyword, tags, categories)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        store_dir, keyword, tags, categories, random_key)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(original_id) DO UPDATE SET
         title = excluded.title,
         duration = excluded.duration,
@@ -154,7 +162,8 @@ async function ingestVideo(db: D1Database, body: IngestPayload): Promise<number>
       body.store_dir || "",
       body.keyword || "",
       tagsJson,
-      catsJson
+      catsJson,
+      randomInt31()
     )
     .first<{ id: number }>();
 
@@ -282,7 +291,7 @@ apiRoutes.post("/rebuild-taxonomies", async (c) => {
 apiRoutes.get("/videos", async (c) => {
   const db = c.env.DB;
   const rows = await db
-    .prepare("SELECT * FROM videos ORDER BY created_at DESC LIMIT 100")
+    .prepare("SELECT * FROM videos ORDER BY random_key DESC LIMIT 100")
     .all();
   return c.json(rows.results);
 });

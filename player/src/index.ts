@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { apiRoutes, syncFromCrawler } from "./api";
+import { apiRoutes, refreshRandomKeys, syncFromCrawler } from "./api";
 import { pageRoutes } from "./pages";
 import STYLES_CSS from "./styles.css";
 import LANG_DROPDOWN_JS from "./lang-dropdown.client.js";
@@ -56,9 +56,13 @@ app.route("/", pageRoutes);
 export default app;
 
 export const scheduled: ExportedHandlerScheduledHandler<Env["Bindings"]> = async (
-  _event,
+  event,
   env,
   ctx
 ) => {
-  ctx.waitUntil(syncFromCrawler(env));
+  if (event.cron === "0 * * * *") {
+    ctx.waitUntil(refreshRandomKeys(env.DB));
+  } else {
+    ctx.waitUntil(syncFromCrawler(env));
+  }
 };

@@ -102,7 +102,8 @@ async function resolveIndex(c: any, lang: string) {
     if (lang !== DEFAULT_LANG) params.push(`%${q}%`);
   }
 
-  listSql += " ORDER BY " + (lang === DEFAULT_LANG ? "" : "v.") + "created_at DESC LIMIT ? OFFSET ?";
+  listSql +=
+    " ORDER BY " + (lang === DEFAULT_LANG ? "" : "v.") + "random_key DESC LIMIT ? OFFSET ?";
 
   const countParams = q ? [`%${q}%`] : [];
   const [countResult, listResult, navTags, navCategories] = await Promise.all([

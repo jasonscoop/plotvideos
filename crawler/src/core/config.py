@@ -16,6 +16,12 @@ RAPIDAPI_AI_TRANSLATE_KEY_URL = getenv("RAPIDAPI_AI_TRANSLATE_KEY_URL", "")
 RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL = getenv(
     "RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL", ""
 )
+RAPIDAPI_TRANSLATE_MIN_INTERVAL_SEC = get_float(
+    "RAPIDAPI_TRANSLATE_MIN_INTERVAL_SEC", 1.0
+)
+RAPIDAPI_TRANSLATE_FALLBACK_DELAY_SEC = get_float(
+    "RAPIDAPI_TRANSLATE_FALLBACK_DELAY_SEC", 2.0
+)
 
 YT_DLP_PROXY = getenv("YT_DLP_PROXY", None)
 
@@ -64,12 +70,13 @@ S1_KEYWORD_COOLDOWN_HOURS: int = get_int("S1_KEYWORD_COOLDOWN_HOURS", 24)
 
 
 def validate_config():
-    """Raise early with a clear message if required env vars are missing."""
     missing = []
     if not DB_URL:
         missing.append("DB_URL")
     if not RAPIDAPI_KEY:
         missing.append("RAPIDAPI_KEY")
+    if RAPIDAPI_AI_TRANSLATE_KEY_URL.strip() and not RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL.strip():
+        missing.append("RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL")
     if missing:
         raise EnvironmentError(
             f"Missing required environment variables: {', '.join(missing)}"

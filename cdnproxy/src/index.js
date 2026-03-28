@@ -1,27 +1,16 @@
 /**
  * B2 S3-compatible proxy with SigV4 signing (Backblaze B2).
- * @typedef {{ B2_BUCKET: string; B2_REGION: string; B2_KEY_ID: string; B2_APP_KEY: string }} Env
+ * @typedef {{ B2_BUCKET: string; B2_REGION: string; B2_KEY_ID: string; B2_APP_KEY: string; CORS_ALLOWS: string }} Env
  */
 
 /** @param {Request} request @param {Env} env */
 async function handleFetch(request, env) {
-  const { B2_BUCKET, B2_REGION, B2_KEY_ID, B2_APP_KEY } = env;
+  const { B2_BUCKET, B2_REGION, B2_KEY_ID, B2_APP_KEY, CORS_ALLOWS } = env;
   const url = new URL(request.url);
 
   function getCorsOrigin(request) {
     const origin = request.headers.get("Origin");
-    const allowed = [
-      "http://localhost",
-      "http://localhost:8000",
-      "https://wp.garymeng.com",
-      "https://luckvideos.com",
-      "https://play.luckvideos.com",
-      "https://hopevideos.com",
-      "https://muchvideos.com",
-      "https://weekvideos.com",
-      "https://toovideos.com",
-      "https://flatvideos.com",
-    ];
+    const allowed = CORS_ALLOWS ? CORS_ALLOWS.split("\n").map((s) => s.trim()).filter(Boolean) : [];
     if (origin && allowed.includes(origin)) {
       return origin;
     }

@@ -79,7 +79,6 @@ async function resolveIndex(c: any, lang: string) {
   const pageSize = 24;
   const q = c.req.query("q")?.trim() || "";
 
-  let countSql = "SELECT COUNT(*) as total FROM videos";
   let listSql: string;
   const params: any[] = [];
 
@@ -96,7 +95,6 @@ async function resolveIndex(c: any, lang: string) {
     const where = lang === DEFAULT_LANG
       ? " WHERE title LIKE ?"
       : " WHERE (vt.title LIKE ? OR v.title LIKE ?)";
-    countSql += " WHERE title LIKE ?";
     listSql += where;
     params.push(`%${q}%`);
     if (lang !== DEFAULT_LANG) params.push(`%${q}%`);
@@ -105,18 +103,14 @@ async function resolveIndex(c: any, lang: string) {
   listSql +=
     " ORDER BY " + (lang === DEFAULT_LANG ? "" : "v.") + "random_key DESC LIMIT ? OFFSET ?";
 
-  const countParams = q ? [`%${q}%`] : [];
-  const [countResult, listResult, navTags, navCategories] = await Promise.all([
-    db.prepare(countSql).bind(...countParams).first<{ total: number }>(),
-    db.prepare(listSql).bind(...params, pageSize, (page - 1) * pageSize).all(),
+  const [listResult, navTags, navCategories] = await Promise.all([
+    db.prepare(listSql).bind(...params, pageSize + 1, (page - 1) * pageSize).all(),
     db.prepare(TOP_NAV_TAGS_SQL).all<NavTaxonomyItem>(),
     db.prepare(TOP_NAV_CATEGORIES_SQL).all<NavTaxonomyItem>(),
   ]);
 
-  const total = countResult?.total || 0;
-  const totalPages = Math.max(Math.ceil(total / pageSize), 1);
-
-  const videos = listResult.results.map((row: any) => ({
+  const hasNext = listResult.results.length > pageSize;
+  const videos = listResult.results.slice(0, pageSize).map((row: any) => ({
     ...row,
     title: row.tr_title || row.title,
   }));
@@ -126,8 +120,7 @@ async function resolveIndex(c: any, lang: string) {
       lang,
       videos as any,
       page,
-      totalPages,
-      total,
+      hasNext,
       q,
       navTags.results,
       navCategories.results,
@@ -155,16 +148,6 @@ async function resolveTagListing(c: any, lang: string) {
   const pageSize = 24;
   const offset = (page - 1) * pageSize;
 
-  const countResult = await db
-    .prepare(
-      `SELECT COUNT(*) AS total FROM videos v
-       INNER JOIN video_tags vt ON v.id = vt.video_id WHERE vt.tag_id = ?`
-    )
-    .bind(row.id)
-    .first<{ total: number }>();
-  const total = countResult?.total ?? 0;
-  const totalPages = Math.max(Math.ceil(total / pageSize), 1);
-
   const listResult =
     lang === DEFAULT_LANG
       ? await db
@@ -173,7 +156,7 @@ async function resolveTagListing(c: any, lang: string) {
              INNER JOIN video_tags vt ON v.id = vt.video_id WHERE vt.tag_id = ?
              ORDER BY v.created_at DESC LIMIT ? OFFSET ?`
           )
-          .bind(row.id, pageSize, offset)
+          .bind(row.id, pageSize + 1, offset)
           .all()
       : await db
           .prepare(
@@ -182,10 +165,11 @@ async function resolveTagListing(c: any, lang: string) {
              LEFT JOIN video_translations vt2 ON vt2.video_id = v.id AND vt2.lang = ?
              WHERE vt.tag_id = ? ORDER BY v.created_at DESC LIMIT ? OFFSET ?`
           )
-          .bind(lang, row.id, pageSize, offset)
+          .bind(lang, row.id, pageSize + 1, offset)
           .all();
 
-  const videos = listResult.results.map((r: any) => ({
+  const hasNext = listResult.results.length > pageSize;
+  const videos = listResult.results.slice(0, pageSize).map((r: any) => ({
     ...r,
     title: r.tr_title || r.title,
   }));
@@ -204,8 +188,7 @@ async function resolveTagListing(c: any, lang: string) {
       row.slug,
       videos as any,
       page,
-      totalPages,
-      total,
+      hasNext,
       navTags,
       navCategories,
       browserTitle,
@@ -233,16 +216,6 @@ async function resolveCategoryListing(c: any, lang: string) {
   const pageSize = 24;
   const offset = (page - 1) * pageSize;
 
-  const countResult = await db
-    .prepare(
-      `SELECT COUNT(*) AS total FROM videos v
-       INNER JOIN video_categories vc ON v.id = vc.video_id WHERE vc.category_id = ?`
-    )
-    .bind(row.id)
-    .first<{ total: number }>();
-  const total = countResult?.total ?? 0;
-  const totalPages = Math.max(Math.ceil(total / pageSize), 1);
-
   const listResult =
     lang === DEFAULT_LANG
       ? await db
@@ -251,7 +224,7 @@ async function resolveCategoryListing(c: any, lang: string) {
              INNER JOIN video_categories vc ON v.id = vc.video_id WHERE vc.category_id = ?
              ORDER BY v.created_at DESC LIMIT ? OFFSET ?`
           )
-          .bind(row.id, pageSize, offset)
+          .bind(row.id, pageSize + 1, offset)
           .all()
       : await db
           .prepare(
@@ -260,10 +233,11 @@ async function resolveCategoryListing(c: any, lang: string) {
              LEFT JOIN video_translations vt2 ON vt2.video_id = v.id AND vt2.lang = ?
              WHERE vc.category_id = ? ORDER BY v.created_at DESC LIMIT ? OFFSET ?`
           )
-          .bind(lang, row.id, pageSize, offset)
+          .bind(lang, row.id, pageSize + 1, offset)
           .all();
 
-  const videos = listResult.results.map((r: any) => ({
+  const hasNext = listResult.results.length > pageSize;
+  const videos = listResult.results.slice(0, pageSize).map((r: any) => ({
     ...r,
     title: r.tr_title || r.title,
   }));
@@ -282,8 +256,7 @@ async function resolveCategoryListing(c: any, lang: string) {
       row.slug,
       videos as any,
       page,
-      totalPages,
-      total,
+      hasNext,
       navTags,
       navCategories,
       browserTitle,

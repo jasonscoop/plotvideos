@@ -53,16 +53,13 @@ app.get("/watch-page.js", (c) => {
 app.route("/api", apiRoutes);
 app.route("/", pageRoutes);
 
-export default app;
-
-export const scheduled: ExportedHandlerScheduledHandler<Env["Bindings"]> = async (
-  event,
-  env,
-  ctx
-) => {
-  if (event.cron === "0 * * * *") {
-    ctx.waitUntil(refreshRandomKeys(env.DB));
-  } else {
-    ctx.waitUntil(syncFromCrawler(env));
-  }
+export default {
+  fetch: app.fetch,
+  async scheduled(event: ScheduledEvent, env: Env["Bindings"], ctx: ExecutionContext) {
+    if (event.cron === "0 * * * *") {
+      ctx.waitUntil(refreshRandomKeys(env.DB));
+    } else {
+      ctx.waitUntil(syncFromCrawler(env));
+    }
+  },
 };

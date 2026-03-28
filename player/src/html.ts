@@ -189,8 +189,7 @@ export function indexPage(
   lang: string,
   videos: VideoCard[],
   page: number,
-  totalPages: number,
-  total: number,
+  hasNext: boolean,
   q: string,
   navTags: NavTaxonomyItem[] = [],
   navCategories: NavTaxonomyItem[] = [],
@@ -226,8 +225,7 @@ export function indexPage(
   const pagination = `
     <div class="yt-pagination">
       ${page > 1 ? `<a href="${prefix}/?page=${page - 1}${qParam}">${t(lang, "previous")}</a>` : ""}
-      <span class="yt-page-info">${page} / ${totalPages} &middot; ${total} ${t(lang, "videos")}</span>
-      ${page < totalPages ? `<a href="${prefix}/?page=${page + 1}${qParam}">${t(lang, "next")}</a>` : ""}
+      ${hasNext ? `<a href="${prefix}/?page=${page + 1}${qParam}">${t(lang, "next")}</a>` : ""}
     </div>`;
 
   const main = videos.length
@@ -246,8 +244,7 @@ export function taxonomyListingPage(
   taxSlug: string,
   videos: VideoCard[],
   page: number,
-  totalPages: number,
-  total: number,
+  hasNext: boolean,
   navTags: NavTaxonomyItem[],
   navCategories: NavTaxonomyItem[],
   browserTitle: string,
@@ -287,12 +284,7 @@ export function taxonomyListingPage(
   const pagination = `
     <div class="yt-pagination">
       ${page > 1 ? `<a href="${baseHref}${page > 2 ? `?page=${page - 1}` : ""}">${t(lang, "previous")}</a>` : ""}
-      <span class="yt-page-info">${page} / ${totalPages} &middot; ${total} ${t(lang, "videos")}</span>
-      ${
-        page < totalPages
-          ? `<a href="${baseHref}?page=${page + 1}">${t(lang, "next")}</a>`
-          : ""
-      }
+      ${hasNext ? `<a href="${baseHref}?page=${page + 1}">${t(lang, "next")}</a>` : ""}
     </div>`;
 
   const heading = `<h1 class="yt-taxonomy-title">${esc(

@@ -21,7 +21,9 @@ class KeywordCrud:
                 query = query.filter(Keyword.updated_at < cutoff)
             if last_id is not None:
                 query = query.filter(Keyword.id > last_id)
-            return query.order_by(Keyword.id.asc()).limit(batch_size).all()
+            return query.order_by(Keyword.updated_at.asc(), Keyword.id.asc()).limit(
+                batch_size
+            ).all()
 
     @classmethod
     def touch_fetched(cls, keyword_id: int) -> None:

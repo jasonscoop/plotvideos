@@ -49,8 +49,8 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
         return False, None
 
     exception_count = 0
-    for keyword in keywords:
-        for page in range(0, S1_FETCH_MAX_PAGES):
+    for page in range(0, S1_FETCH_MAX_PAGES):
+        for keyword in keywords:
             by_host: Dict[str, Tuple[int, int, int]] = defaultdict(lambda: (0, 0, 0))
 
             data = fetch_video_urls(keyword.name, page + 1)
@@ -94,6 +94,7 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
 
             _log_page_summary(keyword.name, page + 1, dict(by_host))
 
+    for keyword in keywords:
         KeywordCrud.touch_fetched(keyword.id)
 
     return True, keywords[-1].id

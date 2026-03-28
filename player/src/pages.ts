@@ -23,19 +23,9 @@ function parsePublicWatchSegmentParam(slugParam: string): number | null {
   return Math.trunc(n);
 }
 
-const TOP_NAV_TAGS_SQL = `SELECT t.name AS name, t.slug AS slug, COUNT(vt.video_id) AS count
-FROM tags t
-INNER JOIN video_tags vt ON vt.tag_id = t.id
-GROUP BY t.id
-ORDER BY count DESC
-LIMIT 15`;
+const TOP_NAV_TAGS_SQL = `SELECT name, slug, video_count AS count FROM tags ORDER BY video_count DESC LIMIT 15`;
 
-const TOP_NAV_CATEGORIES_SQL = `SELECT c.name AS name, c.slug AS slug, COUNT(vc.video_id) AS count
-FROM categories c
-INNER JOIN video_categories vc ON vc.category_id = c.id
-GROUP BY c.id
-ORDER BY count DESC
-LIMIT 15`;
+const TOP_NAV_CATEGORIES_SQL = `SELECT name, slug, video_count AS count FROM categories ORDER BY video_count DESC LIMIT 15`;
 
 async function fetchNavTaxonomies(db: D1Database): Promise<[NavTaxonomyItem[], NavTaxonomyItem[]]> {
   const [tags, cats] = await Promise.all([
@@ -76,7 +66,7 @@ async function resolveIndex(c: any, lang: string) {
   const { siteName, gaMeasurementId } = pageContext(c.env);
   const slugOffset = watchSlugOffset(c);
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
-  const pageSize = 24;
+  const pageSize = 15;
   const q = c.req.query("q")?.trim() || "";
 
   let listSql: string;
@@ -145,7 +135,7 @@ async function resolveTagListing(c: any, lang: string) {
   if (!row) return c.text("Not found", 404);
 
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
-  const pageSize = 24;
+  const pageSize = 15;
   const offset = (page - 1) * pageSize;
 
   const listResult =
@@ -213,7 +203,7 @@ async function resolveCategoryListing(c: any, lang: string) {
   if (!row) return c.text("Not found", 404);
 
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
-  const pageSize = 24;
+  const pageSize = 15;
   const offset = (page - 1) * pageSize;
 
   const listResult =

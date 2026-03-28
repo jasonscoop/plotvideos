@@ -34,7 +34,7 @@ const translations: Record<string, Record<string, string>> = {
     search_placeholder: "Search",
     latest_videos: "Latest videos",
     no_videos: "No videos found.",
-    previous: "Previous",
+    previous: "Prev",
     next: "Next",
     videos: "videos",
     original: "Original",

@@ -5,7 +5,6 @@ import type { VttCue } from "./vtt";
 
 const GLOBAL_CSS = `
 <link href="/styles.css" rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
 `;
 
 const CHEVRON_SVG = `<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>`;

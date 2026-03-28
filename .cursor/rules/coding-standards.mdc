@@ -1,0 +1,21 @@
+---
+description: Best practices and no generated comments
+alwaysApply: true
+---
+
+# Coding standards
+
+- Change only what the task requires. Do not refactor unrelated code, rename broadly, or add files the user did not ask for.
+- Match the surrounding codebase: naming, imports, types, formatting, and abstraction level.
+- Prefer small, clear functions and early returns over nested branching. Handle errors at the right layer; avoid empty catches and swallowed failures.
+- Reuse existing helpers and patterns instead of duplicating logic.
+- Keep diffs easy to review: one coherent change per edit, no drive-by cleanups.
+
+# No comments
+
+- Do not add comments in code (including `//`, `#`, `/* */`, block comments, or JSX `{/* */}`).
+- Do not add or expand docstrings, module docstrings, or `# type:` noise unless the user explicitly asks for documentation.
+- Do not add placeholder comments such as `TODO`, `FIXME`, or `NOTE` unless the user asks for them.
+- Rely on clear names, structure, and types instead of explanatory text inside the repo.
+
+If the user explicitly asks for comments or documentation, follow that request only for the scope they named.

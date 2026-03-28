@@ -1,16 +1,3 @@
-"""
-Pipeline scheduler and CLI entry point.
-
-Run a single stage:
-    python -m scheduler --runner s4_subtitle
-
-Run all stages concurrently:
-    python -m scheduler --runner all
-
-The pull API runs separately:
-    uvicorn api:app --host 0.0.0.0 --port 8001
-"""
-
 import argparse
 import asyncio
 from dataclasses import dataclass
@@ -29,8 +16,6 @@ from utils.signal_utils import (
 )
 from utils.telegram_notify import notify_stage_failure
 
-# ── Async scheduler ───────────────────────────────────────────────────────────
-
 BatchFn = Callable[[Optional[int]], Tuple[bool, Optional[int]]]
 
 
@@ -38,7 +23,7 @@ BatchFn = Callable[[Optional[int]], Tuple[bool, Optional[int]]]
 class StageConfig:
     name: str
     process_batch: BatchFn
-    idle_sleep: int  # seconds to wait when queue is empty
+    idle_sleep: int
 
 
 STAGES: list[StageConfig] = [
@@ -59,8 +44,6 @@ STAGES: list[StageConfig] = [
 
 
 async def _idle_sleep(seconds: int, shutdown_event: asyncio.Event) -> bool:
-    """Sleep for `seconds` or until shutdown is signalled.
-    Returns True if shutdown fired (caller should stop), False on normal timeout."""
     try:
         await asyncio.wait_for(asyncio.shield(shutdown_event.wait()), timeout=seconds)
         return True
@@ -105,8 +88,6 @@ async def run_all() -> None:
     logger.info("Scheduler stopped")
 
 
-# ── Single-stage runners ──────────────────────────────────────────────────────
-
 RUNNERS = {
     "s1_fetch":          s1_fetch.fetch_and_save_videos,
     "s2_download":       s2_download.download_videos,
@@ -119,8 +100,6 @@ RUNNERS = {
     "s9_cleanup":        s9_cleanup.clean_files,
 }
 
-
-# ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Video processing pipeline")

@@ -19,6 +19,7 @@ class VideoStatus(StrEnum):
     uploaded = "uploaded"
     low_density = "low_density"
     oversized = "oversized"
+    too_short = "too_short"
     failed_cleaned = "failed_cleaned"
 
     def log(self, e: Exception | str = None) -> str:

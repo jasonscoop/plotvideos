@@ -27,13 +27,17 @@ def convert_video(video):
         duration = get_video_duration(video_path)
 
     if duration < MIN_ACCEPT_DURATION:
-        reason = VideoCrud.record_failure(
-            video.id,
-            VideoStatus.converted.log(
-                f"Duration is shorter than {MIN_ACCEPT_DURATION}s"
-            ),
+        VideoCrud.update(
+            {
+                "id": video.id,
+                "duration": duration,
+                "status": VideoStatus.too_short,
+                "failed_reason": f"Duration is shorter than {MIN_ACCEPT_DURATION}s",
+            }
         )
-        logger.warning(f"[{video.id} | {video.host}] {reason}")
+        logger.warning(
+            f"[{video.id} | {video.host}] too_short: duration {duration}s < {MIN_ACCEPT_DURATION}s"
+        )
         return
 
     media_to_wav(video_path, video.store_path.audio)

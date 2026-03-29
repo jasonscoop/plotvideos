@@ -128,25 +128,20 @@ class VideoCrud:
 
     @classmethod
     def record_failure(cls, video_id: int, reason: str = "") -> str:
-        """Increment failed_count by 1 and set failed_reason. Status stays unchanged."""
+        exceeded = False
         with get_db() as session:
             video = session.query(Video).filter(Video.id == video_id).first()
             if video:
                 video.failed_count = video.failed_count + 1
                 video.failed_reason = reason
+                if video.failed_count >= MAX_FAILED_NUM:
+                    video.status = VideoStatus.retry_exceeded
+                    exceeded = True
                 session.commit()
+        if exceeded:
+            from utils.file_utils import rm_by_id
+            rm_by_id(video_id)
         return reason
-
-    @classmethod
-    def get_exceeded_failed(cls, last_id: int | None, batch_size: int, host: str = "") -> list[Video]:
-        """Get videos that have reached MAX_FAILED_NUM (for cleanup)."""
-        with get_db() as session:
-            query = session.query(Video).filter(Video.failed_count >= MAX_FAILED_NUM)
-            if last_id is not None:
-                query = query.filter(Video.id > last_id)
-            if host:
-                query = query.filter(Video.host == host)
-            return query.order_by(Video.id.asc()).limit(batch_size).all()
 
     @classmethod
     def get_title_translations(cls, video_id: int) -> Dict[str, str]:

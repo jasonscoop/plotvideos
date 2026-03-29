@@ -38,6 +38,7 @@ def convert_video(video):
         logger.warning(
             f"[{video.id} | {video.host}] too_short: duration {duration}s < {MIN_ACCEPT_DURATION}s"
         )
+        rm_video(video)
         return
 
     media_to_wav(video_path, video.store_path.audio)

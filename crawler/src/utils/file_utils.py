@@ -27,3 +27,15 @@ def rm_video(video: Video) -> bool:
         shutil.rmtree(str(parent), ignore_errors=False)
         return not parent.exists()
     return False
+
+
+def rm_by_id(video_id: int) -> bool:
+    from core.schemas import StorePath
+
+    parent = StorePath(video_id).parent
+    if not parent.exists():
+        return True
+    if is_path_match(parent.as_posix()):
+        shutil.rmtree(str(parent), ignore_errors=True)
+        return not parent.exists()
+    return False

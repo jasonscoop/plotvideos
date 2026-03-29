@@ -8,7 +8,7 @@ from loguru import logger
 from core.config import S1_KEYWORD_COOLDOWN_HOURS, validate_config
 from service import (
     s1_fetch, s2_download, s3_convert, s4_subtitle,
-    s5_translate_vtt, s6_translate_meta, s7_hls, s8_upload, s9_cleanup,
+    s5_translate_vtt, s6_translate_meta, s7_hls, s8_upload,
 )
 from utils.log_utils import init_logging
 from utils.signal_utils import (
@@ -39,7 +39,6 @@ STAGES: list[StageConfig] = [
     StageConfig("s6_translate_meta", s6_translate_meta.process_batch, 300),
     StageConfig("s7_hls",           s7_hls.process_batch,             300),
     StageConfig("s8_upload",        s8_upload.process_batch,          300),
-    StageConfig("s9_cleanup",       s9_cleanup.process_batch,        3600 * 24),
 ]
 
 
@@ -97,7 +96,6 @@ RUNNERS = {
     "s6_translate_meta": s6_translate_meta.translate_meta_infos,
     "s7_hls":            s7_hls.generate_hls_videos,
     "s8_upload":         s8_upload.upload_videos,
-    "s9_cleanup":        s9_cleanup.clean_files,
 }
 
 

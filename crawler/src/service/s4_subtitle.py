@@ -9,6 +9,7 @@ from core.config import S4_SUBTITLE_BATCH_SIZE, SUBTITLE_TOKEN_RATIO_THRESHOLD
 from core.models import VideoStatus
 from core.models import Video
 
+from utils.file_utils import rm_video
 from utils.signal_utils import setup_graceful_shutdown, should_stop
 from utils.whisper_utils import whisper_transcribe
 
@@ -39,6 +40,7 @@ def subtitle_video(video: Video):
             logger.warning(
                 f"[{video.id} | {video.host}] low_density: {word_density} < {SUBTITLE_TOKEN_RATIO_THRESHOLD}"
             )
+            rm_video(video)
             return None
 
         video.store_path.vtt.write_text(vtt_content)

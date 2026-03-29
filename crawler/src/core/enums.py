@@ -20,7 +20,7 @@ class VideoStatus(StrEnum):
     low_density = "low_density"
     oversized = "oversized"
     too_short = "too_short"
-    failed_cleaned = "failed_cleaned"
+    retry_exceeded = "retry_exceeded"
 
     def log(self, e: Exception | str = None) -> str:
         n = DB_ERROR_LOG_LENGTH - len(self.value) - 3

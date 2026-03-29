@@ -42,6 +42,7 @@ export function layout(
     origin?: string;
     hreflangPath?: string;
     ogImage?: string;
+    ogType?: string;
     noindex?: boolean;
   }
 ) {
@@ -75,13 +76,19 @@ export function layout(
       `\n  <link rel="alternate" hreflang="x-default" href="${origin}${opts.hreflangPath}" />`
     : "";
 
+  const ogType = opts?.ogType || "website";
   const ogTags = origin
     ? [
+        `<meta property="og:type" content="${ogType}" />`,
         `<meta property="og:title" content="${esc(title)}" />`,
         desc ? `<meta property="og:description" content="${esc(desc)}" />` : "",
         `<meta property="og:url" content="${canonicalUrl}" />`,
         `<meta property="og:site_name" content="${esc(brand)}" />`,
         opts?.ogImage ? `<meta property="og:image" content="${esc(opts.ogImage)}" />` : "",
+        `<meta name="twitter:card" content="${opts?.ogImage ? "summary_large_image" : "summary"}" />`,
+        `<meta name="twitter:title" content="${esc(title)}" />`,
+        desc ? `<meta name="twitter:description" content="${esc(desc)}" />` : "",
+        opts?.ogImage ? `<meta name="twitter:image" content="${esc(opts.ogImage)}" />` : "",
       ]
         .filter(Boolean)
         .join("\n  ")
@@ -374,6 +381,7 @@ interface WatchData {
   thumbnail_url: string;
   video_url: string;
   hls_url: string;
+  created_at?: string;
 }
 
 export interface WatchTaxonomyLinks {
@@ -464,6 +472,7 @@ export function watchPage(
 
   const transcriptTextForLd = seoTranscriptCues.map((c) => c.text).join("\n");
   const isoDur = durationIso8601(video.duration);
+  const watchPath = videoWatchPath(video, slugOffset);
   const ldData: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "VideoObject",
@@ -473,6 +482,8 @@ export function watchPage(
   if (video.thumbnail_url) ldData.thumbnailUrl = video.thumbnail_url;
   if (isoDur) ldData.duration = isoDur;
   if (video.hls_url) ldData.contentUrl = video.hls_url;
+  if (video.created_at) ldData.uploadDate = video.created_at.split(" ")[0];
+  if (origin) ldData.url = `${origin}${langPrefix(lang)}${watchPath}`;
   if (transcriptTextForLd) ldData.transcript = transcriptTextForLd;
   const jsonLd = escJsonForScript(ldData);
 
@@ -522,7 +533,6 @@ export function watchPage(
 
   const content = `<div class="yt-home">${sidebar}<div class="yt-home-main yt-watch-page-main">${watchBody}</div></div>`;
 
-  const watchPath = videoWatchPath(video, slugOffset);
   const desc = transcriptTextForLd
     ? transcriptTextForLd.substring(0, 160).replace(/\n/g, " ")
     : video.title;
@@ -535,5 +545,6 @@ export function watchPage(
     origin,
     hreflangPath: watchPath,
     ogImage: video.thumbnail_url,
+    ogType: "video.other",
   });
 }

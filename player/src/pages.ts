@@ -369,6 +369,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
         thumbnail_url: video.thumbnail_url,
         video_url: video.video_url,
         hls_url: video.hls_url,
+        created_at: video.created_at,
       },
       subtitleTracks,
       recResult.results,

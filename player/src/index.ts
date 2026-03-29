@@ -67,6 +67,15 @@ app.get("/logo.svg", (c) => {
   });
 });
 
+app.get("/robots.txt", (c) => {
+  const origin = new URL(c.req.url).origin;
+  const body = `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`;
+  return c.body(body, 200, {
+    "Content-Type": "text/plain; charset=utf-8",
+    "Cache-Control": "public, max-age=86400",
+  });
+});
+
 app.route("/api", apiRoutes);
 registerSitemapRoutes(app);
 app.route("/", pageRoutes);

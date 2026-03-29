@@ -137,11 +137,6 @@
 
   player.ready(function () {
     if (!subtitleTracks.length) return;
-
-    if (player.readyState() >= 1) {
-      addSubtitleTracksOnce();
-    } else {
-      player.one("loadedmetadata", addSubtitleTracksOnce);
-    }
+    addSubtitleTracksOnce();
   });
 })();

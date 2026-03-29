@@ -13,6 +13,17 @@
     });
   });
 
+  var searchToggle = document.querySelector(".yt-search-toggle");
+  var searchInput = document.querySelector(".yt-search input");
+  if (searchToggle) {
+    searchToggle.addEventListener("click", function () {
+      document.body.classList.toggle("search-open");
+      if (document.body.classList.contains("search-open") && searchInput) {
+        searchInput.focus();
+      }
+    });
+  }
+
   var menuBtn = document.querySelector(".yt-menu-btn");
   var overlay = document.querySelector(".yt-sidebar-overlay");
   if (menuBtn) {

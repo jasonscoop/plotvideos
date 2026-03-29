@@ -11,6 +11,14 @@ alwaysApply: true
 - Reuse existing helpers and patterns instead of duplicating logic.
 - Keep diffs easy to review: one coherent change per edit, no drive-by cleanups.
 
+# Player: two-stage queries, no JOINs
+
+- In the `player/` project, never use SQL JOIN (INNER JOIN, LEFT JOIN, etc.). Instead, split into two stages: run the first query to collect IDs/keys, then run a second query using those IDs.
+- Resolve foreign keys in application code. For example, fetch `lang_id` values first, then look up language rows separately.
+- For many-to-many relationships (video_tags, video_categories), query the link table for IDs first, then fetch the related rows in a second query.
+- Use `db.batch()` when the second stage needs multiple queries to keep round-trips minimal.
+- This applies to runtime queries in `src/`. Migration scripts may still use JOINs when needed.
+
 # No comments
 
 - Do not add comments in code (including `//`, `#`, `/* */`, block comments, or JSX `{/* */}`).

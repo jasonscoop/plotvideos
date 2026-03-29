@@ -6,6 +6,7 @@ import STYLES_CSS from "./styles.css";
 import LANG_DROPDOWN_JS from "./lang-dropdown.client.js";
 import WATCH_PAGE_JS from "./watch-page.client.js";
 import LOGO_SVG from "./logo.svg";
+import { ASSET_HASHES } from "./asset-hashes";
 
 export type Env = {
   Bindings: {
@@ -31,24 +32,24 @@ app.use("*", async (c, next) => {
   return next();
 });
 
-app.get("/styles.css", (c) => {
+app.get(`/styles.${ASSET_HASHES.css}.css`, (c) => {
   return c.body(STYLES_CSS, 200, {
     "Content-Type": "text/css; charset=utf-8",
-    "Cache-Control": "public, max-age=3600",
+    "Cache-Control": "public, max-age=31536000, immutable",
   });
 });
 
-app.get("/lang-dropdown.js", (c) => {
+app.get(`/lang-dropdown.${ASSET_HASHES.langDropdown}.js`, (c) => {
   return c.body(LANG_DROPDOWN_JS, 200, {
     "Content-Type": "application/javascript; charset=utf-8",
-    "Cache-Control": "public, max-age=3600",
+    "Cache-Control": "public, max-age=31536000, immutable",
   });
 });
 
-app.get("/watch-page.js", (c) => {
+app.get(`/watch-page.${ASSET_HASHES.watchPage}.js`, (c) => {
   return c.body(WATCH_PAGE_JS, 200, {
     "Content-Type": "application/javascript; charset=utf-8",
-    "Cache-Control": "public, max-age=3600",
+    "Cache-Control": "public, max-age=31536000, immutable",
   });
 });
 

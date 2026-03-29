@@ -2,9 +2,10 @@ import { t, LANGUAGES, langPrefix, nativeName, isRtl } from "./i18n";
 import { publicWatchSegmentFromVideoId } from "./slug";
 import { DEFAULT_SITE_NAME } from "./site";
 import type { VttCue } from "./vtt";
+import { ASSET_HASHES } from "./asset-hashes";
 
 const GLOBAL_CSS = `
-<link href="/styles.css" rel="stylesheet" />
+<link href="/styles.${ASSET_HASHES.css}.css" rel="stylesheet" />
 `;
 
 const CHEVRON_SVG = `<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>`;
@@ -118,7 +119,7 @@ export function layout(
   </header>
   ${content}
   <div class="yt-sidebar-overlay"></div>
-  <script src="/lang-dropdown.js" defer></script>
+  <script src="/lang-dropdown.${ASSET_HASHES.langDropdown}.js" defer></script>
 </body>
 </html>`;
 }
@@ -517,7 +518,7 @@ export function watchPage(
   <script src="https://cdn.jsdelivr.net/npm/video.js@8/dist/video.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-levels@4/dist/videojs-contrib-quality-levels.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@2.0.0/dist/videojs-hls-quality-selector.min.js"></script>
-  <script src="/watch-page.js" defer></script>`;
+  <script src="/watch-page.${ASSET_HASHES.watchPage}.js" defer></script>`;
 
   const content = `<div class="yt-home">${sidebar}<div class="yt-home-main yt-watch-page-main">${watchBody}</div></div>`;
 

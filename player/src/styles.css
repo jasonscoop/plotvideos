@@ -315,13 +315,16 @@ a { color: inherit; text-decoration: none; }
 
 /* ── Video.js Overrides ─────────────────────────────── */
 
-.video-js .vjs-menu .vjs-menu-content { max-height: 250px; overflow-y: auto; }
+.video-js .vjs-menu .vjs-menu-content,
+.video-js .vjs-menu-button-popup .vjs-menu .vjs-menu-content { max-height: none; overflow-y: visible; }
+.video-js .vjs-menu-item { text-transform: capitalize; }
 .video-js { width: 100% !important; height: 100% !important; }
 .video-js .vjs-poster { background-size: cover; }
 
 .video-js .vjs-big-play-button {
   top: 50%;
   left: 50%;
+  margin: 0;
   transform: translate(-50%,-50%);
   width: 68px;
   height: 68px;
@@ -352,6 +355,7 @@ a { color: inherit; text-decoration: none; }
 .video-js .vjs-progress-holder:hover { height: 5px; }
 .video-js .vjs-icon-placeholder::before { font-size: 18px; line-height: 38px; }
 .video-js .vjs-playback-rate .vjs-playback-rate-value { font-size: 12px; line-height: 38px; }
+.video-js.vjs-paused .vjs-control-bar { display: flex; opacity: 1; visibility: visible; pointer-events: auto; }
 
 /* ── Video Meta ─────────────────────────────────────── */
 

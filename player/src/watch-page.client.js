@@ -19,6 +19,8 @@
 
   if (typeof videojs === "undefined") return;
 
+  videojs.addLanguage("en", { "subtitles off": "Off" });
+
   var player = videojs("video-player", {
     fluid: false,
     responsive: true,

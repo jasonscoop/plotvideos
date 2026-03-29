@@ -24,7 +24,6 @@
   var player = videojs("video-player", {
     fluid: false,
     responsive: true,
-    preferFullWindow: true,
     playbackRates: [0.5, 1, 1.25, 1.5, 2],
     html5: {
       vhs: { overrideNative: !videojs.browser.IS_SAFARI },
@@ -136,45 +135,7 @@
     player.on("texttrackchange", persistSubtitleFromPlayer);
   }
 
-  var rotated = false;
-
-  function toggleRotate() {
-    rotated = !rotated;
-    var wrap = document.querySelector(".yt-player-wrap");
-    if (!wrap) return;
-
-    if (rotated) {
-      wrap.classList.add("yt-player-rotated");
-      try {
-        var fs = wrap.requestFullscreen || wrap.webkitRequestFullscreen;
-        if (fs) fs.call(wrap).catch(function () {});
-      } catch (e) {}
-    } else {
-      wrap.classList.remove("yt-player-rotated");
-      try {
-        var doc = document;
-        if (doc.fullscreenElement || doc.webkitFullscreenElement) {
-          (doc.exitFullscreen || doc.webkitExitFullscreen).call(doc);
-        }
-      } catch (e) {}
-    }
-  }
-
-  function addRotateButton() {
-    var controlBar = player.getChild("controlBar");
-    var btn = controlBar.addChild("button", {});
-    btn.addClass("vjs-rotate-btn");
-    btn.el().title = "Rotate";
-    btn.el().addEventListener("click", function (e) {
-      e.stopPropagation();
-      e.preventDefault();
-      toggleRotate();
-    });
-  }
-
   player.ready(function () {
-    addRotateButton();
-
     if (!subtitleTracks.length) return;
 
     if (player.readyState() >= 1) {

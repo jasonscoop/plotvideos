@@ -36,6 +36,11 @@ export function layout(
     jsonLd?: string;
     siteName?: string;
     gaMeasurementId?: string;
+    description?: string;
+    origin?: string;
+    hreflangPath?: string;
+    ogImage?: string;
+    noindex?: boolean;
   }
 ) {
   const brand = opts?.siteName?.trim() || DEFAULT_SITE_NAME;
@@ -53,12 +58,46 @@ export function layout(
   const jsonLdTag = opts?.jsonLd
     ? `<script type="application/ld+json">${opts.jsonLd}</script>`
     : "";
+
+  const desc = opts?.description?.trim();
+  const descTag = desc ? `<meta name="description" content="${esc(desc)}" />` : "";
+
+  const origin = opts?.origin;
+  const canonicalUrl = origin ? `${origin}${prefix}${path}` : "";
+  const canonicalTag = canonicalUrl ? `<link rel="canonical" href="${canonicalUrl}" />` : "";
+
+  const hreflangTags = origin && opts?.hreflangPath
+    ? LANGUAGES.map(
+        (l) => `<link rel="alternate" hreflang="${l.code}" href="${origin}${langPrefix(l.code)}${opts.hreflangPath}" />`
+      ).join("\n  ") +
+      `\n  <link rel="alternate" hreflang="x-default" href="${origin}${opts.hreflangPath}" />`
+    : "";
+
+  const ogTags = origin
+    ? [
+        `<meta property="og:title" content="${esc(title)}" />`,
+        desc ? `<meta property="og:description" content="${esc(desc)}" />` : "",
+        `<meta property="og:url" content="${canonicalUrl}" />`,
+        `<meta property="og:site_name" content="${esc(brand)}" />`,
+        opts?.ogImage ? `<meta property="og:image" content="${esc(opts.ogImage)}" />` : "",
+      ]
+        .filter(Boolean)
+        .join("\n  ")
+    : "";
+
+  const robotsTag = opts?.noindex ? `<meta name="robots" content="noindex, follow" />` : "";
+
   return `<!DOCTYPE html>
 <html lang="${lang}"${dir}>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${esc(title)}</title>
+  ${descTag}
+  ${robotsTag}
+  ${canonicalTag}
+  ${hreflangTags}
+  ${ogTags}
   <link rel="icon" href="/logo.svg" type="image/svg+xml" />
   ${gaHead}
   ${jsonLdTag}
@@ -200,7 +239,8 @@ export function indexPage(
   activeTaxonomy: ActiveTaxonomy = null,
   slugOffset = 0,
   siteName: string,
-  gaMeasurementId?: string
+  gaMeasurementId?: string,
+  origin?: string
 ) {
   const prefix = langPrefix(lang);
   const qParam = q ? `&q=${encodeURIComponent(q)}` : "";
@@ -238,7 +278,15 @@ export function indexPage(
 
   const content = `<div class="yt-home">${sidebar}${main}</div>`;
 
-  return layout(siteName, lang, content, q, "/", { siteName, gaMeasurementId });
+  const pagePath = page > 1 ? `/?page=${page}` : "/";
+  return layout(siteName, lang, content, q, pagePath, {
+    siteName,
+    gaMeasurementId,
+    description: q ? undefined : `${siteName} - Watch the latest videos with subtitles`,
+    origin,
+    hreflangPath: q ? undefined : "/",
+    noindex: !!q,
+  });
 }
 
 export function taxonomyListingPage(
@@ -255,7 +303,8 @@ export function taxonomyListingPage(
   currentPath: string,
   slugOffset = 0,
   siteName: string,
-  gaMeasurementId?: string
+  gaMeasurementId?: string,
+  origin?: string
 ) {
   const prefix = langPrefix(lang);
   const baseHref =
@@ -304,9 +353,14 @@ export function taxonomyListingPage(
 
   const content = `<div class="yt-home">${sidebar}${main}</div>`;
 
-  return layout(`${browserTitle} - ${siteName}`, lang, content, "", currentPath, {
+  const barePath = `/${kind}/${taxSlug}.html`;
+  const pagePath = page > 1 ? `${barePath}?page=${page}` : barePath;
+  return layout(`${browserTitle} - ${siteName}`, lang, content, "", pagePath, {
     siteName,
     gaMeasurementId,
+    description: `${browserTitle} - ${siteName}`,
+    origin,
+    hreflangPath: barePath,
   });
 }
 
@@ -352,7 +406,8 @@ export function watchPage(
   taxonomyLinks: WatchTaxonomyLinks = { keyword: null, tags: [], categories: [] },
   slugOffset = 0,
   siteName: string,
-  gaMeasurementId?: string
+  gaMeasurementId?: string,
+  origin?: string
 ) {
   const prefix = langPrefix(lang);
   const sidebar = homeSidebar(lang, prefix, navTags, navCategories, null);
@@ -407,17 +462,17 @@ export function watchPage(
 
   const transcriptTextForLd = seoTranscriptCues.map((c) => c.text).join("\n");
   const isoDur = durationIso8601(video.duration);
-  const jsonLd =
-    seoTranscriptCues.length > 0
-      ? escJsonForScript({
-          "@context": "https://schema.org",
-          "@type": "VideoObject",
-          name: video.title,
-          description: video.title,
-          transcript: transcriptTextForLd,
-          ...(isoDur ? { duration: isoDur } : {}),
-        })
-      : undefined;
+  const ldData: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name: video.title,
+    description: video.title,
+  };
+  if (video.thumbnail_url) ldData.thumbnailUrl = video.thumbnail_url;
+  if (isoDur) ldData.duration = isoDur;
+  if (video.hls_url) ldData.contentUrl = video.hls_url;
+  if (transcriptTextForLd) ldData.transcript = transcriptTextForLd;
+  const jsonLd = escJsonForScript(ldData);
 
   const watchBody = `
   <div class="yt-watch">
@@ -464,10 +519,18 @@ export function watchPage(
 
   const content = `<div class="yt-home">${sidebar}<div class="yt-home-main yt-watch-page-main">${watchBody}</div></div>`;
 
-  return layout(`${video.title} - ${siteName}`, lang, content, "", videoWatchPath(video, slugOffset), {
+  const watchPath = videoWatchPath(video, slugOffset);
+  const desc = transcriptTextForLd
+    ? transcriptTextForLd.substring(0, 160).replace(/\n/g, " ")
+    : video.title;
+  return layout(`${video.title} - ${siteName}`, lang, content, "", watchPath, {
     playerAssets: true,
     jsonLd,
     siteName,
     gaMeasurementId,
+    description: desc,
+    origin,
+    hreflangPath: watchPath,
+    ogImage: video.thumbnail_url,
   });
 }

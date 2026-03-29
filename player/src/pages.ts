@@ -42,16 +42,17 @@ function watchSlugOffset(c: { env: Env["Bindings"] }): number {
   return parseSlugOffsetValue(c.env.SLUG_OFFSET_VALUE);
 }
 
-function pageContext(env: Env["Bindings"]) {
+function pageContext(c: any) {
   return {
-    siteName: siteNameFromEnv(env),
-    gaMeasurementId: gaMeasurementIdFromEnv(env),
+    siteName: siteNameFromEnv(c.env),
+    gaMeasurementId: gaMeasurementIdFromEnv(c.env),
+    origin: new URL(c.req.url).origin,
   };
 }
 
 async function resolveIndex(c: any, lang: string) {
   const db = c.env.DB;
-  const { siteName, gaMeasurementId } = pageContext(c.env);
+  const { siteName, gaMeasurementId, origin } = pageContext(c);
   const slugOffset = watchSlugOffset(c);
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = 15;
@@ -106,7 +107,8 @@ async function resolveIndex(c: any, lang: string) {
       null,
       slugOffset,
       siteName,
-      gaMeasurementId
+      gaMeasurementId,
+      origin
     )
   );
 }
@@ -115,7 +117,7 @@ async function resolveTagListing(c: any, lang: string) {
   const slug = parseTaxonomySlugParam(c.req.param("slug"));
   if (!slug) return c.text("Not found", 404);
 
-  const { siteName, gaMeasurementId } = pageContext(c.env);
+  const { siteName, gaMeasurementId, origin } = pageContext(c);
   const db = c.env.DB;
   const langId = await resolveLangId(db, lang);
   const row = await db
@@ -176,7 +178,8 @@ async function resolveTagListing(c: any, lang: string) {
       `${prefix}/tag/${row.slug}.html`,
       slugOffset,
       siteName,
-      gaMeasurementId
+      gaMeasurementId,
+      origin
     )
   );
 }
@@ -185,7 +188,7 @@ async function resolveCategoryListing(c: any, lang: string) {
   const slug = parseTaxonomySlugParam(c.req.param("slug"));
   if (!slug) return c.text("Not found", 404);
 
-  const { siteName, gaMeasurementId } = pageContext(c.env);
+  const { siteName, gaMeasurementId, origin } = pageContext(c);
   const db = c.env.DB;
   const langId = await resolveLangId(db, lang);
   const row = await db
@@ -246,7 +249,8 @@ async function resolveCategoryListing(c: any, lang: string) {
       `${prefix}/category/${row.slug}.html`,
       slugOffset,
       siteName,
-      gaMeasurementId
+      gaMeasurementId,
+      origin
     )
   );
 }
@@ -284,7 +288,7 @@ async function resolveWatch(c: any, lang: string) {
 
 async function _renderWatch(c: any, lang: string, video: any) {
   const db = c.env.DB;
-  const { siteName, gaMeasurementId } = pageContext(c.env);
+  const { siteName, gaMeasurementId, origin } = pageContext(c);
   const id = video.id;
   const slugOffset = watchSlugOffset(c);
   const langId = await resolveLangId(db, lang);
@@ -374,7 +378,8 @@ async function _renderWatch(c: any, lang: string, video: any) {
       { keyword: keywordLink, tags: tagLinks, categories: categoryLinks },
       slugOffset,
       siteName,
-      gaMeasurementId
+      gaMeasurementId,
+      origin
     )
   );
 }

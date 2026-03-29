@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { apiRoutes, refreshRandomKeys, syncFromCrawler } from "./api";
 import { pageRoutes } from "./pages";
+import { registerSitemapRoutes } from "./sitemap";
 import STYLES_CSS from "./styles.css";
 import LANG_DROPDOWN_JS from "./lang-dropdown.client.js";
 import WATCH_PAGE_JS from "./watch-page.client.js";
@@ -66,6 +67,7 @@ app.get("/logo.svg", (c) => {
 });
 
 app.route("/api", apiRoutes);
+registerSitemapRoutes(app);
 app.route("/", pageRoutes);
 
 export default {

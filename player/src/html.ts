@@ -483,6 +483,7 @@ export function watchPage(
           id="video-player"
           class="video-js vjs-big-play-centered"
           controls
+          playsinline
           preload="auto"
           poster="${esc(video.thumbnail_url)}"
         ></video>

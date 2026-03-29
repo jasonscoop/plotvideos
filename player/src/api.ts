@@ -20,24 +20,26 @@ interface IngestPayload {
   thumbnail_url?: string;
   video_url?: string;
   hls_url?: string;
-  store_dir?: string;
   keyword?: string;
   tags?: string[];
   categories?: string[];
   translations?: Record<string, TranslationPayload>;
-  subtitle_tracks?: { lang: string; label: string; url: string }[];
+  subtitle_tracks?: { lang: string; url: string }[];
 }
+
+const LANG_ID = "(SELECT id FROM languages WHERE code = ?)";
 
 async function getOrCreateTaxonomyId(
   db: D1Database,
   table: "tags" | "categories",
-  name: string
+  name: string,
+  langCode: string
 ): Promise<number | null> {
   const trimmed = name.trim();
   if (!trimmed) return null;
   const existing = await db
-    .prepare(`SELECT id FROM ${table} WHERE name = ?`)
-    .bind(trimmed)
+    .prepare(`SELECT t.id FROM ${table} t INNER JOIN languages l ON l.id = t.lang_id WHERE t.name = ? AND l.code = ?`)
+    .bind(trimmed, langCode)
     .first<{ id: number }>();
   if (existing) return existing.id;
   const base = slugify(trimmed);
@@ -45,26 +47,49 @@ async function getOrCreateTaxonomyId(
     const slug = i === 0 ? base : `${base}-${i}`;
     try {
       const row = await db
-        .prepare(`INSERT INTO ${table} (name, slug) VALUES (?, ?) RETURNING id`)
-        .bind(trimmed, slug)
+        .prepare(`INSERT INTO ${table} (name, slug, lang_id) VALUES (?, ?, ${LANG_ID}) RETURNING id`)
+        .bind(trimmed, slug, langCode)
         .first<{ id: number }>();
       if (row?.id != null) return row.id;
     } catch {
-      /* slug or name race */
     }
   }
   return null;
 }
 
-export async function resyncVideoTaxonomies(
+async function syncVideoTaxonomiesForLang(
   db: D1Database,
   videoId: number,
+  langCode: string,
   keyword: string,
   tags: string[],
   categories: string[]
 ): Promise<void> {
-  await db.prepare("DELETE FROM video_tags WHERE video_id = ?").bind(videoId).run();
-  await db.prepare("DELETE FROM video_categories WHERE video_id = ?").bind(videoId).run();
+  const existingTagIds = await db
+    .prepare(
+      `SELECT vt.tag_id FROM video_tags vt
+       INNER JOIN tags t ON t.id = vt.tag_id
+       INNER JOIN languages l ON l.id = t.lang_id
+       WHERE vt.video_id = ? AND l.code = ?`
+    )
+    .bind(videoId, langCode)
+    .all<{ tag_id: number }>();
+  for (const r of existingTagIds.results) {
+    await db.prepare("DELETE FROM video_tags WHERE video_id = ? AND tag_id = ?").bind(videoId, r.tag_id).run();
+  }
+
+  const existingCatIds = await db
+    .prepare(
+      `SELECT vc.category_id FROM video_categories vc
+       INNER JOIN categories c ON c.id = vc.category_id
+       INNER JOIN languages l ON l.id = c.lang_id
+       WHERE vc.video_id = ? AND l.code = ?`
+    )
+    .bind(videoId, langCode)
+    .all<{ category_id: number }>();
+  for (const r of existingCatIds.results) {
+    await db.prepare("DELETE FROM video_categories WHERE video_id = ? AND category_id = ?").bind(videoId, r.category_id).run();
+  }
 
   const tagNames = new Set<string>();
   for (const t of tags) {
@@ -73,7 +98,7 @@ export async function resyncVideoTaxonomies(
   }
 
   for (const t of tagNames) {
-    const id = await getOrCreateTaxonomyId(db, "tags", t);
+    const id = await getOrCreateTaxonomyId(db, "tags", t, langCode);
     if (id != null) {
       await db
         .prepare("INSERT OR IGNORE INTO video_tags (video_id, tag_id) VALUES (?, ?)")
@@ -82,8 +107,8 @@ export async function resyncVideoTaxonomies(
     }
   }
 
-  const categoryNames = new Set<string>();
   const kw = keyword?.trim();
+  const categoryNames = new Set<string>();
   if (kw) categoryNames.add(kw);
   for (const c of categories) {
     const x = typeof c === "string" ? c.trim() : "";
@@ -91,14 +116,18 @@ export async function resyncVideoTaxonomies(
   }
 
   for (const c of categoryNames) {
-    const id = await getOrCreateTaxonomyId(db, "categories", c);
+    const id = await getOrCreateTaxonomyId(db, "categories", c, langCode);
     if (id != null) {
+      const isKeyword = c === kw ? 1 : 0;
       await db
-        .prepare("INSERT OR IGNORE INTO video_categories (video_id, category_id) VALUES (?, ?)")
-        .bind(videoId, id)
+        .prepare("INSERT OR IGNORE INTO video_categories (video_id, category_id, is_keyword) VALUES (?, ?, ?)")
+        .bind(videoId, id, isKeyword)
         .run();
     }
   }
+
+  await db.prepare("UPDATE tags SET video_count = (SELECT COUNT(*) FROM video_tags WHERE tag_id = tags.id) WHERE lang_id = " + LANG_ID).bind(langCode).run();
+  await db.prepare("UPDATE categories SET video_count = (SELECT COUNT(*) FROM video_categories WHERE category_id = categories.id) WHERE lang_id = " + LANG_ID).bind(langCode).run();
 }
 
 function randomInt31(): number {
@@ -109,33 +138,13 @@ export async function refreshRandomKeys(db: D1Database): Promise<void> {
   await db.prepare(`UPDATE videos SET random_key = RANDOM()`).run();
 }
 
-export async function rebuildAllTaxonomies(db: D1Database): Promise<{ videos: number }> {
-  const rows = await db.prepare("SELECT id, keyword, tags, categories FROM videos").all<{
-    id: number;
-    keyword: string;
-    tags: string;
-    categories: string;
-  }>();
-  let n = 0;
-  for (const v of rows.results) {
-    const tags = JSON.parse(v.tags || "[]") as string[];
-    const categories = JSON.parse(v.categories || "[]") as string[];
-    await resyncVideoTaxonomies(db, v.id, v.keyword || "", tags, categories);
-    n++;
-  }
-  return { videos: n };
-}
-
 async function ingestVideo(db: D1Database, body: IngestPayload): Promise<number> {
-  const tagsJson = JSON.stringify(body.tags || []);
-  const catsJson = JSON.stringify(body.categories || []);
-
   const result = await db
     .prepare(
       `INSERT INTO videos (original_id, title,
         duration, width, height, thumbnail_url, video_url, hls_url,
-        store_dir, keyword, tags, categories, random_key)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        random_key)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(original_id) DO UPDATE SET
         title = excluded.title,
         duration = excluded.duration,
@@ -143,11 +152,7 @@ async function ingestVideo(db: D1Database, body: IngestPayload): Promise<number>
         height = excluded.height,
         thumbnail_url = excluded.thumbnail_url,
         video_url = excluded.video_url,
-        hls_url = excluded.hls_url,
-        store_dir = excluded.store_dir,
-        keyword = excluded.keyword,
-        tags = excluded.tags,
-        categories = excluded.categories
+        hls_url = excluded.hls_url
        RETURNING id`
     )
     .bind(
@@ -159,10 +164,6 @@ async function ingestVideo(db: D1Database, body: IngestPayload): Promise<number>
       body.thumbnail_url || "",
       body.video_url || "",
       body.hls_url || "",
-      body.store_dir || "",
-      body.keyword || "",
-      tagsJson,
-      catsJson,
       randomInt31()
     )
     .first<{ id: number }>();
@@ -171,47 +172,46 @@ async function ingestVideo(db: D1Database, body: IngestPayload): Promise<number>
 
   const videoId = result.id;
 
+  await syncVideoTaxonomiesForLang(
+    db, videoId, "en",
+    body.keyword || "",
+    body.tags || [],
+    body.categories || []
+  );
+
   if (body.translations) {
     const stmt = db.prepare(
-      `INSERT INTO video_translations (video_id, lang, title, keyword, tags, categories)
-       VALUES (?, ?, ?, ?, ?, ?)
-       ON CONFLICT(video_id, lang) DO UPDATE SET
-        title = excluded.title,
-        keyword = excluded.keyword,
-        tags = excluded.tags,
-        categories = excluded.categories`
+      `INSERT INTO title_translations (video_id, lang_id, title)
+       VALUES (?, ${LANG_ID}, ?)
+       ON CONFLICT(video_id, lang_id) DO UPDATE SET
+        title = excluded.title`
     );
-    const batch = Object.entries(body.translations).map(([lang, tr]) =>
-      stmt.bind(
-        videoId,
-        lang,
-        tr.title || "",
-        tr.keyword || "",
-        JSON.stringify(tr.tags || []),
-        JSON.stringify(tr.categories || [])
-      )
-    );
+    const batch: ReturnType<typeof stmt.bind>[] = [];
+    for (const [lang, tr] of Object.entries(body.translations)) {
+      if (tr.title) {
+        batch.push(stmt.bind(videoId, lang, tr.title));
+      }
+      await syncVideoTaxonomiesForLang(
+        db, videoId, lang,
+        tr.keyword || body.keyword || "",
+        tr.tags || body.tags || [],
+        tr.categories || body.categories || []
+      );
+    }
     if (batch.length) await db.batch(batch);
   }
 
   if (body.subtitle_tracks) {
     const stmt = db.prepare(
-      `INSERT INTO subtitle_tracks (video_id, lang, label, url)
-       VALUES (?, ?, ?, ?) ON CONFLICT(video_id, lang) DO UPDATE SET label = excluded.label, url = excluded.url`
+      `INSERT INTO subtitle_tracks (video_id, lang_id, url)
+       VALUES (?, ${LANG_ID}, ?)
+       ON CONFLICT(video_id, lang_id) DO UPDATE SET url = excluded.url`
     );
     const batch = body.subtitle_tracks.map((t) =>
-      stmt.bind(videoId, t.lang, t.label, t.url)
+      stmt.bind(videoId, t.lang, t.url)
     );
     if (batch.length) await db.batch(batch);
   }
-
-  await resyncVideoTaxonomies(
-    db,
-    videoId,
-    body.keyword || "",
-    body.tags || [],
-    body.categories || []
-  );
 
   return videoId;
 }
@@ -268,20 +268,9 @@ export async function syncFromCrawler(env: Env["Bindings"]): Promise<{ synced: n
   return { synced };
 }
 
-// Manual sync trigger
 apiRoutes.post("/sync", async (c) => {
   try {
     const result = await syncFromCrawler(c.env);
-    return c.json(result);
-  } catch (e: any) {
-    return c.json({ error: e.message }, 500);
-  }
-});
-
-/** One-time / maintenance: rebuild `tags`, `categories`, and junction tables from `videos` JSON. */
-apiRoutes.post("/rebuild-taxonomies", async (c) => {
-  try {
-    const result = await rebuildAllTaxonomies(c.env.DB);
     return c.json(result);
   } catch (e: any) {
     return c.json({ error: e.message }, 500);
@@ -306,11 +295,19 @@ apiRoutes.get("/videos/:id", async (c) => {
   if (!video) return c.json({ error: "not found" }, 404);
 
   const subs = await db
-    .prepare("SELECT lang, label, url FROM subtitle_tracks WHERE video_id = ?")
+    .prepare(
+      `SELECT l.code AS lang, l.name AS label, st.url
+       FROM subtitle_tracks st INNER JOIN languages l ON l.id = st.lang_id
+       WHERE st.video_id = ?`
+    )
     .bind(id)
     .all();
   const translations = await db
-    .prepare("SELECT lang, title, keyword, tags, categories FROM video_translations WHERE video_id = ?")
+    .prepare(
+      `SELECT l.code AS lang, tt.title
+       FROM title_translations tt INNER JOIN languages l ON l.id = tt.lang_id
+       WHERE tt.video_id = ?`
+    )
     .bind(id)
     .all();
 
@@ -318,12 +315,7 @@ apiRoutes.get("/videos/:id", async (c) => {
     ...video,
     subtitle_tracks: subs.results,
     translations: Object.fromEntries(
-      translations.results.map((r: any) => [r.lang, {
-        title: r.title,
-        keyword: r.keyword,
-        tags: JSON.parse(r.tags || "[]"),
-        categories: JSON.parse(r.categories || "[]"),
-      }])
+      translations.results.map((r: any) => [r.lang, { title: r.title }])
     ),
   });
 });

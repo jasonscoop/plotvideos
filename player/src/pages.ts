@@ -14,7 +14,6 @@ import {
 
 export const pageRoutes = new Hono<Env>();
 
-/** Parse `/video/<n>.html` segment: accepts `123` or `123.0` (float artifact), returns INTEGER or null. */
 function parsePublicWatchSegmentParam(slugParam: string): number | null {
   const s = slugParam.replace(/\.html$/i, "").trim();
   if (!/^\d+(\.0+)?$/.test(s)) return null;
@@ -23,31 +22,20 @@ function parsePublicWatchSegmentParam(slugParam: string): number | null {
   return Math.trunc(n);
 }
 
-const TOP_NAV_TAGS_SQL = `SELECT name, slug, video_count AS count FROM tags ORDER BY video_count DESC LIMIT 15`;
-
-const TOP_NAV_CATEGORIES_SQL = `SELECT name, slug, video_count AS count FROM categories ORDER BY video_count DESC LIMIT 15`;
-
-async function fetchNavTaxonomies(db: D1Database): Promise<[NavTaxonomyItem[], NavTaxonomyItem[]]> {
-  const [tags, cats] = await Promise.all([
-    db.prepare(TOP_NAV_TAGS_SQL).all<NavTaxonomyItem>(),
-    db.prepare(TOP_NAV_CATEGORIES_SQL).all<NavTaxonomyItem>(),
-  ]);
-  return [tags.results, cats.results];
+async function resolveLangId(db: D1Database, code: string): Promise<number> {
+  const row = await db.prepare("SELECT id FROM languages WHERE code = ?").bind(code).first<{ id: number }>();
+  return row?.id ?? 0;
 }
 
-async function fetchNameSlugMap(
-  db: D1Database,
-  table: "tags" | "categories",
-  names: string[]
-): Promise<Map<string, string>> {
-  const uniq = [...new Set(names.map((n) => n.trim()).filter(Boolean))];
-  if (!uniq.length) return new Map();
-  const ph = uniq.map(() => "?").join(",");
-  const rows = await db
-    .prepare(`SELECT name, slug FROM ${table} WHERE name IN (${ph})`)
-    .bind(...uniq)
-    .all<{ name: string; slug: string }>();
-  return new Map(rows.results.map((r) => [r.name, r.slug]));
+const NAV_TAGS_SQL = "SELECT name, slug, video_count AS count FROM tags WHERE lang_id = ? ORDER BY video_count DESC LIMIT 15";
+const NAV_CATEGORIES_SQL = "SELECT name, slug, video_count AS count FROM categories WHERE lang_id = ? ORDER BY video_count DESC LIMIT 15";
+
+async function fetchNavTaxonomies(db: D1Database, langId: number): Promise<[NavTaxonomyItem[], NavTaxonomyItem[]]> {
+  const [tags, cats] = await Promise.all([
+    db.prepare(NAV_TAGS_SQL).bind(langId).all<NavTaxonomyItem>(),
+    db.prepare(NAV_CATEGORIES_SQL).bind(langId).all<NavTaxonomyItem>(),
+  ]);
+  return [tags.results, cats.results];
 }
 
 function watchSlugOffset(c: { env: Env["Bindings"] }): number {
@@ -68,6 +56,7 @@ async function resolveIndex(c: any, lang: string) {
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = 15;
   const q = c.req.query("q")?.trim() || "";
+  const langId = await resolveLangId(db, lang);
 
   let listSql: string;
   const params: any[] = [];
@@ -75,16 +64,16 @@ async function resolveIndex(c: any, lang: string) {
   if (lang === DEFAULT_LANG) {
     listSql = "SELECT * FROM videos";
   } else {
-    listSql = `SELECT v.*, vt.title AS tr_title
+    listSql = `SELECT v.*, tt.title AS tr_title
                FROM videos v
-               LEFT JOIN video_translations vt ON vt.video_id = v.id AND vt.lang = ?`;
-    params.push(lang);
+               LEFT JOIN title_translations tt ON tt.video_id = v.id AND tt.lang_id = ?`;
+    params.push(langId);
   }
 
   if (q) {
     const where = lang === DEFAULT_LANG
       ? " WHERE title LIKE ?"
-      : " WHERE (vt.title LIKE ? OR v.title LIKE ?)";
+      : " WHERE (tt.title LIKE ? OR v.title LIKE ?)";
     listSql += where;
     params.push(`%${q}%`);
     if (lang !== DEFAULT_LANG) params.push(`%${q}%`);
@@ -95,8 +84,8 @@ async function resolveIndex(c: any, lang: string) {
 
   const [listResult, navTags, navCategories] = await Promise.all([
     db.prepare(listSql).bind(...params, pageSize + 1, (page - 1) * pageSize).all(),
-    db.prepare(TOP_NAV_TAGS_SQL).all<NavTaxonomyItem>(),
-    db.prepare(TOP_NAV_CATEGORIES_SQL).all<NavTaxonomyItem>(),
+    db.prepare(NAV_TAGS_SQL).bind(langId).all<NavTaxonomyItem>(),
+    db.prepare(NAV_CATEGORIES_SQL).bind(langId).all<NavTaxonomyItem>(),
   ]);
 
   const hasNext = listResult.results.length > pageSize;
@@ -128,6 +117,7 @@ async function resolveTagListing(c: any, lang: string) {
 
   const { siteName, gaMeasurementId } = pageContext(c.env);
   const db = c.env.DB;
+  const langId = await resolveLangId(db, lang);
   const row = await db
     .prepare("SELECT id, name, slug FROM tags WHERE slug = ?")
     .bind(slug)
@@ -143,19 +133,21 @@ async function resolveTagListing(c: any, lang: string) {
       ? await db
           .prepare(
             `SELECT v.* FROM videos v
-             INNER JOIN video_tags vt ON v.id = vt.video_id WHERE vt.tag_id = ?
+             INNER JOIN video_tags vt ON v.id = vt.video_id
+             WHERE vt.tag_id = ?
              ORDER BY v.created_at DESC LIMIT ? OFFSET ?`
           )
           .bind(row.id, pageSize + 1, offset)
           .all()
       : await db
           .prepare(
-            `SELECT v.*, vt2.title AS tr_title FROM videos v
+            `SELECT v.*, tt.title AS tr_title FROM videos v
              INNER JOIN video_tags vt ON v.id = vt.video_id
-             LEFT JOIN video_translations vt2 ON vt2.video_id = v.id AND vt2.lang = ?
-             WHERE vt.tag_id = ? ORDER BY v.created_at DESC LIMIT ? OFFSET ?`
+             LEFT JOIN title_translations tt ON tt.video_id = v.id AND tt.lang_id = ?
+             WHERE vt.tag_id = ?
+             ORDER BY v.created_at DESC LIMIT ? OFFSET ?`
           )
-          .bind(lang, row.id, pageSize + 1, offset)
+          .bind(langId, row.id, pageSize + 1, offset)
           .all();
 
   const hasNext = listResult.results.length > pageSize;
@@ -164,9 +156,8 @@ async function resolveTagListing(c: any, lang: string) {
     title: r.tr_title || r.title,
   }));
 
-  const [navTags, navCategories] = await fetchNavTaxonomies(db);
+  const [navTags, navCategories] = await fetchNavTaxonomies(db, langId);
   const prefix = langPrefix(lang);
-  const pagePath = `${prefix}/tag/${row.slug}.html`;
   const browserTitle = t(lang, "tag_page_title").replace("{name}", row.name);
   const slugOffset = watchSlugOffset(c);
 
@@ -182,7 +173,7 @@ async function resolveTagListing(c: any, lang: string) {
       navTags,
       navCategories,
       browserTitle,
-      pagePath,
+      `${prefix}/tag/${row.slug}.html`,
       slugOffset,
       siteName,
       gaMeasurementId
@@ -196,6 +187,7 @@ async function resolveCategoryListing(c: any, lang: string) {
 
   const { siteName, gaMeasurementId } = pageContext(c.env);
   const db = c.env.DB;
+  const langId = await resolveLangId(db, lang);
   const row = await db
     .prepare("SELECT id, name, slug FROM categories WHERE slug = ?")
     .bind(slug)
@@ -211,19 +203,21 @@ async function resolveCategoryListing(c: any, lang: string) {
       ? await db
           .prepare(
             `SELECT v.* FROM videos v
-             INNER JOIN video_categories vc ON v.id = vc.video_id WHERE vc.category_id = ?
+             INNER JOIN video_categories vc ON v.id = vc.video_id
+             WHERE vc.category_id = ?
              ORDER BY v.created_at DESC LIMIT ? OFFSET ?`
           )
           .bind(row.id, pageSize + 1, offset)
           .all()
       : await db
           .prepare(
-            `SELECT v.*, vt2.title AS tr_title FROM videos v
+            `SELECT v.*, tt.title AS tr_title FROM videos v
              INNER JOIN video_categories vc ON v.id = vc.video_id
-             LEFT JOIN video_translations vt2 ON vt2.video_id = v.id AND vt2.lang = ?
-             WHERE vc.category_id = ? ORDER BY v.created_at DESC LIMIT ? OFFSET ?`
+             LEFT JOIN title_translations tt ON tt.video_id = v.id AND tt.lang_id = ?
+             WHERE vc.category_id = ?
+             ORDER BY v.created_at DESC LIMIT ? OFFSET ?`
           )
-          .bind(lang, row.id, pageSize + 1, offset)
+          .bind(langId, row.id, pageSize + 1, offset)
           .all();
 
   const hasNext = listResult.results.length > pageSize;
@@ -232,9 +226,8 @@ async function resolveCategoryListing(c: any, lang: string) {
     title: r.tr_title || r.title,
   }));
 
-  const [navTags, navCategories] = await fetchNavTaxonomies(db);
+  const [navTags, navCategories] = await fetchNavTaxonomies(db, langId);
   const prefix = langPrefix(lang);
-  const pagePath = `${prefix}/category/${row.slug}.html`;
   const browserTitle = t(lang, "category_page_title").replace("{name}", row.name);
   const slugOffset = watchSlugOffset(c);
 
@@ -250,7 +243,7 @@ async function resolveCategoryListing(c: any, lang: string) {
       navTags,
       navCategories,
       browserTitle,
-      pagePath,
+      `${prefix}/category/${row.slug}.html`,
       slugOffset,
       siteName,
       gaMeasurementId
@@ -294,14 +287,19 @@ async function _renderWatch(c: any, lang: string, video: any) {
   const { siteName, gaMeasurementId } = pageContext(c.env);
   const id = video.id;
   const slugOffset = watchSlugOffset(c);
+  const langId = await resolveLangId(db, lang);
 
-  const [translationResult, subsResult, recResult, navTagsResult, navCategoriesResult] = await Promise.all([
+  const [titleResult, subsResult, recResult, navTags, navCategories, videoTagRows, videoCatRows] = await Promise.all([
     db
-      .prepare("SELECT title, keyword, tags, categories FROM video_translations WHERE video_id = ? AND lang = ?")
-      .bind(id, lang)
-      .first<any>(),
+      .prepare("SELECT title FROM title_translations WHERE video_id = ? AND lang_id = ?")
+      .bind(id, langId)
+      .first<{ title: string }>(),
     db
-      .prepare("SELECT lang, label, url FROM subtitle_tracks WHERE video_id = ?")
+      .prepare(
+        `SELECT l.code AS lang, l.name AS label, st.url
+         FROM subtitle_tracks st INNER JOIN languages l ON l.id = st.lang_id
+         WHERE st.video_id = ?`
+      )
       .bind(id)
       .all<{ lang: string; label: string; url: string }>(),
     lang === "en"
@@ -311,14 +309,24 @@ async function _renderWatch(c: any, lang: string, video: any) {
           .all<any>()
       : db
           .prepare(
-            `SELECT v.id, COALESCE(vt.title, v.title) AS title, v.duration, v.thumbnail_url
-             FROM videos v LEFT JOIN video_translations vt ON vt.video_id = v.id AND vt.lang = ?
+            `SELECT v.id, COALESCE(tt.title, v.title) AS title, v.duration, v.thumbnail_url
+             FROM videos v LEFT JOIN title_translations tt ON tt.video_id = v.id AND tt.lang_id = ?
              WHERE v.id != ? ORDER BY RANDOM() LIMIT 10`
           )
-          .bind(lang, id)
+          .bind(langId, id)
           .all<any>(),
-    db.prepare(TOP_NAV_TAGS_SQL).all<NavTaxonomyItem>(),
-    db.prepare(TOP_NAV_CATEGORIES_SQL).all<NavTaxonomyItem>(),
+    db.prepare(NAV_TAGS_SQL).bind(langId).all<NavTaxonomyItem>(),
+    db.prepare(NAV_CATEGORIES_SQL).bind(langId).all<NavTaxonomyItem>(),
+    db.prepare(
+      `SELECT t.name, t.slug FROM tags t
+       INNER JOIN video_tags vt ON vt.tag_id = t.id
+       WHERE vt.video_id = ? AND t.lang_id = ?`
+    ).bind(id, langId).all<{ name: string; slug: string }>(),
+    db.prepare(
+      `SELECT c.name, c.slug, vc.is_keyword FROM categories c
+       INNER JOIN video_categories vc ON vc.category_id = c.id
+       WHERE vc.video_id = ? AND c.lang_id = ?`
+    ).bind(id, langId).all<{ name: string; slug: string; is_keyword: number }>(),
   ]);
 
   const subtitleTracks = subsResult.results.map((s) => ({
@@ -326,40 +334,21 @@ async function _renderWatch(c: any, lang: string, video: any) {
     isDefault: s.lang === lang,
   }));
 
-  const displayTitle = translationResult?.title || video.title;
-  const displayKeyword = translationResult?.keyword || video.keyword || "";
-  const displayTags: string[] = translationResult?.tags
-    ? JSON.parse(translationResult.tags)
-    : JSON.parse(video.tags || "[]");
-  const displayCategories: string[] = translationResult?.categories
-    ? JSON.parse(translationResult.categories)
-    : JSON.parse(video.categories || "[]");
+  const displayTitle = titleResult?.title || video.title;
 
-  const tagSlugMap = await fetchNameSlugMap(db, "tags", displayTags);
-  const catSlugMap = await fetchNameSlugMap(db, "categories", [
-    displayKeyword,
-    ...displayCategories,
-  ]);
-  const kwTrim = displayKeyword.trim();
-  const kwLower = kwTrim.toLowerCase();
-  const keywordLink =
-    kwTrim && catSlugMap.has(kwTrim) ? { name: kwTrim, slug: catSlugMap.get(kwTrim)! } : null;
-  const tagLinks = displayTags
-    .map((t) => {
-      const tr = t.trim();
-      const sl = tagSlugMap.get(tr);
-      return sl ? { name: tr, slug: sl } : null;
-    })
-    .filter((x): x is { name: string; slug: string } => x != null)
-    .filter((x) => !kwLower || x.name.trim().toLowerCase() !== kwLower);
-  const categoryLinks = displayCategories
-    .map((c) => {
-      const cr = c.trim();
-      const sl = catSlugMap.get(cr);
-      return sl ? { name: cr, slug: sl } : null;
-    })
-    .filter((x): x is { name: string; slug: string } => x != null)
-    .filter((x) => !kwLower || x.name.trim().toLowerCase() !== kwLower);
+  const keywordRow = videoCatRows.results.find((r) => r.is_keyword === 1);
+  const kwName = keywordRow?.name?.trim() || "";
+  const kwLower = kwName.toLowerCase();
+  const keywordLink = keywordRow ? { name: keywordRow.name, slug: keywordRow.slug } : null;
+
+  const tagLinks = videoTagRows.results
+    .map((r) => ({ name: r.name.trim(), slug: r.slug }))
+    .filter((x) => x.name && (!kwLower || x.name.toLowerCase() !== kwLower));
+
+  const categoryLinks = videoCatRows.results
+    .filter((r) => r.is_keyword !== 1)
+    .map((r) => ({ name: r.name.trim(), slug: r.slug }))
+    .filter((x) => x.name && (!kwLower || x.name.toLowerCase() !== kwLower));
 
   const vttUrls = orderedSubtitleUrls(subtitleTracks, lang);
   const seoTranscriptCues =
@@ -376,14 +365,11 @@ async function _renderWatch(c: any, lang: string, video: any) {
         thumbnail_url: video.thumbnail_url,
         video_url: video.video_url,
         hls_url: video.hls_url,
-        keyword: displayKeyword,
-        tags: displayTags,
-        categories: displayCategories,
       },
       subtitleTracks,
       recResult.results,
-      navTagsResult.results,
-      navCategoriesResult.results,
+      navTags.results,
+      navCategories.results,
       seoTranscriptCues,
       { keyword: keywordLink, tags: tagLinks, categories: categoryLinks },
       slugOffset,

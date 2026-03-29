@@ -314,9 +314,6 @@ interface WatchData {
   thumbnail_url: string;
   video_url: string;
   hls_url: string;
-  keyword: string;
-  tags: string[];
-  categories: string[];
 }
 
 export interface WatchTaxonomyLinks {

@@ -8,6 +8,7 @@ const GLOBAL_CSS = `
 `;
 
 const CHEVRON_SVG = `<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>`;
+const CC_BADGE = `<span class="yt-cc"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 12h4v2H4v-2zm10 6H4v-2h10v2zm6 0h-4v-2h4v2zm0-4H10v-2h10v2z"/></svg></span>`;
 
 function langDropdown(currentLang: string, currentPath: string) {
   const items = LANGUAGES.map((l) => {
@@ -257,7 +258,7 @@ export function indexPage(
             ? `<img src="${esc(v.thumbnail_url)}" alt="${esc(v.title)}" loading="lazy" />`
             : `<div class="yt-thumb-empty">${t(lang, "no_thumbnail")}</div>`
         }
-        ${v.duration ? `<span class="yt-duration">${fmtDuration(v.duration)}</span>` : ""}
+        <div class="yt-thumb-badges">${CC_BADGE}${v.duration ? `<span class="yt-duration">${fmtDuration(v.duration)}</span>` : ""}</div>
       </div>
       <div class="yt-card-meta">
         <div class="yt-card-title">${esc(v.title)}</div>
@@ -325,7 +326,7 @@ export function taxonomyListingPage(
             ? `<img src="${esc(v.thumbnail_url)}" alt="${esc(v.title)}" loading="lazy" />`
             : `<div class="yt-thumb-empty">${t(lang, "no_thumbnail")}</div>`
         }
-        ${v.duration ? `<span class="yt-duration">${fmtDuration(v.duration)}</span>` : ""}
+        <div class="yt-thumb-badges">${CC_BADGE}${v.duration ? `<span class="yt-duration">${fmtDuration(v.duration)}</span>` : ""}</div>
       </div>
       <div class="yt-card-meta">
         <div class="yt-card-title">${esc(v.title)}</div>
@@ -504,7 +505,7 @@ export function watchPage(
       <a href="${prefix}${videoWatchPath(r, slugOffset)}" class="yt-card">
         <div class="yt-thumb">
           ${r.thumbnail_url ? `<img src="${esc(r.thumbnail_url)}" alt="${esc(r.title)}" loading="lazy" />` : ""}
-          ${r.duration ? `<span class="yt-duration">${fmtDuration(r.duration)}</span>` : ""}
+          <div class="yt-thumb-badges">${CC_BADGE}${r.duration ? `<span class="yt-duration">${fmtDuration(r.duration)}</span>` : ""}</div>
         </div>
         <div class="yt-card-meta">
           <div class="yt-card-title">${esc(r.title)}</div>

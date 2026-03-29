@@ -49,6 +49,13 @@
   });
   player.hlsQualitySelector({ displayCurrentQuality: true });
 
+  function updateMenuMaxHeight() {
+    var h = player.el().clientHeight - 48;
+    player.el().style.setProperty("--vjs-menu-max-h", Math.max(h, 100) + "px");
+  }
+  updateMenuMaxHeight();
+  window.addEventListener("resize", updateMenuMaxHeight);
+
   function trackLang(tt) {
     return (tt.language || tt.srclang || "").trim();
   }

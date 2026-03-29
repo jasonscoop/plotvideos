@@ -59,6 +59,7 @@ export function layout(
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${esc(title)}</title>
+  <link rel="icon" href="/logo.svg" type="image/svg+xml" />
   ${gaHead}
   ${jsonLdTag}
   ${playerCss}
@@ -67,7 +68,7 @@ export function layout(
 <body>
   <header class="yt-header">
     <button class="yt-menu-btn" type="button" aria-label="Menu"><svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg></button>
-    <a href="${prefix}/" class="yt-logo"><span class="yt-logo-icon"></span> ${esc(brand)}</a>
+    <a href="${prefix}/" class="yt-logo"><img src="/logo.svg" alt="" class="yt-logo-icon" /> ${esc(brand)}</a>
     <form action="${prefix}/" method="get" class="yt-search">
       <input type="text" name="q" value="${esc(q)}" placeholder="${t(lang, "search_placeholder")}" />
       <button type="submit">${t(lang, "search")}</button>

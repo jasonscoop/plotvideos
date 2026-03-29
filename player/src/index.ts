@@ -4,6 +4,7 @@ import { pageRoutes } from "./pages";
 import STYLES_CSS from "./styles.css";
 import LANG_DROPDOWN_JS from "./lang-dropdown.client.js";
 import WATCH_PAGE_JS from "./watch-page.client.js";
+import LOGO_SVG from "./logo.svg";
 
 export type Env = {
   Bindings: {
@@ -47,6 +48,20 @@ app.get("/watch-page.js", (c) => {
   return c.body(WATCH_PAGE_JS, 200, {
     "Content-Type": "application/javascript; charset=utf-8",
     "Cache-Control": "public, max-age=3600",
+  });
+});
+
+app.get("/favicon.ico", (c) => {
+  return c.body(LOGO_SVG, 200, {
+    "Content-Type": "image/svg+xml",
+    "Cache-Control": "public, max-age=86400",
+  });
+});
+
+app.get("/logo.svg", (c) => {
+  return c.body(LOGO_SVG, 200, {
+    "Content-Type": "image/svg+xml",
+    "Cache-Control": "public, max-age=86400",
   });
 });
 

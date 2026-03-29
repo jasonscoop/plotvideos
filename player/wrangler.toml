@@ -12,6 +12,11 @@ type = "Text"
 globs = ["**/*.client.js"]
 fallthrough = true
 
+[[rules]]
+type = "Text"
+globs = ["**/*.svg"]
+fallthrough = true
+
 [dev]
 port = 8000
 

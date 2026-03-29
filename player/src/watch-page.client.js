@@ -129,7 +129,29 @@
     player.on("texttrackchange", persistSubtitleFromPlayer);
   }
 
+  var rotated = false;
+
+  function addRotateButton() {
+    var controlBar = player.getChild("controlBar");
+    var btn = controlBar.addChild("button", {});
+    btn.addClass("vjs-rotate-btn");
+    btn.el().title = "Rotate";
+    btn.el().addEventListener("click", function (e) {
+      e.stopPropagation();
+      rotated = !rotated;
+      var wrap = document.querySelector(".yt-player-wrap");
+      if (!wrap) return;
+      if (rotated) {
+        wrap.classList.add("yt-player-rotated");
+      } else {
+        wrap.classList.remove("yt-player-rotated");
+      }
+    });
+  }
+
   player.ready(function () {
+    addRotateButton();
+
     if (!subtitleTracks.length) return;
 
     if (player.readyState() >= 1) {

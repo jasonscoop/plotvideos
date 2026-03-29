@@ -137,40 +137,26 @@
   }
 
   var rotated = false;
-  var canFullscreen = !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
-  var canOrientationLock = !!(screen.orientation && screen.orientation.lock);
 
-  function enterRotated() {
-    rotated = true;
+  function toggleRotate() {
+    rotated = !rotated;
     var wrap = document.querySelector(".yt-player-wrap");
     if (!wrap) return;
 
-    if (canFullscreen && canOrientationLock) {
-      var el = wrap;
-      var fs = el.requestFullscreen || el.webkitRequestFullscreen;
-      if (fs) {
-        fs.call(el).then(function () {
-          screen.orientation.lock("landscape").catch(function () {});
-        }).catch(function () {
-          wrap.classList.add("yt-player-rotated");
-        });
-        return;
-      }
-    }
-    wrap.classList.add("yt-player-rotated");
-  }
-
-  function exitRotated() {
-    rotated = false;
-    var wrap = document.querySelector(".yt-player-wrap");
-    if (!wrap) return;
-    wrap.classList.remove("yt-player-rotated");
-
-    if (document.fullscreenElement || document.webkitFullscreenElement) {
-      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-    }
-    if (canOrientationLock) {
-      screen.orientation.unlock();
+    if (rotated) {
+      wrap.classList.add("yt-player-rotated");
+      try {
+        var fs = wrap.requestFullscreen || wrap.webkitRequestFullscreen;
+        if (fs) fs.call(wrap).catch(function () {});
+      } catch (e) {}
+    } else {
+      wrap.classList.remove("yt-player-rotated");
+      try {
+        var doc = document;
+        if (doc.fullscreenElement || doc.webkitFullscreenElement) {
+          (doc.exitFullscreen || doc.webkitExitFullscreen).call(doc);
+        }
+      } catch (e) {}
     }
   }
 
@@ -181,15 +167,8 @@
     btn.el().title = "Rotate";
     btn.el().addEventListener("click", function (e) {
       e.stopPropagation();
-      if (rotated) { exitRotated(); } else { enterRotated(); }
-    });
-
-    document.addEventListener("fullscreenchange", function () {
-      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        rotated = false;
-        var wrap = document.querySelector(".yt-player-wrap");
-        if (wrap) wrap.classList.remove("yt-player-rotated");
-      }
+      e.preventDefault();
+      toggleRotate();
     });
   }
 

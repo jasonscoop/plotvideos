@@ -62,9 +62,14 @@ crons = ["*/10 * * * *", "0 * * * *"]
 SLUG_OFFSET_VALUE = "${get("SLUG_OFFSET_VALUE") || "0"}"
 SITE_NAME = "${get("SITE_NAME")}"
 GA_ID = "${get("GA_ID")}"
-VIDEO_FETCH_API_URL = "${get("VIDEO_FETCH_API_URL")}"
-VIDEO_FETCH_API_KEY = "${get("VIDEO_FETCH_API_KEY")}"
 `;
 
 writeFileSync(resolve(root, "wrangler.toml"), toml);
+
+const secrets = {
+  VIDEO_FETCH_API_URL: get("VIDEO_FETCH_API_URL"),
+  VIDEO_FETCH_API_KEY: get("VIDEO_FETCH_API_KEY"),
+};
+writeFileSync(resolve(root, ".secrets.json"), JSON.stringify(secrets));
+
 console.log("wrangler.toml generated");

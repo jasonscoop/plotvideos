@@ -6,7 +6,6 @@ import STYLES_CSS from "./styles.css";
 import LANG_DROPDOWN_JS from "./lang-dropdown.client.js";
 import WATCH_PAGE_JS from "./watch-page.client.js";
 import LOGO_SVG from "./logo.svg";
-import SCHEMA_SQL from "./schema.sql";
 import { ASSET_HASHES } from "./asset-hashes";
 
 export type Env = {
@@ -20,27 +19,13 @@ export type Env = {
   };
 };
 
-let initialized = false;
+let synced = false;
 
 const app = new Hono<Env>();
 
-async function ensureSchema(db: D1Database): Promise<void> {
-  const stmts = SCHEMA_SQL.split(";")
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
-  for (const sql of stmts) {
-    await db.prepare(sql).run();
-  }
-}
-
 app.use("*", async (c, next) => {
-  if (!initialized) {
-    try {
-      await ensureSchema(c.env.DB);
-      initialized = true;
-    } catch (e: any) {
-      return c.text("Schema init failed: " + e.message, 500);
-    }
+  if (!synced) {
+    synced = true;
     c.executionCtx.waitUntil(syncFromCrawler(c.env));
   }
   return next();

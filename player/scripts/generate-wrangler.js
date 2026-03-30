@@ -47,11 +47,6 @@ type = "Text"
 globs = ["**/*.svg"]
 fallthrough = true
 
-[[rules]]
-type = "Text"
-globs = ["**/*.sql"]
-fallthrough = true
-
 [dev]
 port = 8000
 

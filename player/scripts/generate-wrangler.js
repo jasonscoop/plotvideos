@@ -57,6 +57,13 @@ database_id = "${dbId}"
 
 [triggers]
 crons = ["*/10 * * * *", "0 * * * *"]
+
+[vars]
+SLUG_OFFSET_VALUE = "${get("SLUG_OFFSET_VALUE") || "0"}"
+SITE_NAME = "${get("SITE_NAME")}"
+GA_ID = "${get("GA_ID")}"
+VIDEO_FETCH_API_URL = "${get("VIDEO_FETCH_API_URL")}"
+VIDEO_FETCH_API_KEY = "${get("VIDEO_FETCH_API_KEY")}"
 `;
 
 writeFileSync(resolve(root, "wrangler.toml"), toml);

@@ -1,0 +1,77 @@
+#!/usr/bin/env node
+const { readFileSync, writeFileSync, existsSync } = require("fs");
+const { resolve } = require("path");
+
+const root = resolve(__dirname, "..");
+const envPath = resolve(root, ".env");
+
+const fileVars = {};
+if (existsSync(envPath)) {
+  for (const line of readFileSync(envPath, "utf8").split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const i = trimmed.indexOf("=");
+    if (i > 0) fileVars[trimmed.slice(0, i)] = trimmed.slice(i + 1);
+  }
+}
+
+function get(key) {
+  return process.env[key] || fileVars[key] || "";
+}
+
+const dbId = get("D1_DATABASE_ID");
+if (!dbId) {
+  console.error("D1_DATABASE_ID is required (set as env var or in .env)");
+  process.exit(1);
+}
+
+const name = get("WORKER_NAME") || "player";
+const dbName = get("D1_DATABASE_NAME") || `${name}-db`;
+
+const lines = [
+  `name = "${name}"`,
+  'main = "src/index.ts"',
+  'compatibility_date = "2025-01-01"',
+  "",
+  "[[rules]]",
+  'type = "Text"',
+  'globs = ["**/*.css"]',
+  "fallthrough = true",
+  "",
+  "[[rules]]",
+  'type = "Text"',
+  'globs = ["**/*.client.js"]',
+  "fallthrough = true",
+  "",
+  "[[rules]]",
+  'type = "Text"',
+  'globs = ["**/*.svg"]',
+  "fallthrough = true",
+  "",
+  "[dev]",
+  "port = 8000",
+  "",
+  "[[d1_databases]]",
+  'binding = "DB"',
+  `database_name = "${dbName}"`,
+  `database_id = "${dbId}"`,
+  "",
+  "[triggers]",
+  'crons = ["*/10 * * * *", "0 * * * *"]',
+];
+
+const varsEntries = [];
+const slugOffset = get("SLUG_OFFSET_VALUE");
+const siteName = get("SITE_NAME");
+const gaId = get("GA_ID");
+if (slugOffset) varsEntries.push(`SLUG_OFFSET_VALUE = "${slugOffset}"`);
+if (siteName) varsEntries.push(`SITE_NAME = "${siteName}"`);
+if (gaId) varsEntries.push(`GA_ID = "${gaId}"`);
+
+if (varsEntries.length) {
+  lines.push("", "[vars]", ...varsEntries);
+}
+
+lines.push("");
+writeFileSync(resolve(root, "wrangler.toml"), lines.join("\n"));
+console.log("wrangler.toml generated");

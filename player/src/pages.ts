@@ -50,6 +50,20 @@ function pageContext(c: any) {
   };
 }
 
+async function applyTranslatedTitles(db: D1Database, videos: any[], langId: number): Promise<void> {
+  if (!videos.length || langId <= 0) return;
+  const ids = videos.map((v: any) => v.id);
+  const placeholders = ids.map(() => "?").join(",");
+  const rows = await db
+    .prepare(`SELECT video_id, title FROM title_translations WHERE lang_id = ? AND video_id IN (${placeholders})`)
+    .bind(langId, ...ids)
+    .all<{ video_id: number; title: string }>();
+  const titleMap = new Map(rows.results.map((r) => [r.video_id, r.title]));
+  for (const v of videos) {
+    v.title = titleMap.get(v.id) || v.title;
+  }
+}
+
 async function resolveIndex(c: any, lang: string) {
   const db = c.env.DB;
   const { siteName, gaMeasurementId, origin } = pageContext(c);
@@ -59,29 +73,15 @@ async function resolveIndex(c: any, lang: string) {
   const q = c.req.query("q")?.trim() || "";
   const langId = await resolveLangId(db, lang);
 
-  let listSql: string;
+  let listSql = "SELECT * FROM videos";
   const params: any[] = [];
 
-  if (lang === DEFAULT_LANG) {
-    listSql = "SELECT * FROM videos";
-  } else {
-    listSql = `SELECT v.*, tt.title AS tr_title
-               FROM videos v
-               LEFT JOIN title_translations tt ON tt.video_id = v.id AND tt.lang_id = ?`;
-    params.push(langId);
-  }
-
   if (q) {
-    const where = lang === DEFAULT_LANG
-      ? " WHERE title LIKE ?"
-      : " WHERE (tt.title LIKE ? OR v.title LIKE ?)";
-    listSql += where;
+    listSql += " WHERE title LIKE ?";
     params.push(`%${q}%`);
-    if (lang !== DEFAULT_LANG) params.push(`%${q}%`);
   }
 
-  listSql +=
-    " ORDER BY " + (lang === DEFAULT_LANG ? "" : "v.") + "random_key DESC LIMIT ? OFFSET ?";
+  listSql += " ORDER BY random_key DESC LIMIT ? OFFSET ?";
 
   const [listResult, navTags, navCategories] = await Promise.all([
     db.prepare(listSql).bind(...params, pageSize + 1, (page - 1) * pageSize).all(),
@@ -90,10 +90,8 @@ async function resolveIndex(c: any, lang: string) {
   ]);
 
   const hasNext = listResult.results.length > pageSize;
-  const videos = listResult.results.slice(0, pageSize).map((row: any) => ({
-    ...row,
-    title: row.tr_title || row.title,
-  }));
+  const videos = listResult.results.slice(0, pageSize) as any[];
+  if (lang !== DEFAULT_LANG) await applyTranslatedTitles(db, videos, langId);
 
   return c.html(
     indexPage(
@@ -130,33 +128,24 @@ async function resolveTagListing(c: any, lang: string) {
   const pageSize = 15;
   const offset = (page - 1) * pageSize;
 
-  const listResult =
-    lang === DEFAULT_LANG
-      ? await db
-          .prepare(
-            `SELECT v.* FROM videos v
-             INNER JOIN video_tags vt ON v.id = vt.video_id
-             WHERE vt.tag_id = ?
-             ORDER BY v.created_at DESC LIMIT ? OFFSET ?`
-          )
-          .bind(row.id, pageSize + 1, offset)
-          .all()
-      : await db
-          .prepare(
-            `SELECT v.*, tt.title AS tr_title FROM videos v
-             INNER JOIN video_tags vt ON v.id = vt.video_id
-             LEFT JOIN title_translations tt ON tt.video_id = v.id AND tt.lang_id = ?
-             WHERE vt.tag_id = ?
-             ORDER BY v.created_at DESC LIMIT ? OFFSET ?`
-          )
-          .bind(langId, row.id, pageSize + 1, offset)
-          .all();
+  const tagVideoIds = await db
+    .prepare("SELECT video_id FROM video_tags WHERE tag_id = ? ORDER BY video_id DESC LIMIT ? OFFSET ?")
+    .bind(row.id, pageSize + 1, offset)
+    .all<{ video_id: number }>();
 
-  const hasNext = listResult.results.length > pageSize;
-  const videos = listResult.results.slice(0, pageSize).map((r: any) => ({
-    ...r,
-    title: r.tr_title || r.title,
-  }));
+  const hasNext = tagVideoIds.results.length > pageSize;
+  const ids = tagVideoIds.results.slice(0, pageSize).map((r) => r.video_id);
+  let videos: any[] = [];
+  if (ids.length) {
+    const placeholders = ids.map(() => "?").join(",");
+    const vResult = await db
+      .prepare(`SELECT * FROM videos WHERE id IN (${placeholders})`)
+      .bind(...ids)
+      .all();
+    const videoMap = new Map(vResult.results.map((v: any) => [v.id, v]));
+    videos = ids.map((vid) => videoMap.get(vid)).filter(Boolean) as any[];
+    if (lang !== DEFAULT_LANG) await applyTranslatedTitles(db, videos, langId);
+  }
 
   const [navTags, navCategories] = await fetchNavTaxonomies(db, langId);
   const prefix = langPrefix(lang);
@@ -201,33 +190,24 @@ async function resolveCategoryListing(c: any, lang: string) {
   const pageSize = 15;
   const offset = (page - 1) * pageSize;
 
-  const listResult =
-    lang === DEFAULT_LANG
-      ? await db
-          .prepare(
-            `SELECT v.* FROM videos v
-             INNER JOIN video_categories vc ON v.id = vc.video_id
-             WHERE vc.category_id = ?
-             ORDER BY v.created_at DESC LIMIT ? OFFSET ?`
-          )
-          .bind(row.id, pageSize + 1, offset)
-          .all()
-      : await db
-          .prepare(
-            `SELECT v.*, tt.title AS tr_title FROM videos v
-             INNER JOIN video_categories vc ON v.id = vc.video_id
-             LEFT JOIN title_translations tt ON tt.video_id = v.id AND tt.lang_id = ?
-             WHERE vc.category_id = ?
-             ORDER BY v.created_at DESC LIMIT ? OFFSET ?`
-          )
-          .bind(langId, row.id, pageSize + 1, offset)
-          .all();
+  const catVideoIds = await db
+    .prepare("SELECT video_id FROM video_categories WHERE category_id = ? ORDER BY video_id DESC LIMIT ? OFFSET ?")
+    .bind(row.id, pageSize + 1, offset)
+    .all<{ video_id: number }>();
 
-  const hasNext = listResult.results.length > pageSize;
-  const videos = listResult.results.slice(0, pageSize).map((r: any) => ({
-    ...r,
-    title: r.tr_title || r.title,
-  }));
+  const hasNext = catVideoIds.results.length > pageSize;
+  const ids = catVideoIds.results.slice(0, pageSize).map((r) => r.video_id);
+  let videos: any[] = [];
+  if (ids.length) {
+    const placeholders = ids.map(() => "?").join(",");
+    const vResult = await db
+      .prepare(`SELECT * FROM videos WHERE id IN (${placeholders})`)
+      .bind(...ids)
+      .all();
+    const videoMap = new Map(vResult.results.map((v: any) => [v.id, v]));
+    videos = ids.map((vid) => videoMap.get(vid)).filter(Boolean) as any[];
+    if (lang !== DEFAULT_LANG) await applyTranslatedTitles(db, videos, langId);
+  }
 
   const [navTags, navCategories] = await fetchNavTaxonomies(db, langId);
   const prefix = langPrefix(lang);
@@ -293,63 +273,91 @@ async function _renderWatch(c: any, lang: string, video: any) {
   const slugOffset = watchSlugOffset(c);
   const langId = await resolveLangId(db, lang);
 
-  const [titleResult, subsResult, recResult, navTags, navCategories, videoTagRows, videoCatRows] = await Promise.all([
+  const [titleResult, subRows, recResult, navTags, navCategories, videoTagIds, videoCatIds] = await Promise.all([
     db
       .prepare("SELECT title FROM title_translations WHERE video_id = ? AND lang_id = ?")
       .bind(id, langId)
       .first<{ title: string }>(),
     db
-      .prepare(
-        `SELECT l.code AS lang, l.name AS label, st.url
-         FROM subtitle_tracks st INNER JOIN languages l ON l.id = st.lang_id
-         WHERE st.video_id = ?`
-      )
+      .prepare("SELECT lang_id, url FROM subtitle_tracks WHERE video_id = ?")
       .bind(id)
-      .all<{ lang: string; label: string; url: string }>(),
-    lang === "en"
-      ? db
-          .prepare("SELECT id, title, duration, thumbnail_url FROM videos WHERE id != ? ORDER BY RANDOM() LIMIT 10")
-          .bind(id)
-          .all<any>()
-      : db
-          .prepare(
-            `SELECT v.id, COALESCE(tt.title, v.title) AS title, v.duration, v.thumbnail_url
-             FROM videos v LEFT JOIN title_translations tt ON tt.video_id = v.id AND tt.lang_id = ?
-             WHERE v.id != ? ORDER BY RANDOM() LIMIT 10`
-          )
-          .bind(langId, id)
-          .all<any>(),
+      .all<{ lang_id: number; url: string }>(),
+    db
+      .prepare("SELECT id, title, duration, thumbnail_url FROM videos WHERE id != ? ORDER BY random_key DESC LIMIT 10")
+      .bind(id)
+      .all<any>(),
     db.prepare(NAV_TAGS_SQL).bind(langId).all<NavTaxonomyItem>(),
     db.prepare(NAV_CATEGORIES_SQL).bind(langId).all<NavTaxonomyItem>(),
-    db.prepare(
-      `SELECT t.name, t.slug FROM tags t
-       INNER JOIN video_tags vt ON vt.tag_id = t.id
-       WHERE vt.video_id = ? AND t.lang_id = ?`
-    ).bind(id, langId).all<{ name: string; slug: string }>(),
-    db.prepare(
-      `SELECT c.name, c.slug, vc.is_keyword FROM categories c
-       INNER JOIN video_categories vc ON vc.category_id = c.id
-       WHERE vc.video_id = ? AND c.lang_id = ?`
-    ).bind(id, langId).all<{ name: string; slug: string; is_keyword: number }>(),
+    db
+      .prepare("SELECT tag_id FROM video_tags WHERE video_id = ?")
+      .bind(id)
+      .all<{ tag_id: number }>(),
+    db
+      .prepare("SELECT category_id, is_keyword FROM video_categories WHERE video_id = ?")
+      .bind(id)
+      .all<{ category_id: number; is_keyword: number }>(),
   ]);
 
-  const subtitleTracks = subsResult.results.map((s) => ({
-    ...s,
-    isDefault: s.lang === lang,
-  }));
+  const langIds = [...new Set(subRows.results.map((r) => r.lang_id))];
+  let langMap = new Map<number, { code: string; name: string }>();
+  if (langIds.length) {
+    const ph = langIds.map(() => "?").join(",");
+    const langRows = await db
+      .prepare(`SELECT id, code, name FROM languages WHERE id IN (${ph})`)
+      .bind(...langIds)
+      .all<{ id: number; code: string; name: string }>();
+    langMap = new Map(langRows.results.map((l) => [l.id, { code: l.code, name: l.name }]));
+  }
+  const subtitleTracks = subRows.results
+    .map((s) => {
+      const l = langMap.get(s.lang_id);
+      return l ? { lang: l.code, label: l.name, url: s.url, isDefault: l.code === lang } : null;
+    })
+    .filter(Boolean) as { lang: string; label: string; url: string; isDefault: boolean }[];
+
+  const recVideos = recResult.results as any[];
+  if (lang !== DEFAULT_LANG) await applyTranslatedTitles(db, recVideos, langId);
+
+  const tagIds = videoTagIds.results.map((r) => r.tag_id);
+  let videoTagRows: { name: string; slug: string }[] = [];
+  if (tagIds.length) {
+    const ph = tagIds.map(() => "?").join(",");
+    const tagResult = await db
+      .prepare(`SELECT name, slug FROM tags WHERE id IN (${ph}) AND lang_id = ?`)
+      .bind(...tagIds, langId)
+      .all<{ name: string; slug: string }>();
+    videoTagRows = tagResult.results;
+  }
+
+  const catEntries = videoCatIds.results;
+  const catIds = catEntries.map((r) => r.category_id);
+  let videoCatRows: { name: string; slug: string; is_keyword: number }[] = [];
+  if (catIds.length) {
+    const ph = catIds.map(() => "?").join(",");
+    const catResult = await db
+      .prepare(`SELECT id, name, slug FROM categories WHERE id IN (${ph}) AND lang_id = ?`)
+      .bind(...catIds, langId)
+      .all<{ id: number; name: string; slug: string }>();
+    const kwSet = new Set(catEntries.filter((r) => r.is_keyword === 1).map((r) => r.category_id));
+    videoCatRows = catResult.results.map((r) => ({
+      name: r.name,
+      slug: r.slug,
+      is_keyword: kwSet.has(r.id) ? 1 : 0,
+    }));
+  }
 
   const displayTitle = titleResult?.title || video.title;
 
-  const keywordRow = videoCatRows.results.find((r) => r.is_keyword === 1);
+  const keywordRow = videoCatRows.find((r) => r.is_keyword === 1);
   const kwName = keywordRow?.name?.trim() || "";
   const kwLower = kwName.toLowerCase();
   const keywordLink = keywordRow ? { name: keywordRow.name, slug: keywordRow.slug } : null;
 
-  const tagLinks = videoTagRows.results
+  const tagLinks = videoTagRows
     .map((r) => ({ name: r.name.trim(), slug: r.slug }))
     .filter((x) => x.name && (!kwLower || x.name.toLowerCase() !== kwLower));
 
-  const categoryLinks = videoCatRows.results
+  const categoryLinks = videoCatRows
     .filter((r) => r.is_keyword !== 1)
     .map((r) => ({ name: r.name.trim(), slug: r.slug }))
     .filter((x) => x.name && (!kwLower || x.name.toLowerCase() !== kwLower));
@@ -372,7 +380,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
         created_at: video.created_at,
       },
       subtitleTracks,
-      recResult.results,
+      recVideos,
       navTags.results,
       navCategories.results,
       seoTranscriptCues,

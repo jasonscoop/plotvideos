@@ -28,55 +28,41 @@ if (!dbId) {
 const name = get("WORKER_NAME") || "player";
 const dbName = get("D1_DATABASE_NAME") || `${name}-db`;
 
-const lines = [
-  `name = "${name}"`,
-  'main = "src/index.ts"',
-  'compatibility_date = "2025-01-01"',
-  "",
-  "[[rules]]",
-  'type = "Text"',
-  'globs = ["**/*.css"]',
-  "fallthrough = true",
-  "",
-  "[[rules]]",
-  'type = "Text"',
-  'globs = ["**/*.client.js"]',
-  "fallthrough = true",
-  "",
-  "[[rules]]",
-  'type = "Text"',
-  'globs = ["**/*.svg"]',
-  "fallthrough = true",
-  "",
-  "[[rules]]",
-  'type = "Text"',
-  'globs = ["**/*.sql"]',
-  "fallthrough = true",
-  "",
-  "[dev]",
-  "port = 8000",
-  "",
-  "[[d1_databases]]",
-  'binding = "DB"',
-  `database_name = "${dbName}"`,
-  `database_id = "${dbId}"`,
-  "",
-  "[triggers]",
-  'crons = ["*/10 * * * *", "0 * * * *"]',
-];
+const toml = `name = "${name}"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
 
-const varsEntries = [];
-const slugOffset = get("SLUG_OFFSET_VALUE");
-const siteName = get("SITE_NAME");
-const gaId = get("GA_ID");
-if (slugOffset) varsEntries.push(`SLUG_OFFSET_VALUE = "${slugOffset}"`);
-if (siteName) varsEntries.push(`SITE_NAME = "${siteName}"`);
-if (gaId) varsEntries.push(`GA_ID = "${gaId}"`);
+[[rules]]
+type = "Text"
+globs = ["**/*.css"]
+fallthrough = true
 
-if (varsEntries.length) {
-  lines.push("", "[vars]", ...varsEntries);
-}
+[[rules]]
+type = "Text"
+globs = ["**/*.client.js"]
+fallthrough = true
 
-lines.push("");
-writeFileSync(resolve(root, "wrangler.toml"), lines.join("\n"));
+[[rules]]
+type = "Text"
+globs = ["**/*.svg"]
+fallthrough = true
+
+[[rules]]
+type = "Text"
+globs = ["**/*.sql"]
+fallthrough = true
+
+[dev]
+port = 8000
+
+[[d1_databases]]
+binding = "DB"
+database_name = "${dbName}"
+database_id = "${dbId}"
+
+[triggers]
+crons = ["*/10 * * * *", "0 * * * *"]
+`;
+
+writeFileSync(resolve(root, "wrangler.toml"), toml);
 console.log("wrangler.toml generated");

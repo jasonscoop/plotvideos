@@ -2,7 +2,7 @@
   "name": "plotvideos-player",
   "private": true,
   "scripts": {
-    "setup": "node scripts/generate-wrangler.js",
+    "postinstall": "node scripts/generate-wrangler.js",
     "dev": "node scripts/generate-wrangler.js && wrangler dev",
     "deploy": "node scripts/generate-wrangler.js && wrangler deploy",
     "db:init": "wrangler d1 execute plotvideos-db --local --file=src/schema.sql",

@@ -6,6 +6,7 @@ import STYLES_CSS from "./styles.css";
 import LANG_DROPDOWN_JS from "./lang-dropdown.client.js";
 import WATCH_PAGE_JS from "./watch-page.client.js";
 import LOGO_SVG from "./logo.svg";
+import SCHEMA_SQL from "./schema.sql";
 import { ASSET_HASHES } from "./asset-hashes";
 
 export type Env = {
@@ -15,18 +16,18 @@ export type Env = {
     VIDEO_FETCH_API_KEY: string;
     SITE_NAME?: string;
     GA_ID?: string;
-    /** Added to each D1 `videos.id` for the public watch URL only (e.g. id 5 + offset 100 → `/video/105.html`). Not stored in D1. Defaults to 0 if unset. */
     SLUG_OFFSET_VALUE?: string;
   };
 };
 
-let synced = false;
+let initialized = false;
 
 const app = new Hono<Env>();
 
 app.use("*", async (c, next) => {
-  if (!synced) {
-    synced = true;
+  if (!initialized) {
+    initialized = true;
+    await c.env.DB.exec(SCHEMA_SQL);
     c.executionCtx.waitUntil(syncFromCrawler(c.env));
   }
   return next();

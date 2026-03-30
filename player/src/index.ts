@@ -26,8 +26,8 @@ const app = new Hono<Env>();
 
 app.use("*", async (c, next) => {
   if (!initialized) {
-    initialized = true;
     await c.env.DB.exec(SCHEMA_SQL);
+    initialized = true;
     c.executionCtx.waitUntil(syncFromCrawler(c.env));
   }
   return next();

@@ -24,10 +24,23 @@ let initialized = false;
 
 const app = new Hono<Env>();
 
+async function ensureSchema(db: D1Database): Promise<void> {
+  const stmts = SCHEMA_SQL.split(";")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+  for (const sql of stmts) {
+    await db.prepare(sql).run();
+  }
+}
+
 app.use("*", async (c, next) => {
   if (!initialized) {
-    await c.env.DB.exec(SCHEMA_SQL);
-    initialized = true;
+    try {
+      await ensureSchema(c.env.DB);
+      initialized = true;
+    } catch (e: any) {
+      return c.text("Schema init failed: " + e.message, 500);
+    }
     c.executionCtx.waitUntil(syncFromCrawler(c.env));
   }
   return next();

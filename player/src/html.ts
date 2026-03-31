@@ -473,16 +473,23 @@ export function watchPage(
   const transcriptTextForLd = seoTranscriptCues.map((c) => c.text).join("\n");
   const isoDur = durationIso8601(video.duration);
   const watchPath = videoWatchPath(video, slugOffset);
+  let uploadDate = new Date().toISOString();
+  if (video.created_at) {
+    const normalized = video.created_at.includes("T") ? video.created_at : video.created_at.replace(" ", "T");
+    const parsed = new Date(normalized + (normalized.endsWith("Z") ? "" : "Z"));
+    if (!isNaN(parsed.getTime())) uploadDate = parsed.toISOString();
+  }
+
   const ldData: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "VideoObject",
     name: video.title,
     description: video.title,
+    thumbnailUrl: video.thumbnail_url || "",
+    uploadDate,
+    contentUrl: video.hls_url || video.video_url || "",
   };
-  if (video.thumbnail_url) ldData.thumbnailUrl = video.thumbnail_url;
   if (isoDur) ldData.duration = isoDur;
-  if (video.hls_url) ldData.contentUrl = video.hls_url;
-  if (video.created_at) ldData.uploadDate = video.created_at.split(" ")[0];
   if (origin) ldData.url = `${origin}${langPrefix(lang)}${watchPath}`;
   if (transcriptTextForLd) ldData.transcript = transcriptTextForLd;
   const jsonLd = escJsonForScript(ldData);

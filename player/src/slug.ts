@@ -1,12 +1,10 @@
-/** Used when `SLUG_OFFSET_VALUE` is unset, empty, or not a finite integer. */
-export const DEFAULT_SLUG_OFFSET_VALUE = 0;
+export const DEFAULT_ID_OFFSET = 0;
 
-/** Parses worker `SLUG_OFFSET_VALUE` (wrangler / dashboard). Missing → {@link DEFAULT_SLUG_OFFSET_VALUE}. */
-export function parseSlugOffsetValue(raw: string | undefined): number {
+export function parseIdOffset(raw: string | undefined): number {
   const s = raw?.trim();
-  if (s == null || s === "") return DEFAULT_SLUG_OFFSET_VALUE;
+  if (s == null || s === "") return DEFAULT_ID_OFFSET;
   const n = parseInt(s, 10);
-  return Number.isFinite(n) ? n : DEFAULT_SLUG_OFFSET_VALUE;
+  return Number.isFinite(n) ? n : DEFAULT_ID_OFFSET;
 }
 
 /** Public `/video/{n}.html` path segment = D1 `videos.id` + offset. */

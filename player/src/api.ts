@@ -233,8 +233,8 @@ async function syncLanguages(db: D1Database, crawlerUrl: string, crawlerKey: str
 }
 
 export async function syncFromCrawler(env: Env["Bindings"]): Promise<{ synced: number }> {
-  const crawlerUrl = env.VIDEO_FETCH_API_URL;
-  const crawlerKey = env.VIDEO_FETCH_API_KEY;
+  const crawlerUrl = env.FETCH_API_URL;
+  const crawlerKey = env.FETCH_API_KEY;
 
   await syncLanguages(env.DB, crawlerUrl, crawlerKey);
 

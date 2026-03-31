@@ -19,14 +19,14 @@ function get(key) {
   return process.env[key] || fileVars[key] || "";
 }
 
-const dbId = get("D1_DATABASE_ID");
+const dbId = get("D1_DB_ID");
 if (!dbId) {
-  console.error("D1_DATABASE_ID is required (set as env var or in .env)");
+  console.error("D1_DB_ID is required (set as env var or in .env)");
   process.exit(1);
 }
 
 const name = get("WORKER_NAME") || "player";
-const dbName = get("D1_DATABASE_NAME") || `${name}-db`;
+const dbName = get("D1_DB_NAME") || `${name}-db`;
 
 const toml = `name = "${name}"
 main = "src/index.ts"
@@ -57,26 +57,7 @@ database_id = "${dbId}"
 
 [triggers]
 crons = ["*/10 * * * *", "0 * * * *"]
-
-[vars]
-SLUG_OFFSET_VALUE = "${get("SLUG_OFFSET_VALUE") || "0"}"
-SITE_NAME = "${get("SITE_NAME")}"
-GA_ID = "${get("GA_ID")}"
 `;
 
 writeFileSync(resolve(root, "wrangler.toml"), toml);
-
-const secrets = {};
-const apiUrl = get("VIDEO_FETCH_API_URL");
-const apiKey = get("VIDEO_FETCH_API_KEY");
-if (apiUrl) secrets.VIDEO_FETCH_API_URL = apiUrl;
-if (apiKey) secrets.VIDEO_FETCH_API_KEY = apiKey;
-
-const secretsPath = resolve(root, ".secrets.json");
-if (Object.keys(secrets).length) {
-  writeFileSync(secretsPath, JSON.stringify(secrets));
-} else if (existsSync(secretsPath)) {
-  require("fs").unlinkSync(secretsPath);
-}
-
 console.log("wrangler.toml generated");

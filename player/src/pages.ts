@@ -7,7 +7,7 @@ import { DEFAULT_LANG, isValidLang, langPrefix, t } from "./i18n";
 import { fetchVttCues, orderedSubtitleUrls } from "./vtt";
 import {
   parseTaxonomySlugParam,
-  parseSlugOffsetValue,
+  parseIdOffset,
   videoIdFromPublicWatchSegment,
   publicWatchSegmentFromVideoId,
 } from "./slug";
@@ -39,7 +39,7 @@ async function fetchNavTaxonomies(db: D1Database, langId: number): Promise<[NavT
 }
 
 function watchSlugOffset(c: { env: Env["Bindings"] }): number {
-  return parseSlugOffsetValue(c.env.SLUG_OFFSET_VALUE);
+  return parseIdOffset(c.env.ID_OFFSET);
 }
 
 function pageContext(c: any) {

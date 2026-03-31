@@ -11,11 +11,11 @@ import { ASSET_HASHES } from "./asset-hashes";
 export type Env = {
   Bindings: {
     DB: D1Database;
-    VIDEO_FETCH_API_URL: string;
-    VIDEO_FETCH_API_KEY: string;
-    SITE_NAME?: string;
+    FETCH_API_URL: string;
+    FETCH_API_KEY: string;
+    SITENAME?: string;
     GA_ID?: string;
-    SLUG_OFFSET_VALUE?: string;
+    ID_OFFSET?: string;
   };
 };
 

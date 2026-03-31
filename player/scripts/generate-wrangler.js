@@ -66,10 +66,17 @@ GA_ID = "${get("GA_ID")}"
 
 writeFileSync(resolve(root, "wrangler.toml"), toml);
 
-const secrets = {
-  VIDEO_FETCH_API_URL: get("VIDEO_FETCH_API_URL"),
-  VIDEO_FETCH_API_KEY: get("VIDEO_FETCH_API_KEY"),
-};
-writeFileSync(resolve(root, ".secrets.json"), JSON.stringify(secrets));
+const secrets = {};
+const apiUrl = get("VIDEO_FETCH_API_URL");
+const apiKey = get("VIDEO_FETCH_API_KEY");
+if (apiUrl) secrets.VIDEO_FETCH_API_URL = apiUrl;
+if (apiKey) secrets.VIDEO_FETCH_API_KEY = apiKey;
+
+const secretsPath = resolve(root, ".secrets.json");
+if (Object.keys(secrets).length) {
+  writeFileSync(secretsPath, JSON.stringify(secrets));
+} else if (existsSync(secretsPath)) {
+  require("fs").unlinkSync(secretsPath);
+}
 
 console.log("wrangler.toml generated");

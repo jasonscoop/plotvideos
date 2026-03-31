@@ -1,6 +1,11 @@
 
 # Environment variables
 
+Build command:
+```bash
+npm run deploy
+```
+
 Build environment variables
 ```bash
 WORKER_NAME=

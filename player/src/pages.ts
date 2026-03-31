@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import type { Env } from "./index";
-import { indexPage, watchPage, taxonomyListingPage, type NavTaxonomyItem } from "./html";
+import { indexPage, watchPage, taxonomyListingPage, compliancePage, dmcaPage, type NavTaxonomyItem } from "./html";
 import { gaMeasurementIdFromEnv } from "./analytics";
 import { siteNameFromEnv } from "./site";
 import { DEFAULT_LANG, isValidLang, langPrefix, t } from "./i18n";
@@ -47,6 +47,7 @@ function pageContext(c: any) {
     siteName: siteNameFromEnv(c.env),
     gaMeasurementId: gaMeasurementIdFromEnv(c.env),
     origin: new URL(c.req.url).origin,
+    contactEmail: (c.env.CONTACT_EMAIL?.trim() || "admin@gmail.com"),
   };
 }
 
@@ -66,7 +67,7 @@ async function applyTranslatedTitles(db: D1Database, videos: any[], langId: numb
 
 async function resolveIndex(c: any, lang: string) {
   const db = c.env.DB;
-  const { siteName, gaMeasurementId, origin } = pageContext(c);
+  const { siteName, gaMeasurementId, origin, contactEmail } = pageContext(c);
   const slugOffset = watchSlugOffset(c);
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = 15;
@@ -106,7 +107,8 @@ async function resolveIndex(c: any, lang: string) {
       slugOffset,
       siteName,
       gaMeasurementId,
-      origin
+      origin,
+      contactEmail
     )
   );
 }
@@ -115,7 +117,7 @@ async function resolveTagListing(c: any, lang: string) {
   const slug = parseTaxonomySlugParam(c.req.param("slug"));
   if (!slug) return c.text("Not found", 404);
 
-  const { siteName, gaMeasurementId, origin } = pageContext(c);
+  const { siteName, gaMeasurementId, origin, contactEmail } = pageContext(c);
   const db = c.env.DB;
   const langId = await resolveLangId(db, lang);
   const row = await db
@@ -168,7 +170,8 @@ async function resolveTagListing(c: any, lang: string) {
       slugOffset,
       siteName,
       gaMeasurementId,
-      origin
+      origin,
+      contactEmail
     )
   );
 }
@@ -177,7 +180,7 @@ async function resolveCategoryListing(c: any, lang: string) {
   const slug = parseTaxonomySlugParam(c.req.param("slug"));
   if (!slug) return c.text("Not found", 404);
 
-  const { siteName, gaMeasurementId, origin } = pageContext(c);
+  const { siteName, gaMeasurementId, origin, contactEmail } = pageContext(c);
   const db = c.env.DB;
   const langId = await resolveLangId(db, lang);
   const row = await db
@@ -230,7 +233,8 @@ async function resolveCategoryListing(c: any, lang: string) {
       slugOffset,
       siteName,
       gaMeasurementId,
-      origin
+      origin,
+      contactEmail
     )
   );
 }
@@ -268,7 +272,7 @@ async function resolveWatch(c: any, lang: string) {
 
 async function _renderWatch(c: any, lang: string, video: any) {
   const db = c.env.DB;
-  const { siteName, gaMeasurementId, origin } = pageContext(c);
+  const { siteName, gaMeasurementId, origin, contactEmail } = pageContext(c);
   const id = video.id;
   const slugOffset = watchSlugOffset(c);
   const langId = await resolveLangId(db, lang);
@@ -388,12 +392,21 @@ async function _renderWatch(c: any, lang: string, video: any) {
       slugOffset,
       siteName,
       gaMeasurementId,
-      origin
+      origin,
+      contactEmail
     )
   );
 }
 
+function resolveStaticPage(c: any, lang: string, page: "2257" | "dmca") {
+  const { siteName, gaMeasurementId, origin, contactEmail } = pageContext(c);
+  const render = page === "2257" ? compliancePage : dmcaPage;
+  return c.html(render(lang, siteName, contactEmail, gaMeasurementId, origin));
+}
+
 pageRoutes.get("/", (c) => resolveIndex(c, DEFAULT_LANG));
+pageRoutes.get("/2257.html", (c) => resolveStaticPage(c, DEFAULT_LANG, "2257"));
+pageRoutes.get("/dmca.html", (c) => resolveStaticPage(c, DEFAULT_LANG, "dmca"));
 pageRoutes.get("/videos/:id", (c) => resolveWatch(c, DEFAULT_LANG));
 pageRoutes.get("/video/:slug", (c) => resolveWatchBySlug(c, DEFAULT_LANG));
 pageRoutes.get("/tag/:slug", (c) => resolveTagListing(c, DEFAULT_LANG));
@@ -403,6 +416,18 @@ pageRoutes.get("/:lang/", (c) => {
   const lang = c.req.param("lang");
   if (!isValidLang(lang)) return c.text("Not found", 404);
   return resolveIndex(c, lang);
+});
+
+pageRoutes.get("/:lang/2257.html", (c) => {
+  const lang = c.req.param("lang");
+  if (!isValidLang(lang)) return c.text("Not found", 404);
+  return resolveStaticPage(c, lang, "2257");
+});
+
+pageRoutes.get("/:lang/dmca.html", (c) => {
+  const lang = c.req.param("lang");
+  if (!isValidLang(lang)) return c.text("Not found", 404);
+  return resolveStaticPage(c, lang, "dmca");
 });
 
 pageRoutes.get("/:lang/videos/:id", (c) => {

@@ -44,6 +44,7 @@ export function layout(
     ogImage?: string;
     ogType?: string;
     noindex?: boolean;
+    contactEmail?: string;
   }
 ) {
   const brand = opts?.siteName?.trim() || DEFAULT_SITE_NAME;
@@ -125,6 +126,12 @@ export function layout(
     ${langDropdown(lang, path)}
   </header>
   ${content}
+  <footer class="yt-footer">
+    <div class="yt-footer-inner">
+      <p><a href="${prefix}/2257.html">18 U.S.C. 2257 Compliance Statement</a> | <a href="${prefix}/dmca.html">DMCA</a> | Contact: <a href="mailto:${esc(opts?.contactEmail || "admin@gmail.com")}">${esc(opts?.contactEmail || "admin@gmail.com")}</a></p>
+      <p>&copy; ${new Date().getFullYear()} ${esc(brand)}. All rights reserved.</p>
+    </div>
+  </footer>
   <div class="yt-sidebar-overlay"></div>
   <script src="/lang-dropdown.${ASSET_HASHES.langDropdown}.js" defer></script>
 </body>
@@ -249,7 +256,8 @@ export function indexPage(
   slugOffset = 0,
   siteName: string,
   gaMeasurementId?: string,
-  origin?: string
+  origin?: string,
+  contactEmail?: string
 ) {
   const prefix = langPrefix(lang);
   const qParam = q ? `&q=${encodeURIComponent(q)}` : "";
@@ -295,6 +303,7 @@ export function indexPage(
     origin,
     hreflangPath: q ? undefined : "/",
     noindex: !!q,
+    contactEmail,
   });
 }
 
@@ -313,7 +322,8 @@ export function taxonomyListingPage(
   slugOffset = 0,
   siteName: string,
   gaMeasurementId?: string,
-  origin?: string
+  origin?: string,
+  contactEmail?: string
 ) {
   const prefix = langPrefix(lang);
   const baseHref =
@@ -370,6 +380,7 @@ export function taxonomyListingPage(
     description: `${browserTitle} - ${siteName}`,
     origin,
     hreflangPath: barePath,
+    contactEmail,
   });
 }
 
@@ -417,7 +428,8 @@ export function watchPage(
   slugOffset = 0,
   siteName: string,
   gaMeasurementId?: string,
-  origin?: string
+  origin?: string,
+  contactEmail?: string
 ) {
   const prefix = langPrefix(lang);
   const sidebar = homeSidebar(lang, prefix, navTags, navCategories, null);
@@ -553,5 +565,65 @@ export function watchPage(
     hreflangPath: watchPath,
     ogImage: video.thumbnail_url,
     ogType: "video.other",
+    contactEmail,
+  });
+}
+
+export function compliancePage(
+  lang: string,
+  siteName: string,
+  contactEmail?: string,
+  gaMeasurementId?: string,
+  origin?: string
+) {
+  const email = contactEmail || "admin@gmail.com";
+  const content = `<div class="yt-static-page">
+    <h1>18 U.S.C. 2257 Record-Keeping Requirements Compliance Statement</h1>
+    <p>All models, actors, actresses and other persons that appear in any visual depiction of sexually explicit conduct appearing or otherwise contained in this website were over the age of eighteen (18) years at the time of the creation of such depictions.</p>
+    <p>All content and images are in full compliance with the requirements of 18 U.S.C. 2257 and associated regulations.</p>
+    <p>${esc(siteName)} is not a producer (primary or secondary) of any content found on the website. With respect to the records as per 18 USC 2257 for any content found on this site, please direct your request to the site for which the content was produced.</p>
+    <p>${esc(siteName)} is a video sharing site in which allows for the uploading, sharing and general viewing of various types of adult content and while ${esc(siteName)} does its best monitoring for content to ensure compliance with these obligations, users may upload content in violation of 18 U.S.C. 2257.</p>
+    <p>For any inquiries or to report content, please contact us at <a href="mailto:${esc(email)}">${esc(email)}</a>.</p>
+  </div>`;
+  return layout(`2257 Compliance - ${siteName}`, lang, content, "", "/2257.html", {
+    siteName,
+    gaMeasurementId,
+    origin,
+    noindex: true,
+    contactEmail,
+  });
+}
+
+export function dmcaPage(
+  lang: string,
+  siteName: string,
+  contactEmail?: string,
+  gaMeasurementId?: string,
+  origin?: string
+) {
+  const email = contactEmail || "admin@gmail.com";
+  const content = `<div class="yt-static-page">
+    <h1>DMCA / Copyright Policy</h1>
+    <p>${esc(siteName)} respects the intellectual property rights of others and expects its users to do the same. In accordance with the Digital Millennium Copyright Act of 1998 ("DMCA"), we will respond expeditiously to claims of copyright infringement that are reported to our designated copyright agent.</p>
+    <h2>Filing a DMCA Notice</h2>
+    <p>If you believe that your copyrighted work has been copied in a way that constitutes copyright infringement, please provide the following information to our copyright agent:</p>
+    <ul>
+      <li>A description of the copyrighted work that you claim has been infringed.</li>
+      <li>A description of the material that you claim is infringing, including the URL or other specific location on our site.</li>
+      <li>Your name, address, telephone number, and email address.</li>
+      <li>A statement that you have a good faith belief that the disputed use is not authorized by the copyright owner, its agent, or the law.</li>
+      <li>A statement, made under penalty of perjury, that the above information in your notice is accurate and that you are the copyright owner or authorized to act on the copyright owner's behalf.</li>
+      <li>Your physical or electronic signature.</li>
+    </ul>
+    <h2>Contact</h2>
+    <p>Send your DMCA notice to: <a href="mailto:${esc(email)}">${esc(email)}</a></p>
+    <p>Upon receipt of a valid DMCA notice, we will remove or disable access to the allegedly infringing material promptly.</p>
+  </div>`;
+  return layout(`DMCA Policy - ${siteName}`, lang, content, "", "/dmca.html", {
+    siteName,
+    gaMeasurementId,
+    origin,
+    noindex: true,
+    contactEmail,
   });
 }

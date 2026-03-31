@@ -16,6 +16,7 @@ export type Env = {
     SITENAME?: string;
     GA_ID?: string;
     ID_OFFSET?: string;
+    CONTACT_EMAIL?: string;
   };
 };
 

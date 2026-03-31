@@ -2,12 +2,12 @@
   "name": "plotvideos-player",
   "private": true,
   "scripts": {
-    "dev": "node scripts/generate-wrangler.js && wrangler dev",
+    "dev": "D1_DB_ID=${D1_DB_ID:-local} node scripts/generate-wrangler.js && wrangler dev",
     "deploy": "node scripts/generate-wrangler.js && wrangler d1 execute DB --remote --file=src/schema.sql && wrangler deploy --keep-vars",
-    "db:init": "wrangler d1 execute plotvideos-db --local --file=src/schema.sql",
-    "db:reset": "rm -rf .wrangler/state/v3/d1/miniflare-D1DatabaseObject && wrangler d1 execute plotvideos-db --local --file=src/schema.sql",
-    "db:clean": "wrangler d1 execute plotvideos-db --local --file=src/schema.sql && wrangler d1 execute plotvideos-db --local --file=scripts/clean-local-d1.sql",
-    "db:migrate:random-key": "wrangler d1 execute plotvideos-db --local --file=scripts/migrate-add-random-key.sql"
+    "db:init": "wrangler d1 execute DB --local --file=src/schema.sql",
+    "db:reset": "rm -rf .wrangler/state/v3/d1/miniflare-D1DatabaseObject && wrangler d1 execute DB --local --file=src/schema.sql",
+    "db:clean": "wrangler d1 execute DB --local --file=src/schema.sql && wrangler d1 execute DB --local --file=scripts/clean-local-d1.sql",
+    "db:migrate:random-key": "wrangler d1 execute DB --local --file=scripts/migrate-add-random-key.sql"
   },
   "dependencies": {
     "hono": "^4"

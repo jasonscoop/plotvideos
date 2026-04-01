@@ -4,6 +4,7 @@ export interface Settings {
   id_offset: string;
   site_name: string;
   site_slogan: string;
+  site_description: string;
   head_code: string;
   footer_code: string;
   contact_email: string;
@@ -23,6 +24,7 @@ const DEFAULT_SETTINGS: Settings = {
   id_offset: "0",
   site_name: "PlotVideos",
   site_slogan: "",
+  site_description: "",
   head_code: "",
   footer_code: "",
   contact_email: "",

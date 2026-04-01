@@ -45,10 +45,12 @@ function pageContext(c: any) {
   const settings: Settings = c.get("settings");
   const siteName = settings.site_name?.trim() || "PlotVideos";
   const siteSlogan = settings.site_slogan?.trim() || "";
+  const siteDescription = settings.site_description?.trim() || "";
   const origin = new URL(c.req.url).origin;
   return {
     siteName,
     siteSlogan,
+    siteDescription,
     headCode: settings.head_code || "",
     footerCode: settings.footer_code || "",
     origin,
@@ -80,7 +82,7 @@ async function applyTranslatedTitles(db: D1Database, videos: any[], langId: numb
 
 async function resolveIndex(c: any, lang: string) {
   const db = c.env.DB;
-  const { siteName, siteSlogan, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
+  const { siteName, siteSlogan, siteDescription, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
   const slugOffset = watchSlugOffset(c);
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = 15;
@@ -120,7 +122,7 @@ async function resolveIndex(c: any, lang: string) {
       slugOffset,
       siteSlogan ? `${siteName} - ${siteSlogan}` : siteName,
       origin,
-      { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year }
+      { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year, siteDescription }
     )
   );
 }
@@ -182,7 +184,7 @@ async function resolveTagListing(c: any, lang: string) {
       slugOffset,
       siteName,
       origin,
-      { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year }
+      { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year, siteDescription }
     )
   );
 }

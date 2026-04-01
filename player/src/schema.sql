@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS settings (
 INSERT OR IGNORE INTO settings (key, value, description) VALUES
   ('site_name', 'PlotVideos', 'Site brand name'),
   ('site_slogan', '', 'Site slogan'),
+  ('site_description', '', 'Site home page description'),
   ('head_code', '', 'Extra HTML inserted into head'),
   ('fetch_api_url', '', 'Crawler API base URL'),
   ('fetch_api_key', '', 'Crawler API key'),

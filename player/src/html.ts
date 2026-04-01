@@ -321,7 +321,7 @@ export function indexPage(
   const pagePath = page > 1 ? `/?page=${page}` : "/";
   return layout(siteName, lang, content, q, pagePath, {
     siteName,
-    description: q ? undefined : `${siteName} - Watch the latest videos with subtitles`,
+    description: q ? undefined : (footerSettings.siteDescription || `${siteName} - Watch the latest videos with subtitles`),
     origin,
     hreflangPath: q ? undefined : "/",
     noindex: !!q,
@@ -448,6 +448,7 @@ interface FooterSettings {
   year?: number;
   headCode?: string;
   footerCode?: string;
+  siteDescription?: string;
 }
 
 export function watchPage(

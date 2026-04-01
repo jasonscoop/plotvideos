@@ -77,7 +77,7 @@ CREATE INDEX IF NOT EXISTS idx_video_categories_category ON video_categories(cat
 
 CREATE TABLE IF NOT EXISTS settings (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  key         TEXT NOT NULL UNIQUE CHECK(key <> '' AND key NOT GLOB '*[^a-z_]*'),
+  key         TEXT NOT NULL UNIQUE CHECK(key <> '' AND key NOT GLOB '*[^a-z0-9_]*'),
   value       TEXT NOT NULL DEFAULT '',
   description TEXT NOT NULL DEFAULT '',
   created_at  TEXT NOT NULL DEFAULT (datetime('now')),

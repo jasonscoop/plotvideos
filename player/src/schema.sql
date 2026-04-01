@@ -74,3 +74,30 @@ CREATE INDEX IF NOT EXISTS idx_tags_lang ON tags(lang_id);
 CREATE INDEX IF NOT EXISTS idx_categories_lang ON categories(lang_id);
 CREATE INDEX IF NOT EXISTS idx_video_tags_tag ON video_tags(tag_id);
 CREATE INDEX IF NOT EXISTS idx_video_categories_category ON video_categories(category_id);
+
+CREATE TABLE IF NOT EXISTS settings (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  key         TEXT NOT NULL UNIQUE CHECK(key <> '' AND key NOT GLOB '*[^a-z_]*'),
+  value       TEXT NOT NULL DEFAULT '',
+  description TEXT NOT NULL DEFAULT '',
+  created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+INSERT OR IGNORE INTO settings (key, value, description) VALUES
+  ('site_name', 'PlotVideos', 'Site brand name'),
+  ('site_slogan', '', 'Site slogan'),
+  ('head_code', '', 'Extra HTML inserted into head'),
+  ('fetch_api_url', '', 'Crawler API base URL'),
+  ('fetch_api_key', '', 'Crawler API key'),
+  ('id_offset', '0', 'Public video ID offset'),
+  ('footer_code', '', 'Footer code'),
+  ('contact_email', '', 'DMCA and compliance contact email'),
+  ('contact_telegram', '', 'Telegram contact'),
+  ('contact_whatsapp', '', 'WhatsApp contact'),
+  ('compliance_2257_title', '18 U.S.C. 2257 Compliance Statement', ''),
+  ('compliance_2257_enabled', '1', ''),
+  ('compliance_2257_content', '', ''),
+  ('dmca_title', 'DMCA / Copyright Policy', ''),
+  ('dmca_enabled', '1', ''),
+  ('dmca_content', '', '');

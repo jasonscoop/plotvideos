@@ -7,16 +7,14 @@ import LANG_DROPDOWN_JS from "./lang-dropdown.client.js";
 import WATCH_PAGE_JS from "./watch-page.client.js";
 import LOGO_SVG from "./logo.svg";
 import { ASSET_HASHES } from "./asset-hashes";
+import { getSettings, type Settings } from "./settings";
 
 export type Env = {
   Bindings: {
     DB: D1Database;
-    FETCH_API_URL: string;
-    FETCH_API_KEY: string;
-    SITENAME?: string;
-    GA_ID?: string;
-    ID_OFFSET?: string;
-    CONTACT_EMAIL?: string;
+  };
+  Variables: {
+    settings: Settings;
   };
 };
 
@@ -25,9 +23,11 @@ let synced = false;
 const app = new Hono<Env>();
 
 app.use("*", async (c, next) => {
+  const settings = await getSettings(c.env.DB);
+  c.set("settings", settings);
   if (!synced) {
     synced = true;
-    c.executionCtx.waitUntil(syncFromCrawler(c.env));
+    c.executionCtx.waitUntil(syncFromCrawler(c.env.DB, settings));
   }
   return next();
 });
@@ -83,10 +83,11 @@ app.route("/", pageRoutes);
 export default {
   fetch: app.fetch,
   async scheduled(event: ScheduledEvent, env: Env["Bindings"], ctx: ExecutionContext) {
+    const settings = await getSettings(env.DB);
     if (event.cron === "0 * * * *") {
       ctx.waitUntil(refreshRandomKeys(env.DB));
     } else {
-      ctx.waitUntil(syncFromCrawler(env));
+      ctx.waitUntil(syncFromCrawler(env.DB, settings));
     }
   },
 };

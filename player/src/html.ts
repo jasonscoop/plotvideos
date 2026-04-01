@@ -1,8 +1,9 @@
 import { t, LANGUAGES, langPrefix, nativeName, isRtl } from "./i18n";
 import { publicWatchSegmentFromVideoId } from "./slug";
-import { DEFAULT_SITE_NAME } from "./site";
 import type { VttCue } from "./vtt";
 import { ASSET_HASHES } from "./asset-hashes";
+
+const DEFAULT_SITE_NAME = "PlotVideos";
 
 const GLOBAL_CSS = `
 <link href="/styles.${ASSET_HASHES.css}.css" rel="stylesheet" />
@@ -37,24 +38,28 @@ export function layout(
     playerAssets?: boolean;
     jsonLd?: string;
     siteName?: string;
-    gaMeasurementId?: string;
     description?: string;
     origin?: string;
     hreflangPath?: string;
+    headCode?: string;
+    footerCode?: string;
+    siteUrl?: string;
+    year?: number;
     ogImage?: string;
     ogType?: string;
     noindex?: boolean;
     contactEmail?: string;
+    contactTelegram?: string;
+    contactWhatsapp?: string;
+    compliance2257Title?: string;
+    compliance2257Enabled?: boolean;
+    dmcaTitle?: string;
+    dmcaEnabled?: boolean;
   }
 ) {
   const brand = opts?.siteName?.trim() || DEFAULT_SITE_NAME;
   const prefix = langPrefix(lang);
   const dir = isRtl(lang) ? ' dir="rtl"' : "";
-  const gaId = opts?.gaMeasurementId?.trim();
-  const gaHead =
-    gaId !== undefined && gaId !== ""
-      ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${esc(gaId)}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","${esc(gaId)}");</script>`
-      : "";
   const playerCss = opts?.playerAssets
     ? `<link href="https://cdn.jsdelivr.net/npm/video.js@8/dist/video-js.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@2.0.0/dist/videojs-hls-quality-selector.css" rel="stylesheet" />`
@@ -62,6 +67,8 @@ export function layout(
   const jsonLdTag = opts?.jsonLd
     ? `<script type="application/ld+json">${opts.jsonLd}</script>`
     : "";
+  const headCode = opts?.headCode || "";
+  const footerCode = opts?.footerCode || "";
 
   const desc = opts?.description?.trim();
   const descTag = desc ? `<meta name="description" content="${esc(desc)}" />` : "";
@@ -96,6 +103,22 @@ export function layout(
     : "";
 
   const robotsTag = opts?.noindex ? `<meta name="robots" content="noindex, follow" />` : "";
+  const footerLinks: string[] = [];
+  if (opts?.compliance2257Enabled) {
+    footerLinks.push(`<a href="${prefix}/2257.html">${esc(opts?.compliance2257Title || "18 U.S.C. 2257 Compliance Statement")}</a>`);
+  }
+  if (opts?.dmcaEnabled) {
+    footerLinks.push(`<a href="${prefix}/dmca.html">${esc(opts?.dmcaTitle || "DMCA / Copyright Policy")}</a>`);
+  }
+  if (opts?.contactEmail) {
+    footerLinks.push(`Email: <a href="mailto:${esc(opts.contactEmail)}">${esc(opts.contactEmail)}</a>`);
+  }
+  if (opts?.contactTelegram) {
+    footerLinks.push(`Telegram: <a href="${esc(opts.contactTelegram)}" rel="nofollow noopener" target="_blank">${esc(opts.contactTelegram)}</a>`);
+  }
+  if (opts?.contactWhatsapp) {
+    footerLinks.push(`WhatsApp: <a href="${esc(opts.contactWhatsapp)}" rel="nofollow noopener" target="_blank">${esc(opts.contactWhatsapp)}</a>`);
+  }
 
   return `<!DOCTYPE html>
 <html lang="${lang}"${dir}>
@@ -109,8 +132,8 @@ export function layout(
   ${hreflangTags}
   ${ogTags}
   <link rel="icon" href="/logo.svg" type="image/svg+xml" />
-  ${gaHead}
   ${jsonLdTag}
+  ${headCode}
   ${playerCss}
   ${GLOBAL_CSS}
 </head>
@@ -128,10 +151,11 @@ export function layout(
   ${content}
   <footer class="yt-footer">
     <div class="yt-footer-inner">
-      <p><a href="${prefix}/2257.html">18 U.S.C. 2257 Compliance Statement</a> | <a href="${prefix}/dmca.html">DMCA</a> | Contact: <a href="mailto:${esc(opts?.contactEmail || "admin@gmail.com")}">${esc(opts?.contactEmail || "admin@gmail.com")}</a></p>
-      <p>&copy; ${new Date().getFullYear()} ${esc(brand)}. All rights reserved.</p>
+      ${footerLinks.length ? `<p>${footerLinks.join(" | ")}</p>` : ""}
+      <p>@copyright ${opts?.year || new Date().getFullYear()} <a href="${esc(opts?.siteUrl || `${prefix}/`)}">${esc(brand)}</a></p>
     </div>
   </footer>
+  ${footerCode}
   <div class="yt-sidebar-overlay"></div>
   <script src="/lang-dropdown.${ASSET_HASHES.langDropdown}.js" defer></script>
 </body>
@@ -255,9 +279,8 @@ export function indexPage(
   activeTaxonomy: ActiveTaxonomy = null,
   slugOffset = 0,
   siteName: string,
-  gaMeasurementId?: string,
   origin?: string,
-  contactEmail?: string
+  footerSettings: FooterSettings = {}
 ) {
   const prefix = langPrefix(lang);
   const qParam = q ? `&q=${encodeURIComponent(q)}` : "";
@@ -298,12 +321,11 @@ export function indexPage(
   const pagePath = page > 1 ? `/?page=${page}` : "/";
   return layout(siteName, lang, content, q, pagePath, {
     siteName,
-    gaMeasurementId,
     description: q ? undefined : `${siteName} - Watch the latest videos with subtitles`,
     origin,
     hreflangPath: q ? undefined : "/",
     noindex: !!q,
-    contactEmail,
+    ...footerSettings,
   });
 }
 
@@ -321,9 +343,8 @@ export function taxonomyListingPage(
   currentPath: string,
   slugOffset = 0,
   siteName: string,
-  gaMeasurementId?: string,
   origin?: string,
-  contactEmail?: string
+  footerSettings: FooterSettings = {}
 ) {
   const prefix = langPrefix(lang);
   const baseHref =
@@ -376,11 +397,10 @@ export function taxonomyListingPage(
   const pagePath = page > 1 ? `${barePath}?page=${page}` : barePath;
   return layout(`${browserTitle} - ${siteName}`, lang, content, "", pagePath, {
     siteName,
-    gaMeasurementId,
     description: `${browserTitle} - ${siteName}`,
     origin,
     hreflangPath: barePath,
-    contactEmail,
+    ...footerSettings,
   });
 }
 
@@ -416,6 +436,20 @@ interface RecommendedVideo {
   thumbnail_url: string;
 }
 
+interface FooterSettings {
+  contactEmail?: string;
+  contactTelegram?: string;
+  contactWhatsapp?: string;
+  compliance2257Title?: string;
+  compliance2257Enabled?: boolean;
+  dmcaTitle?: string;
+  dmcaEnabled?: boolean;
+  siteUrl?: string;
+  year?: number;
+  headCode?: string;
+  footerCode?: string;
+}
+
 export function watchPage(
   lang: string,
   video: WatchData,
@@ -427,9 +461,8 @@ export function watchPage(
   taxonomyLinks: WatchTaxonomyLinks = { keyword: null, tags: [], categories: [] },
   slugOffset = 0,
   siteName: string,
-  gaMeasurementId?: string,
   origin?: string,
-  contactEmail?: string
+  footerSettings: FooterSettings = {}
 ) {
   const prefix = langPrefix(lang);
   const sidebar = homeSidebar(lang, prefix, navTags, navCategories, null);
@@ -559,71 +592,89 @@ export function watchPage(
     playerAssets: true,
     jsonLd,
     siteName,
-    gaMeasurementId,
     description: desc,
     origin,
     hreflangPath: watchPath,
     ogImage: video.thumbnail_url,
     ogType: "video.other",
-    contactEmail,
+    ...footerSettings,
   });
 }
 
 export function compliancePage(
   lang: string,
   siteName: string,
+  pageTitle: string,
+  pageContent: string,
   contactEmail?: string,
-  gaMeasurementId?: string,
-  origin?: string
+  contactTelegram?: string,
+  contactWhatsapp?: string,
+  origin?: string,
+  siteUrl?: string,
+  year?: number
 ) {
-  const email = contactEmail || "admin@gmail.com";
+  const body = pageContent.trim()
+    ? pageContent
+        .split(/\n{2,}/)
+        .map((x) => `<p>${esc(x.trim()).replace(/\n/g, "<br />")}</p>`)
+        .join("")
+    : "";
   const content = `<div class="yt-static-page">
-    <h1>18 U.S.C. 2257 Record-Keeping Requirements Compliance Statement</h1>
-    <p>All models, actors, actresses and other persons that appear in any visual depiction of sexually explicit conduct appearing or otherwise contained in this website were over the age of eighteen (18) years at the time of the creation of such depictions.</p>
-    <p>All content and images are in full compliance with the requirements of 18 U.S.C. 2257 and associated regulations.</p>
-    <p>${esc(siteName)} is not a producer (primary or secondary) of any content found on the website. With respect to the records as per 18 USC 2257 for any content found on this site, please direct your request to the site for which the content was produced.</p>
-    <p>${esc(siteName)} is a video sharing site in which allows for the uploading, sharing and general viewing of various types of adult content and while ${esc(siteName)} does its best monitoring for content to ensure compliance with these obligations, users may upload content in violation of 18 U.S.C. 2257.</p>
-    <p>For any inquiries or to report content, please contact us at <a href="mailto:${esc(email)}">${esc(email)}</a>.</p>
+    <h1>${esc(pageTitle)}</h1>
+    ${body}
   </div>`;
-  return layout(`2257 Compliance - ${siteName}`, lang, content, "", "/2257.html", {
+  return layout(`${pageTitle} - ${siteName}`, lang, content, "", "/2257.html", {
     siteName,
-    gaMeasurementId,
     origin,
     noindex: true,
     contactEmail,
+    contactTelegram,
+    contactWhatsapp,
+    compliance2257Title: pageTitle,
+    compliance2257Enabled: true,
+    siteUrl,
+    year,
   });
 }
 
 export function dmcaPage(
   lang: string,
   siteName: string,
+  pageTitle: string,
+  pageContent: string,
   contactEmail?: string,
-  gaMeasurementId?: string,
-  origin?: string
+  contactTelegram?: string,
+  contactWhatsapp?: string,
+  origin?: string,
+  siteUrl?: string,
+  year?: number
 ) {
-  const email = contactEmail || "admin@gmail.com";
+  const body = pageContent.trim()
+    ? pageContent
+        .split(/\n{2,}/)
+        .map((x) => `<p>${esc(x.trim()).replace(/\n/g, "<br />")}</p>`)
+        .join("")
+    : "";
   const content = `<div class="yt-static-page">
-    <h1>DMCA / Copyright Policy</h1>
-    <p>${esc(siteName)} respects the intellectual property rights of others and expects its users to do the same. In accordance with the Digital Millennium Copyright Act of 1998 ("DMCA"), we will respond expeditiously to claims of copyright infringement that are reported to our designated copyright agent.</p>
-    <h2>Filing a DMCA Notice</h2>
-    <p>If you believe that your copyrighted work has been copied in a way that constitutes copyright infringement, please provide the following information to our copyright agent:</p>
-    <ul>
-      <li>A description of the copyrighted work that you claim has been infringed.</li>
-      <li>A description of the material that you claim is infringing, including the URL or other specific location on our site.</li>
-      <li>Your name, address, telephone number, and email address.</li>
-      <li>A statement that you have a good faith belief that the disputed use is not authorized by the copyright owner, its agent, or the law.</li>
+    <h1>${esc(pageTitle)}</h1>
+    ${body}
       <li>A statement, made under penalty of perjury, that the above information in your notice is accurate and that you are the copyright owner or authorized to act on the copyright owner's behalf.</li>
       <li>Your physical or electronic signature.</li>
     </ul>
     <h2>Contact</h2>
-    <p>Send your DMCA notice to: <a href="mailto:${esc(email)}">${esc(email)}</a></p>
+    ${body}
     <p>Upon receipt of a valid DMCA notice, we will remove or disable access to the allegedly infringing material promptly.</p>
   </div>`;
-  return layout(`DMCA Policy - ${siteName}`, lang, content, "", "/dmca.html", {
+  return layout(`${pageTitle} - ${siteName}`, lang, content, "", "/dmca.html", {
     siteName,
-    gaMeasurementId,
     origin,
     noindex: true,
     contactEmail,
+    contactTelegram,
+    contactWhatsapp,
+    dmcaTitle: pageTitle,
+    dmcaEnabled: true,
+    siteUrl,
+    year,
   });
 }

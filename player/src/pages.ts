@@ -1,8 +1,6 @@
 import { Hono } from "hono";
 import type { Env } from "./index";
 import { indexPage, watchPage, taxonomyListingPage, compliancePage, dmcaPage, type NavTaxonomyItem } from "./html";
-import { gaMeasurementIdFromEnv } from "./analytics";
-import { siteNameFromEnv } from "./site";
 import { DEFAULT_LANG, isValidLang, langPrefix, t } from "./i18n";
 import { fetchVttCues, orderedSubtitleUrls } from "./vtt";
 import {
@@ -11,6 +9,7 @@ import {
   videoIdFromPublicWatchSegment,
   publicWatchSegmentFromVideoId,
 } from "./slug";
+import type { Settings } from "./settings";
 
 export const pageRoutes = new Hono<Env>();
 
@@ -38,16 +37,30 @@ async function fetchNavTaxonomies(db: D1Database, langId: number): Promise<[NavT
   return [tags.results, cats.results];
 }
 
-function watchSlugOffset(c: { env: Env["Bindings"] }): number {
-  return parseIdOffset(c.env.ID_OFFSET);
+function watchSlugOffset(c: any): number {
+  return parseIdOffset(c.get("settings").id_offset);
 }
 
 function pageContext(c: any) {
+  const settings: Settings = c.get("settings");
+  const siteName = settings.site_name?.trim() || "PlotVideos";
+  const siteSlogan = settings.site_slogan?.trim() || "";
+  const origin = new URL(c.req.url).origin;
   return {
-    siteName: siteNameFromEnv(c.env),
-    gaMeasurementId: gaMeasurementIdFromEnv(c.env),
-    origin: new URL(c.req.url).origin,
-    contactEmail: (c.env.CONTACT_EMAIL?.trim() || "admin@gmail.com"),
+    siteName,
+    siteSlogan,
+    headCode: settings.head_code || "",
+    footerCode: settings.footer_code || "",
+    origin,
+    siteUrl: origin,
+    year: new Date().getFullYear(),
+    contactEmail: settings.contact_email?.trim() || "",
+    contactTelegram: settings.contact_telegram?.trim() || "",
+    contactWhatsapp: settings.contact_whatsapp?.trim() || "",
+    compliance2257Title: settings.compliance_2257_title?.trim() || "18 U.S.C. 2257 Compliance Statement",
+    compliance2257Enabled: settings.compliance_2257_enabled === "1",
+    dmcaTitle: settings.dmca_title?.trim() || "DMCA / Copyright Policy",
+    dmcaEnabled: settings.dmca_enabled === "1",
   };
 }
 
@@ -67,7 +80,7 @@ async function applyTranslatedTitles(db: D1Database, videos: any[], langId: numb
 
 async function resolveIndex(c: any, lang: string) {
   const db = c.env.DB;
-  const { siteName, gaMeasurementId, origin, contactEmail } = pageContext(c);
+  const { siteName, siteSlogan, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
   const slugOffset = watchSlugOffset(c);
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = 15;
@@ -105,10 +118,9 @@ async function resolveIndex(c: any, lang: string) {
       navCategories.results,
       null,
       slugOffset,
-      siteName,
-      gaMeasurementId,
+      siteSlogan ? `${siteName} - ${siteSlogan}` : siteName,
       origin,
-      contactEmail
+      { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year }
     )
   );
 }
@@ -117,7 +129,7 @@ async function resolveTagListing(c: any, lang: string) {
   const slug = parseTaxonomySlugParam(c.req.param("slug"));
   if (!slug) return c.text("Not found", 404);
 
-  const { siteName, gaMeasurementId, origin, contactEmail } = pageContext(c);
+  const { siteName, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
   const db = c.env.DB;
   const langId = await resolveLangId(db, lang);
   const row = await db
@@ -169,9 +181,8 @@ async function resolveTagListing(c: any, lang: string) {
       `${prefix}/tag/${row.slug}.html`,
       slugOffset,
       siteName,
-      gaMeasurementId,
       origin,
-      contactEmail
+      { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year }
     )
   );
 }
@@ -180,7 +191,7 @@ async function resolveCategoryListing(c: any, lang: string) {
   const slug = parseTaxonomySlugParam(c.req.param("slug"));
   if (!slug) return c.text("Not found", 404);
 
-  const { siteName, gaMeasurementId, origin, contactEmail } = pageContext(c);
+  const { siteName, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
   const db = c.env.DB;
   const langId = await resolveLangId(db, lang);
   const row = await db
@@ -232,9 +243,8 @@ async function resolveCategoryListing(c: any, lang: string) {
       `${prefix}/category/${row.slug}.html`,
       slugOffset,
       siteName,
-      gaMeasurementId,
       origin,
-      contactEmail
+      { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year }
     )
   );
 }
@@ -272,7 +282,7 @@ async function resolveWatch(c: any, lang: string) {
 
 async function _renderWatch(c: any, lang: string, video: any) {
   const db = c.env.DB;
-  const { siteName, gaMeasurementId, origin, contactEmail } = pageContext(c);
+  const { siteName, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
   const id = video.id;
   const slugOffset = watchSlugOffset(c);
   const langId = await resolveLangId(db, lang);
@@ -391,17 +401,21 @@ async function _renderWatch(c: any, lang: string, video: any) {
       { keyword: keywordLink, tags: tagLinks, categories: categoryLinks },
       slugOffset,
       siteName,
-      gaMeasurementId,
       origin,
-      contactEmail
+      { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year }
     )
   );
 }
 
 function resolveStaticPage(c: any, lang: string, page: "2257" | "dmca") {
-  const { siteName, gaMeasurementId, origin, contactEmail } = pageContext(c);
+  const { siteName, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp } = pageContext(c);
+  const settings = c.get("settings");
+  const enabled = page === "2257" ? settings.compliance_2257_enabled === "1" : settings.dmca_enabled === "1";
+  if (!enabled) return c.text("Not found", 404);
   const render = page === "2257" ? compliancePage : dmcaPage;
-  return c.html(render(lang, siteName, contactEmail, gaMeasurementId, origin));
+  const pageTitle = page === "2257" ? settings.compliance_2257_title : settings.dmca_title;
+  const pageContent = page === "2257" ? settings.compliance_2257_content : settings.dmca_content;
+  return c.html(render(lang, siteName, pageTitle, pageContent, contactEmail, contactTelegram, contactWhatsapp, origin, siteUrl, year));
 }
 
 pageRoutes.get("/", (c) => resolveIndex(c, DEFAULT_LANG));

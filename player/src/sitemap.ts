@@ -2,6 +2,7 @@ import type { Hono } from "hono";
 import type { Env } from "./index";
 import { publicWatchSegmentFromVideoId, parseIdOffset } from "./slug";
 import { DEFAULT_LANG } from "./i18n";
+import type { Settings } from "./settings";
 
 const PAGE_SIZE = 5000;
 
@@ -23,7 +24,8 @@ async function defaultLangId(db: D1Database): Promise<number> {
 async function handleVideosSitemap(c: any, page: number) {
   const db = c.env.DB;
   const origin = new URL(c.req.url).origin;
-  const slugOffset = parseIdOffset(c.env.ID_OFFSET);
+  const settings: Settings = c.get("settings");
+  const slugOffset = parseIdOffset(settings.id_offset);
   const offset = (page - 1) * PAGE_SIZE;
 
   const result = await db

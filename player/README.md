@@ -14,11 +14,12 @@ D1_DB_ID=
 ```
 This environment variables are using to create `wrangler.toml` file and deploy the worker.
 
-Runtime environment variables
+Runtime settings
 ```bash
-SITENAME=
-ID_OFFSET=37951
-GA_ID=
-FETCH_API_URL=
-FETCH_API_KEY=
+site_name=
+site_slogan=
+id_offset=37951
+footer_code=
+fetch_api_url=
+fetch_api_key=
 ```

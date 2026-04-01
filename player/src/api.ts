@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Env } from "./index";
 import { slugify } from "./slug";
+import type { Settings } from "./settings";
 
 export const apiRoutes = new Hono<Env>();
 
@@ -232,13 +233,15 @@ async function syncLanguages(db: D1Database, crawlerUrl: string, crawlerKey: str
   await db.batch(languages.map((l) => stmt.bind(l.code, l.name, l.locale)));
 }
 
-export async function syncFromCrawler(env: Env["Bindings"]): Promise<{ synced: number }> {
-  const crawlerUrl = env.FETCH_API_URL;
-  const crawlerKey = env.FETCH_API_KEY;
+export async function syncFromCrawler(db: D1Database, settings: Settings): Promise<{ synced: number }> {
+  const crawlerUrl = settings.fetch_api_url;
+  const crawlerKey = settings.fetch_api_key;
 
-  await syncLanguages(env.DB, crawlerUrl, crawlerKey);
+  if (!crawlerUrl || !crawlerKey) return { synced: 0 };
 
-  const maxRow = await env.DB
+  await syncLanguages(db, crawlerUrl, crawlerKey);
+
+  const maxRow = await db
     .prepare("SELECT MAX(original_id) AS max_id FROM videos")
     .first<{ max_id: number | null }>();
   const afterId = maxRow?.max_id ?? 0;
@@ -257,7 +260,7 @@ export async function syncFromCrawler(env: Env["Bindings"]): Promise<{ synced: n
     if (!videos.length) break;
 
     for (const video of videos) {
-      await ingestVideo(env.DB, video);
+      await ingestVideo(db, video);
       synced++;
     }
 
@@ -270,7 +273,7 @@ export async function syncFromCrawler(env: Env["Bindings"]): Promise<{ synced: n
 
 apiRoutes.post("/sync", async (c) => {
   try {
-    const result = await syncFromCrawler(c.env);
+    const result = await syncFromCrawler(c.env.DB, c.get("settings"));
     return c.json(result);
   } catch (e: any) {
     return c.json({ error: e.message }, 500);

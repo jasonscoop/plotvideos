@@ -18,27 +18,4 @@ Assume your websinamte will be `mybestwebsite`.
     - Variable name: `D1_DB_ID`
     - Variable value: <paste the database ID you got from step 1>
 3. Click `Deploy` button.
-4. Bind domain.
-
-Build command:
-```bash
-npm run deploy
-```
-
-Build environment variables
-```bash
-WORKER_NAME=
-D1_DB_NAME=
-D1_DB_ID=
-```
-This environment variables are using to create `wrangler.toml` file and deploy the worker.
-
-Runtime settings
-```bash
-site_name=
-site_slogan=
-id_offset=37951
-footer_code=
-fetch_api_url=
-fetch_api_key=
-```
+4. Once deployment finished, bind your own domain.

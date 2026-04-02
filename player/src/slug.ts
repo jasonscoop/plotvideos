@@ -7,17 +7,13 @@ export function parseIdOffset(raw: string | undefined): number {
   return Number.isFinite(n) ? n : DEFAULT_ID_OFFSET;
 }
 
-/** Public `/video/{n}.html` path segment = D1 `videos.id` + offset. */
-export function publicWatchSegmentFromVideoId(videoId: number, slugOffset: number): number {
-  return videoId + slugOffset;
+export function generateVideoSlug(originalId: number, title: string, slugFrom: string, idOffset: number): string {
+  if (slugFrom === "title_original_id") {
+    return `${slugify(title)}-${originalId}`;
+  }
+  return String(originalId + idOffset);
 }
 
-/** Resolve `videos.id` from the numeric URL segment (inverse of publicWatchSegmentFromVideoId). */
-export function videoIdFromPublicWatchSegment(segment: number, slugOffset: number): number {
-  return segment - slugOffset;
-}
-
-/** URL segment for /tag/… and /category/… (stored in D1). */
 export function slugify(name: string): string {
   const s = name
     .trim()
@@ -29,7 +25,13 @@ export function slugify(name: string): string {
   return s || "item";
 }
 
-/** Strip optional `.html` from route param; allow `[a-z0-9-]+`. */
+export function parseVideoSlugParam(param: string): string | null {
+  let raw = param.replace(/\.html$/i, "").trim().toLowerCase();
+  raw = raw.replace(/\.0+$/, "");
+  if (!raw || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(raw)) return null;
+  return raw;
+}
+
 export function parseTaxonomySlugParam(param: string): string | null {
   const raw = param.replace(/\.html$/i, "").trim().toLowerCase();
   if (!raw || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(raw)) return null;

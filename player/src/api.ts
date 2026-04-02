@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import type { Env } from "./index";
-import { slugify } from "./slug";
+import { slugify, generateVideoSlug, parseIdOffset } from "./slug";
 import type { Settings } from "./settings";
 
 export const apiRoutes = new Hono<Env>();
@@ -139,13 +139,20 @@ export async function refreshRandomKeys(db: D1Database): Promise<void> {
   await db.prepare(`UPDATE videos SET random_key = RANDOM()`).run();
 }
 
-async function ingestVideo(db: D1Database, body: IngestPayload): Promise<number> {
+async function ingestVideo(db: D1Database, body: IngestPayload, settings: Settings): Promise<number> {
+  const slug = generateVideoSlug(
+    body.original_id,
+    body.title,
+    settings.slug_from,
+    parseIdOffset(settings.id_offset)
+  );
+
   const result = await db
     .prepare(
       `INSERT INTO videos (original_id, title,
         duration, width, height, thumbnail_url, video_url, hls_url,
-        random_key)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        slug, random_key)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(original_id) DO UPDATE SET
         title = excluded.title,
         duration = excluded.duration,
@@ -165,6 +172,7 @@ async function ingestVideo(db: D1Database, body: IngestPayload): Promise<number>
       body.thumbnail_url || "",
       body.video_url || "",
       body.hls_url || "",
+      slug,
       randomInt31()
     )
     .first<{ id: number }>();
@@ -260,7 +268,7 @@ export async function syncFromCrawler(db: D1Database, settings: Settings): Promi
     if (!videos.length) break;
 
     for (const video of videos) {
-      await ingestVideo(db, video);
+      await ingestVideo(db, video, settings);
       synced++;
     }
 

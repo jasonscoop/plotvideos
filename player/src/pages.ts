@@ -5,21 +5,11 @@ import { DEFAULT_LANG, isValidLang, langPrefix, t } from "./i18n";
 import { fetchVttCues, orderedSubtitleUrls } from "./vtt";
 import {
   parseTaxonomySlugParam,
-  parseIdOffset,
-  videoIdFromPublicWatchSegment,
-  publicWatchSegmentFromVideoId,
+  parseVideoSlugParam,
 } from "./slug";
 import type { Settings } from "./settings";
 
 export const pageRoutes = new Hono<Env>();
-
-function parsePublicWatchSegmentParam(slugParam: string): number | null {
-  const s = slugParam.replace(/\.html$/i, "").trim();
-  if (!/^\d+(\.0+)?$/.test(s)) return null;
-  const n = Number(s);
-  if (!Number.isFinite(n)) return null;
-  return Math.trunc(n);
-}
 
 async function resolveLangId(db: D1Database, code: string): Promise<number> {
   const row = await db.prepare("SELECT id FROM languages WHERE code = ?").bind(code).first<{ id: number }>();
@@ -35,10 +25,6 @@ async function fetchNavTaxonomies(db: D1Database, langId: number): Promise<[NavT
     db.prepare(NAV_CATEGORIES_SQL).bind(langId).all<NavTaxonomyItem>(),
   ]);
   return [tags.results, cats.results];
-}
-
-function watchSlugOffset(c: any): number {
-  return parseIdOffset(c.get("settings").id_offset);
 }
 
 function pageContext(c: any) {
@@ -83,7 +69,6 @@ async function applyTranslatedTitles(db: D1Database, videos: any[], langId: numb
 async function resolveIndex(c: any, lang: string) {
   const db = c.env.DB;
   const { siteName, siteSlogan, siteDescription, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
-  const slugOffset = watchSlugOffset(c);
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = 15;
   const q = c.req.query("q")?.trim() || "";
@@ -119,7 +104,6 @@ async function resolveIndex(c: any, lang: string) {
       navTags.results,
       navCategories.results,
       null,
-      slugOffset,
       siteSlogan ? `${siteName} - ${siteSlogan}` : siteName,
       origin,
       { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year, siteDescription }
@@ -166,7 +150,6 @@ async function resolveTagListing(c: any, lang: string) {
   const [navTags, navCategories] = await fetchNavTaxonomies(db, langId);
   const prefix = langPrefix(lang);
   const browserTitle = t(lang, "tag_page_title").replace("{name}", row.name);
-  const slugOffset = watchSlugOffset(c);
 
   return c.html(
     taxonomyListingPage(
@@ -181,7 +164,6 @@ async function resolveTagListing(c: any, lang: string) {
       navCategories,
       browserTitle,
       `${prefix}/tag/${row.slug}.html`,
-      slugOffset,
       siteName,
       origin,
       { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year, siteDescription }
@@ -228,7 +210,6 @@ async function resolveCategoryListing(c: any, lang: string) {
   const [navTags, navCategories] = await fetchNavTaxonomies(db, langId);
   const prefix = langPrefix(lang);
   const browserTitle = t(lang, "category_page_title").replace("{name}", row.name);
-  const slugOffset = watchSlugOffset(c);
 
   return c.html(
     taxonomyListingPage(
@@ -243,7 +224,6 @@ async function resolveCategoryListing(c: any, lang: string) {
       navCategories,
       browserTitle,
       `${prefix}/category/${row.slug}.html`,
-      slugOffset,
       siteName,
       origin,
       { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year }
@@ -253,15 +233,10 @@ async function resolveCategoryListing(c: any, lang: string) {
 
 async function resolveWatchBySlug(c: any, lang: string) {
   const db = c.env.DB;
-  const segment = parsePublicWatchSegmentParam(c.req.param("slug"));
-  if (segment == null) return c.text("Video not found", 404);
+  const slug = parseVideoSlugParam(c.req.param("slug"));
+  if (!slug) return c.text("Video not found", 404);
 
-  const offset = watchSlugOffset(c);
-  const videoId = videoIdFromPublicWatchSegment(segment, offset);
-  if (videoId < 1) return c.text("Video not found", 404);
-
-  const video = await db.prepare("SELECT * FROM videos WHERE id = ?").bind(videoId).first<any>();
-
+  const video = await db.prepare("SELECT * FROM videos WHERE slug = ?").bind(slug).first<any>();
   if (!video) return c.text("Video not found", 404);
   return _renderWatch(c, lang, video);
 }
@@ -272,21 +247,18 @@ async function resolveWatch(c: any, lang: string) {
   if (!Number.isFinite(id) || id < 1) return c.text("Video not found", 404);
 
   const video = await db
-    .prepare("SELECT * FROM videos WHERE id = ?")
+    .prepare("SELECT slug FROM videos WHERE id = ?")
     .bind(id)
-    .first<any>();
+    .first<{ slug: string }>();
 
   if (!video) return c.text("Video not found", 404);
-
-  const seg = publicWatchSegmentFromVideoId(video.id, watchSlugOffset(c));
-  return c.redirect(`${langPrefix(lang)}/video/${seg}.html`, 302);
+  return c.redirect(`${langPrefix(lang)}/video/${video.slug}.html`, 302);
 }
 
 async function _renderWatch(c: any, lang: string, video: any) {
   const db = c.env.DB;
   const { siteName, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
   const id = video.id;
-  const slugOffset = watchSlugOffset(c);
   const langId = await resolveLangId(db, lang);
 
   const [titleResult, subRows, recResult, navTags, navCategories, videoTagIds, videoCatIds] = await Promise.all([
@@ -299,7 +271,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
       .bind(id)
       .all<{ lang_id: number; url: string }>(),
     db
-      .prepare("SELECT id, title, duration, thumbnail_url FROM videos WHERE id != ? ORDER BY random_key DESC LIMIT 10")
+      .prepare("SELECT id, slug, title, duration, thumbnail_url FROM videos WHERE id != ? ORDER BY random_key DESC LIMIT 10")
       .bind(id)
       .all<any>(),
     db.prepare(NAV_TAGS_SQL).bind(langId).all<NavTaxonomyItem>(),
@@ -387,6 +359,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
       lang,
       {
         id: video.id,
+        slug: video.slug,
         title: displayTitle,
         original_title: video.title,
         duration: video.duration,
@@ -401,7 +374,6 @@ async function _renderWatch(c: any, lang: string, video: any) {
       navCategories.results,
       seoTranscriptCues,
       { keyword: keywordLink, tags: tagLinks, categories: categoryLinks },
-      slugOffset,
       siteName,
       origin,
       { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year }

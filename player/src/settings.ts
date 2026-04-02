@@ -2,6 +2,7 @@ export interface Settings {
   fetch_api_url: string;
   fetch_api_key: string;
   id_offset: string;
+  slug_from: string;
   site_name: string;
   site_slogan: string;
   site_description: string;
@@ -22,6 +23,7 @@ const DEFAULT_SETTINGS: Settings = {
   fetch_api_url: "",
   fetch_api_key: "",
   id_offset: "0",
+  slug_from: "original_id_plus_offset",
   site_name: "PlotVideos",
   site_slogan: "",
   site_description: "",

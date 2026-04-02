@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS videos (
   thumbnail_url TEXT    NOT NULL DEFAULT '',
   video_url     TEXT    NOT NULL DEFAULT '',
   hls_url       TEXT    NOT NULL DEFAULT '',
+  slug          TEXT    NOT NULL DEFAULT '',
   created_at    TEXT    NOT NULL DEFAULT (datetime('now')),
   random_key    INTEGER NOT NULL DEFAULT 0
 );
@@ -66,6 +67,7 @@ CREATE TABLE IF NOT EXISTS video_categories (
   PRIMARY KEY (video_id, category_id)
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_videos_slug ON videos(slug);
 CREATE INDEX IF NOT EXISTS idx_videos_created_at ON videos(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_videos_random_key ON videos(random_key DESC);
 CREATE INDEX IF NOT EXISTS idx_title_translations_video_id ON title_translations(video_id);
@@ -91,6 +93,7 @@ INSERT OR IGNORE INTO settings (key, value, description) VALUES
   ('fetch_api_url', '', 'Crawler API base URL'),
   ('fetch_api_key', '', 'Crawler API key'),
   ('id_offset', '0', 'Public video ID offset'),
+  ('slug_from', 'original_id_plus_offset', 'Video slug mode: original_id_plus_offset or title_original_id'),
   ('head_code', '', 'Extra code in <head> tag'),
   ('footer_code', '', 'Extra code in <footer> tag'),
   ('contact_email', '', 'DMCA and compliance contact email'),

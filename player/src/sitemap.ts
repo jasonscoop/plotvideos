@@ -1,8 +1,6 @@
 import type { Hono } from "hono";
 import type { Env } from "./index";
-import { publicWatchSegmentFromVideoId, parseIdOffset } from "./slug";
 import { DEFAULT_LANG } from "./i18n";
-import type { Settings } from "./settings";
 
 const PAGE_SIZE = 5000;
 
@@ -24,23 +22,20 @@ async function defaultLangId(db: D1Database): Promise<number> {
 async function handleVideosSitemap(c: any, page: number) {
   const db = c.env.DB;
   const origin = new URL(c.req.url).origin;
-  const settings: Settings = c.get("settings");
-  const slugOffset = parseIdOffset(settings.id_offset);
   const offset = (page - 1) * PAGE_SIZE;
 
   const result = await db
-    .prepare("SELECT id, created_at FROM videos ORDER BY id ASC LIMIT ? OFFSET ?")
+    .prepare("SELECT slug, created_at FROM videos ORDER BY id ASC LIMIT ? OFFSET ?")
     .bind(PAGE_SIZE, offset)
-    .all<{ id: number; created_at: string }>();
+    .all<{ slug: string; created_at: string }>();
 
   if (!result.results.length) return c.text("Not found", 404);
 
   const urls = result.results.map((r) => {
-    const seg = publicWatchSegmentFromVideoId(r.id, slugOffset);
     const day = r.created_at?.substring(0, 10) || "";
     return day
-      ? `<url><loc>${origin}/video/${seg}.html</loc><lastmod>${day}</lastmod></url>`
-      : `<url><loc>${origin}/video/${seg}.html</loc></url>`;
+      ? `<url><loc>${origin}/video/${r.slug}.html</loc><lastmod>${day}</lastmod></url>`
+      : `<url><loc>${origin}/video/${r.slug}.html</loc></url>`;
   });
 
   return xmlRes(c, [

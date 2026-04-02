@@ -9,7 +9,7 @@ export function parseIdOffset(raw: string | undefined): number {
 
 export function generateVideoSlug(originalId: number, title: string, slugFrom: string, idOffset: number): string {
   if (slugFrom === "title_original_id") {
-    return `${slugify(title)}-${originalId}`;
+    return `${slugify(title)}-${originalId + idOffset}`;
   }
   return String(originalId + idOffset);
 }

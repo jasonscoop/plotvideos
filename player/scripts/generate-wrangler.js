@@ -19,14 +19,35 @@ function get(key) {
   return process.env[key] || fileVars[key] || "";
 }
 
+function packageJsonName() {
+  try {
+    const raw = readFileSync(resolve(root, "package.json"), "utf8");
+    const p = JSON.parse(raw);
+    if (typeof p?.name !== "string") return "";
+    const n = p.name.trim();
+    if (!n) return "";
+    if (n.startsWith("@")) {
+      return n.slice(1).replace(/\//g, "-");
+    }
+    return n;
+  } catch {
+    return "";
+  }
+}
+
 const dbId = get("D1_DB_ID");
 if (!dbId) {
   console.error("D1_DB_ID is required (set as env var or in .env)");
   process.exit(1);
 }
 
-const name = get("WORKER_NAME") || "player";
-const dbName = get("D1_DB_NAME") || `${name}-db`;
+const name =
+  get("WORKER_NAME") ||
+  get("CLOUDFLARE_PROJECT_NAME") ||
+  get("CF_PAGES_PROJECT_NAME") ||
+  packageJsonName() ||
+  "player";
+const dbName = get("D1_DB_NAME") || name;
 
 const toml = `name = "${name}"
 main = "src/index.ts"

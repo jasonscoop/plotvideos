@@ -1,4 +1,3 @@
-import time
 import traceback
 from typing import Optional, Tuple
 
@@ -9,7 +8,6 @@ from crud.video_crud import VideoCrud
 from core.config import SUBTITLE_TOKEN_RATIO_THRESHOLD, S5_TRANSLATE_VTT_BATCH_SIZE
 from core.enums import VideoStatus
 from core.languages import Language
-from utils.signal_utils import setup_graceful_shutdown, should_stop
 from utils.translate_utils import translate_list
 
 
@@ -106,12 +104,9 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
 
 
 def process_subtitled_videos():
-    setup_graceful_shutdown()
     last_id = None
 
-    while not should_stop():
+    while True:
         had_work, last_id = process_batch(last_id)
         if not had_work:
-            logger.info("All vtt translated, sleeping for 5 minutes")
-            time.sleep(5 * 60)
-            last_id = None
+            break

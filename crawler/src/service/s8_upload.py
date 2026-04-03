@@ -1,4 +1,3 @@
-import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Optional, Tuple
 
@@ -11,7 +10,6 @@ from core.languages import Language
 from core.models import Video
 from utils.b2_utils import get_b2_client
 from utils.file_utils import rm_video
-from utils.signal_utils import setup_graceful_shutdown, should_stop
 
 
 def upload_video(video: Video, languages: List[Language]) -> None:
@@ -67,12 +65,9 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
 
 
 def upload_videos():
-    setup_graceful_shutdown()
     last_id = None
 
-    while not should_stop():
+    while True:
         had_work, last_id = process_batch(last_id)
         if not had_work:
-            logger.info("All uploads done, sleeping for 5 minutes")
-            time.sleep(5 * 60)
-            last_id = None
+            break

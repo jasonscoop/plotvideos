@@ -1,4 +1,3 @@
-import time
 import traceback
 from typing import Optional, Tuple
 
@@ -9,7 +8,6 @@ from core.config import MIN_ACCEPT_DURATION, S3_CONVERT_BATCH_SIZE
 from core.models import VideoStatus
 from utils.file_utils import rm_video
 from utils.media_utils import get_video_duration, media_to_wav
-from utils.signal_utils import setup_graceful_shutdown, should_stop
 
 
 def convert_video(video):
@@ -74,12 +72,9 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
 
 
 def convert_videos():
-    setup_graceful_shutdown()
     last_id = None
 
-    while not should_stop():
+    while True:
         had_work, last_id = process_batch(last_id)
         if not had_work:
-            logger.info("All converted, sleeping for 10 minutes")
-            time.sleep(10 * 60)
-            last_id = None
+            break

@@ -1,4 +1,3 @@
-import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Optional, Tuple
@@ -17,7 +16,6 @@ from utils.download_utils import (
     download_image,
 )
 from utils.file_utils import rm_video
-from utils.signal_utils import setup_graceful_shutdown, should_stop
 
 
 def download_video(video: Video):
@@ -111,11 +109,8 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
 
 
 def download_videos():
-    setup_graceful_shutdown()
     last_id = None
-    while not should_stop():
+    while True:
         had_work, last_id = process_batch(last_id)
         if not had_work:
-            logger.info("All downloaded, sleeping for 1 hour")
-            time.sleep(1 * 60 * 60)
-            last_id = None
+            break

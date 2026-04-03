@@ -5,19 +5,12 @@ from typing import Callable, Optional, Tuple
 
 from loguru import logger
 
-from core.config import (
-    S1_KEYWORD_COOLDOWN_HOURS,
-    SKIP_STAGES,
-    validate_config,
-)
+from core.config import SKIP_STAGES, validate_config
 from service import (
     s1_fetch, s2_download, s3_convert, s4_subtitle,
     s5_translate_vtt, s6_translate_meta, s7_hls, s8_upload,
 )
 from utils.log_utils import init_logging
-from utils.signal_utils import (
-    register_shutdown_event, setup_graceful_shutdown, should_stop,
-)
 from utils.telegram_notify import notify_stage_failure
 
 BatchFn = Callable[[Optional[int]], Tuple[bool, Optional[int]]]
@@ -27,22 +20,17 @@ BatchFn = Callable[[Optional[int]], Tuple[bool, Optional[int]]]
 class StageConfig:
     name: str
     process_batch: BatchFn
-    idle_sleep: int
 
 
 STAGES: list[StageConfig] = [
-    StageConfig(
-        "s1_fetch",
-        s1_fetch.process_batch,
-        max(60, S1_KEYWORD_COOLDOWN_HOURS * 3600),
-    ),
-    StageConfig("s2_download",       s2_download.process_batch,       3600),
-    StageConfig("s3_convert",        s3_convert.process_batch,        600),
-    StageConfig("s4_subtitle",       s4_subtitle.process_batch,       300),
-    StageConfig("s5_translate_vtt",  s5_translate_vtt.process_batch,  300),
-    StageConfig("s6_translate_meta", s6_translate_meta.process_batch, 300),
-    StageConfig("s7_hls",           s7_hls.process_batch,             300),
-    StageConfig("s8_upload",        s8_upload.process_batch,          300),
+    StageConfig("s1_fetch", s1_fetch.process_batch),
+    StageConfig("s2_download", s2_download.process_batch),
+    StageConfig("s3_convert", s3_convert.process_batch),
+    StageConfig("s4_subtitle", s4_subtitle.process_batch),
+    StageConfig("s5_translate_vtt", s5_translate_vtt.process_batch),
+    StageConfig("s6_translate_meta", s6_translate_meta.process_batch),
+    StageConfig("s7_hls", s7_hls.process_batch),
+    StageConfig("s8_upload", s8_upload.process_batch),
 ]
 
 _skip_set = set(SKIP_STAGES)
@@ -53,43 +41,26 @@ for _name in SKIP_STAGES:
 ACTIVE_STAGES = [s for s in STAGES if s.name not in _skip_set]
 
 
-async def _idle_sleep(seconds: int, shutdown_event: asyncio.Event) -> bool:
-    try:
-        await asyncio.wait_for(asyncio.shield(shutdown_event.wait()), timeout=seconds)
-        return True
-    except asyncio.TimeoutError:
-        return False
-
-
-async def _run_stage(stage: StageConfig, shutdown_event: asyncio.Event) -> None:
+async def _run_stage(stage: StageConfig) -> None:
     last_id: Optional[int] = None
     logger.info(f"[{stage.name}] stage started")
 
-    while not should_stop():
+    while True:
         try:
             had_work, last_id = await asyncio.to_thread(stage.process_batch, last_id)
         except Exception as e:
-            logger.exception(
-                f"[{stage.name}] batch failed; retrying after {stage.idle_sleep}s"
-            )
+            logger.exception(f"[{stage.name}] batch failed")
             notify_stage_failure(stage.name, e)
-            if await _idle_sleep(stage.idle_sleep, shutdown_event):
-                break
-            continue
+            break
 
         if not had_work:
-            logger.debug(f"[{stage.name}] queue empty, sleeping {stage.idle_sleep}s")
-            if await _idle_sleep(stage.idle_sleep, shutdown_event):
-                break
+            logger.info(f"[{stage.name}] queue empty, exiting")
+            break
 
     logger.info(f"[{stage.name}] stage stopped")
 
 
 async def run_all() -> None:
-    shutdown_event = asyncio.Event()
-    register_shutdown_event(shutdown_event)
-    setup_graceful_shutdown()
-
     if not ACTIVE_STAGES:
         logger.error("No stages to run after SKIP_STAGES; check SKIP_STAGES")
         return
@@ -100,7 +71,7 @@ async def run_all() -> None:
     else:
         logger.info("Scheduler starting — all stages running concurrently")
     try:
-        await asyncio.gather(*[_run_stage(stage, shutdown_event) for stage in ACTIVE_STAGES])
+        await asyncio.gather(*[_run_stage(stage) for stage in ACTIVE_STAGES])
     except asyncio.CancelledError:
         logger.info("Scheduler cancelled (Ctrl+C)")
     logger.info("Scheduler stopped")

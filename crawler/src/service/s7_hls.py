@@ -1,4 +1,3 @@
-import time
 from typing import Optional, Tuple
 
 from loguru import logger
@@ -8,7 +7,6 @@ from core.config import S7_UPLOAD_BATCH_SIZE
 from core.enums import VideoStatus
 from core.models import Video
 from utils.media_utils import generate_hls
-from utils.signal_utils import setup_graceful_shutdown, should_stop
 
 
 def transcode_video(video: Video) -> bool:
@@ -58,12 +56,9 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
 
 
 def generate_hls_videos():
-    setup_graceful_shutdown()
     last_id = None
 
-    while not should_stop():
+    while True:
         had_work, last_id = process_batch(last_id)
         if not had_work:
-            logger.info("All HLS generated, sleeping for 5 minutes")
-            time.sleep(5 * 60)
-            last_id = None
+            break

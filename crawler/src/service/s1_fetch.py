@@ -17,7 +17,6 @@ from core.config import (
 )
 from core.enums import VideoStatus
 from core.models import Video, Keyword
-from utils.signal_utils import setup_graceful_shutdown, should_stop
 
 
 def _log_page_summary(keyword_name: str, page_1based: int, by_host: Dict[str, Tuple[int, int, int]]) -> None:
@@ -101,12 +100,8 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
 
 
 def fetch_and_save_videos():
-    setup_graceful_shutdown()
     last_id = None
-    while not should_stop():
+    while True:
         had_work, last_id = process_batch(last_id)
         if not had_work:
-            sleep_s = max(60, S1_KEYWORD_COOLDOWN_HOURS * 3600)
-            logger.info(f"No keywords due for fetch, sleeping {sleep_s}s")
-            import time; time.sleep(sleep_s)
-            last_id = None
+            break

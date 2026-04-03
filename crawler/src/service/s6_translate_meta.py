@@ -1,4 +1,3 @@
-import time
 import traceback
 from typing import Optional, Tuple
 
@@ -11,7 +10,6 @@ from core.config import S6_TRANSLATE_META_BATCH_SIZE
 from core.enums import VideoStatus
 from core.languages import Language
 from core.models import Video
-from utils.signal_utils import setup_graceful_shutdown, should_stop
 from utils.translate_utils import translate_list
 
 
@@ -71,12 +69,9 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
 
 
 def translate_meta_infos():
-    setup_graceful_shutdown()
     last_id = None
 
-    while not should_stop():
+    while True:
         had_work, last_id = process_batch(last_id)
         if not had_work:
-            logger.info("All meta translated, sleeping for 5 minutes")
-            time.sleep(5 * 60)
-            last_id = None
+            break

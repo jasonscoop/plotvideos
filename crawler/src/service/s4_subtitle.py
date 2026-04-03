@@ -1,4 +1,3 @@
-import time
 import traceback
 from typing import Optional, Tuple
 
@@ -10,7 +9,6 @@ from core.models import VideoStatus
 from core.models import Video
 
 from utils.file_utils import rm_video
-from utils.signal_utils import setup_graceful_shutdown, should_stop
 from utils.whisper_utils import whisper_transcribe
 
 
@@ -79,12 +77,9 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
 
 
 def subtitle_videos():
-    setup_graceful_shutdown()
     last_id = None
 
-    while not should_stop():
+    while True:
         had_work, last_id = process_batch(last_id)
         if not had_work:
-            logger.info("All subtitled, sleeping for 5 minutes")
-            time.sleep(5 * 60)
-            last_id = None
+            break

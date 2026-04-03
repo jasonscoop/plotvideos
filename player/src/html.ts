@@ -240,7 +240,7 @@ function homeSidebar(
       const isActive = active?.kind === "tag" && active.slug === tg.slug ? " active" : "";
       return `<a href="${tagPageHref(prefix, tg.slug)}" class="yt-nav-item${isActive}" title="${esc(
         tg.name
-      )}">${esc(tg.name)} <span class="yt-nav-count">${tg.count}</span></a>`;
+      )}">${esc(tg.name)}</a>`;
     })
     .join("");
   const catItems = navCategories
@@ -248,7 +248,7 @@ function homeSidebar(
       const isActive = active?.kind === "category" && active.slug === cg.slug ? " active" : "";
       return `<a href="${categoryPageHref(prefix, cg.slug)}" class="yt-nav-item${isActive}" title="${esc(
         cg.name
-      )}">${esc(cg.name)} <span class="yt-nav-count">${cg.count}</span></a>`;
+      )}">${esc(cg.name)}</a>`;
     })
     .join("");
   return `<nav class="yt-home-sidebar">

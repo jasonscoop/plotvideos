@@ -179,13 +179,6 @@ a { color: inherit; text-decoration: none; }
 .yt-nav-item:hover { background: var(--yt-surface); }
 .yt-nav-item.active { background: var(--yt-surface); color: var(--yt-blue); font-weight: 500; }
 
-.yt-nav-count {
-  font-size: 11px;
-  color: var(--yt-text2);
-  font-weight: 400;
-  margin-inline-start: 4px;
-}
-
 .yt-taxonomy-title {
   font-size: 22px;
   font-weight: 600;

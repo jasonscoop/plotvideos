@@ -24,6 +24,7 @@
   var player = videojs("video-player", {
     fluid: false,
     responsive: true,
+    inactivityTimeout: 2500,
     playbackRates: [0.5, 1, 1.25, 1.5, 2],
     html5: {
       vhs: { overrideNative: !videojs.browser.IS_SAFARI },
@@ -136,6 +137,7 @@
   }
 
   player.ready(function () {
+    player.userActive(false);
     if (!subtitleTracks.length) return;
     addSubtitleTracksOnce();
   });

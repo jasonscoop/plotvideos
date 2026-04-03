@@ -476,7 +476,6 @@ a { color: inherit; text-decoration: none; }
 .video-js .vjs-progress-holder:hover { height: 5px; }
 .video-js .vjs-icon-placeholder::before { font-size: 18px; line-height: 38px; }
 .video-js .vjs-playback-rate .vjs-playback-rate-value { font-size: 12px; line-height: 38px; }
-.video-js.vjs-paused .vjs-control-bar { display: flex; opacity: 1; visibility: visible; pointer-events: auto; }
 
 /* ── Video Meta ─────────────────────────────────────── */
 

@@ -608,6 +608,13 @@ export function watchPage(
   }
   const tagsHtml = tagParts.join("");
 
+  const metaParts: string[] = [];
+  if (video.duration) metaParts.push(`<span>${fmtDuration(video.duration)}</span>`);
+  if (subtitleTracks.length)
+    metaParts.push(`<span>${subtitleTracks.length} ${t(lang, "subtitles")}</span>`);
+  if (tagsHtml) metaParts.push(`<span class="yt-meta-tags">${tagsHtml}</span>`);
+  const metaRowInner = metaParts.join(`<span class="yt-meta-sep">&middot;</span>`);
+
   const watchConfig = {
     pageLang: lang,
     sources: [
@@ -676,12 +683,7 @@ export function watchPage(
 
       <h1 class="yt-title">${esc(video.title)}</h1>
 
-      <div class="yt-meta-row">
-        ${video.duration ? `<span>${fmtDuration(video.duration)}</span>` : ""}
-        ${subtitleTracks.length ? `<span>&middot;</span><span>${subtitleTracks.length} ${t(lang, "subtitles")}</span>` : ""}
-      </div>
-
-      ${tagsHtml ? `<div style="margin-top:12px">${tagsHtml}</div>` : ""}
+      ${metaRowInner ? `<div class="yt-meta-row">${metaRowInner}</div>` : ""}
       ${seoTranscriptBlock}
     </div>
   </div>

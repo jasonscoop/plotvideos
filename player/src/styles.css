@@ -491,21 +491,52 @@ a { color: inherit; text-decoration: none; }
   flex-wrap: wrap;
 }
 
+.yt-meta-sep {
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.yt-meta-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  line-height: 1.5;
+}
+
+.yt-meta-tags .yt-tag {
+  margin: 0;
+}
+
 .yt-transcript-seo {
   margin-top: 20px;
-  border-radius: 12px;
-  border: 1px solid var(--yt-border);
-  background: var(--yt-surface);
-  overflow: hidden;
+  background: transparent;
 }
 
 .yt-transcript-seo-summary {
-  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  margin: -4px -10px 0;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   color: var(--yt-text);
   list-style: none;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.yt-transcript-seo-summary:hover {
+  background: var(--yt-surface);
+}
+
+.yt-transcript-seo-summary:focus-visible {
+  outline: 2px solid var(--yt-blue);
+  outline-offset: 2px;
 }
 
 .yt-transcript-seo-summary::-webkit-details-marker {
@@ -513,27 +544,49 @@ a { color: inherit; text-decoration: none; }
 }
 
 .yt-transcript-seo-summary::after {
-  content: " ▸";
-  color: var(--yt-text2);
-  font-size: 12px;
+  content: "";
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid var(--yt-text2);
+  border-bottom: 2px solid var(--yt-text2);
+  transform: rotate(45deg);
+  transition: transform 0.2s ease, border-color 0.15s ease;
+  opacity: 0.9;
+}
+
+.yt-transcript-seo-summary:hover::after {
+  border-color: var(--yt-text);
 }
 
 .yt-transcript-seo[open] .yt-transcript-seo-summary::after {
-  content: " ▾";
+  transform: rotate(-135deg);
+  margin-top: 4px;
 }
 
 .yt-transcript-seo-body {
-  padding: 0 16px 16px;
+  margin-top: 10px;
+  padding: 14px 16px 16px;
   max-height: min(50vh, 400px);
   overflow-y: auto;
   font-size: 14px;
-  line-height: 1.55;
-  color: var(--yt-text2);
-  border-top: 1px solid var(--yt-border);
+  line-height: 1.65;
+  color: var(--yt-text);
+  background: var(--yt-surface);
+  border-radius: 8px;
+}
+
+.yt-transcript-seo-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.yt-transcript-seo-body::-webkit-scrollbar-thumb {
+  background: var(--yt-hover);
+  border-radius: 3px;
 }
 
 .yt-transcript-seo-body p {
-  margin: 0 0 0.65em;
+  margin: 0 0 0.7em;
 }
 
 .yt-transcript-seo-body p:last-child {

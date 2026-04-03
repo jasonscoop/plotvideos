@@ -94,6 +94,7 @@ INSERT OR IGNORE INTO settings (key, value, description) VALUES
   ('fetch_api_key', '', 'Crawler API key'),
   ('id_offset', '0', 'Public video ID offset'),
   ('slug_from', 'original_id_plus_offset', 'Video slug mode: original_id_plus_offset or title_original_id (title slug + original_id + id_offset)'),
+  ('home_page_size', '16', 'Home index videos per page'),
   ('head_code', '', 'Extra code in <head> tag'),
   ('footer_code', '', 'Extra code in <footer> tag'),
   ('contact_email', '', 'DMCA and compliance contact email'),

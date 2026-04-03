@@ -3,6 +3,7 @@ export interface Settings {
   fetch_api_key: string;
   id_offset: string;
   slug_from: string;
+  home_page_size: string;
   site_name: string;
   site_slogan: string;
   site_description: string;
@@ -24,6 +25,7 @@ const DEFAULT_SETTINGS: Settings = {
   fetch_api_key: "",
   id_offset: "0",
   slug_from: "original_id_plus_offset",
+  home_page_size: "16",
   site_name: "PlotVideos",
   site_slogan: "",
   site_description: "",

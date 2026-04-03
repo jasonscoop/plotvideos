@@ -66,11 +66,17 @@ async function applyTranslatedTitles(db: D1Database, videos: any[], langId: numb
   }
 }
 
+function parseHomePageSize(raw: string | undefined): number {
+  const n = parseInt(raw?.trim() || "16", 10);
+  if (!Number.isFinite(n) || n < 1) return 16;
+  return Math.min(n, 100);
+}
+
 async function resolveIndex(c: any, lang: string) {
   const db = c.env.DB;
   const { siteName, siteSlogan, siteDescription, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
-  const pageSize = 15;
+  const pageSize = parseHomePageSize(c.get("settings").home_page_size);
   const q = c.req.query("q")?.trim() || "";
   const langId = await resolveLangId(db, lang);
 

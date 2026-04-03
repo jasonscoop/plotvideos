@@ -5,7 +5,11 @@ from typing import Callable, Optional, Tuple
 
 from loguru import logger
 
-from core.config import S1_KEYWORD_COOLDOWN_HOURS, validate_config
+from core.config import (
+    S1_KEYWORD_COOLDOWN_HOURS,
+    SKIP_STAGES,
+    validate_config,
+)
 from service import (
     s1_fetch, s2_download, s3_convert, s4_subtitle,
     s5_translate_vtt, s6_translate_meta, s7_hls, s8_upload,
@@ -40,6 +44,13 @@ STAGES: list[StageConfig] = [
     StageConfig("s7_hls",           s7_hls.process_batch,             300),
     StageConfig("s8_upload",        s8_upload.process_batch,          300),
 ]
+
+_skip_set = set(SKIP_STAGES)
+_known = {s.name for s in STAGES}
+for _name in SKIP_STAGES:
+    if _name not in _known:
+        logger.warning(f"SKIP_STAGES contains unknown stage: {_name}")
+ACTIVE_STAGES = [s for s in STAGES if s.name not in _skip_set]
 
 
 async def _idle_sleep(seconds: int, shutdown_event: asyncio.Event) -> bool:
@@ -79,9 +90,17 @@ async def run_all() -> None:
     register_shutdown_event(shutdown_event)
     setup_graceful_shutdown()
 
-    logger.info("Scheduler starting — all stages running concurrently")
+    if not ACTIVE_STAGES:
+        logger.error("No stages to run after SKIP_STAGES; check SKIP_STAGES")
+        return
+
+    skipped = _skip_set & _known
+    if skipped:
+        logger.info(f"Scheduler starting without stages: {sorted(skipped)}")
+    else:
+        logger.info("Scheduler starting — all stages running concurrently")
     try:
-        await asyncio.gather(*[_run_stage(stage, shutdown_event) for stage in STAGES])
+        await asyncio.gather(*[_run_stage(stage, shutdown_event) for stage in ACTIVE_STAGES])
     except asyncio.CancelledError:
         logger.info("Scheduler cancelled (Ctrl+C)")
     logger.info("Scheduler stopped")

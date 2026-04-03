@@ -26,4 +26,4 @@ services:
       - .env
     ports:
       - "8999:8001"
-    command: python -m run_api
+    command: python -m api

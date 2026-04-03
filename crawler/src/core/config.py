@@ -2,7 +2,7 @@ from os import getenv
 
 from dotenv import load_dotenv
 
-from utils.env_utils import get_str, get_int, get_bool, get_float
+from utils.env_utils import get_str, get_int, get_bool, get_float, get_list
 
 load_dotenv()
 
@@ -65,15 +65,16 @@ WHISPER_BEAM_SIZE = get_int("WHISPER_BEAM_SIZE", 1)
 WHISPER_DEVICE_INDEX = get_int("WHISPER_DEVICE_INDEX", 0)
 
 S1_FETCH_MAX_PAGES: int = get_int("S1_FETCH_MAX_PAGES", 10)
-# Keyword eligibility window and idle backoff when no work: same hours. 0 = no cooldown / poll ~every 60s.
 S1_KEYWORD_COOLDOWN_HOURS: int = get_int("S1_KEYWORD_COOLDOWN_HOURS", 24)
+
+SKIP_STAGES = get_list("SKIP_STAGES")
 
 
 def validate_config():
     missing = []
     if not DB_URL:
         missing.append("DB_URL")
-    if not RAPIDAPI_KEY:
+    if "s1_fetch" not in set(SKIP_STAGES) and not RAPIDAPI_KEY:
         missing.append("RAPIDAPI_KEY")
     if RAPIDAPI_AI_TRANSLATE_KEY_URL.strip() and not RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL.strip():
         missing.append("RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL")

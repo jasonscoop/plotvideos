@@ -115,13 +115,11 @@ def _build_payload(video: Video, languages: list) -> dict:
 
 if __name__ == "__main__":
     import uvicorn
-
-    from uvicorn_log_config import setup_uvicorn_logging
+    from utils.uvicorn_log_config import setup_uvicorn_logging
 
     uvicorn.run(
         "api:app",
         host="0.0.0.0",
         port=8001,
-        reload=True,
         log_config=setup_uvicorn_logging(),
     )

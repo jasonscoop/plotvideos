@@ -89,8 +89,8 @@ services:
     volumes:
       - ./works:/workspace/works
     cpus: "4"
-    mem_limit: 6g
-    memswap_limit: 8g
+    mem_limit: 8g
+    memswap_limit: 12g
     command:
       - python
       - -m

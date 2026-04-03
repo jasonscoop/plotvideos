@@ -28,9 +28,10 @@ class VideoCrud:
             )
 
             if isinstance(status, list):
-                query = query.filter(Video.status.in_(status))
+                values = [s.value if isinstance(s, VideoStatus) else s for s in status]
+                query = query.filter(Video.status.in_(values))
             elif isinstance(status, VideoStatus):
-                query = query.filter(Video.status == status)
+                query = query.filter(Video.status == status.value)
 
             if last_id is not None:
                 query = query.filter(Video.id > last_id)

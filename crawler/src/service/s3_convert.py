@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 from loguru import logger
 
 from crud.video_crud import VideoCrud
-from core.config import MIN_ACCEPT_DURATION, S3_CONVERT_BATCH_SIZE
+from core.config import MAX_FAILED_NUM, MIN_ACCEPT_DURATION, S3_CONVERT_BATCH_SIZE
 from core.enums import VideoStatus
 from utils.file_utils import rm_video
 from utils.media_utils import get_video_duration, media_to_wav
@@ -79,4 +79,8 @@ def convert_videos():
     while True:
         had_work, last_id = process_batch(last_id)
         if not had_work:
+            logger.info(
+                "s3_convert: no rows with status=downloaded "
+                f"(and failed_count < {MAX_FAILED_NUM}); exiting"
+            )
             break

@@ -5,7 +5,7 @@ from loguru import logger
 
 from crud.video_crud import VideoCrud
 from core.config import MIN_ACCEPT_DURATION, S3_CONVERT_BATCH_SIZE
-from core.models import VideoStatus
+from core.enums import VideoStatus
 from utils.file_utils import rm_video
 from utils.media_utils import get_video_duration, media_to_wav
 
@@ -29,8 +29,10 @@ def convert_video(video):
             {
                 "id": video.id,
                 "duration": duration,
-                "status": VideoStatus.too_short,
-                "failed_reason": f"Duration is shorter than {MIN_ACCEPT_DURATION}s",
+                "status": VideoStatus.too_short.value,
+                "failed_reason": VideoStatus.too_short.log(
+                    f"{duration}s < minimum {MIN_ACCEPT_DURATION}s"
+                ),
             }
         )
         logger.warning(
@@ -44,7 +46,7 @@ def convert_video(video):
         {
             "id": video.id,
             "duration": duration,
-            "status": VideoStatus.converted,
+            "status": VideoStatus.converted.value,
             "failed_reason": "",
         }
     )

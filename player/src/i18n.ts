@@ -24,6 +24,12 @@ export function langPrefix(lang: string): string {
   return lang === DEFAULT_LANG ? "" : `/${lang}`;
 }
 
+export function inferLangFromPath(path: string): string {
+  const seg = path.split("/").filter(Boolean)[0];
+  if (seg && isValidLang(seg)) return seg;
+  return DEFAULT_LANG;
+}
+
 export function nativeName(code: string): string {
   return LANGUAGES.find((l) => l.code === code)?.native || code;
 }
@@ -51,6 +57,11 @@ const translations: Record<string, Record<string, string>> = {
     sidebar_categories_less: "Less",
     tag_page_title: "Tag: {name}",
     category_page_title: "Category: {name}",
+    page_not_found_title: "Page not found",
+    page_not_found_heading: "This page isn’t here",
+    page_not_found_message: "The link may be broken, or the page was removed.",
+    page_not_found_home: "Return home",
+    page_not_found_countdown: "Returning home in {n} seconds…",
   },
   de: {
     search: "Suchen",
@@ -74,6 +85,11 @@ const translations: Record<string, Record<string, string>> = {
     sidebar_categories_less: "Weniger",
     tag_page_title: "Tag: {name}",
     category_page_title: "Kategorie: {name}",
+    page_not_found_title: "Seite nicht gefunden",
+    page_not_found_heading: "Diese Seite gibt es nicht",
+    page_not_found_message: "Der Link ist ungültig oder die Seite wurde entfernt.",
+    page_not_found_home: "Zur Startseite",
+    page_not_found_countdown: "Weiterleitung zur Startseite in {n} Sekunden…",
   },
   fr: {
     search: "Rechercher",
@@ -97,6 +113,11 @@ const translations: Record<string, Record<string, string>> = {
     sidebar_categories_less: "Moins",
     tag_page_title: "Tag : {name}",
     category_page_title: "Catégorie : {name}",
+    page_not_found_title: "Page introuvable",
+    page_not_found_heading: "Cette page n’existe pas",
+    page_not_found_message: "Le lien est peut-être rompu ou la page a été supprimée.",
+    page_not_found_home: "Retour à l’accueil",
+    page_not_found_countdown: "Retour à l’accueil dans {n} secondes…",
   },
   nl: {
     search: "Zoeken",
@@ -120,6 +141,11 @@ const translations: Record<string, Record<string, string>> = {
     sidebar_categories_less: "Minder",
     tag_page_title: "Tag: {name}",
     category_page_title: "Categorie: {name}",
+    page_not_found_title: "Pagina niet gevonden",
+    page_not_found_heading: "Deze pagina bestaat niet",
+    page_not_found_message: "De link is ongeldig of de pagina is verwijderd.",
+    page_not_found_home: "Naar home",
+    page_not_found_countdown: "Terug naar home over {n} seconden…",
   },
   ja: {
     search: "検索",
@@ -143,6 +169,11 @@ const translations: Record<string, Record<string, string>> = {
     sidebar_categories_less: "閉じる",
     tag_page_title: "タグ: {name}",
     category_page_title: "カテゴリ: {name}",
+    page_not_found_title: "ページが見つかりません",
+    page_not_found_heading: "このページはありません",
+    page_not_found_message: "リンクが無効か、ページが削除された可能性があります。",
+    page_not_found_home: "ホームへ戻る",
+    page_not_found_countdown: "{n}秒後にホームへ戻ります…",
   },
   ko: {
     search: "검색",
@@ -166,6 +197,11 @@ const translations: Record<string, Record<string, string>> = {
     sidebar_categories_less: "접기",
     tag_page_title: "태그: {name}",
     category_page_title: "카테고리: {name}",
+    page_not_found_title: "페이지를 찾을 수 없음",
+    page_not_found_heading: "이 페이지는 없습니다",
+    page_not_found_message: "링크가 잘못되었거나 페이지가 삭제되었을 수 있습니다.",
+    page_not_found_home: "홈으로",
+    page_not_found_countdown: "{n}초 후 홈으로 이동합니다…",
   },
   pt: {
     search: "Pesquisar",
@@ -189,6 +225,11 @@ const translations: Record<string, Record<string, string>> = {
     sidebar_categories_less: "Menos",
     tag_page_title: "Tag: {name}",
     category_page_title: "Categoria: {name}",
+    page_not_found_title: "Página não encontrada",
+    page_not_found_heading: "Esta página não existe",
+    page_not_found_message: "O link pode estar incorreto ou a página foi removida.",
+    page_not_found_home: "Ir ao início",
+    page_not_found_countdown: "A ir para o início em {n} segundos…",
   },
   ar: {
     search: "بحث",
@@ -212,6 +253,11 @@ const translations: Record<string, Record<string, string>> = {
     sidebar_categories_less: "أقل",
     tag_page_title: "وسم: {name}",
     category_page_title: "تصنيف: {name}",
+    page_not_found_title: "الصفحة غير موجودة",
+    page_not_found_heading: "هذه الصفحة غير موجودة",
+    page_not_found_message: "قد يكون الرابط معطلاً أو أُزيلت الصفحة.",
+    page_not_found_home: "العودة للرئيسية",
+    page_not_found_countdown: "العودة للرئيسية خلال {n} ثوانٍ…",
   },
   es: {
     search: "Buscar",
@@ -235,6 +281,11 @@ const translations: Record<string, Record<string, string>> = {
     sidebar_categories_less: "Menos",
     tag_page_title: "Etiqueta: {name}",
     category_page_title: "Categoría: {name}",
+    page_not_found_title: "Página no encontrada",
+    page_not_found_heading: "Esta página no existe",
+    page_not_found_message: "El enlace puede estar roto o la página se eliminó.",
+    page_not_found_home: "Volver al inicio",
+    page_not_found_countdown: "Volviendo al inicio en {n} segundos…",
   },
   zh: {
     search: "搜索",
@@ -258,6 +309,11 @@ const translations: Record<string, Record<string, string>> = {
     sidebar_categories_less: "收起",
     tag_page_title: "标签：{name}",
     category_page_title: "分类：{name}",
+    page_not_found_title: "页面未找到",
+    page_not_found_heading: "此页面不存在",
+    page_not_found_message: "链接可能已失效，或页面已被移除。",
+    page_not_found_home: "返回首页",
+    page_not_found_countdown: "{n} 秒后返回首页…",
   },
 };
 

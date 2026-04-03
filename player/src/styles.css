@@ -245,6 +245,75 @@ a { color: inherit; text-decoration: none; }
   display: none;
 }
 
+/* ── 404 ────────────────────────────────────────────── */
+
+.yt-not-found {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px 64px;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(62, 166, 255, 0.18), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 60%, rgba(255, 80, 120, 0.08), transparent 50%),
+    var(--yt-bg);
+}
+
+.yt-not-found-inner {
+  text-align: center;
+  max-width: 420px;
+}
+
+.yt-not-found-code {
+  font-size: clamp(56px, 14vw, 96px);
+  font-weight: 800;
+  line-height: 1;
+  margin: 0 0 8px;
+  letter-spacing: -0.06em;
+  color: var(--yt-surface);
+  text-shadow: 0 0 40px rgba(62, 166, 255, 0.35);
+}
+
+.yt-not-found-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 12px;
+  line-height: 1.25;
+}
+
+.yt-not-found-message {
+  font-size: 14px;
+  color: var(--yt-text2);
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+
+.yt-not-found-countdown {
+  font-size: 13px;
+  color: var(--yt-blue);
+  line-height: 1.5;
+  margin: 0 0 24px;
+  min-height: 1.5em;
+}
+
+.yt-not-found-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f0f0f;
+  background: var(--yt-blue);
+  border-radius: 24px;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.yt-not-found-btn:hover {
+  background: #65b8ff;
+  transform: translateY(-1px);
+}
+
 /* ── Video Grid & Cards ─────────────────────────────── */
 
 .yt-grid {

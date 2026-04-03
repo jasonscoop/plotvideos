@@ -469,7 +469,7 @@ interface RecommendedVideo {
   thumbnail_url: string;
 }
 
-interface FooterSettings {
+export interface FooterSettings {
   contactEmail?: string;
   contactTelegram?: string;
   contactWhatsapp?: string;
@@ -482,6 +482,58 @@ interface FooterSettings {
   headCode?: string;
   footerCode?: string;
   siteDescription?: string;
+}
+
+export function notFoundPage(
+  lang: string,
+  siteName: string,
+  origin: string | undefined,
+  requestPath: string,
+  footer: FooterSettings
+): string {
+  const prefix = langPrefix(lang);
+  const title = t(lang, "page_not_found_title");
+  const heading = t(lang, "page_not_found_heading");
+  const message = t(lang, "page_not_found_message");
+  const homeLabel = t(lang, "page_not_found_home");
+  const countdownTpl = t(lang, "page_not_found_countdown");
+  const homeHref = `${prefix}/`;
+  const notFoundCfg = escJsonForScript({
+    homeHref,
+    template: countdownTpl,
+  });
+  const body = `<div class="yt-not-found">
+    <div class="yt-not-found-inner">
+      <p class="yt-not-found-code" aria-hidden="true">404</p>
+      <h1 class="yt-not-found-title">${esc(heading)}</h1>
+      <p class="yt-not-found-message">${esc(message)}</p>
+      <p class="yt-not-found-countdown" id="yt-not-found-countdown" aria-live="polite"></p>
+      <a href="${prefix}/" class="yt-not-found-btn">${esc(homeLabel)}</a>
+    </div>
+  </div>
+  <script>
+(function(){
+  var cfg = ${notFoundCfg};
+  var el = document.getElementById("yt-not-found-countdown");
+  var n = 5;
+  function tick() {
+    if (n <= 0) { window.location.href = cfg.homeHref; return; }
+    if (el) el.textContent = cfg.template.replace("{n}", String(n));
+    n--;
+    setTimeout(tick, 1000);
+  }
+  tick();
+})();
+  </script>`;
+  return layout(`${title} - ${siteName}`, lang, body, "", requestPath, {
+    ...footer,
+    siteName,
+    origin,
+    noindex: true,
+    description: message,
+    siteUrl: origin ?? footer.siteUrl,
+    year: footer.year ?? new Date().getFullYear(),
+  });
 }
 
 export function watchPage(

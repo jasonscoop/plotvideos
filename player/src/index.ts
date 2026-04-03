@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { apiRoutes, refreshRandomKeys, syncFromCrawler } from "./api";
-import { pageRoutes } from "./pages";
+import { pageRoutes, renderNotFoundHtml } from "./pages";
 import { registerSitemapRoutes } from "./sitemap";
 import STYLES_CSS from "./styles.css";
 import LANG_DROPDOWN_JS from "./lang-dropdown.client.js";
@@ -79,6 +79,13 @@ app.get("/robots.txt", (c) => {
 app.route("/api", apiRoutes);
 registerSitemapRoutes(app);
 app.route("/", pageRoutes);
+
+app.notFound((c) => {
+  if (c.req.path.startsWith("/api")) {
+    return c.json({ error: "not found" }, 404);
+  }
+  return c.html(renderNotFoundHtml(c), 404);
+});
 
 export default {
   fetch: app.fetch,

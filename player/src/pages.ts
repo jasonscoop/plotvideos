@@ -1,7 +1,15 @@
 import { Hono } from "hono";
 import type { Env } from "./index";
-import { indexPage, watchPage, taxonomyListingPage, compliancePage, dmcaPage, type NavTaxonomyItem } from "./html";
-import { DEFAULT_LANG, isValidLang, langPrefix, t } from "./i18n";
+import {
+  indexPage,
+  watchPage,
+  taxonomyListingPage,
+  compliancePage,
+  dmcaPage,
+  notFoundPage,
+  type NavTaxonomyItem,
+} from "./html";
+import { DEFAULT_LANG, inferLangFromPath, isValidLang, langPrefix, t } from "./i18n";
 import { fetchVttCues, orderedSubtitleUrls } from "./vtt";
 import {
   parseTaxonomySlugParam,
@@ -10,6 +18,26 @@ import {
 import type { Settings } from "./settings";
 
 export const pageRoutes = new Hono<Env>();
+
+export function renderNotFoundHtml(c: any): string {
+  const settings = c.get("settings");
+  const siteName = settings.site_name?.trim() || "PlotVideos";
+  const origin = new URL(c.req.url).origin;
+  const lang = inferLangFromPath(c.req.path);
+  return notFoundPage(lang, siteName, origin, c.req.path, {
+    headCode: settings.head_code || "",
+    footerCode: settings.footer_code || "",
+    contactEmail: settings.contact_email?.trim() || "",
+    contactTelegram: settings.contact_telegram?.trim() || "",
+    contactWhatsapp: settings.contact_whatsapp?.trim() || "",
+    compliance2257Title: settings.compliance_2257_title?.trim() || "18 U.S.C. 2257 Compliance Statement",
+    compliance2257Enabled: settings.compliance_2257_enabled === "1",
+    dmcaTitle: settings.dmca_title?.trim() || "DMCA / Copyright Policy",
+    dmcaEnabled: settings.dmca_enabled === "1",
+    siteUrl: origin,
+    year: new Date().getFullYear(),
+  });
+}
 
 async function resolveLangId(db: D1Database, code: string): Promise<number> {
   const row = await db.prepare("SELECT id FROM languages WHERE code = ?").bind(code).first<{ id: number }>();
@@ -119,7 +147,7 @@ async function resolveIndex(c: any, lang: string) {
 
 async function resolveTagListing(c: any, lang: string) {
   const slug = parseTaxonomySlugParam(c.req.param("slug"));
-  if (!slug) return c.text("Not found", 404);
+  if (!slug) return c.html(renderNotFoundHtml(c), 404);
 
   const { siteName, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
   const db = c.env.DB;
@@ -128,7 +156,7 @@ async function resolveTagListing(c: any, lang: string) {
     .prepare("SELECT id, name, slug FROM tags WHERE slug = ?")
     .bind(slug)
     .first<{ id: number; name: string; slug: string }>();
-  if (!row) return c.text("Not found", 404);
+  if (!row) return c.html(renderNotFoundHtml(c), 404);
 
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = 15;
@@ -179,7 +207,7 @@ async function resolveTagListing(c: any, lang: string) {
 
 async function resolveCategoryListing(c: any, lang: string) {
   const slug = parseTaxonomySlugParam(c.req.param("slug"));
-  if (!slug) return c.text("Not found", 404);
+  if (!slug) return c.html(renderNotFoundHtml(c), 404);
 
   const { siteName, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
   const db = c.env.DB;
@@ -188,7 +216,7 @@ async function resolveCategoryListing(c: any, lang: string) {
     .prepare("SELECT id, name, slug FROM categories WHERE slug = ?")
     .bind(slug)
     .first<{ id: number; name: string; slug: string }>();
-  if (!row) return c.text("Not found", 404);
+  if (!row) return c.html(renderNotFoundHtml(c), 404);
 
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = 15;
@@ -240,24 +268,24 @@ async function resolveCategoryListing(c: any, lang: string) {
 async function resolveWatchBySlug(c: any, lang: string) {
   const db = c.env.DB;
   const slug = parseVideoSlugParam(c.req.param("slug"));
-  if (!slug) return c.text("Video not found", 404);
+  if (!slug) return c.html(renderNotFoundHtml(c), 404);
 
   const video = await db.prepare("SELECT * FROM videos WHERE slug = ?").bind(slug).first<any>();
-  if (!video) return c.text("Video not found", 404);
+  if (!video) return c.html(renderNotFoundHtml(c), 404);
   return _renderWatch(c, lang, video);
 }
 
 async function resolveWatch(c: any, lang: string) {
   const db = c.env.DB;
   const id = Math.trunc(Number(c.req.param("id")));
-  if (!Number.isFinite(id) || id < 1) return c.text("Video not found", 404);
+  if (!Number.isFinite(id) || id < 1) return c.html(renderNotFoundHtml(c), 404);
 
   const video = await db
     .prepare("SELECT slug FROM videos WHERE id = ?")
     .bind(id)
     .first<{ slug: string }>();
 
-  if (!video) return c.text("Video not found", 404);
+  if (!video) return c.html(renderNotFoundHtml(c), 404);
   return c.redirect(`${langPrefix(lang)}/video/${video.slug}.html`, 302);
 }
 
@@ -391,7 +419,7 @@ function resolveStaticPage(c: any, lang: string, page: "2257" | "dmca") {
   const { siteName, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp } = pageContext(c);
   const settings = c.get("settings");
   const enabled = page === "2257" ? settings.compliance_2257_enabled === "1" : settings.dmca_enabled === "1";
-  if (!enabled) return c.text("Not found", 404);
+  if (!enabled) return c.html(renderNotFoundHtml(c), 404);
   const render = page === "2257" ? compliancePage : dmcaPage;
   const pageTitle = page === "2257" ? settings.compliance_2257_title : settings.dmca_title;
   const pageContent = page === "2257" ? settings.compliance_2257_content : settings.dmca_content;
@@ -408,42 +436,42 @@ pageRoutes.get("/category/:slug", (c) => resolveCategoryListing(c, DEFAULT_LANG)
 
 pageRoutes.get("/:lang/", (c) => {
   const lang = c.req.param("lang");
-  if (!isValidLang(lang)) return c.text("Not found", 404);
+  if (!isValidLang(lang)) return c.html(renderNotFoundHtml(c), 404);
   return resolveIndex(c, lang);
 });
 
 pageRoutes.get("/:lang/2257.html", (c) => {
   const lang = c.req.param("lang");
-  if (!isValidLang(lang)) return c.text("Not found", 404);
+  if (!isValidLang(lang)) return c.html(renderNotFoundHtml(c), 404);
   return resolveStaticPage(c, lang, "2257");
 });
 
 pageRoutes.get("/:lang/dmca.html", (c) => {
   const lang = c.req.param("lang");
-  if (!isValidLang(lang)) return c.text("Not found", 404);
+  if (!isValidLang(lang)) return c.html(renderNotFoundHtml(c), 404);
   return resolveStaticPage(c, lang, "dmca");
 });
 
 pageRoutes.get("/:lang/videos/:id", (c) => {
   const lang = c.req.param("lang");
-  if (!isValidLang(lang)) return c.text("Not found", 404);
+  if (!isValidLang(lang)) return c.html(renderNotFoundHtml(c), 404);
   return resolveWatch(c, lang);
 });
 
 pageRoutes.get("/:lang/video/:slug", (c) => {
   const lang = c.req.param("lang");
-  if (!isValidLang(lang)) return c.text("Not found", 404);
+  if (!isValidLang(lang)) return c.html(renderNotFoundHtml(c), 404);
   return resolveWatchBySlug(c, lang);
 });
 
 pageRoutes.get("/:lang/tag/:slug", (c) => {
   const lang = c.req.param("lang");
-  if (!isValidLang(lang)) return c.text("Not found", 404);
+  if (!isValidLang(lang)) return c.html(renderNotFoundHtml(c), 404);
   return resolveTagListing(c, lang);
 });
 
 pageRoutes.get("/:lang/category/:slug", (c) => {
   const lang = c.req.param("lang");
-  if (!isValidLang(lang)) return c.text("Not found", 404);
+  if (!isValidLang(lang)) return c.html(renderNotFoundHtml(c), 404);
   return resolveCategoryListing(c, lang);
 });

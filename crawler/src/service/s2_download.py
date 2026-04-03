@@ -7,8 +7,8 @@ from yt_dlp.utils import DownloadError, RegexNotFoundError
 
 from crud.video_crud import VideoCrud
 from core.config import MAX_ACCEPT_VIDEO_SIZE, S2_DOWNLOAD_BATCH_SIZE
-from core.enums import ThumbnailStatus
-from core.models import VideoStatus, Video
+from core.enums import ThumbnailStatus, VideoStatus
+from core.models import Video
 from utils.download_utils import (
     download_remote_video,
     SizeLimitExceeded,
@@ -38,7 +38,7 @@ def download_video(video: Video):
         VideoCrud.update(
             {
                 "id": video.id,
-                "status": VideoStatus.downloaded,
+                "status": VideoStatus.downloaded.value,
                 "filename": video.store_path.video.name,
                 "title": info.get("title", video.title),
                 "tags": info.get("tags", []),
@@ -57,7 +57,7 @@ def download_video(video: Video):
             }
         )
         if video_size > MAX_ACCEPT_VIDEO_SIZE:
-            VideoCrud.update({"id": video.id, "status": VideoStatus.oversized})
+            VideoCrud.update({"id": video.id, "status": VideoStatus.oversized.value})
             logger.warning(
                 f"[{video.id} | {video.host}] "
                 f"Video oversized: {to_mb(video_size)}MB > {to_mb(MAX_ACCEPT_VIDEO_SIZE)}MB"

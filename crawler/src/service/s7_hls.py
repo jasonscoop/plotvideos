@@ -41,7 +41,7 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
                 VideoCrud.update(
                     {
                         "id": video.id,
-                        "status": VideoStatus.hls_ready,
+                        "status": VideoStatus.hls_ready.value,
                         "failed_reason": "",
                     }
                 )

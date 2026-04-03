@@ -36,7 +36,7 @@ def translate_video(video: Video, languages):
     VideoCrud.update(
         {
             "id": video.id,
-            "status": VideoStatus.meta_translated,
+            "status": VideoStatus.meta_translated.value,
             "failed_reason": "",
         }
     )

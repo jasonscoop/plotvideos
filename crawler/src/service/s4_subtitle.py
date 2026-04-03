@@ -5,7 +5,7 @@ from loguru import logger
 
 from crud.video_crud import VideoCrud
 from core.config import S4_SUBTITLE_BATCH_SIZE, SUBTITLE_TOKEN_RATIO_THRESHOLD
-from core.models import VideoStatus
+from core.enums import VideoStatus
 from core.models import Video
 
 from utils.file_utils import rm_video
@@ -31,8 +31,10 @@ def subtitle_video(video: Video):
                     "id": video.id,
                     "word_count": word_count,
                     "word_density": word_density,
-                    "status": VideoStatus.low_density,
-                    "failed_reason": f"Word density {word_density} below threshold {SUBTITLE_TOKEN_RATIO_THRESHOLD}",
+                    "status": VideoStatus.low_density.value,
+                    "failed_reason": VideoStatus.low_density.log(
+                        f"Word density {word_density} below threshold {SUBTITLE_TOKEN_RATIO_THRESHOLD}"
+                    ),
                 }
             )
             logger.warning(
@@ -47,7 +49,7 @@ def subtitle_video(video: Video):
                 "id": video.id,
                 "word_count": word_count,
                 "word_density": word_density,
-                "status": VideoStatus.subtitled,
+                "status": VideoStatus.subtitled.value,
                 "failed_reason": "",
             }
         )

@@ -28,7 +28,7 @@ def upload_video(video: Video, languages: List[Language]) -> None:
         VideoCrud.update(
             {
                 "id": video.id,
-                "status": VideoStatus.uploaded,
+                "status": VideoStatus.uploaded.value,
                 "failed_reason": "",
             }
         )

@@ -32,7 +32,7 @@ const translations: Record<string, Record<string, string>> = {
   en: {
     search: "Search",
     search_placeholder: "Search",
-    latest_videos: "Latest videos",
+    latest_videos: "Latest",
     no_videos: "No videos found.",
     previous: "Prev",
     next: "Next",
@@ -52,7 +52,7 @@ const translations: Record<string, Record<string, string>> = {
   de: {
     search: "Suchen",
     search_placeholder: "Suchen",
-    latest_videos: "Neueste Videos",
+    latest_videos: "Neueste",
     no_videos: "Keine Videos gefunden.",
     previous: "Zurück",
     next: "Weiter",
@@ -72,7 +72,7 @@ const translations: Record<string, Record<string, string>> = {
   fr: {
     search: "Rechercher",
     search_placeholder: "Rechercher",
-    latest_videos: "Dernières vidéos",
+    latest_videos: "Dernières",
     no_videos: "Aucune vidéo trouvée.",
     previous: "Précédent",
     next: "Suivant",
@@ -92,7 +92,7 @@ const translations: Record<string, Record<string, string>> = {
   nl: {
     search: "Zoeken",
     search_placeholder: "Zoeken",
-    latest_videos: "Nieuwste video's",
+    latest_videos: "Nieuwste",
     no_videos: "Geen video's gevonden.",
     previous: "Vorige",
     next: "Volgende",
@@ -112,7 +112,7 @@ const translations: Record<string, Record<string, string>> = {
   ja: {
     search: "検索",
     search_placeholder: "検索",
-    latest_videos: "最新の動画",
+    latest_videos: "最新",
     no_videos: "動画が見つかりません。",
     previous: "前へ",
     next: "次へ",
@@ -132,7 +132,7 @@ const translations: Record<string, Record<string, string>> = {
   ko: {
     search: "검색",
     search_placeholder: "검색",
-    latest_videos: "최신 동영상",
+    latest_videos: "최신",
     no_videos: "동영상을 찾을 수 없습니다.",
     previous: "이전",
     next: "다음",
@@ -152,7 +152,7 @@ const translations: Record<string, Record<string, string>> = {
   pt: {
     search: "Pesquisar",
     search_placeholder: "Pesquisar",
-    latest_videos: "Vídeos recentes",
+    latest_videos: "Recentes",
     no_videos: "Nenhum vídeo encontrado.",
     previous: "Anterior",
     next: "Próximo",
@@ -172,7 +172,7 @@ const translations: Record<string, Record<string, string>> = {
   ar: {
     search: "بحث",
     search_placeholder: "بحث",
-    latest_videos: "أحدث الفيديوهات",
+    latest_videos: "أحدث",
     no_videos: "لم يتم العثور على فيديوهات.",
     previous: "السابق",
     next: "التالي",
@@ -192,7 +192,7 @@ const translations: Record<string, Record<string, string>> = {
   es: {
     search: "Buscar",
     search_placeholder: "Buscar",
-    latest_videos: "Últimos videos",
+    latest_videos: "Últimos",
     no_videos: "No se encontraron videos.",
     previous: "Anterior",
     next: "Siguiente",
@@ -212,7 +212,7 @@ const translations: Record<string, Record<string, string>> = {
   zh: {
     search: "搜索",
     search_placeholder: "搜索",
-    latest_videos: "最新视频",
+    latest_videos: "最新",
     no_videos: "未找到视频。",
     previous: "上一页",
     next: "下一页",

@@ -28,7 +28,7 @@ services:
 
   s1_fetch:
     build: .
-    restart: unless-stopped
+    restart: "no"
     env_file:
       - .env
     volumes:
@@ -45,7 +45,7 @@ services:
 
   s2_download:
     build: .
-    restart: unless-stopped
+    restart: "no"
     env_file:
       - .env
     environment:
@@ -66,7 +66,7 @@ services:
 
   s3_convert:
     build: .
-    restart: unless-stopped
+    restart: "no"
     env_file:
       - .env
     volumes:
@@ -83,7 +83,7 @@ services:
 
   s4_subtitle:
     build: .
-    restart: unless-stopped
+    restart: "no"
     env_file:
       - .env
     volumes:
@@ -100,7 +100,7 @@ services:
 
   s5_translate_vtt:
     build: .
-    restart: unless-stopped
+    restart: "no"
     env_file:
       - .env
     volumes:
@@ -117,7 +117,7 @@ services:
 
   s6_translate_meta:
     build: .
-    restart: unless-stopped
+    restart: "no"
     env_file:
       - .env
     volumes:
@@ -134,7 +134,7 @@ services:
 
   s7_hls:
     build: .
-    restart: unless-stopped
+    restart: "no"
     env_file:
       - .env
     volumes:
@@ -151,7 +151,7 @@ services:
 
   s8_upload:
     build: .
-    restart: unless-stopped
+    restart: "no"
     env_file:
       - .env
     volumes:

@@ -36,6 +36,10 @@ Run from **`crawler/`**.
 
 Only **`s2_download`** uses Tor (`YT_DLP_PROXY`); other stages clear it in Compose so `.env` does not force a proxy on them.
 
+Pipeline services use **`restart: "no"`** so when the process exits **0** (queue drained), Docker does **not** restart them in a tight loop. Run again with **`docker compose up -d <service>`** or cron. **`tor`**, **`api`**, and **`postgres`** still use **`unless-stopped`**.
+
+If Compose warns about **orphan** containers after renames, run **`docker compose up --remove-orphans`** once to remove them.
+
 `DB_URL` for services talking to Compose Postgres: host **`postgres`**, e.g. `postgresql+psycopg2://USER:PASS@postgres:5432/DB`. Ensure **`./works`** exists (locks under `./works/locks`).
 
 ## Cron

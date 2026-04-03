@@ -199,6 +199,52 @@ a { color: inherit; text-decoration: none; }
   padding: 16px 12px 6px;
 }
 
+.yt-nav-heading--row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-inline-end: 8px;
+}
+
+.yt-nav-heading-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.yt-nav-cat-toggle {
+  flex-shrink: 0;
+  background: transparent;
+  border: 0;
+  padding: 2px 6px;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .35px;
+  color: var(--yt-blue);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.yt-nav-cat-toggle:hover {
+  color: var(--yt-text);
+}
+
+.yt-nav-cat-block:not(.expanded) .yt-nav-cat-extra {
+  display: none;
+}
+
+.yt-nav-cat-block.expanded .yt-nav-cat-toggle-more {
+  display: none;
+}
+
+.yt-nav-cat-block:not(.expanded) .yt-nav-cat-toggle-less {
+  display: none;
+}
+
 /* ── Video Grid & Cards ─────────────────────────────── */
 
 .yt-grid {

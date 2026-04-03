@@ -155,7 +155,7 @@ async function resolveTagListing(c: any, lang: string) {
 
   const [navTags, navCategories] = await fetchNavTaxonomies(db, langId);
   const prefix = langPrefix(lang);
-  const browserTitle = t(lang, "tag_page_title").replace("{name}", row.name);
+  const browserTitle = t(lang, "taxonomy_seo_title").replace("{name}", row.name);
 
   return c.html(
     taxonomyListingPage(
@@ -215,7 +215,7 @@ async function resolveCategoryListing(c: any, lang: string) {
 
   const [navTags, navCategories] = await fetchNavTaxonomies(db, langId);
   const prefix = langPrefix(lang);
-  const browserTitle = t(lang, "category_page_title").replace("{name}", row.name);
+  const browserTitle = t(lang, "taxonomy_seo_title").replace("{name}", row.name);
 
   return c.html(
     taxonomyListingPage(

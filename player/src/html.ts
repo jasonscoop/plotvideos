@@ -226,6 +226,23 @@ function categoryPageHref(prefix: string, slug: string): string {
   return `${prefix}/category/${slug}.html`;
 }
 
+const SIDEBAR_CATEGORY_EXPAND_THRESHOLD = 15;
+
+function sidebarCategoryLinks(
+  items: NavTaxonomyItem[],
+  active: ActiveTaxonomy,
+  prefix: string
+): string {
+  return items
+    .map((cg) => {
+      const isActive = active?.kind === "category" && active.slug === cg.slug ? " active" : "";
+      return `<a href="${categoryPageHref(prefix, cg.slug)}" class="yt-nav-item${isActive}" title="${esc(
+        cg.name
+      )}">${esc(cg.name)}</a>`;
+    })
+    .join("");
+}
+
 function homeSidebar(
   lang: string,
   prefix: string,
@@ -243,22 +260,38 @@ function homeSidebar(
       )}">${esc(tg.name)}</a>`;
     })
     .join("");
-  const catItems = navCategories
-    .map((cg) => {
-      const isActive = active?.kind === "category" && active.slug === cg.slug ? " active" : "";
-      return `<a href="${categoryPageHref(prefix, cg.slug)}" class="yt-nav-item${isActive}" title="${esc(
-        cg.name
-      )}">${esc(cg.name)}</a>`;
-    })
-    .join("");
+
+  let categoriesBlock = "";
+  if (navCategories.length) {
+    if (navCategories.length <= SIDEBAR_CATEGORY_EXPAND_THRESHOLD) {
+      categoriesBlock = `<div class="yt-nav-heading">${t(lang, "categories")}</div>
+        ${sidebarCategoryLinks(navCategories, active, prefix)}`;
+    } else {
+      const activeInExtra =
+        active?.kind === "category" &&
+        navCategories
+          .slice(SIDEBAR_CATEGORY_EXPAND_THRESHOLD)
+          .some((c) => c.slug === active.slug);
+      const visible = navCategories.slice(0, SIDEBAR_CATEGORY_EXPAND_THRESHOLD);
+      const extra = navCategories.slice(SIDEBAR_CATEGORY_EXPAND_THRESHOLD);
+      const expandedClass = activeInExtra ? " expanded" : "";
+      categoriesBlock = `<div class="yt-nav-cat-block${expandedClass}" data-cat-count="${navCategories.length}" data-cat-threshold="${SIDEBAR_CATEGORY_EXPAND_THRESHOLD}" data-active-in-extra="${activeInExtra ? "1" : "0"}">
+        <div class="yt-nav-heading yt-nav-heading--row">
+          <span class="yt-nav-heading-label">${t(lang, "categories")}</span>
+          <button type="button" class="yt-nav-cat-toggle" aria-expanded="${activeInExtra ? "true" : "false"}">
+            <span class="yt-nav-cat-toggle-more">${esc(t(lang, "sidebar_categories_more"))}</span>
+            <span class="yt-nav-cat-toggle-less">${esc(t(lang, "sidebar_categories_less"))}</span>
+          </button>
+        </div>
+        <div class="yt-nav-cat-visible">${sidebarCategoryLinks(visible, active, prefix)}</div>
+        <div class="yt-nav-cat-extra">${sidebarCategoryLinks(extra, active, prefix)}</div>
+      </div>`;
+    }
+  }
+
   return `<nav class="yt-home-sidebar">
         <a href="${prefix}/" class="yt-nav-item${homeActive}">🏠 ${t(lang, "latest_videos")}</a>
-        ${
-          catItems
-            ? `<div class="yt-nav-heading">${t(lang, "categories")}</div>
-        ${catItems}`
-            : ""
-        }
+        ${categoriesBlock}
         ${
           tagItems
             ? `<div class="yt-nav-heading">${t(lang, "tags")}</div>

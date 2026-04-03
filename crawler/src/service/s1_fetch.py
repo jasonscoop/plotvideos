@@ -49,6 +49,7 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
 
     exception_count = 0
     for page in range(0, S1_FETCH_MAX_PAGES):
+        page_had_any_links = False
         for keyword in keywords:
             by_host: Dict[str, Tuple[int, int, int]] = defaultdict(lambda: (0, 0, 0))
 
@@ -57,6 +58,7 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
             for site in sites:
                 if not site["links"]:
                     continue
+                page_had_any_links = True
 
                 videos = []
                 site_host = site["site"]["host"]
@@ -92,6 +94,13 @@ def process_batch(last_id: Optional[int]) -> Tuple[bool, Optional[int]]:
                     traceback.print_exc()
 
             _log_page_summary(keyword.name, page + 1, dict(by_host))
+
+        if not page_had_any_links:
+            logger.info(
+                f"s1_fetch: page {page + 1} returned no links from any host for all keywords; "
+                f"stopping (max pages was {S1_FETCH_MAX_PAGES})"
+            )
+            break
 
     for keyword in keywords:
         KeywordCrud.touch_fetched(keyword.id)

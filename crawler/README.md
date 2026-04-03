@@ -1,6 +1,6 @@
 # Crawler (Python)
 
-Pipeline: fetch → download → convert → subtitles → translate → HLS → upload. FastAPI (`api`) for the player; storage on B2. Code lives under `src/`; entrypoints are `main` (CLI), `scheduler`, and `api`.
+Pipeline: fetch → download → convert → subtitles → translate → HLS → upload. FastAPI (`api`) for the player; storage on B2. Code lives under `src/`; entrypoints are `pipeline` (CLI), `scheduler`, and `api`.
 
 ## Configuration
 
@@ -12,12 +12,12 @@ From `crawler/` after `uv sync`:
 
 ```bash
 export PYTHONPATH=src
-python -m main pipeline --runner=s2_download
-python -m main pipeline --runner=all
+python -m pipeline --runner=s2_download
+python -m pipeline --runner=all
 python -m api
 ```
 
-Optional overlap guard: `python -m main pipeline --runner=s2_download --lock-file=/path/to/lock`.
+Optional overlap guard: `python -m pipeline --runner=s2_download --lock-file=/path/to/lock`.
 
 ## Docker Compose
 
@@ -50,4 +50,4 @@ Example (daily 08:00 `start` for every stage):
 0 8 * * * cd /path/to/crawler && docker compose start s8_upload
 ```
 
-`--runner=all` is not a separate Compose service; run it on the host with `python -m main pipeline --runner=all` (or `python -m scheduler --runner=all`) if you need one process running every stage.
+`--runner=all` is not a separate Compose service; run it on the host with `python -m pipeline --runner=all` (or `python -m scheduler --runner=all`) if you need one process running every stage.

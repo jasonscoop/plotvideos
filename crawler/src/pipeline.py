@@ -33,11 +33,8 @@ def _run_pipeline(runner: str) -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(prog="main")
-    sub = parser.add_subparsers(dest="command", required=True)
-
-    p_pipe = sub.add_parser("pipeline", help="Run the video processing pipeline")
-    p_pipe.add_argument(
+    parser = argparse.ArgumentParser(prog="pipeline")
+    parser.add_argument(
         "--runner",
         required=True,
         help=(
@@ -45,7 +42,7 @@ def main() -> int:
             f"or one of: {', '.join(RUNNERS)}"
         ),
     )
-    p_pipe.add_argument(
+    parser.add_argument(
         "--lock-file",
         type=Path,
         default=None,
@@ -55,18 +52,15 @@ def main() -> int:
             "(for cron / overlapping schedules)"
         ),
     )
-    p_pipe.add_argument(
+    parser.add_argument(
         "--exit-code-if-locked",
         type=int,
         choices=(0, 1),
         default=0,
         help="Exit code when lock is not acquired (default: 0 for cron-friendly skip)",
     )
-
     args = parser.parse_args()
-    if args.command == "pipeline":
-        return _cmd_pipeline(args)
-    return 1
+    return _cmd_pipeline(args)
 
 
 if __name__ == "__main__":

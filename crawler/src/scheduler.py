@@ -118,6 +118,22 @@ RUNNERS = {
 }
 
 
+def run_runner(runner: str, *, init_log: bool = True) -> None:
+    if init_log:
+        init_logging(runner)
+    validate_config()
+    logger.info(f"Starting runner: {runner}")
+    if runner == "all":
+        asyncio.run(run_all())
+    elif runner in RUNNERS:
+        RUNNERS[runner]()
+    else:
+        raise ValueError(
+            f"Invalid runner: {runner}. "
+            f"Choose from: all, {', '.join(RUNNERS)}"
+        )
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Video processing pipeline")
     parser.add_argument(
@@ -129,17 +145,8 @@ if __name__ == "__main__":
         ),
     )
     args = parser.parse_args()
-    init_logging(args.runner)
-    validate_config()
-    logger.info(f"Starting runner: {args.runner}")
-
-    if args.runner == "all":
-        asyncio.run(run_all())
-    elif args.runner in RUNNERS:
-        RUNNERS[args.runner]()
-    else:
-        logger.error(
-            f"Invalid runner: {args.runner}. "
-            f"Choose from: all, {', '.join(RUNNERS)}"
-        )
+    try:
+        run_runner(args.runner)
+    except ValueError as e:
+        logger.error(str(e))
         exit(1)

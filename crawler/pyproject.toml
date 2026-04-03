@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools]
-py-modules = ["api", "scheduler"]
+py-modules = ["api", "main", "scheduler"]
 
 [project]
 name = "wuse"

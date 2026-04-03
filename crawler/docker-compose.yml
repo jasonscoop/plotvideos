@@ -3,12 +3,52 @@ services:
     image: dperson/torproxy
     restart: unless-stopped
 
-  crawler:
+  postgres:
+    image: postgres:18-alpine
+    profiles:
+      - pgsql
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-PLot@789}
+      POSTGRES_DB: ${POSTGRES_DB:-plotvideos}
+    volumes:
+      - pgsql_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-plotvideos}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  s1_fetch:
     build: .
     restart: unless-stopped
-    cpus: "8"
-    mem_limit: 8g
-    memswap_limit: 12g
+    env_file:
+      - .env
+    environment:
+      YT_DLP_PROXY: ""
+    volumes:
+      - ./works:/workspace/works
+    cpus: "1"
+    mem_limit: 1g
+    memswap_limit: 2g
+    command:
+      - python
+      - -m
+      - main
+      - pipeline
+      - --runner=s1_fetch
+      - --lock-file=/workspace/works/locks/pipeline-s1_fetch.lock
+
+  s2_download:
+    build: .
+    restart: unless-stopped
     env_file:
       - .env
     environment:
@@ -17,7 +57,136 @@ services:
       - tor
     volumes:
       - ./works:/workspace/works
-    command: python -m scheduler --runner=all
+    cpus: "4"
+    mem_limit: 4g
+    memswap_limit: 6g
+    command:
+      - python
+      - -m
+      - main
+      - pipeline
+      - --runner=s2_download
+      - --lock-file=/workspace/works/locks/pipeline-s2_download.lock
+
+  s3_convert:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      YT_DLP_PROXY: ""
+    volumes:
+      - ./works:/workspace/works
+    cpus: "4"
+    mem_limit: 4g
+    memswap_limit: 6g
+    command:
+      - python
+      - -m
+      - main
+      - pipeline
+      - --runner=s3_convert
+      - --lock-file=/workspace/works/locks/pipeline-s3_convert.lock
+
+  s4_subtitle:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      YT_DLP_PROXY: ""
+    volumes:
+      - ./works:/workspace/works
+    cpus: "4"
+    mem_limit: 6g
+    memswap_limit: 8g
+    command:
+      - python
+      - -m
+      - main
+      - pipeline
+      - --runner=s4_subtitle
+      - --lock-file=/workspace/works/locks/pipeline-s4_subtitle.lock
+
+  s5_translate_vtt:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      YT_DLP_PROXY: ""
+    volumes:
+      - ./works:/workspace/works
+    cpus: "2"
+    mem_limit: 2g
+    memswap_limit: 3g
+    command:
+      - python
+      - -m
+      - main
+      - pipeline
+      - --runner=s5_translate_vtt
+      - --lock-file=/workspace/works/locks/pipeline-s5_translate_vtt.lock
+
+  s6_translate_meta:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      YT_DLP_PROXY: ""
+    volumes:
+      - ./works:/workspace/works
+    cpus: "2"
+    mem_limit: 2g
+    memswap_limit: 3g
+    command:
+      - python
+      - -m
+      - main
+      - pipeline
+      - --runner=s6_translate_meta
+      - --lock-file=/workspace/works/locks/pipeline-s6_translate_meta.lock
+
+  s7_hls:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      YT_DLP_PROXY: ""
+    volumes:
+      - ./works:/workspace/works
+    cpus: "4"
+    mem_limit: 4g
+    memswap_limit: 6g
+    command:
+      - python
+      - -m
+      - main
+      - pipeline
+      - --runner=s7_hls
+      - --lock-file=/workspace/works/locks/pipeline-s7_hls.lock
+
+  s8_upload:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      YT_DLP_PROXY: ""
+    volumes:
+      - ./works:/workspace/works
+    cpus: "2"
+    mem_limit: 2g
+    memswap_limit: 3g
+    command:
+      - python
+      - -m
+      - main
+      - pipeline
+      - --runner=s8_upload
+      - --lock-file=/workspace/works/locks/pipeline-s8_upload.lock
 
   api:
     build: .
@@ -27,3 +196,6 @@ services:
     ports:
       - "8999:8001"
     command: python -m api
+
+volumes:
+  pgsql_data:

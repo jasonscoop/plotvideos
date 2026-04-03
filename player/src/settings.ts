@@ -18,6 +18,15 @@ export interface Settings {
   dmca_title: string;
   dmca_enabled: string;
   dmca_content: string;
+  ad_home_sidebar: string;
+  ad_home_list_top: string;
+  ad_home_list_bottom: string;
+  ad_listing_sidebar: string;
+  ad_listing_list_top: string;
+  ad_listing_list_bottom: string;
+  ad_watch_top: string;
+  ad_watch_related_above: string;
+  ad_watch_related_below: string;
 }
 
 const DEFAULT_SETTINGS: Settings = {
@@ -40,6 +49,15 @@ const DEFAULT_SETTINGS: Settings = {
   dmca_title: "DMCA / Copyright Policy",
   dmca_enabled: "1",
   dmca_content: "",
+  ad_home_sidebar: "",
+  ad_home_list_top: "",
+  ad_home_list_bottom: "",
+  ad_listing_sidebar: "",
+  ad_listing_list_top: "",
+  ad_listing_list_bottom: "",
+  ad_watch_top: "",
+  ad_watch_related_above: "",
+  ad_watch_related_below: "",
 };
 
 let cachedSettings: Settings | null = null;

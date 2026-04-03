@@ -177,6 +177,12 @@ export function esc(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
+function rawAdSlot(html: string | undefined, className: string): string {
+  const s = html?.trim();
+  if (!s) return "";
+  return `<div class="yt-ad ${className}">${s}</div>`;
+}
+
 /** Safe embedding of JSON inside a `<script type="application/json">` block. */
 export function escJsonForScript(obj: unknown): string {
   return JSON.stringify(obj).replace(/</g, "\\u003c");
@@ -248,9 +254,15 @@ function homeSidebar(
   prefix: string,
   navTags: NavTaxonomyItem[],
   navCategories: NavTaxonomyItem[],
-  active: ActiveTaxonomy
+  active: ActiveTaxonomy,
+  sidebarAdHtml = ""
 ): string {
-  if (!navTags.length && !navCategories.length) return "";
+  const adAside = sidebarAdHtml.trim()
+    ? `<aside class="yt-ad yt-ad--sidebar">${sidebarAdHtml.trim()}</aside>`
+    : "";
+  if (!navTags.length && !navCategories.length) {
+    return adAside ? `<nav class="yt-home-sidebar"><div class="yt-home-sidebar-body">${adAside}</div></nav>` : "";
+  }
   const homeActive = !active ? " active" : "";
   const tagItems = navTags
     .map((tg) => {
@@ -289,7 +301,7 @@ function homeSidebar(
     }
   }
 
-  return `<nav class="yt-home-sidebar">
+  return `<nav class="yt-home-sidebar"><div class="yt-home-sidebar-body">
         <a href="${prefix}/" class="yt-nav-item${homeActive}">🏠 ${t(lang, "latest_videos")}</a>
         ${categoriesBlock}
         ${
@@ -298,7 +310,7 @@ function homeSidebar(
         ${tagItems}`
             : ""
         }
-      </nav>`;
+      ${adAside}</div></nav>`;
 }
 
 export function indexPage(
@@ -317,7 +329,16 @@ export function indexPage(
   const prefix = langPrefix(lang);
   const qParam = q ? `&q=${encodeURIComponent(q)}` : "";
 
-  const sidebar = homeSidebar(lang, prefix, navTags, navCategories, activeTaxonomy);
+  const sidebar = homeSidebar(
+    lang,
+    prefix,
+    navTags,
+    navCategories,
+    activeTaxonomy,
+    footerSettings.adHomeSidebar
+  );
+  const adListTop = rawAdSlot(footerSettings.adHomeListTop, "yt-ad--list-top");
+  const adListBottom = rawAdSlot(footerSettings.adHomeListBottom, "yt-ad--list-bottom");
 
   const cards = videos
     .map(
@@ -345,8 +366,8 @@ export function indexPage(
     </div>`;
 
   const main = videos.length
-    ? `<div class="yt-home-main"><div class="yt-grid">${cards}</div>${pagination}</div>`
-    : `<div class="yt-home-main" style="padding:48px 0;color:var(--yt-text2)">${t(lang, "no_videos")}</div>`;
+    ? `<div class="yt-home-main">${adListTop}<div class="yt-grid">${cards}</div>${adListBottom}${pagination}</div>`
+    : `<div class="yt-home-main" style="padding:48px 0;color:var(--yt-text2)">${adListTop}${t(lang, "no_videos")}${adListBottom}</div>`;
 
   const content = `<div class="yt-home">${sidebar}${main}</div>`;
 
@@ -384,7 +405,9 @@ export function taxonomyListingPage(
   const sidebar = homeSidebar(lang, prefix, navTags, navCategories, {
     kind,
     slug: taxSlug,
-  });
+  }, footerSettings.adListingSidebar);
+  const adListTop = rawAdSlot(footerSettings.adListingListTop, "yt-ad--list-top");
+  const adListBottom = rawAdSlot(footerSettings.adListingListBottom, "yt-ad--list-bottom");
 
   const cards = videos
     .map(
@@ -416,11 +439,11 @@ export function taxonomyListingPage(
   )}</h1>`;
 
   const main = videos.length
-    ? `<div class="yt-home-main">${heading}<div class="yt-grid">${cards}</div>${pagination}</div>`
-    : `<div class="yt-home-main">${heading}<div style="padding:24px 0;color:var(--yt-text2)">${t(
+    ? `<div class="yt-home-main">${heading}${adListTop}<div class="yt-grid">${cards}</div>${adListBottom}${pagination}</div>`
+    : `<div class="yt-home-main">${heading}${adListTop}<div style="padding:24px 0;color:var(--yt-text2)">${t(
         lang,
         "no_videos"
-      )}</div></div>`;
+      )}</div>${adListBottom}</div>`;
 
   const content = `<div class="yt-home">${sidebar}${main}</div>`;
 
@@ -482,6 +505,15 @@ export interface FooterSettings {
   headCode?: string;
   footerCode?: string;
   siteDescription?: string;
+  adHomeSidebar?: string;
+  adHomeListTop?: string;
+  adHomeListBottom?: string;
+  adListingSidebar?: string;
+  adListingListTop?: string;
+  adListingListBottom?: string;
+  adWatchTop?: string;
+  adWatchRelatedAbove?: string;
+  adWatchRelatedBelow?: string;
 }
 
 export function notFoundPage(
@@ -550,7 +582,10 @@ export function watchPage(
   footerSettings: FooterSettings = {}
 ) {
   const prefix = langPrefix(lang);
-  const sidebar = homeSidebar(lang, prefix, navTags, navCategories, null);
+  const sidebar = homeSidebar(lang, prefix, navTags, navCategories, null, footerSettings.adListingSidebar);
+  const adWatchTop = rawAdSlot(footerSettings.adWatchTop, "yt-ad--watch-top");
+  const adWatchRelatedAbove = rawAdSlot(footerSettings.adWatchRelatedAbove, "yt-ad--watch-related-above");
+  const adWatchRelatedBelow = rawAdSlot(footerSettings.adWatchRelatedBelow, "yt-ad--watch-related-below");
 
   const kw = taxonomyLinks.keyword;
   const kwName = kw?.name?.trim() || "";
@@ -625,6 +660,7 @@ export function watchPage(
   const jsonLd = escJsonForScript(ldData);
 
   const watchBody = `
+  ${adWatchTop}
   <div class="yt-watch">
     <div class="yt-watch-main">
       <div class="yt-player-wrap">
@@ -649,6 +685,7 @@ export function watchPage(
       ${seoTranscriptBlock}
     </div>
   </div>
+  ${adWatchRelatedAbove}
   ${recommended.length ? `<h2 class="yt-recommended-title">${t(lang, "recommended")}</h2>` : ""}
   <div class="yt-recommended">
     ${recommended.map((r) => `
@@ -662,6 +699,7 @@ export function watchPage(
         </div>
       </a>`).join("")}
   </div>
+  ${adWatchRelatedBelow}
   <script type="application/json" id="watch-page-config">${escJsonForScript(watchConfig)}</script>
   <script src="https://cdn.jsdelivr.net/npm/video.js@8/dist/video.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-levels@4/dist/videojs-contrib-quality-levels.min.js"></script>

@@ -77,6 +77,15 @@ function pageContext(c: any) {
     compliance2257Enabled: settings.compliance_2257_enabled === "1",
     dmcaTitle: settings.dmca_title?.trim() || "DMCA / Copyright Policy",
     dmcaEnabled: settings.dmca_enabled === "1",
+    adHomeSidebar: settings.ad_home_sidebar?.trim() || "",
+    adHomeListTop: settings.ad_home_list_top?.trim() || "",
+    adHomeListBottom: settings.ad_home_list_bottom?.trim() || "",
+    adListingSidebar: settings.ad_listing_sidebar?.trim() || "",
+    adListingListTop: settings.ad_listing_list_top?.trim() || "",
+    adListingListBottom: settings.ad_listing_list_bottom?.trim() || "",
+    adWatchTop: settings.ad_watch_top?.trim() || "",
+    adWatchRelatedAbove: settings.ad_watch_related_above?.trim() || "",
+    adWatchRelatedBelow: settings.ad_watch_related_below?.trim() || "",
   };
 }
 
@@ -102,7 +111,26 @@ function parseHomePageSize(raw: string | undefined): number {
 
 async function resolveIndex(c: any, lang: string) {
   const db = c.env.DB;
-  const { siteName, siteSlogan, siteDescription, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
+  const {
+    siteName,
+    siteSlogan,
+    siteDescription,
+    headCode,
+    footerCode,
+    origin,
+    siteUrl,
+    year,
+    contactEmail,
+    contactTelegram,
+    contactWhatsapp,
+    compliance2257Title,
+    compliance2257Enabled,
+    dmcaTitle,
+    dmcaEnabled,
+    adHomeSidebar,
+    adHomeListTop,
+    adHomeListBottom,
+  } = pageContext(c);
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = parseHomePageSize(c.get("settings").home_page_size);
   const q = c.req.query("q")?.trim() || "";
@@ -140,7 +168,23 @@ async function resolveIndex(c: any, lang: string) {
       null,
       siteSlogan ? `${siteName} - ${siteSlogan}` : siteName,
       origin,
-      { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year, siteDescription }
+      {
+        contactEmail,
+        contactTelegram,
+        contactWhatsapp,
+        compliance2257Title,
+        compliance2257Enabled,
+        dmcaTitle,
+        dmcaEnabled,
+        headCode,
+        footerCode,
+        siteUrl,
+        year,
+        siteDescription,
+        adHomeSidebar,
+        adHomeListTop,
+        adHomeListBottom,
+      }
     )
   );
 }
@@ -149,7 +193,25 @@ async function resolveTagListing(c: any, lang: string) {
   const slug = parseTaxonomySlugParam(c.req.param("slug"));
   if (!slug) return c.html(renderNotFoundHtml(c), 404);
 
-  const { siteName, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
+  const {
+    siteName,
+    headCode,
+    footerCode,
+    origin,
+    siteUrl,
+    year,
+    contactEmail,
+    contactTelegram,
+    contactWhatsapp,
+    compliance2257Title,
+    compliance2257Enabled,
+    dmcaTitle,
+    dmcaEnabled,
+    siteDescription,
+    adListingSidebar,
+    adListingListTop,
+    adListingListBottom,
+  } = pageContext(c);
   const db = c.env.DB;
   const langId = await resolveLangId(db, lang);
   const row = await db
@@ -200,7 +262,23 @@ async function resolveTagListing(c: any, lang: string) {
       `${prefix}/tag/${row.slug}.html`,
       siteName,
       origin,
-      { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year, siteDescription }
+      {
+        contactEmail,
+        contactTelegram,
+        contactWhatsapp,
+        compliance2257Title,
+        compliance2257Enabled,
+        dmcaTitle,
+        dmcaEnabled,
+        headCode,
+        footerCode,
+        siteUrl,
+        year,
+        siteDescription,
+        adListingSidebar,
+        adListingListTop,
+        adListingListBottom,
+      }
     )
   );
 }
@@ -209,7 +287,25 @@ async function resolveCategoryListing(c: any, lang: string) {
   const slug = parseTaxonomySlugParam(c.req.param("slug"));
   if (!slug) return c.html(renderNotFoundHtml(c), 404);
 
-  const { siteName, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
+  const {
+    siteName,
+    headCode,
+    footerCode,
+    origin,
+    siteUrl,
+    year,
+    contactEmail,
+    contactTelegram,
+    contactWhatsapp,
+    compliance2257Title,
+    compliance2257Enabled,
+    dmcaTitle,
+    dmcaEnabled,
+    siteDescription,
+    adListingSidebar,
+    adListingListTop,
+    adListingListBottom,
+  } = pageContext(c);
   const db = c.env.DB;
   const langId = await resolveLangId(db, lang);
   const row = await db
@@ -260,7 +356,23 @@ async function resolveCategoryListing(c: any, lang: string) {
       `${prefix}/category/${row.slug}.html`,
       siteName,
       origin,
-      { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year }
+      {
+        contactEmail,
+        contactTelegram,
+        contactWhatsapp,
+        compliance2257Title,
+        compliance2257Enabled,
+        dmcaTitle,
+        dmcaEnabled,
+        headCode,
+        footerCode,
+        siteUrl,
+        year,
+        siteDescription,
+        adListingSidebar,
+        adListingListTop,
+        adListingListBottom,
+      }
     )
   );
 }
@@ -291,7 +403,25 @@ async function resolveWatch(c: any, lang: string) {
 
 async function _renderWatch(c: any, lang: string, video: any) {
   const db = c.env.DB;
-  const { siteName, headCode, footerCode, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled } = pageContext(c);
+  const {
+    siteName,
+    headCode,
+    footerCode,
+    origin,
+    siteUrl,
+    year,
+    contactEmail,
+    contactTelegram,
+    contactWhatsapp,
+    compliance2257Title,
+    compliance2257Enabled,
+    dmcaTitle,
+    dmcaEnabled,
+    adListingSidebar,
+    adWatchTop,
+    adWatchRelatedAbove,
+    adWatchRelatedBelow,
+  } = pageContext(c);
   const id = video.id;
   const langId = await resolveLangId(db, lang);
 
@@ -410,7 +540,23 @@ async function _renderWatch(c: any, lang: string, video: any) {
       { keyword: keywordLink, tags: tagLinks, categories: categoryLinks },
       siteName,
       origin,
-      { contactEmail, contactTelegram, contactWhatsapp, compliance2257Title, compliance2257Enabled, dmcaTitle, dmcaEnabled, headCode, footerCode, siteUrl, year }
+      {
+        contactEmail,
+        contactTelegram,
+        contactWhatsapp,
+        compliance2257Title,
+        compliance2257Enabled,
+        dmcaTitle,
+        dmcaEnabled,
+        headCode,
+        footerCode,
+        siteUrl,
+        year,
+        adListingSidebar,
+        adWatchTop,
+        adWatchRelatedAbove,
+        adWatchRelatedBelow,
+      }
     )
   );
 }

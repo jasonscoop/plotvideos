@@ -1,6 +1,7 @@
 import type { Hono } from "hono";
 import type { Env } from "./index";
-import { DEFAULT_LANG } from "./i18n";
+import { getLanguages, resolveDefaultLang } from "./languages";
+import { getSettings } from "./settings";
 
 const PAGE_SIZE = 5000;
 
@@ -12,9 +13,11 @@ function xmlRes(c: any, xml: string) {
 }
 
 async function defaultLangId(db: D1Database): Promise<number> {
+  const [settings, languages] = await Promise.all([getSettings(db), getLanguages(db)]);
+  const code = resolveDefaultLang(settings, languages);
   const row = await db
     .prepare("SELECT id FROM languages WHERE code = ?")
-    .bind(DEFAULT_LANG)
+    .bind(code)
     .first<{ id: number }>();
   return row?.id ?? 0;
 }

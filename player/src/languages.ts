@@ -1,4 +1,4 @@
-import { DEFAULT_LANG } from "./i18n";
+import type { Settings } from "./settings";
 
 export type LanguageRow = {
   code: string;
@@ -26,10 +26,16 @@ export function isValidLangCode(code: string, languages: LanguageRow[]): boolean
   return languages.some((l) => l.code === code);
 }
 
-export function inferLangFromPath(path: string, languages: LanguageRow[]): string {
+export function resolveDefaultLang(settings: Settings, languages: LanguageRow[]): string {
+  const raw = (settings.default_language ?? "").trim().toLowerCase() || "en";
+  if (!languages.length) return raw;
+  return languages.some((l) => l.code === raw) ? raw : "en";
+}
+
+export function inferLangFromPath(path: string, languages: LanguageRow[], defaultLang: string): string {
   const seg = path.split("/").filter(Boolean)[0];
   if (seg && isValidLangCode(seg, languages)) return seg;
-  return DEFAULT_LANG;
+  return defaultLang;
 }
 
 export function languageName(code: string, languages: LanguageRow[]): string {

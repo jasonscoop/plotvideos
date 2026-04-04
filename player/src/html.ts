@@ -1,4 +1,4 @@
-import { t, langPrefix, DEFAULT_LANG, isRtl } from "./i18n";
+import { t, langPrefix, isRtl } from "./i18n";
 import {
   type LanguageRow,
   languageName,
@@ -17,13 +17,13 @@ const GLOBAL_CSS = `
 const CHEVRON_SVG = `<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>`;
 const CC_BADGE = `<span class="yt-cc"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 12h4v2H4v-2zm10 6H4v-2h10v2zm6 0h-4v-2h4v2zm0-4H10v-2h10v2z"/></svg></span>`;
 
-function langDropdown(currentLang: string, currentPath: string, languages: LanguageRow[]) {
+function langDropdown(currentLang: string, currentPath: string, languages: LanguageRow[], defaultLang: string) {
   const curFlag = languageFlag(currentLang, languages);
   const curName = languageName(currentLang, languages);
   const basePath = pathWithoutLangPrefix(currentPath, languages);
   const items = languages
     .map((l) => {
-      const prefix = l.code === DEFAULT_LANG ? "" : `/${l.code}`;
+      const prefix = l.code === defaultLang ? "" : `/${l.code}`;
       const href = prefix + (basePath === "/" ? "/" : basePath);
       const active = l.code === currentLang ? ' class="active"' : "";
       return `<a href="${href}"${active}><span class="yt-lang-flag" aria-hidden="true">${l.flag}</span><span>${l.name}</span></a>`;
@@ -65,10 +65,12 @@ export function layout(
     dmcaTitle?: string;
     dmcaEnabled?: boolean;
     languages?: LanguageRow[];
+    defaultLang?: string;
   }
 ) {
   const brand = opts?.siteName?.trim() || DEFAULT_SITE_NAME;
-  const prefix = langPrefix(lang);
+  const defaultLang = opts?.defaultLang ?? "en";
+  const prefix = langPrefix(lang, defaultLang);
   const dir = isRtl(lang) ? ' dir="rtl"' : "";
   const playerCss = opts?.playerAssets
     ? `<link href="https://cdn.jsdelivr.net/npm/video.js@8/dist/video-js.min.css" rel="stylesheet" />
@@ -92,7 +94,7 @@ export function layout(
       ? (opts.languages ?? [])
           .map(
             (l) =>
-              `<link rel="alternate" hreflang="${l.code}" href="${origin}${langPrefix(l.code)}${opts.hreflangPath}" />`
+              `<link rel="alternate" hreflang="${l.code}" href="${origin}${langPrefix(l.code, defaultLang)}${opts.hreflangPath}" />`
           )
           .join("\n  ") +
         `\n  <link rel="alternate" hreflang="x-default" href="${origin}${opts.hreflangPath}" />`
@@ -160,7 +162,7 @@ export function layout(
       <button type="submit">${t(lang, "search")}</button>
     </form>
     <button class="yt-search-toggle" type="button" aria-label="Search"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
-    ${langDropdown(lang, path, opts?.languages ?? [])}
+    ${langDropdown(lang, path, opts?.languages ?? [], defaultLang)}
   </header>
   ${content}
   <footer class="yt-footer">
@@ -347,7 +349,8 @@ export function indexPage(
   origin?: string,
   footerSettings: FooterSettings = {}
 ) {
-  const prefix = langPrefix(lang);
+  const defaultLang = footerSettings.defaultLang ?? "en";
+  const prefix = langPrefix(lang, defaultLang);
   const qParam = q ? `&q=${encodeURIComponent(q)}` : "";
 
   const sidebar = homeSidebar(
@@ -399,6 +402,7 @@ export function indexPage(
     origin,
     hreflangPath: q ? undefined : "/",
     noindex: !!q,
+    defaultLang,
     ...footerSettings,
   });
 }
@@ -418,7 +422,8 @@ export function taxonomyListingPage(
   origin?: string,
   footerSettings: FooterSettings = {}
 ) {
-  const prefix = langPrefix(lang);
+  const defaultLang = footerSettings.defaultLang ?? "en";
+  const prefix = langPrefix(lang, defaultLang);
   const baseHref = taxonomyListingHref(prefix, kind, taxSlug, page);
 
   const sidebar = homeSidebar(lang, prefix, navTags, navCategories, {
@@ -475,6 +480,7 @@ export function taxonomyListingPage(
     description: `${browserTitle} - ${siteName}`,
     origin,
     hreflangPath: barePath,
+    defaultLang,
     ...footerSettings,
   });
 }
@@ -536,6 +542,7 @@ export interface FooterSettings {
   adWatchRelatedAbove?: string;
   adWatchRelatedBelow?: string;
   languages?: LanguageRow[];
+  defaultLang?: string;
 }
 
 export function notFoundPage(
@@ -545,7 +552,8 @@ export function notFoundPage(
   requestPath: string,
   footer: FooterSettings
 ): string {
-  const prefix = langPrefix(lang);
+  const defaultLang = footer.defaultLang ?? "en";
+  const prefix = langPrefix(lang, defaultLang);
   const title = t(lang, "page_not_found_title");
   const heading = t(lang, "page_not_found_heading");
   const message = t(lang, "page_not_found_message");
@@ -587,6 +595,7 @@ export function notFoundPage(
     description: message,
     siteUrl: origin ?? footer.siteUrl,
     year: footer.year ?? new Date().getFullYear(),
+    defaultLang,
   });
 }
 
@@ -603,7 +612,8 @@ export function watchPage(
   origin?: string,
   footerSettings: FooterSettings = {}
 ) {
-  const prefix = langPrefix(lang);
+  const defaultLang = footerSettings.defaultLang ?? "en";
+  const prefix = langPrefix(lang, defaultLang);
   const sidebar = homeSidebar(lang, prefix, navTags, navCategories, null, footerSettings.adListingSidebar);
   const adWatchTop = rawAdSlot(footerSettings.adWatchTop, "yt-ad--watch-top");
   const adWatchRelatedAbove = rawAdSlot(footerSettings.adWatchRelatedAbove, "yt-ad--watch-related-above");
@@ -684,7 +694,7 @@ export function watchPage(
     contentUrl: video.hls_url || video.video_url || "",
   };
   if (isoDur) ldData.duration = isoDur;
-  if (origin) ldData.url = `${origin}${langPrefix(lang)}${watchPath}`;
+  if (origin) ldData.url = `${origin}${langPrefix(lang, defaultLang)}${watchPath}`;
   if (transcriptTextForLd) ldData.transcript = transcriptTextForLd;
   const jsonLd = escJsonForScript(ldData);
 
@@ -744,6 +754,7 @@ export function watchPage(
     hreflangPath: watchPath,
     ogImage: video.thumbnail_url,
     ogType: "video.other",
+    defaultLang,
     ...footerSettings,
   });
 }
@@ -765,7 +776,8 @@ export function compliancePage(
     dmcaTitle?: string;
     dmcaEnabled?: boolean;
   },
-  languages: LanguageRow[] = []
+  languages: LanguageRow[] = [],
+  defaultLang?: string
 ) {
   const inner = pageContent.trim();
   const body = inner ? `<div class="yt-legal-html">${inner}</div>` : "";
@@ -773,6 +785,7 @@ export function compliancePage(
     <h1>${esc(pageTitle)}</h1>
     ${body}
   </div>`;
+  const dl = defaultLang ?? "en";
   return layout(`${pageTitle} - ${siteName}`, lang, content, "", "/2257.html", {
     siteName,
     origin,
@@ -787,6 +800,7 @@ export function compliancePage(
     siteUrl,
     year,
     languages,
+    defaultLang: dl,
   });
 }
 
@@ -807,7 +821,8 @@ export function dmcaPage(
     dmcaTitle?: string;
     dmcaEnabled?: boolean;
   },
-  languages: LanguageRow[] = []
+  languages: LanguageRow[] = [],
+  defaultLang?: string
 ) {
   const inner = pageContent.trim();
   const body = inner ? `<div class="yt-legal-html">${inner}</div>` : "";
@@ -815,6 +830,7 @@ export function dmcaPage(
     <h1>${esc(pageTitle)}</h1>
     ${body}
   </div>`;
+  const dl = defaultLang ?? "en";
   return layout(`${pageTitle} - ${siteName}`, lang, content, "", "/dmca.html", {
     siteName,
     origin,
@@ -829,5 +845,6 @@ export function dmcaPage(
     siteUrl,
     year,
     languages,
+    defaultLang: dl,
   });
 }

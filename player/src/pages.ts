@@ -10,11 +10,12 @@ import {
   notFoundPage,
   type NavTaxonomyItem,
 } from "./html";
-import { DEFAULT_LANG, langPrefix, t } from "./i18n";
+import { langPrefix, t } from "./i18n";
 import {
   type LanguageRow,
   inferLangFromPath,
   isValidLangCode,
+  resolveDefaultLang,
 } from "./languages";
 import { fetchVttCues, orderedSubtitleUrls } from "./vtt";
 import {
@@ -26,12 +27,17 @@ import { isSettingEnabled, type Settings } from "./settings";
 
 export const pageRoutes = new Hono<Env>();
 
+function defaultLangForRequest(c: any): string {
+  return resolveDefaultLang(c.get("settings"), (c.get("languages") as LanguageRow[]) ?? []);
+}
+
 export function renderNotFoundHtml(c: any): string {
   const settings = c.get("settings");
   const languages = (c.get("languages") as LanguageRow[]) ?? [];
   const siteName = settings.site_name?.trim() || "PlotVideos";
   const origin = new URL(c.req.url).origin;
-  const lang = inferLangFromPath(c.req.path, languages);
+  const defaultLang = resolveDefaultLang(settings, languages);
+  const lang = inferLangFromPath(c.req.path, languages, defaultLang);
   return notFoundPage(lang, siteName, origin, c.req.path, {
     headCode: settings.head_code || "",
     footerCode: settings.footer_code || "",
@@ -45,6 +51,7 @@ export function renderNotFoundHtml(c: any): string {
     siteUrl: origin,
     year: new Date().getFullYear(),
     languages,
+    defaultLang,
   });
 }
 
@@ -58,7 +65,8 @@ async function resolveTaxonomyListRowAndPage(
   db: D1Database,
   lang: string,
   kind: "tag" | "category",
-  rawParam: string
+  rawParam: string,
+  defaultLang: string
 ): Promise<
   | { row: { id: number; name: string; slug: string }; page: number }
   | { redirect: string }
@@ -68,7 +76,7 @@ async function resolveTaxonomyListRowAndPage(
   if (!stripped) return null;
 
   const table = kind === "tag" ? "tags" : "categories";
-  const prefix = langPrefix(lang);
+  const prefix = langPrefix(lang, defaultLang);
 
   const rowFull = await db
     .prepare(`SELECT id, name, slug FROM ${table} WHERE slug = ?`)
@@ -111,6 +119,8 @@ async function fetchNavTaxonomies(db: D1Database, langId: number): Promise<[NavT
 
 function pageContext(c: any) {
   const settings: Settings = c.get("settings");
+  const languages = (c.get("languages") as LanguageRow[]) ?? [];
+  const defaultLang = resolveDefaultLang(settings, languages);
   const siteName = settings.site_name?.trim() || "PlotVideos";
   const siteSlogan = settings.site_slogan?.trim() || "";
   const siteDescription = settings.site_description?.trim() || "";
@@ -140,7 +150,8 @@ function pageContext(c: any) {
     adWatchTop: settings.ad_watch_top?.trim() || "",
     adWatchRelatedAbove: settings.ad_watch_related_above?.trim() || "",
     adWatchRelatedBelow: settings.ad_watch_related_below?.trim() || "",
-    languages: (c.get("languages") as LanguageRow[]) ?? [],
+    languages,
+    defaultLang,
   };
 }
 
@@ -186,6 +197,7 @@ async function resolveIndex(c: any, lang: string) {
     adHomeListTop,
     adHomeListBottom,
     languages,
+    defaultLang,
   } = pageContext(c);
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = parseHomePageSize(c.get("settings").home_page_size);
@@ -210,7 +222,7 @@ async function resolveIndex(c: any, lang: string) {
 
   const hasNext = listResult.results.length > pageSize;
   const videos = listResult.results.slice(0, pageSize) as any[];
-  if (lang !== DEFAULT_LANG) await applyTranslatedTitles(db, videos, langId);
+  await applyTranslatedTitles(db, videos, langId);
 
   return c.html(
     indexPage(
@@ -241,6 +253,7 @@ async function resolveIndex(c: any, lang: string) {
         adHomeListTop,
         adHomeListBottom,
         languages,
+        defaultLang,
       }
     )
   );
@@ -248,11 +261,6 @@ async function resolveIndex(c: any, lang: string) {
 
 async function resolveTagListing(c: any, lang: string) {
   const db = c.env.DB;
-  const resolved = await resolveTaxonomyListRowAndPage(c, db, lang, "tag", c.req.param("slug"));
-  if (!resolved) return c.html(renderNotFoundHtml(c), 404);
-  if ("redirect" in resolved) return c.redirect(resolved.redirect, 301);
-  const { row, page } = resolved;
-
   const {
     siteName,
     headCode,
@@ -272,7 +280,12 @@ async function resolveTagListing(c: any, lang: string) {
     adListingListTop,
     adListingListBottom,
     languages,
+    defaultLang,
   } = pageContext(c);
+  const resolved = await resolveTaxonomyListRowAndPage(c, db, lang, "tag", c.req.param("slug"), defaultLang);
+  if (!resolved) return c.html(renderNotFoundHtml(c), 404);
+  if ("redirect" in resolved) return c.redirect(resolved.redirect, 301);
+  const { row, page } = resolved;
   const langId = await resolveLangId(db, lang);
   const pageSize = 15;
   const offset = (page - 1) * pageSize;
@@ -293,11 +306,10 @@ async function resolveTagListing(c: any, lang: string) {
       .all();
     const videoMap = new Map(vResult.results.map((v: any) => [v.id, v]));
     videos = ids.map((vid) => videoMap.get(vid)).filter(Boolean) as any[];
-    if (lang !== DEFAULT_LANG) await applyTranslatedTitles(db, videos, langId);
+    await applyTranslatedTitles(db, videos, langId);
   }
 
   const [navTags, navCategories] = await fetchNavTaxonomies(db, langId);
-  const prefix = langPrefix(lang);
   const browserTitle = t(lang, "taxonomy_seo_title").replace("{name}", row.name);
 
   return c.html(
@@ -331,6 +343,7 @@ async function resolveTagListing(c: any, lang: string) {
         adListingListTop,
         adListingListBottom,
         languages,
+        defaultLang,
       }
     )
   );
@@ -338,11 +351,6 @@ async function resolveTagListing(c: any, lang: string) {
 
 async function resolveCategoryListing(c: any, lang: string) {
   const db = c.env.DB;
-  const resolved = await resolveTaxonomyListRowAndPage(c, db, lang, "category", c.req.param("slug"));
-  if (!resolved) return c.html(renderNotFoundHtml(c), 404);
-  if ("redirect" in resolved) return c.redirect(resolved.redirect, 301);
-  const { row, page } = resolved;
-
   const {
     siteName,
     headCode,
@@ -362,7 +370,12 @@ async function resolveCategoryListing(c: any, lang: string) {
     adListingListTop,
     adListingListBottom,
     languages,
+    defaultLang,
   } = pageContext(c);
+  const resolved = await resolveTaxonomyListRowAndPage(c, db, lang, "category", c.req.param("slug"), defaultLang);
+  if (!resolved) return c.html(renderNotFoundHtml(c), 404);
+  if ("redirect" in resolved) return c.redirect(resolved.redirect, 301);
+  const { row, page } = resolved;
   const langId = await resolveLangId(db, lang);
   const pageSize = 15;
   const offset = (page - 1) * pageSize;
@@ -383,11 +396,10 @@ async function resolveCategoryListing(c: any, lang: string) {
       .all();
     const videoMap = new Map(vResult.results.map((v: any) => [v.id, v]));
     videos = ids.map((vid) => videoMap.get(vid)).filter(Boolean) as any[];
-    if (lang !== DEFAULT_LANG) await applyTranslatedTitles(db, videos, langId);
+    await applyTranslatedTitles(db, videos, langId);
   }
 
   const [navTags, navCategories] = await fetchNavTaxonomies(db, langId);
-  const prefix = langPrefix(lang);
   const browserTitle = t(lang, "taxonomy_seo_title").replace("{name}", row.name);
 
   return c.html(
@@ -421,6 +433,7 @@ async function resolveCategoryListing(c: any, lang: string) {
         adListingListTop,
         adListingListBottom,
         languages,
+        defaultLang,
       }
     )
   );
@@ -447,7 +460,7 @@ async function resolveWatch(c: any, lang: string) {
     .first<{ slug: string }>();
 
   if (!video) return c.html(renderNotFoundHtml(c), 404);
-  return c.redirect(`${langPrefix(lang)}/video/${video.slug}.html`, 302);
+  return c.redirect(`${langPrefix(lang, defaultLangForRequest(c))}/video/${video.slug}.html`, 302);
 }
 
 async function _renderWatch(c: any, lang: string, video: any) {
@@ -471,6 +484,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
     adWatchRelatedAbove,
     adWatchRelatedBelow,
     languages,
+    defaultLang,
   } = pageContext(c);
   const id = video.id;
   const langId = await resolveLangId(db, lang);
@@ -518,7 +532,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
     .filter(Boolean) as { lang: string; label: string; url: string; isDefault: boolean }[];
 
   const recVideos = recResult.results as any[];
-  if (lang !== DEFAULT_LANG) await applyTranslatedTitles(db, recVideos, langId);
+  await applyTranslatedTitles(db, recVideos, langId);
 
   const tagIds = videoTagIds.results.map((r) => r.tag_id);
   let videoTagRows: { name: string; slug: string }[] = [];
@@ -607,6 +621,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
         adWatchRelatedAbove,
         adWatchRelatedBelow,
         languages,
+        defaultLang,
       }
     )
   );
@@ -614,7 +629,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
 
 function resolveStaticPage(c: any, lang: string, page: "2257" | "dmca") {
   const ctx = pageContext(c);
-  const { siteName, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, languages } = ctx;
+  const { siteName, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, languages, defaultLang } = ctx;
   const settings = c.get("settings");
   const enabled =
     page === "2257"
@@ -646,18 +661,19 @@ function resolveStaticPage(c: any, lang: string, page: "2257" | "dmca") {
       siteUrl,
       year,
       footerNav,
-      languages
+      languages,
+      defaultLang
     )
   );
 }
 
-pageRoutes.get("/", (c) => resolveIndex(c, DEFAULT_LANG));
-pageRoutes.get("/2257.html", (c) => resolveStaticPage(c, DEFAULT_LANG, "2257"));
-pageRoutes.get("/dmca.html", (c) => resolveStaticPage(c, DEFAULT_LANG, "dmca"));
-pageRoutes.get("/videos/:id", (c) => resolveWatch(c, DEFAULT_LANG));
-pageRoutes.get("/video/:slug", (c) => resolveWatchBySlug(c, DEFAULT_LANG));
-pageRoutes.get("/tag/:slug", (c) => resolveTagListing(c, DEFAULT_LANG));
-pageRoutes.get("/category/:slug", (c) => resolveCategoryListing(c, DEFAULT_LANG));
+pageRoutes.get("/", (c) => resolveIndex(c, defaultLangForRequest(c)));
+pageRoutes.get("/2257.html", (c) => resolveStaticPage(c, defaultLangForRequest(c), "2257"));
+pageRoutes.get("/dmca.html", (c) => resolveStaticPage(c, defaultLangForRequest(c), "dmca"));
+pageRoutes.get("/videos/:id", (c) => resolveWatch(c, defaultLangForRequest(c)));
+pageRoutes.get("/video/:slug", (c) => resolveWatchBySlug(c, defaultLangForRequest(c)));
+pageRoutes.get("/tag/:slug", (c) => resolveTagListing(c, defaultLangForRequest(c)));
+pageRoutes.get("/category/:slug", (c) => resolveCategoryListing(c, defaultLangForRequest(c)));
 
 pageRoutes.get("/:lang/", (c) => {
   const lang = c.req.param("lang");

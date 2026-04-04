@@ -7,6 +7,7 @@ export interface Settings {
   site_name: string;
   site_slogan: string;
   site_description: string;
+  default_language: string;
   head_code: string;
   footer_code: string;
   contact_email: string;
@@ -43,6 +44,7 @@ const DEFAULT_SETTINGS: Settings = {
   site_name: "PlotVideos",
   site_slogan: "",
   site_description: "",
+  default_language: "en",
   head_code: "",
   footer_code: "",
   contact_email: "",

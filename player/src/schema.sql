@@ -91,6 +91,7 @@ INSERT OR IGNORE INTO settings (key, value, description) VALUES
   ('site_name', 'PlotVideos', 'Site brand name'),
   ('site_slogan', '', 'Site slogan'),
   ('site_description', '', 'Site home page description'),
+  ('default_language', 'en', 'Default UI language code; that language has no URL prefix, others use /{code}/'),
   ('fetch_api_url', '', 'Crawler API base URL'),
   ('fetch_api_key', '', 'Crawler API key'),
   ('id_offset', '0', 'Public video ID offset'),

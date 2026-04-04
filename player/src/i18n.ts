@@ -1,7 +1,5 @@
-export const DEFAULT_LANG = "en";
-
-export function langPrefix(lang: string): string {
-  return lang === DEFAULT_LANG ? "" : `/${lang}`;
+export function langPrefix(lang: string, defaultLang: string): string {
+  return lang === defaultLang ? "" : `/${lang}`;
 }
 
 const translations: Record<string, Record<string, string>> = {

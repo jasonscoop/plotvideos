@@ -41,7 +41,7 @@ def get_languages(
     _: str = Depends(_check_auth),
 ) -> List[dict]:
     return [
-        {"code": lang.code, "name": lang.native_name, "locale": lang.locale}
+        {"code": lang.code, "name": lang.native_name, "locale": lang.locale, "flag": lang.flag}
         for lang in Language.get_all()
     ]
 

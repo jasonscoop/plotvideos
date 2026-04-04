@@ -8,6 +8,7 @@ import WATCH_PAGE_JS from "./watch-page.client.js";
 import LOGO_SVG from "./logo.svg";
 import { ASSET_HASHES } from "./asset-hashes";
 import { getSettings, type Settings } from "./settings";
+import { getLanguages, type LanguageRow } from "./languages";
 
 export type Env = {
   Bindings: {
@@ -15,6 +16,7 @@ export type Env = {
   };
   Variables: {
     settings: Settings;
+    languages: LanguageRow[];
   };
 };
 
@@ -24,7 +26,9 @@ const app = new Hono<Env>();
 
 app.use("*", async (c, next) => {
   const settings = await getSettings(c.env.DB);
+  const languages = await getLanguages(c.env.DB);
   c.set("settings", settings);
+  c.set("languages", languages);
   if (!synced) {
     synced = true;
     c.executionCtx.waitUntil(syncFromCrawler(c.env.DB, settings));

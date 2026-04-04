@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type { Env } from "./index";
 import { slugify, generateVideoSlug, parseIdOffset } from "./slug";
 import type { Settings } from "./settings";
+import { invalidateLanguagesCache } from "./languages";
 
 export const apiRoutes = new Hono<Env>();
 
@@ -231,14 +232,17 @@ async function syncLanguages(db: D1Database, crawlerUrl: string, crawlerKey: str
   });
   if (!resp.ok) throw new Error(`Crawler API error: ${resp.status}`);
 
-  const languages: { code: string; name: string; locale: string }[] = await resp.json();
+  const languages: { code: string; name: string; locale: string; flag?: string }[] = await resp.json();
   if (!languages.length) return;
 
   const stmt = db.prepare(
-    `INSERT INTO languages (code, name, locale) VALUES (?, ?, ?)
-     ON CONFLICT(code) DO UPDATE SET name = excluded.name, locale = excluded.locale`
+    `INSERT INTO languages (code, name, locale, flag) VALUES (?, ?, ?, ?)
+     ON CONFLICT(code) DO UPDATE SET name = excluded.name, locale = excluded.locale, flag = excluded.flag`
   );
-  await db.batch(languages.map((l) => stmt.bind(l.code, l.name, l.locale)));
+  await db.batch(
+    languages.map((l) => stmt.bind(l.code, l.name, l.locale, l.flag ?? ""))
+  );
+  invalidateLanguagesCache();
 }
 
 export async function syncFromCrawler(db: D1Database, settings: Settings): Promise<{ synced: number }> {

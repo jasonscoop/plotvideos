@@ -10,7 +10,12 @@ import {
   notFoundPage,
   type NavTaxonomyItem,
 } from "./html";
-import { DEFAULT_LANG, inferLangFromPath, isValidLang, langPrefix, t } from "./i18n";
+import { DEFAULT_LANG, langPrefix, t } from "./i18n";
+import {
+  type LanguageRow,
+  inferLangFromPath,
+  isValidLangCode,
+} from "./languages";
 import { fetchVttCues, orderedSubtitleUrls } from "./vtt";
 import {
   parseTaxonomyPagedSuffix,
@@ -23,9 +28,10 @@ export const pageRoutes = new Hono<Env>();
 
 export function renderNotFoundHtml(c: any): string {
   const settings = c.get("settings");
+  const languages = (c.get("languages") as LanguageRow[]) ?? [];
   const siteName = settings.site_name?.trim() || "PlotVideos";
   const origin = new URL(c.req.url).origin;
-  const lang = inferLangFromPath(c.req.path);
+  const lang = inferLangFromPath(c.req.path, languages);
   return notFoundPage(lang, siteName, origin, c.req.path, {
     headCode: settings.head_code || "",
     footerCode: settings.footer_code || "",
@@ -38,6 +44,7 @@ export function renderNotFoundHtml(c: any): string {
     dmcaEnabled: isSettingEnabled(settings.dmca_enabled),
     siteUrl: origin,
     year: new Date().getFullYear(),
+    languages,
   });
 }
 
@@ -133,6 +140,7 @@ function pageContext(c: any) {
     adWatchTop: settings.ad_watch_top?.trim() || "",
     adWatchRelatedAbove: settings.ad_watch_related_above?.trim() || "",
     adWatchRelatedBelow: settings.ad_watch_related_below?.trim() || "",
+    languages: (c.get("languages") as LanguageRow[]) ?? [],
   };
 }
 
@@ -177,6 +185,7 @@ async function resolveIndex(c: any, lang: string) {
     adHomeSidebar,
     adHomeListTop,
     adHomeListBottom,
+    languages,
   } = pageContext(c);
   const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = parseHomePageSize(c.get("settings").home_page_size);
@@ -231,6 +240,7 @@ async function resolveIndex(c: any, lang: string) {
         adHomeSidebar,
         adHomeListTop,
         adHomeListBottom,
+        languages,
       }
     )
   );
@@ -261,6 +271,7 @@ async function resolveTagListing(c: any, lang: string) {
     adListingSidebar,
     adListingListTop,
     adListingListBottom,
+    languages,
   } = pageContext(c);
   const langId = await resolveLangId(db, lang);
   const pageSize = 15;
@@ -319,6 +330,7 @@ async function resolveTagListing(c: any, lang: string) {
         adListingSidebar,
         adListingListTop,
         adListingListBottom,
+        languages,
       }
     )
   );
@@ -349,6 +361,7 @@ async function resolveCategoryListing(c: any, lang: string) {
     adListingSidebar,
     adListingListTop,
     adListingListBottom,
+    languages,
   } = pageContext(c);
   const langId = await resolveLangId(db, lang);
   const pageSize = 15;
@@ -407,6 +420,7 @@ async function resolveCategoryListing(c: any, lang: string) {
         adListingSidebar,
         adListingListTop,
         adListingListBottom,
+        languages,
       }
     )
   );
@@ -456,6 +470,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
     adWatchTop,
     adWatchRelatedAbove,
     adWatchRelatedBelow,
+    languages,
   } = pageContext(c);
   const id = video.id;
   const langId = await resolveLangId(db, lang);
@@ -591,6 +606,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
         adWatchTop,
         adWatchRelatedAbove,
         adWatchRelatedBelow,
+        languages,
       }
     )
   );
@@ -598,7 +614,7 @@ async function _renderWatch(c: any, lang: string, video: any) {
 
 function resolveStaticPage(c: any, lang: string, page: "2257" | "dmca") {
   const ctx = pageContext(c);
-  const { siteName, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp } = ctx;
+  const { siteName, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp, languages } = ctx;
   const settings = c.get("settings");
   const enabled =
     page === "2257"
@@ -629,7 +645,8 @@ function resolveStaticPage(c: any, lang: string, page: "2257" | "dmca") {
       origin,
       siteUrl,
       year,
-      footerNav
+      footerNav,
+      languages
     )
   );
 }
@@ -644,42 +661,49 @@ pageRoutes.get("/category/:slug", (c) => resolveCategoryListing(c, DEFAULT_LANG)
 
 pageRoutes.get("/:lang/", (c) => {
   const lang = c.req.param("lang");
-  if (!isValidLang(lang)) return c.html(renderNotFoundHtml(c), 404);
+  const languages = (c.get("languages") as LanguageRow[]) ?? [];
+  if (!isValidLangCode(lang, languages)) return c.html(renderNotFoundHtml(c), 404);
   return resolveIndex(c, lang);
 });
 
 pageRoutes.get("/:lang/2257.html", (c) => {
   const lang = c.req.param("lang");
-  if (!isValidLang(lang)) return c.html(renderNotFoundHtml(c), 404);
+  const languages = (c.get("languages") as LanguageRow[]) ?? [];
+  if (!isValidLangCode(lang, languages)) return c.html(renderNotFoundHtml(c), 404);
   return resolveStaticPage(c, lang, "2257");
 });
 
 pageRoutes.get("/:lang/dmca.html", (c) => {
   const lang = c.req.param("lang");
-  if (!isValidLang(lang)) return c.html(renderNotFoundHtml(c), 404);
+  const languages = (c.get("languages") as LanguageRow[]) ?? [];
+  if (!isValidLangCode(lang, languages)) return c.html(renderNotFoundHtml(c), 404);
   return resolveStaticPage(c, lang, "dmca");
 });
 
 pageRoutes.get("/:lang/videos/:id", (c) => {
   const lang = c.req.param("lang");
-  if (!isValidLang(lang)) return c.html(renderNotFoundHtml(c), 404);
+  const languages = (c.get("languages") as LanguageRow[]) ?? [];
+  if (!isValidLangCode(lang, languages)) return c.html(renderNotFoundHtml(c), 404);
   return resolveWatch(c, lang);
 });
 
 pageRoutes.get("/:lang/video/:slug", (c) => {
   const lang = c.req.param("lang");
-  if (!isValidLang(lang)) return c.html(renderNotFoundHtml(c), 404);
+  const languages = (c.get("languages") as LanguageRow[]) ?? [];
+  if (!isValidLangCode(lang, languages)) return c.html(renderNotFoundHtml(c), 404);
   return resolveWatchBySlug(c, lang);
 });
 
 pageRoutes.get("/:lang/tag/:slug", (c) => {
   const lang = c.req.param("lang");
-  if (!isValidLang(lang)) return c.html(renderNotFoundHtml(c), 404);
+  const languages = (c.get("languages") as LanguageRow[]) ?? [];
+  if (!isValidLangCode(lang, languages)) return c.html(renderNotFoundHtml(c), 404);
   return resolveTagListing(c, lang);
 });
 
 pageRoutes.get("/:lang/category/:slug", (c) => {
   const lang = c.req.param("lang");
-  if (!isValidLang(lang)) return c.html(renderNotFoundHtml(c), 404);
+  const languages = (c.get("languages") as LanguageRow[]) ?? [];
+  if (!isValidLangCode(lang, languages)) return c.html(renderNotFoundHtml(c), 404);
   return resolveCategoryListing(c, lang);
 });

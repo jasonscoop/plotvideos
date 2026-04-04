@@ -1,4 +1,10 @@
-import { t, LANGUAGES, langPrefix, nativeName, isRtl } from "./i18n";
+import { t, langPrefix, DEFAULT_LANG, isRtl } from "./i18n";
+import {
+  type LanguageRow,
+  languageName,
+  languageFlag,
+  pathWithoutLangPrefix,
+} from "./languages";
 import type { VttCue } from "./vtt";
 import { ASSET_HASHES } from "./asset-hashes";
 
@@ -11,18 +17,22 @@ const GLOBAL_CSS = `
 const CHEVRON_SVG = `<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>`;
 const CC_BADGE = `<span class="yt-cc"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 12h4v2H4v-2zm10 6H4v-2h10v2zm6 0h-4v-2h4v2zm0-4H10v-2h10v2z"/></svg></span>`;
 
-function langDropdown(currentLang: string, currentPath: string) {
-  const items = LANGUAGES.map((l) => {
-    const prefix = l.code === "en" ? "" : `/${l.code}`;
-    const cleanPath = currentPath.replace(/^\/(en|de|fr|nl|ja|ko|pt|ar|es|zh)(\/|$)/, "/");
-    const href = prefix + (cleanPath === "/" ? "/" : cleanPath);
-    const active = l.code === currentLang ? ' class="active"' : "";
-    return `<a href="${href}"${active}>${l.native}</a>`;
-  }).join("");
+function langDropdown(currentLang: string, currentPath: string, languages: LanguageRow[]) {
+  const curFlag = languageFlag(currentLang, languages);
+  const curName = languageName(currentLang, languages);
+  const basePath = pathWithoutLangPrefix(currentPath, languages);
+  const items = languages
+    .map((l) => {
+      const prefix = l.code === DEFAULT_LANG ? "" : `/${l.code}`;
+      const href = prefix + (basePath === "/" ? "/" : basePath);
+      const active = l.code === currentLang ? ' class="active"' : "";
+      return `<a href="${href}"${active}><span class="yt-lang-flag" aria-hidden="true">${l.flag}</span><span>${l.name}</span></a>`;
+    })
+    .join("");
 
   return `
     <div class="yt-lang-wrap">
-      <button class="yt-lang-btn" type="button">${nativeName(currentLang)} ${CHEVRON_SVG}</button>
+      <button class="yt-lang-btn" type="button"><span class="yt-lang-flag" aria-hidden="true">${curFlag}</span><span>${curName}</span> ${CHEVRON_SVG}</button>
       <div class="yt-lang-menu">${items}</div>
     </div>`;
 }
@@ -54,6 +64,7 @@ export function layout(
     compliance2257Enabled?: boolean;
     dmcaTitle?: string;
     dmcaEnabled?: boolean;
+    languages?: LanguageRow[];
   }
 ) {
   const brand = opts?.siteName?.trim() || DEFAULT_SITE_NAME;
@@ -76,12 +87,16 @@ export function layout(
   const canonicalUrl = origin ? `${origin}${prefix}${path}` : "";
   const canonicalTag = canonicalUrl ? `<link rel="canonical" href="${canonicalUrl}" />` : "";
 
-  const hreflangTags = origin && opts?.hreflangPath
-    ? LANGUAGES.map(
-        (l) => `<link rel="alternate" hreflang="${l.code}" href="${origin}${langPrefix(l.code)}${opts.hreflangPath}" />`
-      ).join("\n  ") +
-      `\n  <link rel="alternate" hreflang="x-default" href="${origin}${opts.hreflangPath}" />`
-    : "";
+  const hreflangTags =
+    origin && opts?.hreflangPath && (opts.languages?.length ?? 0) > 0
+      ? (opts.languages ?? [])
+          .map(
+            (l) =>
+              `<link rel="alternate" hreflang="${l.code}" href="${origin}${langPrefix(l.code)}${opts.hreflangPath}" />`
+          )
+          .join("\n  ") +
+        `\n  <link rel="alternate" hreflang="x-default" href="${origin}${opts.hreflangPath}" />`
+      : "";
 
   const ogType = opts?.ogType || "website";
   const ogTags = origin
@@ -145,7 +160,7 @@ export function layout(
       <button type="submit">${t(lang, "search")}</button>
     </form>
     <button class="yt-search-toggle" type="button" aria-label="Search"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
-    ${langDropdown(lang, path)}
+    ${langDropdown(lang, path, opts?.languages ?? [])}
   </header>
   ${content}
   <footer class="yt-footer">
@@ -520,6 +535,7 @@ export interface FooterSettings {
   adWatchTop?: string;
   adWatchRelatedAbove?: string;
   adWatchRelatedBelow?: string;
+  languages?: LanguageRow[];
 }
 
 export function notFoundPage(
@@ -748,7 +764,8 @@ export function compliancePage(
     compliance2257Enabled?: boolean;
     dmcaTitle?: string;
     dmcaEnabled?: boolean;
-  }
+  },
+  languages: LanguageRow[] = []
 ) {
   const inner = pageContent.trim();
   const body = inner ? `<div class="yt-legal-html">${inner}</div>` : "";
@@ -769,6 +786,7 @@ export function compliancePage(
     dmcaEnabled: footerNav?.dmcaEnabled,
     siteUrl,
     year,
+    languages,
   });
 }
 
@@ -788,7 +806,8 @@ export function dmcaPage(
     compliance2257Enabled?: boolean;
     dmcaTitle?: string;
     dmcaEnabled?: boolean;
-  }
+  },
+  languages: LanguageRow[] = []
 ) {
   const inner = pageContent.trim();
   const body = inner ? `<div class="yt-legal-html">${inner}</div>` : "";
@@ -809,5 +828,6 @@ export function dmcaPage(
     dmcaEnabled: footerNav?.dmcaEnabled ?? true,
     siteUrl,
     year,
+    languages,
   });
 }

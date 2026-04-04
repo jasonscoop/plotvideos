@@ -1,37 +1,7 @@
-export const LANGUAGES = [
-  { code: "en", native: "English" },
-  { code: "de", native: "Deutsch" },
-  { code: "fr", native: "Français" },
-  { code: "nl", native: "Nederlands" },
-  { code: "ja", native: "日本語" },
-  { code: "ko", native: "한국어" },
-  { code: "pt", native: "Português" },
-  { code: "ar", native: "العربية" },
-  { code: "es", native: "Español" },
-  { code: "zh", native: "简体中文" },
-] as const;
-
-export const LANG_CODES = LANGUAGES.map((l) => l.code);
 export const DEFAULT_LANG = "en";
-
-export type LangCode = (typeof LANGUAGES)[number]["code"];
-
-export function isValidLang(code: string): code is LangCode {
-  return LANG_CODES.includes(code as any);
-}
 
 export function langPrefix(lang: string): string {
   return lang === DEFAULT_LANG ? "" : `/${lang}`;
-}
-
-export function inferLangFromPath(path: string): string {
-  const seg = path.split("/").filter(Boolean)[0];
-  if (seg && isValidLang(seg)) return seg;
-  return DEFAULT_LANG;
-}
-
-export function nativeName(code: string): string {
-  return LANGUAGES.find((l) => l.code === code)?.native || code;
 }
 
 const translations: Record<string, Record<string, string>> = {

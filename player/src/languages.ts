@@ -22,10 +22,6 @@ export async function getLanguages(db: D1Database): Promise<LanguageRow[]> {
   return cachedLanguages;
 }
 
-export function invalidateLanguagesCache(): void {
-  cachedLanguages = null;
-}
-
 export function isValidLangCode(code: string, languages: LanguageRow[]): boolean {
   return languages.some((l) => l.code === code);
 }

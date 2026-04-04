@@ -2,7 +2,6 @@ import { Hono } from "hono";
 import type { Env } from "./index";
 import { slugify, generateVideoSlug, parseIdOffset } from "./slug";
 import type { Settings } from "./settings";
-import { invalidateLanguagesCache } from "./languages";
 
 export const apiRoutes = new Hono<Env>();
 
@@ -242,7 +241,6 @@ async function syncLanguages(db: D1Database, crawlerUrl: string, crawlerKey: str
   await db.batch(
     languages.map((l) => stmt.bind(l.code, l.name, l.locale, l.flag ?? ""))
   );
-  invalidateLanguagesCache();
 }
 
 export async function syncFromCrawler(db: D1Database, settings: Settings): Promise<{ synced: number }> {

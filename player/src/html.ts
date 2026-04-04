@@ -232,6 +232,12 @@ function categoryPageHref(prefix: string, slug: string): string {
   return `${prefix}/category/${slug}.html`;
 }
 
+export function taxonomyListingHref(prefix: string, kind: "tag" | "category", slug: string, page: number): string {
+  const seg = kind === "tag" ? "tag" : "category";
+  if (page <= 1) return `${prefix}/${seg}/${slug}.html`;
+  return `${prefix}/${seg}/${slug}-${page}.html`;
+}
+
 const SIDEBAR_CATEGORY_EXPAND_THRESHOLD = 15;
 
 function sidebarCategoryLinks(
@@ -393,14 +399,12 @@ export function taxonomyListingPage(
   navTags: NavTaxonomyItem[],
   navCategories: NavTaxonomyItem[],
   browserTitle: string,
-  currentPath: string,
   siteName: string,
   origin?: string,
   footerSettings: FooterSettings = {}
 ) {
   const prefix = langPrefix(lang);
-  const baseHref =
-    kind === "tag" ? tagPageHref(prefix, taxSlug) : categoryPageHref(prefix, taxSlug);
+  const baseHref = taxonomyListingHref(prefix, kind, taxSlug, page);
 
   const sidebar = homeSidebar(lang, prefix, navTags, navCategories, {
     kind,
@@ -428,10 +432,12 @@ export function taxonomyListingPage(
     )
     .join("");
 
+  const prevHref = page > 1 ? taxonomyListingHref(prefix, kind, taxSlug, page - 1) : "";
+  const nextHref = hasNext ? taxonomyListingHref(prefix, kind, taxSlug, page + 1) : "";
   const pagination = `
     <div class="yt-pagination">
-      ${page > 1 ? `<a href="${baseHref}${page > 2 ? `?page=${page - 1}` : ""}">${t(lang, "previous")}</a>` : ""}
-      ${hasNext ? `<a href="${baseHref}?page=${page + 1}">${t(lang, "next")}</a>` : ""}
+      ${page > 1 ? `<a href="${prevHref}">${t(lang, "previous")}</a>` : ""}
+      ${hasNext ? `<a href="${nextHref}">${t(lang, "next")}</a>` : ""}
     </div>`;
 
   const heading = `<h1 class="yt-taxonomy-title">${esc(
@@ -447,8 +453,8 @@ export function taxonomyListingPage(
 
   const content = `<div class="yt-home">${sidebar}${main}</div>`;
 
-  const barePath = `/${kind}/${taxSlug}.html`;
-  const pagePath = page > 1 ? `${barePath}?page=${page}` : barePath;
+  const barePath = taxonomyListingHref("", kind, taxSlug, page);
+  const pagePath = barePath;
   return layout(`${browserTitle} - ${siteName}`, lang, content, "", pagePath, {
     siteName,
     description: `${browserTitle} - ${siteName}`,

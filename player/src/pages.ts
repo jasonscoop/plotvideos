@@ -4,6 +4,7 @@ import {
   indexPage,
   watchPage,
   taxonomyListingPage,
+  taxonomyListingHref,
   compliancePage,
   dmcaPage,
   notFoundPage,
@@ -12,6 +13,7 @@ import {
 import { DEFAULT_LANG, inferLangFromPath, isValidLang, langPrefix, t } from "./i18n";
 import { fetchVttCues, orderedSubtitleUrls } from "./vtt";
 import {
+  parseTaxonomyPagedSuffix,
   parseTaxonomySlugParam,
   parseVideoSlugParam,
 } from "./slug";
@@ -42,6 +44,51 @@ export function renderNotFoundHtml(c: any): string {
 async function resolveLangId(db: D1Database, code: string): Promise<number> {
   const row = await db.prepare("SELECT id FROM languages WHERE code = ?").bind(code).first<{ id: number }>();
   return row?.id ?? 0;
+}
+
+async function resolveTaxonomyListRowAndPage(
+  c: any,
+  db: D1Database,
+  lang: string,
+  kind: "tag" | "category",
+  rawParam: string
+): Promise<
+  | { row: { id: number; name: string; slug: string }; page: number }
+  | { redirect: string }
+  | null
+> {
+  const stripped = rawParam.replace(/\.html$/i, "").trim().toLowerCase();
+  if (!stripped) return null;
+
+  const table = kind === "tag" ? "tags" : "categories";
+  const prefix = langPrefix(lang);
+
+  const rowFull = await db
+    .prepare(`SELECT id, name, slug FROM ${table} WHERE slug = ?`)
+    .bind(stripped)
+    .first<{ id: number; name: string; slug: string }>();
+
+  if (rowFull) {
+    const qp = c.req.query("page");
+    const page = qp ? Math.max(1, parseInt(qp, 10) || 1) : 1;
+    if (page > 1) {
+      return { redirect: taxonomyListingHref(prefix, kind, rowFull.slug, page) };
+    }
+    return { row: rowFull, page: 1 };
+  }
+
+  const paged = parseTaxonomyPagedSuffix(stripped);
+  if (paged) {
+    const row = await db
+      .prepare(`SELECT id, name, slug FROM ${table} WHERE slug = ?`)
+      .bind(paged.baseSlug)
+      .first<{ id: number; name: string; slug: string }>();
+    if (!row) return null;
+    return { row, page: paged.page };
+  }
+
+  if (!parseTaxonomySlugParam(rawParam)) return null;
+  return null;
 }
 
 const NAV_TAGS_SQL = "SELECT name, slug, video_count AS count FROM tags WHERE lang_id = ? ORDER BY video_count DESC LIMIT 15";
@@ -190,8 +237,11 @@ async function resolveIndex(c: any, lang: string) {
 }
 
 async function resolveTagListing(c: any, lang: string) {
-  const slug = parseTaxonomySlugParam(c.req.param("slug"));
-  if (!slug) return c.html(renderNotFoundHtml(c), 404);
+  const db = c.env.DB;
+  const resolved = await resolveTaxonomyListRowAndPage(c, db, lang, "tag", c.req.param("slug"));
+  if (!resolved) return c.html(renderNotFoundHtml(c), 404);
+  if ("redirect" in resolved) return c.redirect(resolved.redirect, 301);
+  const { row, page } = resolved;
 
   const {
     siteName,
@@ -212,15 +262,7 @@ async function resolveTagListing(c: any, lang: string) {
     adListingListTop,
     adListingListBottom,
   } = pageContext(c);
-  const db = c.env.DB;
   const langId = await resolveLangId(db, lang);
-  const row = await db
-    .prepare("SELECT id, name, slug FROM tags WHERE slug = ?")
-    .bind(slug)
-    .first<{ id: number; name: string; slug: string }>();
-  if (!row) return c.html(renderNotFoundHtml(c), 404);
-
-  const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = 15;
   const offset = (page - 1) * pageSize;
 
@@ -259,7 +301,6 @@ async function resolveTagListing(c: any, lang: string) {
       navTags,
       navCategories,
       browserTitle,
-      `${prefix}/tag/${row.slug}.html`,
       siteName,
       origin,
       {
@@ -284,8 +325,11 @@ async function resolveTagListing(c: any, lang: string) {
 }
 
 async function resolveCategoryListing(c: any, lang: string) {
-  const slug = parseTaxonomySlugParam(c.req.param("slug"));
-  if (!slug) return c.html(renderNotFoundHtml(c), 404);
+  const db = c.env.DB;
+  const resolved = await resolveTaxonomyListRowAndPage(c, db, lang, "category", c.req.param("slug"));
+  if (!resolved) return c.html(renderNotFoundHtml(c), 404);
+  if ("redirect" in resolved) return c.redirect(resolved.redirect, 301);
+  const { row, page } = resolved;
 
   const {
     siteName,
@@ -306,15 +350,7 @@ async function resolveCategoryListing(c: any, lang: string) {
     adListingListTop,
     adListingListBottom,
   } = pageContext(c);
-  const db = c.env.DB;
   const langId = await resolveLangId(db, lang);
-  const row = await db
-    .prepare("SELECT id, name, slug FROM categories WHERE slug = ?")
-    .bind(slug)
-    .first<{ id: number; name: string; slug: string }>();
-  if (!row) return c.html(renderNotFoundHtml(c), 404);
-
-  const page = Math.max(parseInt(c.req.query("page") || "1"), 1);
   const pageSize = 15;
   const offset = (page - 1) * pageSize;
 
@@ -353,7 +389,6 @@ async function resolveCategoryListing(c: any, lang: string) {
       navTags,
       navCategories,
       browserTitle,
-      `${prefix}/category/${row.slug}.html`,
       siteName,
       origin,
       {

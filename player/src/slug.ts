@@ -37,3 +37,13 @@ export function parseTaxonomySlugParam(param: string): string | null {
   if (!raw || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(raw)) return null;
   return raw;
 }
+
+export function parseTaxonomyPagedSuffix(stripped: string): { baseSlug: string; page: number } | null {
+  const m = stripped.match(/^(.+)-(\d+)$/);
+  if (!m) return null;
+  const page = parseInt(m[2], 10);
+  if (!Number.isFinite(page) || page < 2) return null;
+  const base = m[1];
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(base)) return null;
+  return { baseSlug: base, page };
+}

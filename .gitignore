@@ -47,3 +47,5 @@ htmlcov/
 works/
 _keyframes/
 *_trimmed.mp4
+
+.wrangler/

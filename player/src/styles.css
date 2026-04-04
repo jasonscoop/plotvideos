@@ -25,7 +25,7 @@ a { color: inherit; text-decoration: none; }
 .yt-header {
   position: sticky;
   top: 0;
-  z-index: 200;
+  z-index: 100000;
   background: var(--yt-bg);
   height: 56px;
   display: flex;
@@ -89,7 +89,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ── Language Switcher ──────────────────────────────── */
 
-.yt-lang-wrap { position: relative; }
+.yt-lang-wrap { position: relative; z-index: 1; }
 
 .yt-lang-btn {
   background: transparent;
@@ -126,7 +126,7 @@ a { color: inherit; text-decoration: none; }
   border-radius: 12px;
   padding: 8px 0;
   min-width: 160px;
-  z-index: 100;
+  z-index: 2;
   box-shadow: 0 4px 16px rgba(0,0,0,.4);
   max-height: calc(100vh - 70px);
   overflow-y: auto;
@@ -686,7 +686,7 @@ a { color: inherit; text-decoration: none; }
   display: none;
   position: fixed;
   inset: 0;
-  z-index: 299;
+  z-index: 101000;
   background: rgba(0, 0, 0, .5);
 }
 
@@ -706,7 +706,7 @@ a { color: inherit; text-decoration: none; }
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 300;
+    z-index: 102000;
     width: 240px;
     height: 100vh;
     background: var(--yt-bg);

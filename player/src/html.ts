@@ -736,14 +736,16 @@ export function compliancePage(
   contactWhatsapp?: string,
   origin?: string,
   siteUrl?: string,
-  year?: number
+  year?: number,
+  footerNav?: {
+    compliance2257Title?: string;
+    compliance2257Enabled?: boolean;
+    dmcaTitle?: string;
+    dmcaEnabled?: boolean;
+  }
 ) {
-  const body = pageContent.trim()
-    ? pageContent
-        .split(/\n{2,}/)
-        .map((x) => `<p>${esc(x.trim()).replace(/\n/g, "<br />")}</p>`)
-        .join("")
-    : "";
+  const inner = pageContent.trim();
+  const body = inner ? `<div class="yt-legal-html">${inner}</div>` : "";
   const content = `<div class="yt-static-page">
     <h1>${esc(pageTitle)}</h1>
     ${body}
@@ -755,8 +757,10 @@ export function compliancePage(
     contactEmail,
     contactTelegram,
     contactWhatsapp,
-    compliance2257Title: pageTitle,
-    compliance2257Enabled: true,
+    compliance2257Title: footerNav?.compliance2257Title ?? pageTitle,
+    compliance2257Enabled: footerNav?.compliance2257Enabled ?? true,
+    dmcaTitle: footerNav?.dmcaTitle,
+    dmcaEnabled: footerNav?.dmcaEnabled,
     siteUrl,
     year,
   });
@@ -772,23 +776,19 @@ export function dmcaPage(
   contactWhatsapp?: string,
   origin?: string,
   siteUrl?: string,
-  year?: number
+  year?: number,
+  footerNav?: {
+    compliance2257Title?: string;
+    compliance2257Enabled?: boolean;
+    dmcaTitle?: string;
+    dmcaEnabled?: boolean;
+  }
 ) {
-  const body = pageContent.trim()
-    ? pageContent
-        .split(/\n{2,}/)
-        .map((x) => `<p>${esc(x.trim()).replace(/\n/g, "<br />")}</p>`)
-        .join("")
-    : "";
+  const inner = pageContent.trim();
+  const body = inner ? `<div class="yt-legal-html">${inner}</div>` : "";
   const content = `<div class="yt-static-page">
     <h1>${esc(pageTitle)}</h1>
     ${body}
-      <li>A statement, made under penalty of perjury, that the above information in your notice is accurate and that you are the copyright owner or authorized to act on the copyright owner's behalf.</li>
-      <li>Your physical or electronic signature.</li>
-    </ul>
-    <h2>Contact</h2>
-    ${body}
-    <p>Upon receipt of a valid DMCA notice, we will remove or disable access to the allegedly infringing material promptly.</p>
   </div>`;
   return layout(`${pageTitle} - ${siteName}`, lang, content, "", "/dmca.html", {
     siteName,
@@ -797,8 +797,10 @@ export function dmcaPage(
     contactEmail,
     contactTelegram,
     contactWhatsapp,
-    dmcaTitle: pageTitle,
-    dmcaEnabled: true,
+    compliance2257Title: footerNav?.compliance2257Title,
+    compliance2257Enabled: footerNav?.compliance2257Enabled,
+    dmcaTitle: footerNav?.dmcaTitle ?? pageTitle,
+    dmcaEnabled: footerNav?.dmcaEnabled ?? true,
     siteUrl,
     year,
   });

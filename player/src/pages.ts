@@ -15,7 +15,7 @@ import {
   parseTaxonomySlugParam,
   parseVideoSlugParam,
 } from "./slug";
-import type { Settings } from "./settings";
+import { isSettingEnabled, type Settings } from "./settings";
 
 export const pageRoutes = new Hono<Env>();
 
@@ -31,9 +31,9 @@ export function renderNotFoundHtml(c: any): string {
     contactTelegram: settings.contact_telegram?.trim() || "",
     contactWhatsapp: settings.contact_whatsapp?.trim() || "",
     compliance2257Title: settings.compliance_2257_title?.trim() || "18 U.S.C. 2257 Compliance Statement",
-    compliance2257Enabled: settings.compliance_2257_enabled === "1",
+    compliance2257Enabled: isSettingEnabled(settings.compliance_2257_enabled),
     dmcaTitle: settings.dmca_title?.trim() || "DMCA / Copyright Policy",
-    dmcaEnabled: settings.dmca_enabled === "1",
+    dmcaEnabled: isSettingEnabled(settings.dmca_enabled),
     siteUrl: origin,
     year: new Date().getFullYear(),
   });
@@ -74,9 +74,9 @@ function pageContext(c: any) {
     contactTelegram: settings.contact_telegram?.trim() || "",
     contactWhatsapp: settings.contact_whatsapp?.trim() || "",
     compliance2257Title: settings.compliance_2257_title?.trim() || "18 U.S.C. 2257 Compliance Statement",
-    compliance2257Enabled: settings.compliance_2257_enabled === "1",
+    compliance2257Enabled: isSettingEnabled(settings.compliance_2257_enabled),
     dmcaTitle: settings.dmca_title?.trim() || "DMCA / Copyright Policy",
-    dmcaEnabled: settings.dmca_enabled === "1",
+    dmcaEnabled: isSettingEnabled(settings.dmca_enabled),
     adHomeSidebar: settings.ad_home_sidebar?.trim() || "",
     adHomeListTop: settings.ad_home_list_top?.trim() || "",
     adHomeListBottom: settings.ad_home_list_bottom?.trim() || "",
@@ -562,14 +562,41 @@ async function _renderWatch(c: any, lang: string, video: any) {
 }
 
 function resolveStaticPage(c: any, lang: string, page: "2257" | "dmca") {
-  const { siteName, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp } = pageContext(c);
+  const ctx = pageContext(c);
+  const { siteName, origin, siteUrl, year, contactEmail, contactTelegram, contactWhatsapp } = ctx;
   const settings = c.get("settings");
-  const enabled = page === "2257" ? settings.compliance_2257_enabled === "1" : settings.dmca_enabled === "1";
+  const enabled =
+    page === "2257"
+      ? isSettingEnabled(settings.compliance_2257_enabled)
+      : isSettingEnabled(settings.dmca_enabled);
   if (!enabled) return c.html(renderNotFoundHtml(c), 404);
   const render = page === "2257" ? compliancePage : dmcaPage;
-  const pageTitle = page === "2257" ? settings.compliance_2257_title : settings.dmca_title;
+  const pageTitle =
+    page === "2257"
+      ? settings.compliance_2257_title?.trim() || "18 U.S.C. 2257 Compliance Statement"
+      : settings.dmca_title?.trim() || "DMCA / Copyright Policy";
   const pageContent = page === "2257" ? settings.compliance_2257_content : settings.dmca_content;
-  return c.html(render(lang, siteName, pageTitle, pageContent, contactEmail, contactTelegram, contactWhatsapp, origin, siteUrl, year));
+  const footerNav = {
+    compliance2257Title: ctx.compliance2257Title,
+    compliance2257Enabled: ctx.compliance2257Enabled,
+    dmcaTitle: ctx.dmcaTitle,
+    dmcaEnabled: ctx.dmcaEnabled,
+  };
+  return c.html(
+    render(
+      lang,
+      siteName,
+      pageTitle,
+      pageContent,
+      contactEmail,
+      contactTelegram,
+      contactWhatsapp,
+      origin,
+      siteUrl,
+      year,
+      footerNav
+    )
+  );
 }
 
 pageRoutes.get("/", (c) => resolveIndex(c, DEFAULT_LANG));

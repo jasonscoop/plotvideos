@@ -29,6 +29,11 @@ export interface Settings {
   ad_watch_related_below: string;
 }
 
+export function isSettingEnabled(value: string | undefined): boolean {
+  const s = String(value ?? "").trim().toLowerCase();
+  return s === "1" || s === "true" || s === "yes";
+}
+
 const DEFAULT_SETTINGS: Settings = {
   fetch_api_url: "",
   fetch_api_key: "",
@@ -67,7 +72,8 @@ export async function loadSettings(db: D1Database): Promise<Settings> {
   const settings = { ...DEFAULT_SETTINGS };
   for (const row of rows.results) {
     if (row.key in settings) {
-      settings[row.key as keyof Settings] = row.value;
+      const v = row.value;
+      (settings as Record<string, string>)[row.key] = v == null ? "" : String(v);
     }
   }
   return settings;

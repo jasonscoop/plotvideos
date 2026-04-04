@@ -396,7 +396,8 @@ export function indexPage(
   const content = `<div class="yt-home">${sidebar}${main}</div>`;
 
   const pagePath = page > 1 ? `/?page=${page}` : "/";
-  return layout(siteName, lang, content, q, pagePath, {
+  const docTitle = footerSettings.htmlDocumentTitle ?? siteName;
+  return layout(docTitle, lang, content, q, pagePath, {
     siteName,
     description: q ? undefined : (footerSettings.siteDescription || `${siteName} - Watch the latest videos with subtitles`),
     origin,
@@ -543,6 +544,7 @@ export interface FooterSettings {
   adWatchRelatedBelow?: string;
   languages?: LanguageRow[];
   defaultLang?: string;
+  htmlDocumentTitle?: string;
 }
 
 export function notFoundPage(

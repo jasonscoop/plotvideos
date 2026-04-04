@@ -1,17 +1,56 @@
 (function () {
+  function syncLangMenuPosition(w) {
+    var mq = window.matchMedia("(max-width: 640px)");
+    if (!w.classList.contains("open") || !mq.matches) {
+      w.style.removeProperty("--yt-lang-menu-top");
+      w.style.removeProperty("--yt-lang-menu-right");
+      w.style.removeProperty("--yt-lang-menu-left");
+      w.style.removeProperty("--yt-lang-menu-max-h");
+      return;
+    }
+    var btn = w.querySelector(".yt-lang-btn");
+    if (!btn) return;
+    var r = btn.getBoundingClientRect();
+    var gap = 4;
+    w.style.setProperty("--yt-lang-menu-top", r.bottom + gap + "px");
+    w.style.setProperty("--yt-lang-menu-max-h", Math.max(120, window.innerHeight - r.bottom - gap - 12) + "px");
+    if (document.documentElement.getAttribute("dir") === "rtl") {
+      w.style.setProperty("--yt-lang-menu-left", r.left + "px");
+      w.style.removeProperty("--yt-lang-menu-right");
+    } else {
+      w.style.setProperty("--yt-lang-menu-right", window.innerWidth - r.right + "px");
+      w.style.removeProperty("--yt-lang-menu-left");
+    }
+  }
+
   document.querySelectorAll(".yt-lang-wrap").forEach(function (w) {
     var b = w.querySelector(".yt-lang-btn");
     if (!b) return;
     b.addEventListener("click", function (e) {
       e.stopPropagation();
       w.classList.toggle("open");
+      syncLangMenuPosition(w);
     });
   });
   document.addEventListener("click", function () {
     document.querySelectorAll(".yt-lang-wrap.open").forEach(function (w) {
       w.classList.remove("open");
+      syncLangMenuPosition(w);
     });
   });
+  window.addEventListener("resize", function () {
+    document.querySelectorAll(".yt-lang-wrap.open").forEach(syncLangMenuPosition);
+  });
+  window.addEventListener(
+    "scroll",
+    function () {
+      document.querySelectorAll(".yt-lang-wrap.open").forEach(function (w) {
+        w.classList.remove("open");
+        syncLangMenuPosition(w);
+      });
+    },
+    { passive: true }
+  );
 
   var searchToggle = document.querySelector(".yt-search-toggle");
   var searchInput = document.querySelector(".yt-search input");

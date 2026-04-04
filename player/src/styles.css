@@ -735,8 +735,21 @@ a { color: inherit; text-decoration: none; }
     row-gap: 8px;
     width: 100%;
     max-width: 100%;
-    overflow-x: clip;
+    overflow: visible;
     box-sizing: border-box;
+  }
+  .yt-lang-menu {
+    position: fixed;
+    top: var(--yt-lang-menu-top, auto);
+    right: var(--yt-lang-menu-right, 12px);
+    left: auto;
+    margin-top: 0;
+    z-index: 100001;
+    max-height: min(var(--yt-lang-menu-max-h, 70vh), calc(100vh - 70px));
+  }
+  [dir="rtl"] .yt-lang-menu {
+    right: auto;
+    left: var(--yt-lang-menu-left, 12px);
   }
   .yt-menu-btn { order: 0; }
   .yt-logo {
@@ -784,7 +797,7 @@ a { color: inherit; text-decoration: none; }
   font-size: 13px;
   color: var(--yt-text2);
 }
-.yt-footer a { color: var(--yt-text2); text-decoration: underline; }
+.yt-footer a { color: var(--yt-text2); text-decoration: none; }
 .yt-footer a:hover { color: var(--yt-text); }
 .yt-footer p { margin: 4px 0; }
 .yt-footer-inner > p + p { margin-top: 15px; }

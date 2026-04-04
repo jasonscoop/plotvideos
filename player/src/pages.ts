@@ -122,12 +122,10 @@ function pageContext(c: any) {
   const languages = (c.get("languages") as LanguageRow[]) ?? [];
   const defaultLang = resolveDefaultLang(settings, languages);
   const siteName = settings.site_name?.trim() || "PlotVideos";
-  const siteSlogan = settings.site_slogan?.trim() || "";
   const siteDescription = settings.site_description?.trim() || "";
   const origin = new URL(c.req.url).origin;
   return {
     siteName,
-    siteSlogan,
     siteDescription,
     headCode: settings.head_code || "",
     footerCode: settings.footer_code || "",
@@ -179,7 +177,6 @@ async function resolveIndex(c: any, lang: string) {
   const db = c.env.DB;
   const {
     siteName,
-    siteSlogan,
     siteDescription,
     headCode,
     footerCode,
@@ -224,6 +221,8 @@ async function resolveIndex(c: any, lang: string) {
   const videos = listResult.results.slice(0, pageSize) as any[];
   await applyTranslatedTitles(db, videos, langId);
 
+  const siteSlogan = c.get("settings").site_slogan?.trim() || "";
+
   return c.html(
     indexPage(
       lang,
@@ -234,7 +233,7 @@ async function resolveIndex(c: any, lang: string) {
       navTags.results,
       navCategories.results,
       null,
-      siteSlogan ? `${siteName} - ${siteSlogan}` : siteName,
+      siteName,
       origin,
       {
         contactEmail,
@@ -254,6 +253,7 @@ async function resolveIndex(c: any, lang: string) {
         adHomeListBottom,
         languages,
         defaultLang,
+        htmlDocumentTitle: siteSlogan ? `${siteName} - ${siteSlogan}` : undefined,
       }
     )
   );

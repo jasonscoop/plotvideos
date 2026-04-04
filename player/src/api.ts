@@ -235,8 +235,7 @@ async function syncLanguages(db: D1Database, crawlerUrl: string, crawlerKey: str
   if (!languages.length) return;
 
   const stmt = db.prepare(
-    `INSERT INTO languages (code, name, locale, flag) VALUES (?, ?, ?, ?)
-     ON CONFLICT(code) DO UPDATE SET name = excluded.name, locale = excluded.locale, flag = excluded.flag`
+    `INSERT OR IGNORE INTO languages (code, name, locale, flag) VALUES (?, ?, ?, ?)`
   );
   await db.batch(
     languages.map((l) => stmt.bind(l.code, l.name, l.locale, l.flag ?? ""))

@@ -803,25 +803,25 @@ a { color: inherit; text-decoration: none; }
 .yt-static-page a { color: var(--yt-blue); }
 
 .yt-legal-html,
-.yt-ad-html { text-align: start; }
+.yt-ad { text-align: start; }
 .yt-legal-html p,
-.yt-ad-html p { margin: 0 0 1em; }
+.yt-ad p { margin: 0 0 1em; }
 .yt-legal-html p:last-child,
-.yt-ad-html p:last-child { margin-bottom: 0; }
+.yt-ad p:last-child { margin-bottom: 0; }
 .yt-legal-html h2,
 .yt-legal-html h3,
-.yt-ad-html h2,
-.yt-ad-html h3 { font-size: 18px; margin: 1.25em 0 0.5em; font-weight: 600; }
+.yt-ad h2,
+.yt-ad h3 { font-size: 18px; margin: 1.25em 0 0.5em; font-weight: 600; }
 .yt-legal-html ul,
 .yt-legal-html ol,
-.yt-ad-html ul,
-.yt-ad-html ol { margin: 0 0 1em; padding-left: 1.5em; }
+.yt-ad ul,
+.yt-ad ol { margin: 0 0 1em; padding-left: 1.5em; }
 .yt-legal-html li,
-.yt-ad-html li { margin: 0.35em 0; }
+.yt-ad li { margin: 0.35em 0; }
 .yt-legal-html a,
-.yt-ad-html a { color: var(--yt-blue); text-decoration: underline; }
+.yt-ad a { color: var(--yt-blue); text-decoration: underline; }
 .yt-legal-html img,
-.yt-ad-html img { max-width: 100%; height: auto; }
+.yt-ad img { max-width: 100%; height: auto; }
 
 .yt-ad {
   margin: 12px 0;

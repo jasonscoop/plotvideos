@@ -195,7 +195,7 @@ export function esc(s: string): string {
 function rawAdSlot(html: string | undefined, className: string): string {
   const s = html?.trim();
   if (!s) return "";
-  return `<div class="yt-ad ${className}"><div class="yt-ad-html">${s}</div></div>`;
+  return `<div class="yt-ad ${className}">${s}</div>`;
 }
 
 /** Safe embedding of JSON inside a `<script type="application/json">` block. */
@@ -279,7 +279,7 @@ function homeSidebar(
   sidebarAdHtml = ""
 ): string {
   const adAside = sidebarAdHtml.trim()
-    ? `<aside class="yt-ad yt-ad--sidebar"><div class="yt-ad-html">${sidebarAdHtml.trim()}</div></aside>`
+    ? `<aside class="yt-ad yt-ad--sidebar">${sidebarAdHtml.trim()}</aside>`
     : "";
   if (!navTags.length && !navCategories.length) {
     return adAside ? `<nav class="yt-home-sidebar"><div class="yt-home-sidebar-body">${adAside}</div></nav>` : "";

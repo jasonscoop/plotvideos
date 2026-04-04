@@ -579,7 +579,7 @@ export function notFoundPage(
 (function(){
   var cfg = ${notFoundCfg};
   var el = document.getElementById("yt-not-found-countdown");
-  var n = 5;
+  var n = 3;
   function tick() {
     if (n <= 0) { window.location.href = cfg.homeHref; return; }
     if (el) el.textContent = cfg.template.replace("{n}", String(n));

@@ -2,9 +2,9 @@ services:
   tor:
     image: dperson/torproxy
     restart: unless-stopped
-    cpus: "0.5"
-    mem_limit: 256m
-    memswap_limit: 512m
+    cpus: "0.25"
+    mem_limit: 128m
+    memswap_limit: 256m
 
   s1_fetch:
     build: .
@@ -13,9 +13,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "0.5"
-    mem_limit: 512m
-    memswap_limit: 1g
+    cpus: "0.35"
+    mem_limit: 384m
+    memswap_limit: 768m
     command:
       - python
       - -m
@@ -34,9 +34,9 @@ services:
       - tor
     volumes:
       - ./works:/workspace/works
-    cpus: "2.5"
-    mem_limit: 2560m
-    memswap_limit: 4g
+    cpus: "0.8"
+    mem_limit: 1536m
+    memswap_limit: 2304m
     command:
       - python
       - -m
@@ -51,9 +51,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "2"
-    mem_limit: 2g
-    memswap_limit: 3g
+    cpus: "0.8"
+    mem_limit: 2048m
+    memswap_limit: 3072m
     command:
       - python
       - -m
@@ -68,9 +68,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "4"
-    mem_limit: 6g
-    memswap_limit: 8g
+    cpus: "1.85"
+    mem_limit: 4608m
+    memswap_limit: 6144m
     command:
       - python
       - -m
@@ -85,9 +85,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "1.5"
-    mem_limit: 1536m
-    memswap_limit: 2g
+    cpus: "0.55"
+    mem_limit: 1024m
+    memswap_limit: 1536m
     command:
       - python
       - -m
@@ -102,9 +102,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "1"
-    mem_limit: 1g
-    memswap_limit: 1536m
+    cpus: "0.35"
+    mem_limit: 512m
+    memswap_limit: 768m
     command:
       - python
       - -m
@@ -119,9 +119,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "3"
-    mem_limit: 3g
-    memswap_limit: 4g
+    cpus: "0.75"
+    mem_limit: 1536m
+    memswap_limit: 2304m
     command:
       - python
       - -m
@@ -136,15 +136,12 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "1"
-    mem_limit: 1g
-    memswap_limit: 1536m
+    cpus: "0.35"
+    mem_limit: 512m
+    memswap_limit: 768m
     command:
       - python
       - -m
       - pipeline
       - --runner=s8_upload
       - --lock-file=/workspace/works/locks/pipeline-s8_upload.lock
-
-volumes:
-  pgsql_data:

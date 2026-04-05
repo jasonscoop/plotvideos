@@ -6,32 +6,6 @@ services:
     mem_limit: 256m
     memswap_limit: 512m
 
-  postgres:
-    image: postgres:18-alpine
-    profiles:
-      - pgsql
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-PLotV789}
-      POSTGRES_DB: ${POSTGRES_DB:-plotvideos}
-    volumes:
-      - pgsql_data:/var/lib/postgresql/data
-    cpus: "1"
-    mem_limit: 1536m
-    memswap_limit: 2g
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-plotvideos}",
-        ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   s1_fetch:
     build: .
     restart: "no"

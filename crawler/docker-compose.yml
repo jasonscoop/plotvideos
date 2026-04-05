@@ -2,6 +2,9 @@ services:
   tor:
     image: dperson/torproxy
     restart: unless-stopped
+    cpus: "0.5"
+    mem_limit: 256m
+    memswap_limit: 512m
 
   postgres:
     image: postgres:18-alpine
@@ -14,6 +17,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-plotvideos}
     volumes:
       - pgsql_data:/var/lib/postgresql/data
+    cpus: "1"
+    mem_limit: 1536m
+    memswap_limit: 2g
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     healthcheck:
@@ -33,9 +39,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "1"
-    mem_limit: 1g
-    memswap_limit: 2g
+    cpus: "0.5"
+    mem_limit: 512m
+    memswap_limit: 1g
     command:
       - python
       - -m
@@ -54,9 +60,9 @@ services:
       - tor
     volumes:
       - ./works:/workspace/works
-    cpus: "4"
-    mem_limit: 4g
-    memswap_limit: 6g
+    cpus: "2.5"
+    mem_limit: 2560m
+    memswap_limit: 4g
     command:
       - python
       - -m
@@ -71,9 +77,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "4"
-    mem_limit: 4g
-    memswap_limit: 6g
+    cpus: "2"
+    mem_limit: 2g
+    memswap_limit: 3g
     command:
       - python
       - -m
@@ -89,8 +95,8 @@ services:
     volumes:
       - ./works:/workspace/works
     cpus: "4"
-    mem_limit: 8g
-    memswap_limit: 12g
+    mem_limit: 6g
+    memswap_limit: 8g
     command:
       - python
       - -m
@@ -105,9 +111,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "2"
-    mem_limit: 2g
-    memswap_limit: 3g
+    cpus: "1.5"
+    mem_limit: 1536m
+    memswap_limit: 2g
     command:
       - python
       - -m
@@ -122,9 +128,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "2"
-    mem_limit: 2g
-    memswap_limit: 3g
+    cpus: "1"
+    mem_limit: 1g
+    memswap_limit: 1536m
     command:
       - python
       - -m
@@ -139,9 +145,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "4"
-    mem_limit: 4g
-    memswap_limit: 6g
+    cpus: "3"
+    mem_limit: 3g
+    memswap_limit: 4g
     command:
       - python
       - -m
@@ -156,9 +162,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "2"
-    mem_limit: 2g
-    memswap_limit: 3g
+    cpus: "1"
+    mem_limit: 1g
+    memswap_limit: 1536m
     command:
       - python
       - -m
@@ -171,6 +177,9 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    cpus: "1"
+    mem_limit: 768m
+    memswap_limit: 1g
     ports:
       - "8999:8001"
     command: python -m api

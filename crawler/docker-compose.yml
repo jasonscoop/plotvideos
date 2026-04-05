@@ -3,8 +3,8 @@ services:
     image: dperson/torproxy
     restart: unless-stopped
     cpus: "0.25"
-    mem_limit: 128m
-    memswap_limit: 256m
+    mem_limit: 192m
+    memswap_limit: 384m
 
   s1_fetch:
     build: .
@@ -34,7 +34,7 @@ services:
       - tor
     volumes:
       - ./works:/workspace/works
-    cpus: "0.8"
+    cpus: "0.4"
     mem_limit: 1536m
     memswap_limit: 2304m
     command:
@@ -68,9 +68,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "1.85"
-    mem_limit: 4608m
-    memswap_limit: 6144m
+    cpus: "2.25"
+    mem_limit: 5824m
+    memswap_limit: 7168m
     command:
       - python
       - -m
@@ -86,8 +86,8 @@ services:
     volumes:
       - ./works:/workspace/works
     cpus: "0.55"
-    mem_limit: 1024m
-    memswap_limit: 1536m
+    mem_limit: 512m
+    memswap_limit: 768m
     command:
       - python
       - -m
@@ -120,8 +120,8 @@ services:
     volumes:
       - ./works:/workspace/works
     cpus: "0.75"
-    mem_limit: 1536m
-    memswap_limit: 2304m
+    mem_limit: 768m
+    memswap_limit: 1152m
     command:
       - python
       - -m

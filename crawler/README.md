@@ -1,6 +1,6 @@
 # Crawler (Python)
 
-Pipeline: fetch → download → convert → subtitles → translate → HLS → upload. FastAPI (`api`) for the player; storage on B2. Code lives under `src/`; entrypoints are `pipeline` (CLI), `scheduler`, and `api`.
+Pipeline: fetch → download → convert → subtitles → translate → HLS → upload. The player syncs catalog data from Postgres via the **`dataapi/`** Cloudflare Worker (replaces the former FastAPI service). Storage on B2. Code lives under `src/`; entrypoints are `pipeline` (CLI) and `scheduler`.
 
 ## Configuration
 
@@ -14,7 +14,6 @@ From `crawler/` after `uv sync`:
 export PYTHONPATH=src
 python -m pipeline --runner=s2_download
 python -m pipeline --runner=all
-python -m api
 ```
 
 Each stage runs batches until its queue is empty, then exits (cron controls when the next run starts).
@@ -29,14 +28,14 @@ Run from **`crawler/`**.
 
 | Command | Effect |
 |--------|--------|
-| `docker compose up -d` | **tor**, **api**, all pipeline services **`s1_fetch` … `s8_upload`** |
+| `docker compose up -d` | **tor**, all pipeline services **`s1_fetch` … `s8_upload`** |
 | `docker compose up -d s3_convert` | Create/start **one** service (and its **`depends_on`**, e.g. **tor** for **`s2_download`**) |
 | `docker compose --profile pgsql up -d postgres` | Postgres 18 only (profile **`pgsql`**) |
 | `docker compose --profile pgsql up -d` | Above **plus** full stack |
 
 Only **`s2_download`** uses Tor (`YT_DLP_PROXY`); other stages clear it in Compose so `.env` does not force a proxy on them.
 
-Pipeline services use **`restart: "no"`** so when the process exits **0** (queue drained), Docker does **not** restart them in a tight loop. Run again with **`docker compose up -d <service>`** or cron. **`tor`**, **`api`**, and **`postgres`** still use **`unless-stopped`**.
+Pipeline services use **`restart: "no"`** so when the process exits **0** (queue drained), Docker does **not** restart them in a tight loop. Run again with **`docker compose up -d <service>`** or cron. **`tor`** and **`postgres`** still use **`unless-stopped`**.
 
 If Compose warns about **orphan** containers after renames, run **`docker compose up --remove-orphans`** once to remove them.
 

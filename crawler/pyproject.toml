@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools]
-py-modules = ["api", "pipeline", "scheduler"]
+py-modules = ["pipeline", "scheduler"]
 
 [project]
 name = "wuse"
@@ -16,7 +16,6 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "b2sdk>=1.32.0",
-    "fastapi>=0.115.0",
     "faster-whisper==1.2.1",
     "ffmpeg-python==0.2.0",
     "loguru==0.7.3",
@@ -27,8 +26,6 @@ dependencies = [
     "sqlalchemy>=2.0.41",
     "tenacity==9.1.2",
     "tiktoken>=0.9.0",
-    "slowapi==0.1.9",
-    "uvicorn[standard]>=0.34.0",
     "stt2vtt>=0.0.5",
     "webvtt-py>=0.5.1",
     "yt-dlp==2026.3.17",

@@ -146,17 +146,5 @@ services:
       - --runner=s8_upload
       - --lock-file=/workspace/works/locks/pipeline-s8_upload.lock
 
-  api:
-    build: .
-    restart: unless-stopped
-    env_file:
-      - .env
-    cpus: "1"
-    mem_limit: 768m
-    memswap_limit: 1g
-    ports:
-      - "8999:8001"
-    command: python -m api
-
 volumes:
   pgsql_data:

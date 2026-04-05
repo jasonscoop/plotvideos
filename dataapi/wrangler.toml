@@ -1,0 +1,11 @@
+name = "plotvideos-data-api"
+main = "src/index.ts"
+compatibility_date = "2025-04-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+B2_CDN_DOMAIN = "https://play.luckvideos.com"
+
+[[hyperdrive]]
+binding = "HYPERDRIVE"
+id = "2057a650ebac436da5060fd763154f6e"

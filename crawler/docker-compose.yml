@@ -13,7 +13,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "0.35"
+    cpus: "0.25"
     mem_limit: 384m
     memswap_limit: 768m
     command:
@@ -34,9 +34,9 @@ services:
       - tor
     volumes:
       - ./works:/workspace/works
-    cpus: "0.4"
-    mem_limit: 1536m
-    memswap_limit: 2304m
+    cpus: "0.25"
+    mem_limit: 1024m
+    memswap_limit: 1536m
     command:
       - python
       - -m
@@ -51,9 +51,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "0.8"
-    mem_limit: 2048m
-    memswap_limit: 3072m
+    cpus: "0.5"
+    mem_limit: 1792m
+    memswap_limit: 2688m
     command:
       - python
       - -m
@@ -68,9 +68,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "2.25"
-    mem_limit: 5824m
-    memswap_limit: 7168m
+    cpus: "2.75"
+    mem_limit: 6208m
+    memswap_limit: 7680m
     command:
       - python
       - -m
@@ -85,8 +85,8 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "0.55"
-    mem_limit: 512m
+    cpus: "0.35"
+    mem_limit: 384m
     memswap_limit: 768m
     command:
       - python
@@ -102,8 +102,8 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "0.35"
-    mem_limit: 512m
+    cpus: "0.25"
+    mem_limit: 384m
     memswap_limit: 768m
     command:
       - python
@@ -119,9 +119,9 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "0.75"
-    mem_limit: 768m
-    memswap_limit: 1152m
+    cpus: "1.25"
+    mem_limit: 1536m
+    memswap_limit: 2304m
     command:
       - python
       - -m
@@ -136,8 +136,8 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "0.35"
-    mem_limit: 512m
+    cpus: "0.2"
+    mem_limit: 384m
     memswap_limit: 768m
     command:
       - python

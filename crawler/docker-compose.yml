@@ -119,7 +119,7 @@ services:
       - .env
     volumes:
       - ./works:/workspace/works
-    cpus: "1.25"
+    cpus: "2.25"
     mem_limit: 1536m
     memswap_limit: 2304m
     command:

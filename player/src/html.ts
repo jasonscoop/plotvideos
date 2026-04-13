@@ -654,8 +654,9 @@ export function watchPage(
     sources: [
       ...(video.hls_url
         ? [{ src: video.hls_url, type: "application/x-mpegURL" as const }]
-        : []),
-      ...(video.video_url ? [{ src: video.video_url, type: "video/mp4" as const }] : []),
+        : video.video_url
+          ? [{ src: video.video_url, type: "video/mp4" as const }]
+          : []),
     ],
     /** Passed to Video.js only — avoid inline track tags (browser would fetch VTT before Video.js / CORS). */
     subtitleTracks: subtitleTracks.map((tr) => ({

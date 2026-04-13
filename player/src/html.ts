@@ -667,16 +667,6 @@ export function watchPage(
     })),
   };
 
-  const seoTranscriptBlock =
-    seoTranscriptCues.length > 0
-      ? `<details class="yt-transcript-seo">
-  <summary class="yt-transcript-seo-summary">${t(lang, "full_transcript")}</summary>
-  <div class="yt-transcript-seo-body">
-    ${seoTranscriptCues.map((c) => `<p>${esc(c.text)}</p>`).join("")}
-  </div>
-</details>`
-      : "";
-
   const transcriptTextForLd = seoTranscriptCues.map((c) => c.text).join("\n");
   const isoDur = durationIso8601(video.duration);
   const watchPath = videoWatchPath(video);
@@ -719,7 +709,6 @@ export function watchPage(
       <h1 class="yt-title">${esc(video.title)}</h1>
 
       ${metaRowInner ? `<div class="yt-meta-row">${metaRowInner}</div>` : ""}
-      ${seoTranscriptBlock}
     </div>
   </div>
   ${adWatchRelatedAbove}

@@ -7,27 +7,27 @@ from tenacity import stop_after_attempt, retry, wait_random
 
 from core.config import (
     RAPIDAPI_AI_TRANSLATE_KEY_URL,
+    RAPIDAPI_AI_TRANSLATE_MIN_INTERVAL_SEC,
     RAPIDAPI_GOOGLE_TRANSLATE113_KEY_URL,
+    RAPIDAPI_GOOGLE_TRANSLATE_MIN_INTERVAL_SEC,
     RAPIDAPI_TRANSLATE_FALLBACK_DELAY_SEC,
-    RAPIDAPI_TRANSLATE_MIN_INTERVAL_SEC,
 )
 from core.languages import Language
 
 _API_KEY_TTL = 3600
 _api_key_cache: dict[str, tuple[str, float]] = {}
-_last_translate_request_mono: float = 0.0
+_last_request_mono: dict[str, float] = {}
 
 
-def _throttle_translate_request() -> None:
-    global _last_translate_request_mono
-    interval = RAPIDAPI_TRANSLATE_MIN_INTERVAL_SEC
+def _throttle(api: str, interval: float) -> None:
     if interval <= 0:
         return
     now = time.monotonic()
-    wait = interval - (now - _last_translate_request_mono)
+    last = _last_request_mono.get(api, 0.0)
+    wait = interval - (now - last)
     if wait > 0:
         time.sleep(wait)
-    _last_translate_request_mono = time.monotonic()
+    _last_request_mono[api] = time.monotonic()
 
 
 def _fetch_api_key(url: str) -> str:
@@ -72,7 +72,7 @@ def _translate_via_ai(texts: List[str], lang: Language) -> List[str]:
         "Content-Type": "application/json",
     }
 
-    _throttle_translate_request()
+    _throttle("ai", RAPIDAPI_AI_TRANSLATE_MIN_INTERVAL_SEC)
     response = requests.post(
         "https://ai-translate.p.rapidapi.com/translateHtml",
         json=payload, headers=headers, timeout=60,
@@ -92,7 +92,7 @@ def _translate_via_google(texts: List[str], lang: Language) -> List[str]:
         "Content-Type": "application/json",
     }
 
-    _throttle_translate_request()
+    _throttle("google", RAPIDAPI_GOOGLE_TRANSLATE_MIN_INTERVAL_SEC)
     response = requests.post(
         "https://google-translate113.p.rapidapi.com/api/v1/translator/json",
         json=payload, headers=headers, timeout=60,

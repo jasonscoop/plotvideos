@@ -2,10 +2,10 @@ import { Hono } from "hono";
 import { apiRoutes, refreshRandomKeys, syncFromCrawler } from "./api";
 import { pageRoutes, renderNotFoundHtml } from "./pages";
 import { registerSitemapRoutes } from "./sitemap";
-import STYLES_CSS from "./styles.css";
-import LANG_DROPDOWN_JS from "./lang-dropdown.client.js";
-import WATCH_PAGE_JS from "./watch-page.client.js";
-import LOGO_SVG from "./logo.svg";
+import STYLES_CSS from "./static/styles.css";
+import LANG_DROPDOWN_JS from "./static/lang-dropdown.client.js";
+import WATCH_PAGE_JS from "./static/watch-page.client.js";
+import LOGO_SVG from "./static/logo.svg";
 import { ASSET_HASHES } from "./asset-hashes";
 import { getSettings, type Settings } from "./settings";
 import { getLanguages, type LanguageRow } from "./languages";
@@ -70,6 +70,7 @@ app.get("/logo.svg", (c) => {
     "Cache-Control": "public, max-age=86400",
   });
 });
+
 
 app.get("/robots.txt", (c) => {
   const origin = new URL(c.req.url).origin;

@@ -14,8 +14,7 @@ const GLOBAL_CSS = `
 <link href="/styles.${ASSET_HASHES.css}.css" rel="stylesheet" />
 `;
 
-const CHEVRON_SVG = `<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>`;
-const CC_BADGE = `<span class="yt-cc"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 12h4v2H4v-2zm10 6H4v-2h10v2zm6 0h-4v-2h4v2zm0-4H10v-2h10v2z"/></svg></span>`;
+const CC_BADGE = `<span class="yt-cc"></span>`;
 
 function langDropdown(currentLang: string, currentPath: string, languages: LanguageRow[], defaultLang: string) {
   const curFlag = languageFlag(currentLang, languages);
@@ -32,7 +31,7 @@ function langDropdown(currentLang: string, currentPath: string, languages: Langu
 
   return `
     <div class="yt-lang-wrap">
-      <button class="yt-lang-btn" type="button"><span class="yt-lang-flag" aria-hidden="true">${curFlag}</span><span>${curName}</span> ${CHEVRON_SVG}</button>
+      <button class="yt-lang-btn" type="button"><span class="yt-lang-flag" aria-hidden="true">${curFlag}</span><span>${curName}</span></button>
       <div class="yt-lang-menu">${items}</div>
     </div>`;
 }
@@ -155,13 +154,13 @@ export function layout(
 </head>
 <body>
   <header class="yt-header">
-    <button class="yt-menu-btn" type="button" aria-label="Menu"><svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg></button>
+    <button class="yt-menu-btn" type="button" aria-label="Menu"></button>
     <a href="${prefix}/" class="yt-logo"><img src="/logo.svg" alt="" class="yt-logo-icon" /> ${esc(brand)}</a>
     <form action="${prefix}/" method="get" class="yt-search">
       <input type="text" name="q" value="${esc(q)}" placeholder="${t(lang, "search_placeholder")}" />
       <button type="submit">${t(lang, "search")}</button>
     </form>
-    <button class="yt-search-toggle" type="button" aria-label="Search"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
+    <button class="yt-search-toggle" type="button" aria-label="Search"></button>
     ${langDropdown(lang, path, opts?.languages ?? [], defaultLang)}
   </header>
   ${content}

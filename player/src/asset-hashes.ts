@@ -1,6 +1,6 @@
-import STYLES_CSS from "./styles.css";
-import LANG_DROPDOWN_JS from "./lang-dropdown.client.js";
-import WATCH_PAGE_JS from "./watch-page.client.js";
+import STYLES_CSS from "./static/styles.css";
+import LANG_DROPDOWN_JS from "./static/lang-dropdown.client.js";
+import WATCH_PAGE_JS from "./static/watch-page.client.js";
 
 function shortHash(src: string): string {
   let h = 0;

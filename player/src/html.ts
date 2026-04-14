@@ -167,11 +167,11 @@ export function layout(
   ${content}
   <footer class="yt-footer">
     <div class="yt-footer-inner">
+      ${footerCode}
       ${footerLinks.length ? `<p>${footerLinks.join(" | ")}</p>` : ""}
       <p>@copyright ${opts?.year || new Date().getFullYear()} <a href="${esc(opts?.siteUrl || `${prefix}/`)}">${esc(brand)}</a></p>
     </div>
   </footer>
-  ${footerCode}
   <div class="yt-sidebar-overlay"></div>
   <script src="/lang-dropdown.${ASSET_HASHES.langDropdown}.js" defer></script>
 </body>

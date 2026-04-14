@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "D1_DB_ID=${D1_DB_ID:-local} node scripts/generate-wrangler.js && wrangler dev",
-    "deploy": "node scripts/generate-wrangler.js && wrangler d1 execute DB --remote --file=src/schema.sql && wrangler deploy --keep-vars",
+    "deploy": "node scripts/generate-wrangler.js && node scripts/minify-static.js && wrangler d1 execute DB --remote --file=src/schema.sql && wrangler deploy --keep-vars",
     "db:init": "D1_DB_ID=${D1_DB_ID:-local} node scripts/generate-wrangler.js && wrangler d1 execute DB --local --file=src/schema.sql",
     "db:reset": "D1_DB_ID=${D1_DB_ID:-local} node scripts/generate-wrangler.js && rm -rf .wrangler/state/v3/d1/miniflare-D1DatabaseObject && wrangler d1 execute DB --local --file=src/schema.sql",
     "db:clean": "D1_DB_ID=${D1_DB_ID:-local} node scripts/generate-wrangler.js && wrangler d1 execute DB --local --file=src/schema.sql && wrangler d1 execute DB --local --file=scripts/clean-local-d1.sql",
